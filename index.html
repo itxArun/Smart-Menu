@@ -45,7 +45,6 @@
         .btn-container {
             margin-top: 20px;
         }
-        /* New Animated Button */
         .premium-btn {
             background: linear-gradient(45deg, #D4AF37, #F9E27D);
             color: #000;
@@ -60,7 +59,6 @@
             text-transform: uppercase;
         }
         .premium-btn:active { transform: scale(0.9); }
-        
         .status-text { font-size: 12px; color: #aaa; margin-top: 10px; }
     </style>
 </head>
@@ -73,20 +71,20 @@
 
     <model-viewer 
         id="ar-model"
-        src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" 
+        src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb" 
         ar 
         ar-modes="scene-viewer webxr quick-look" 
         camera-controls 
         auto-rotate 
         shadow-intensity="2"
         exposure="1"
-        alt="Premium Pizza">
+        alt="Premium Dish">
         
         <div slot="ar-button" style="display:none;"></div> </model-viewer>
 
     <div class="bottom-section">
-        <h2 style="margin:0;">Classic Margherita</h2>
-        <p style="color: #D4AF37; font-size: 20px; font-weight: bold; margin: 10px 0;">₹599</p>
+        <h2 style="margin:0;">Signature Dish</h2>
+        <p style="color: #D4AF37; font-size: 20px; font-weight: bold; margin: 10px 0;">₹1299</p>
         
         <div class="btn-container">
             <button class="premium-btn" onclick="activateAR()">
@@ -97,7 +95,6 @@
     </div>
 
     <script>
-        // Manual AR Trigger Function
         function activateAR() {
             const modelViewer = document.querySelector('#ar-model');
             if (modelViewer.canActivateAR) {
