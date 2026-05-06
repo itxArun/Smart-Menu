@@ -3,102 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arun's Premium AR Menu</title>
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <title>Arun's Royal AR Menu</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        :root {
-            --primary: #ff4757;
-            --glass: rgba(255, 255, 255, 0.15);
-        }
         body {
             margin: 0;
-            background: radial-gradient(circle, #2f3542 0%, #000000 100%);
-            color: white;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
+            background: #000;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         .header {
-            padding: 30px;
+            padding: 25px;
             text-align: center;
-            z-index: 10;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
         }
-        .header h1 {
+        .gold-text {
+            color: #D4AF37;
+            letter-spacing: 3px;
+            font-size: 24px;
             margin: 0;
-            font-size: 28px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            background: linear-gradient(to right, #ff4757, #ffa502);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .header p {
-            font-size: 14px;
-            opacity: 0.7;
-            margin-top: 5px;
+            font-weight: bold;
         }
         model-viewer {
             width: 100%;
-            flex-grow: 1;
+            height: 60vh;
             --poster-color: transparent;
         }
-        .footer-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding: 25px;
-            border-radius: 30px 30px 0 0;
+        .bottom-section {
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 40px 40px 0 0;
+            padding: 30px;
             text-align: center;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-            z-index: 10;
         }
-        .price-tag {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: block;
+        .btn-container {
+            margin-top: 20px;
         }
-        #ar-button {
-            background: linear-gradient(45deg, #ff4757, #ff6b81);
-            color: white;
+        /* New Animated Button */
+        .premium-btn {
+            background: linear-gradient(45deg, #D4AF37, #F9E27D);
+            color: #000;
             border: none;
-            padding: 18px 40px;
-            border-radius: 100px;
+            padding: 18px 45px;
+            border-radius: 50px;
             font-size: 16px;
-            font-weight: 600;
-            letter-spacing: 1px;
+            font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+            transition: 0.3s;
+            text-transform: uppercase;
         }
-        #ar-button:active {
-            transform: scale(0.95);
-        }
-        /* AR prompt animation */
-        .ar-guide {
-            position: absolute;
-            bottom: 120px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.6);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            pointer-events: none;
-        }
+        .premium-btn:active { transform: scale(0.9); }
+        
+        .status-text { font-size: 12px; color: #aaa; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Grand Italiano</h1>
-        <p>Premium AR Dining Experience</p>
+        <p class="gold-text">THE ROYAL DINING</p>
+        <p style="margin:5px 0 0; font-size: 12px; opacity: 0.6;">3D Augmented Reality Experience</p>
     </div>
 
     <model-viewer 
+        id="ar-model"
         src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" 
         ar 
         ar-modes="scene-viewer webxr quick-look" 
@@ -106,21 +80,33 @@
         auto-rotate 
         shadow-intensity="2"
         exposure="1"
-        environment-image="neutral">
+        alt="Premium Pizza">
         
-        <div class="ar-guide">Move phone to place dish</div>
-        
-        <button slot="ar-button" id="ar-button">
-            ✨ VIEW ON YOUR TABLE
-        </button>
-    </model-viewer>
+        <div slot="ar-button" style="display:none;"></div> </model-viewer>
 
-    <div class="footer-card">
-        <span class="price-tag">Authentic Neapolitan Pizza • ₹599</span>
-        <p style="font-size: 12px; opacity: 0.6; margin-bottom: 20px;">
-            Fresh mozzarella, basil, and hand-pressed San Marzano tomatoes.
-        </p>
+    <div class="bottom-section">
+        <h2 style="margin:0;">Classic Margherita</h2>
+        <p style="color: #D4AF37; font-size: 20px; font-weight: bold; margin: 10px 0;">₹599</p>
+        
+        <div class="btn-container">
+            <button class="premium-btn" onclick="activateAR()">
+                ✨ View on Table
+            </button>
+        </div>
+        <p class="status-text">Table detect karne ke liye phone ko ghumayein</p>
     </div>
+
+    <script>
+        // Manual AR Trigger Function
+        function activateAR() {
+            const modelViewer = document.querySelector('#ar-model');
+            if (modelViewer.canActivateAR) {
+                modelViewer.activateAR();
+            } else {
+                alert("Aapka browser AR support nahi kar raha. Chrome use karein!");
+            }
+        }
+    </script>
 
 </body>
 </html>
