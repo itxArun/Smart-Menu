@@ -19,7 +19,6 @@
         .header {
             padding: 25px;
             text-align: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
         }
         .gold-text {
             color: #D4AF37;
@@ -31,7 +30,6 @@
         model-viewer {
             width: 100%;
             height: 60vh;
-            --poster-color: transparent;
         }
         .bottom-section {
             flex-grow: 1;
@@ -41,9 +39,6 @@
             border-radius: 40px 40px 0 0;
             padding: 30px;
             text-align: center;
-        }
-        .btn-container {
-            margin-top: 20px;
         }
         .premium-btn {
             background: linear-gradient(45deg, #D4AF37, #F9E27D);
@@ -55,32 +50,27 @@
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
-            transition: 0.3s;
             text-transform: uppercase;
         }
-        .premium-btn:active { transform: scale(0.9); }
-        .status-text { font-size: 12px; color: #aaa; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <p class="gold-text">THE ROYAL DINING</p>
-        <p style="margin:5px 0 0; font-size: 12px; opacity: 0.6;">3D Augmented Reality Experience</p>
     </div>
 
     <model-viewer 
         id="ar-model"
-        src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb" 
+        src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
         ar 
-        ar-modes="scene-viewer webxr quick-look" 
+        ar-modes="webxr quick-look" 
         camera-controls 
-        auto-rotate 
         shadow-intensity="2"
-        exposure="1"
-        alt="Premium Dish">
+        exposure="1">
         
-        <div slot="ar-button" style="display:none;"></div> </model-viewer>
+        <button slot="ar-button" id="real-ar-btn" style="display:none;"></button>
+    </model-viewer>
 
     <div class="bottom-section">
         <h2 style="margin:0;">Signature Dish</h2>
@@ -91,17 +81,14 @@
                 ✨ View on Table
             </button>
         </div>
-        <p class="status-text">Table detect karne ke liye phone ko ghumayein</p>
+        <p style="font-size: 12px; color: #aaa; margin-top: 10px;">Chrome browser use karein best experience ke liye</p>
     </div>
 
     <script>
         function activateAR() {
             const modelViewer = document.querySelector('#ar-model');
-            if (modelViewer.canActivateAR) {
-                modelViewer.activateAR();
-            } else {
-                alert("Aapka browser AR support nahi kar raha. Chrome use karein!");
-            }
+            // Direct trigger for WebXR
+            modelViewer.activateAR();
         }
     </script>
 
