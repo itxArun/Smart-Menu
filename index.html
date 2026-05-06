@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arun's Royal Smart Menu</title>
+    <title>Arun's Royal AR Menu</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         body { margin: 0; background: #000; color: #fff; font-family: 'Poppins', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .header { padding: 20px; text-align: center; }
+        .header { padding: 15px; text-align: center; background: rgba(0,0,0,0.5); }
         .gold-text { color: #D4AF37; letter-spacing: 2px; font-size: 20px; font-weight: bold; margin: 0; }
         
-        model-viewer { width: 100%; height: 50vh; background: radial-gradient(#333, #000); }
+        model-viewer { width: 100%; height: 50vh; background: radial-gradient(#444, #000); }
         
         .menu-container {
             flex-grow: 1;
@@ -24,40 +24,39 @@
             align-items: center;
         }
 
-        /* Dish Selection Cards */
         .dish-list {
             display: flex;
             gap: 15px;
             overflow-x: auto;
             width: 100%;
-            padding: 10px 0;
-            margin-bottom: 20px;
+            padding: 10px 5px;
+            margin-bottom: 15px;
         }
         .dish-card {
-            min-width: 100px;
+            min-width: 90px;
             background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 2px solid transparent;
             border-radius: 15px;
             padding: 10px;
             text-align: center;
-            cursor: pointer;
+            transition: 0.3s;
         }
-        .dish-card.active { border-color: #D4AF37; background: rgba(212, 175, 55, 0.1); }
-        .dish-card img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
-
+        .dish-card.active { border-color: #D4AF37; background: rgba(212, 175, 55, 0.2); }
+        
         .premium-btn {
             background: linear-gradient(45deg, #D4AF37, #F9E27D);
             color: #000; border: none; padding: 15px 40px;
             border-radius: 50px; font-size: 16px; font-weight: 800;
             box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
-            text-transform: uppercase; width: 80%;
+            text-transform: uppercase; width: 90%;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <p class="gold-text">ROYAL SMART MENU</p>
+        <p class="gold-text">ROYAL AR MENU</p>
     </div>
 
     <model-viewer 
@@ -69,17 +68,19 @@
 
     <div class="menu-container">
         <div class="dish-list">
-            <div class="dish-card active" onclick="changeDish('Pizza', '599', 'https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb', this)">
-                <img src="https://cdn-icons-png.flaticon.com/512/3595/3595455.png" alt="Pizza">
-                <p style="font-size: 12px; margin: 5px 0 0;">Pizza</p>
+            <div class="dish-card active" onclick="changeDish('Classic Pizza', '599', 'https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb', this)">
+                <span style="font-size: 30px;">🍕</span>
+                <p style="font-size: 11px; margin: 5px 0 0;">Pizza</p>
             </div>
-            <div class="dish-card" onclick="changeDish('Space Cake', '450', 'https://modelviewer.dev/shared-assets/models/Astronaut.glb', this)">
-                <img src="https://cdn-icons-png.flaticon.com/512/2682/2682413.png" alt="Cake">
-                <p style="font-size: 12px; margin: 5px 0 0;">Special</p>
+            
+            <div class="dish-card" onclick="changeDish('King Burger', '350', 'https://modelviewer.dev/shared-assets/models/Astronaut.glb', this)">
+                <span style="font-size: 30px;">🍔</span>
+                <p style="font-size: 11px; margin: 5px 0 0;">Burger</p>
             </div>
-            <div class="dish-card" onclick="changeDish('Wooden Chair', '1200', 'https://modelviewer.dev/shared-assets/models/Chair.glb', this)">
-                <img src="https://cdn-icons-png.flaticon.com/512/2153/2153549.png" alt="Furniture">
-                <p style="font-size: 12px; margin: 5px 0 0;">Furniture</p>
+
+            <div class="dish-card" onclick="changeDish('Chocolate Cake', '250', 'https://modelviewer.dev/shared-assets/models/glTFSampleModels/SheenChair/glTF-Binary/SheenChair.glb', this)">
+                <span style="font-size: 30px;">🍰</span>
+                <p style="font-size: 11px; margin: 5px 0 0;">Dessert</p>
             </div>
         </div>
 
@@ -87,21 +88,22 @@
         <p id="dish-price" style="color: #D4AF37; font-size: 22px; font-weight: bold; margin: 5px 0;">₹599</p>
         
         <button class="premium-btn" onclick="document.querySelector('#main-viewer').activateAR()">
-            ✨ View on Table
+            ✨ VIEW ON TABLE
         </button>
     </div>
 
     <script>
         function changeDish(name, price, modelUrl, element) {
-            // Update Viewer
             const viewer = document.querySelector('#main-viewer');
+            
+            // 1. Model change karo
             viewer.src = modelUrl;
 
-            // Update Text
+            // 2. Text update karo
             document.querySelector('#dish-name').innerText = name;
             document.querySelector('#dish-price').innerText = "₹" + price;
 
-            // Update Active UI
+            // 3. UI look badlo (Active card highlight)
             document.querySelectorAll('.dish-card').forEach(card => card.classList.remove('active'));
             element.classList.add('active');
         }
