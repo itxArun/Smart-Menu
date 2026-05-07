@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grand Italiano AR Smart Menu</title>
+    <title>Grand Italiano AR</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
-            --gold-static: #AA771C;
-        }
-
         body {
             margin: 0;
-            background-color: #0d0d0d;
-            /* WhatsApp-style food pattern background */
-            background-image: url('https://raw.githubusercontent.com/satyasricharan/WhatsApp-Doodle/master/whatsapp-doodle-dark.webp');
-            background-size: 400px;
+            background-color: #000;
+            /* WhatsApp style pattern with Emojis */
+            background: 
+                radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 100%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='30' fill='rgba(212,175,55,0.1)' font-size='20'%3E🍕%3C/text%3E%3Ctext x='60' y='70' fill='rgba(212,175,55,0.1)' font-size='20'%3E🍔%3C/text%3E%3Ctext x='40' y='40' fill='rgba(212,175,55,0.1)' font-size='15'%3E🍰%3C/text%3E%3Ctext x='80' y='20' fill='rgba(212,175,55,0.1)' font-size='15'%3E🍩%3C/text%3E%3C/svg%3E");
             color: #fff;
-            font-family: 'Times New Roman', Times, serif; /* Premium feeling font */
+            font-family: 'Poppins', sans-serif;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -26,113 +23,111 @@
         }
 
         .header {
-            padding: 25px;
+            padding: 30px 20px;
             text-align: center;
-            border-bottom: 1px solid var(--gold-static);
-            background-color: rgba(0,0,0,0.8);
-            z-index: 10;
+            border-bottom: 2px solid #D4AF37;
         }
 
-        .gold-title {
-            background: var(--gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 26px;
-            font-weight: bold;
-            letter-spacing: 2px;
+        .gold-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #D4AF37;
             margin: 0;
-            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(212,175,55,0.5);
+        }
+
+        .viewer-container {
+            position: relative;
+            width: 100%;
+            height: 55vh;
         }
 
         model-viewer {
             width: 100%;
-            height: 55vh;
+            height: 100%;
             --poster-color: transparent;
-            background-color: rgba(0,0,0,0.2);
         }
 
-        .bottom-section {
+        .bottom-ui {
             flex-grow: 1;
-            background-color: rgba(0, 0, 0, 0.9);
-            border-top: 1px solid var(--gold-static);
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 2px solid #D4AF37;
             border-radius: 40px 40px 0 0;
             padding: 30px;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
-            z-index: 10;
+            justify-content: center;
+            gap: 15px;
         }
 
-        .dish-name {
-            font-size: 22px;
-            font-style: italic;
-            margin: 0 0 10px 0;
-        }
-
-        .dish-price {
-            font-size: 28px;
+        .price {
+            color: #D4AF37;
+            font-size: 30px;
             font-weight: bold;
-            color: var(--gold-static);
-            margin: 0 0 20px 0;
+            margin: 0;
         }
 
-        /* Original, direct-trigger AR button */
-        #ar-button {
-            background: var(--gold);
+        .btn-premium {
+            background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728);
             color: #000;
             border: none;
-            padding: 18px 50px;
+            padding: 18px 0;
             border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 18px;
+            font-weight: 800;
+            width: 85%;
+            max-width: 320px;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            width: 100%;
-            max-width: 300px;
             transition: 0.3s;
         }
 
-        #ar-button:active {
-            transform: scale(0.95);
-        }
+        .btn-premium:active { transform: scale(0.95); }
 
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1 class="gold-title">Grand Italiano</h1>
+        <h1 class="gold-brand">Grand Italiano</h1>
+        <p style="margin:5px 0 0; opacity:0.6; font-size:12px; letter-spacing:2px;">CUTE AR EXPERIENCE</p>
     </div>
 
-    <model-viewer 
-        id="ar-model"
-        src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" 
-        ios-src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.usdz"
-        ar 
-        ar-modes="webxr quick-look" 
-        camera-controls 
-        auto-rotate 
-        shadow-intensity="1.5"
-        exposure="1"
-        alt="Premium Neapolitan Pizza">
+    <div class="viewer-container">
+        <model-viewer 
+            id="ar-view"
+            src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" 
+            ios-src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.usdz"
+            ar 
+            ar-modes="webxr scene-viewer quick-look" 
+            camera-controls 
+            auto-rotate 
+            shadow-intensity="1.5">
+        </model-viewer>
+    </div>
+
+    <div class="bottom-ui">
+        <h2 style="font-style: italic; margin:0;">Signature Pizza</h2>
+        <p class="price">₹599</p>
         
-        <button slot="ar-button" id="ar-button">
+        <button class="btn-premium" onclick="startAR()">
             ✨ View on Table
         </button>
-    </model-viewer>
-
-    <div class="bottom-section">
-        <div>
-            <h2 class="dish-name">Classic Neapolitan Pizza</h2>
-            <p class="dish-price">₹599</p>
-        </div>
-        <p style="font-size: 11px; color: #aaa; font-family: sans-serif;">Point phone at an empty space for AR</p>
+        
+        <p style="font-size: 10px; color: #888;">Use Chrome Incognito for best results</p>
     </div>
+
+    <script>
+        function startAR() {
+            const mv = document.querySelector('#ar-view');
+            // Force activate AR
+            mv.activateAR();
+        }
+    </script>
 
 </body>
 </html>
