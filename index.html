@@ -10,7 +10,7 @@
         body {
             margin: 0;
             background-color: #1a1a1a;
-            /* YAHAN MAINE EMOJIS KO BADA AUR BRIGHT KAR DIYA HAI */
+            /* Premium Cute Background */
             background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='15' y='35' font-size='25' opacity='0.3'%3E🍕%3C/text%3E%3Ctext x='65' y='80' font-size='25' opacity='0.3'%3E🍔%3C/text%3E%3Ctext x='40' y='55' font-size='18' opacity='0.3'%3E🍰%3C/text%3E%3Ctext x='85' y='30' font-size='18' opacity='0.3'%3E🍩%3C/text%3E%3C/svg%3E");
             color: #fff;
             font-family: 'Poppins', sans-serif;
@@ -21,105 +21,155 @@
         }
 
         .header {
-            padding: 25px 20px;
+            padding: 15px;
             text-align: center;
             background: rgba(0,0,0,0.85);
             border-bottom: 2px solid #D4AF37;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             z-index: 10;
         }
 
         .gold-brand {
             font-family: 'Playfair Display', serif;
-            font-size: 32px;
+            font-size: 28px;
             color: #D4AF37;
             margin: 0;
             text-shadow: 0 0 10px rgba(212,175,55,0.4);
         }
 
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
+        /* 3D Viewer Area */
         model-viewer {
             width: 100%;
-            height: 50vh;
+            height: 45vh; 
             --poster-color: transparent;
+            z-index: 1;
         }
 
+        /* Menu UI Section */
         .bottom-ui {
             flex-grow: 1;
             background: rgba(15, 15, 15, 0.95);
             border-top: 2px solid #D4AF37;
-            border-radius: 40px 40px 0 0;
-            padding: 30px;
+            border-radius: 30px 30px 0 0;
+            padding: 20px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
         }
 
-        .price {
-            color: #D4AF37;
-            font-size: 32px;
-            font-weight: bold;
-            margin: 5px 0 20px 0;
+        /* 3 Dishes List */
+        .dish-list {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
-        /* 100% WORKING BUTTON (SLOTTED & FIXED) */
+        .dish-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(212,175,55,0.3);
+            border-radius: 15px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            width: 70px;
+        }
+
+        .dish-card.active {
+            background: rgba(212,175,55,0.2);
+            border-color: #D4AF37;
+            transform: scale(1.1);
+        }
+
+        .dish-emoji { font-size: 30px; margin-bottom: 5px; }
+        .dish-name-small { font-size: 11px; margin: 0; color: #ddd; font-weight: 600;}
+
+        .price-container { margin-bottom: 15px; }
+        .dish-title { font-size: 22px; font-weight: 600; margin: 0; }
+        .price { color: #D4AF37; font-size: 26px; font-weight: bold; margin: 5px 0 0 0; }
+
+        /* AR Button */
         .btn-premium {
             background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728);
             color: #000;
             border: none;
-            padding: 16px 0;
+            padding: 15px 0;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 800;
-            width: 80%;
+            width: 90%;
             max-width: 320px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             text-transform: uppercase;
-            
-            /* Ye code button ko screen ke niche center me set karega */
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
         }
-
-        .btn-premium:active { transform: scale(0.95) translateX(-50%); }
-
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1 class="gold-brand">Grand Italiano</h1>
-        <p style="margin:5px 0 0; opacity:0.7; font-size:12px; letter-spacing:2px;">CUTE AR EXPERIENCE</p>
     </div>
 
-    <div class="main-content">
-        <model-viewer 
-            src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" 
-            ios-src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.usdz"
-            ar 
-            ar-modes="webxr scene-viewer quick-look" 
-            camera-controls 
-            auto-rotate 
-            shadow-intensity="1.5"
-            environment-image="neutral">
+    <model-viewer 
+        id="ar-viewer"
+        src="https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb"
+        ar 
+        ar-modes="webxr scene-viewer quick-look" 
+        camera-controls 
+        auto-rotate 
+        shadow-intensity="1.5"
+        environment-image="neutral">
+        
+        <button slot="ar-button" class="btn-premium" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);">
+            ✨ VIEW ON TABLE
+        </button>
+    </model-viewer>
+
+    <div class="bottom-ui">
+        
+        <div class="dish-list">
+            <div class="dish-card active" onclick="changeDish(this, 'Signature Pizza', '599', 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="dish-emoji">🍕</div>
+                <p class="dish-name-small">Pizza</p>
+            </div>
             
-            <button slot="ar-button" class="btn-premium">
-                ✨ View on Table
-            </button>
-        </model-viewer>
-
-        <div class="bottom-ui">
-            <h2 style="font-style: italic; margin:0;">Signature Pizza</h2>
-            <p class="price">₹599</p>
+            <div class="dish-card" onclick="changeDish(this, 'Healthy Avocado', '299', 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+                <div class="dish-emoji">🥑</div>
+                <p class="dish-name-small">Avocado</p>
+            </div>
+            
+            <div class="dish-card" onclick="changeDish(this, 'Cold Drink', '150', 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
+                <div class="dish-emoji">🥤</div>
+                <p class="dish-name-small">Drink</p>
+            </div>
         </div>
+
+        <div class="price-container">
+            <h2 class="dish-title" id="display-name">Signature Pizza</h2>
+            <p class="price" id="display-price">₹599</p>
+        </div>
+
+        <p style="font-size: 11px; color: #888; margin-top: 5px;">Screen par dish ko ungli se ghumayein ya AR mein dekhein</p>
     </div>
 
+    <script>
+        function changeDish(element, name, price, modelUrl) {
+            // Text aur Price change karo
+            document.getElementById('display-name').innerText = name;
+            document.getElementById('display-price').innerText = '₹' + price;
+
+            // 3D Model file change karo
+            const viewer = document.getElementById('ar-viewer');
+            viewer.src = modelUrl;
+
+            // Niche wale buttons ka color change karo
+            document.querySelectorAll('.dish-card').forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+        }
+    </script>
 </body>
 </html>
