@@ -3,148 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grand Italiano AR</title>
+    <title>Grand Italiano - Smart Menu</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
-            margin: 0;
-            background-color: #1a1a1a;
-            /* Premium Cute Background */
+            margin: 0; background-color: #1a1a1a;
             background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='15' y='35' font-size='25' opacity='0.3'%3E🍕%3C/text%3E%3Ctext x='65' y='80' font-size='25' opacity='0.3'%3E🍔%3C/text%3E%3Ctext x='40' y='55' font-size='18' opacity='0.3'%3E🍰%3C/text%3E%3Ctext x='85' y='30' font-size='18' opacity='0.3'%3E🍩%3C/text%3E%3C/svg%3E");
-            color: #fff;
-            font-family: 'Poppins', sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            color: #fff; font-family: 'Poppins', sans-serif;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
 
         .header {
-            padding: 15px;
-            text-align: center;
-            background: rgba(0,0,0,0.85);
-            border-bottom: 2px solid #D4AF37;
-            z-index: 10;
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.85); border-bottom: 2px solid #D4AF37; z-index: 10;
         }
-
         .gold-brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 28px;
-            color: #D4AF37;
-            margin: 0;
+            font-family: 'Playfair Display', serif; font-size: 24px; color: #D4AF37; margin: 0;
             text-shadow: 0 0 10px rgba(212,175,55,0.4);
         }
 
-        /* 3D Viewer Area */
-        model-viewer {
-            width: 100%;
-            height: 45vh; 
-            --poster-color: transparent;
-            z-index: 1;
+        /* Cart Icon */
+        .cart-icon {
+            position: relative; font-size: 24px; cursor: pointer;
+        }
+        .cart-badge {
+            position: absolute; top: -5px; right: -10px; background: #ff4757; color: white;
+            font-size: 10px; font-weight: bold; width: 18px; height: 18px;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
         }
 
-        /* Menu UI Section */
+        .viewer-wrapper { position: relative; width: 100%; height: 40vh; z-index: 1; }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+
+        /* Loader */
+        .progress-bar {
+            display: block; width: 33%; height: 5px; max-width: 200px;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; overflow: hidden;
+        }
+        .progress-bar.hide { visibility: hidden; }
+        .update-bar { background-color: #D4AF37; width: 0%; height: 100%; transition: width 0.3s; }
+        .loading-text {
+            position: absolute; top: calc(50% + 20px); left: 50%; transform: translateX(-50%);
+            color: #D4AF37; font-size: 12px; font-weight: 600; letter-spacing: 1px;
+        }
+        .loading-text.hide { visibility: hidden; }
+
         .bottom-ui {
-            flex-grow: 1;
-            background: rgba(15, 15, 15, 0.95);
-            border-top: 2px solid #D4AF37;
-            border-radius: 30px 30px 0 0;
-            padding: 20px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 10;
+            flex-grow: 1; background: rgba(15, 15, 15, 0.95);
+            border-top: 2px solid #D4AF37; border-radius: 30px 30px 0 0;
+            padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; z-index: 10;
         }
 
-        /* 3 Dishes List */
-        .dish-list {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
+        .dish-list { display: flex; gap: 15px; width: 100%; justify-content: center; margin-bottom: 15px; }
         .dish-card {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(212,175,55,0.3);
-            border-radius: 15px;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: 0.3s;
-            text-align: center;
-            width: 70px;
+            background: rgba(255,255,255,0.05); border: 2px solid rgba(212,175,55,0.3);
+            border-radius: 15px; padding: 10px; cursor: pointer; transition: 0.3s; text-align: center; width: 65px;
         }
-
-        .dish-card.active {
-            background: rgba(212,175,55,0.2);
-            border-color: #D4AF37;
-            transform: scale(1.1);
-        }
-
-        .dish-emoji { font-size: 30px; margin-bottom: 5px; }
-        .dish-name-small { font-size: 11px; margin: 0; color: #ddd; font-weight: 600;}
+        .dish-card.active { background: rgba(212,175,55,0.2); border-color: #D4AF37; transform: scale(1.1); }
+        .dish-emoji { font-size: 26px; margin-bottom: 5px; }
+        .dish-name-small { font-size: 10px; margin: 0; color: #ddd; font-weight: 600;}
 
         .price-container { margin-bottom: 15px; }
-        .dish-title { font-size: 22px; font-weight: 600; margin: 0; }
-        .price { color: #D4AF37; font-size: 26px; font-weight: bold; margin: 5px 0 0 0; }
+        .dish-title { font-size: 20px; font-weight: 600; margin: 0; }
+        .price { color: #D4AF37; font-size: 24px; font-weight: bold; margin: 5px 0 0 0; }
 
-        /* AR Button */
+        /* Action Buttons */
+        .action-row { display: flex; gap: 10px; width: 100%; max-width: 350px; }
         .btn-premium {
-            background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728);
-            color: #000;
-            border: none;
-            padding: 15px 0;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 800;
-            width: 90%;
-            max-width: 320px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            text-transform: uppercase;
+            background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728); color: #000; border: none;
+            padding: 15px 0; border-radius: 15px; font-size: 14px; font-weight: 800; flex: 1;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
+        .btn-cart {
+            background: transparent; color: #D4AF37; border: 2px solid #D4AF37;
+            padding: 15px 0; border-radius: 15px; font-size: 14px; font-weight: 800; flex: 1;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-cart:active { background: rgba(212,175,55,0.2); }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%);
+            background: #2ed573; color: white; padding: 10px 20px; border-radius: 50px;
+            font-size: 12px; font-weight: bold; transition: bottom 0.3s; z-index: 1000;
+        }
+        .toast.show { bottom: 20px; }
+
+        /* Cart Modal */
+        .cart-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: flex-end;
+            z-index: 500; visibility: hidden; opacity: 0; transition: 0.3s;
+        }
+        .cart-modal.show { visibility: visible; opacity: 1; }
+        .cart-content {
+            background: #1a1a1a; width: 100%; border-radius: 30px 30px 0 0;
+            padding: 30px 20px; border-top: 2px solid #D4AF37;
+        }
+        .cart-item { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 10px 0; }
+        .cart-total { display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; color: #D4AF37; margin: 20px 0; }
+        .close-cart { text-align: center; color: #888; font-size: 12px; margin-top: 15px; cursor: pointer; }
+
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1 class="gold-brand">Grand Italiano</h1>
+        <div class="cart-icon" onclick="toggleCart()">
+            🛒 <div class="cart-badge" id="cart-count">0</div>
+        </div>
     </div>
 
-    <model-viewer 
-        id="ar-viewer"
-        src="https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb"
-        ar 
-        ar-modes="webxr scene-viewer quick-look" 
-        camera-controls 
-        auto-rotate 
-        shadow-intensity="1.5"
-        environment-image="neutral">
-        
-        <button slot="ar-button" class="btn-premium" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);">
-            ✨ VIEW ON TABLE
-        </button>
-    </model-viewer>
+    <div class="viewer-wrapper">
+        <model-viewer id="ar-viewer" src="https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1.5" environment-image="neutral">
+            <div slot="progress-bar" class="progress-bar"><div class="update-bar" id="update-bar"></div></div>
+            <div id="loading-text" class="loading-text">Preparing Dish...</div>
+        </model-viewer>
+    </div>
 
     <div class="bottom-ui">
-        
         <div class="dish-list">
-            <div class="dish-card active" onclick="changeDish(this, 'Signature Pizza', '599', 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
-                <div class="dish-emoji">🍕</div>
-                <p class="dish-name-small">Pizza</p>
+            <div class="dish-card active" onclick="changeDish(this, 'Signature Pizza', 599, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="dish-emoji">🍕</div><p class="dish-name-small">Pizza</p>
             </div>
-            
-            <div class="dish-card" onclick="changeDish(this, 'Healthy Avocado', '299', 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
-                <div class="dish-emoji">🥑</div>
-                <p class="dish-name-small">Avocado</p>
+            <div class="dish-card" onclick="changeDish(this, 'Fresh Avocado', 349, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+                <div class="dish-emoji">🥑</div><p class="dish-name-small">Avocado</p>
             </div>
-            
-            <div class="dish-card" onclick="changeDish(this, 'Cold Drink', '150', 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
-                <div class="dish-emoji">🥤</div>
-                <p class="dish-name-small">Drink</p>
+            <div class="dish-card" onclick="changeDish(this, 'Premium Water', 149, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
+                <div class="dish-emoji">💧</div><p class="dish-name-small">Drink</p>
             </div>
         </div>
 
@@ -152,23 +142,101 @@
             <h2 class="dish-title" id="display-name">Signature Pizza</h2>
             <p class="price" id="display-price">₹599</p>
         </div>
+        
+        <div class="action-row">
+            <button class="btn-cart" onclick="addToCart()">🛒 ADD TO CART</button>
+            <button class="btn-premium" onclick="document.querySelector('#ar-viewer').activateAR()">✨ VIEW IN AR</button>
+        </div>
+    </div>
 
-        <p style="font-size: 11px; color: #888; margin-top: 5px;">Screen par dish ko ungli se ghumayein ya AR mein dekhein</p>
+    <div class="toast" id="toast">Item added to cart!</div>
+
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-content">
+            <h2 style="margin:0 0 15px 0; color:#D4AF37;">Your Order</h2>
+            <div id="cart-items-list">
+                </div>
+            <div class="cart-total">
+                <span>Total Bill:</span>
+                <span id="cart-total-price">₹0</span>
+            </div>
+            <button class="btn-premium" style="width:100%" onclick="alert('Order Placed Successfully! (Demo)')">PLACE ORDER</button>
+            <div class="close-cart" onclick="toggleCart()">Close Menu</div>
+        </div>
     </div>
 
     <script>
+        const viewer = document.querySelector('#ar-viewer');
+        const updateBar = document.querySelector('#update-bar');
+        const progressBar = document.querySelector('.progress-bar');
+        const loadingText = document.querySelector('#loading-text');
+
+        // Current Dish State
+        let currentDish = { name: 'Signature Pizza', price: 599 };
+        let cart = [];
+
+        // Loading animation
+        viewer.addEventListener('progress', (event) => {
+            const progress = event.detail.totalProgress;
+            updateBar.style.width = `${progress * 100}%`;
+            if (progress === 1) {
+                progressBar.classList.add('hide'); loadingText.classList.add('hide');
+            } else {
+                progressBar.classList.remove('hide'); loadingText.classList.remove('hide');
+            }
+        });
+
         function changeDish(element, name, price, modelUrl) {
-            // Text aur Price change karo
+            currentDish = { name: name, price: price };
             document.getElementById('display-name').innerText = name;
             document.getElementById('display-price').innerText = '₹' + price;
-
-            // 3D Model file change karo
-            const viewer = document.getElementById('ar-viewer');
+            
+            progressBar.classList.remove('hide'); loadingText.classList.remove('hide');
+            updateBar.style.width = '0%';
             viewer.src = modelUrl;
 
-            // Niche wale buttons ka color change karo
             document.querySelectorAll('.dish-card').forEach(card => card.classList.remove('active'));
             element.classList.add('active');
+        }
+
+        function addToCart() {
+            cart.push(currentDish);
+            
+            // Update Badge
+            document.getElementById('cart-count').innerText = cart.length;
+            
+            // Show Toast
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function toggleCart() {
+            const modal = document.getElementById('cart-modal');
+            const itemsList = document.getElementById('cart-items-list');
+            const totalPrice = document.getElementById('cart-total-price');
+            
+            if (!modal.classList.contains('show')) {
+                // Populate Cart
+                itemsList.innerHTML = '';
+                let total = 0;
+                
+                if(cart.length === 0) {
+                    itemsList.innerHTML = '<p style="text-align:center; color:#888;">Cart is empty</p>';
+                } else {
+                    cart.forEach((item, index) => {
+                        total += item.price;
+                        itemsList.innerHTML += `
+                            <div class="cart-item">
+                                <span>${item.name}</span>
+                                <span>₹${item.price}</span>
+                            </div>
+                        `;
+                    });
+                }
+                totalPrice.innerText = '₹' + total;
+            }
+            modal.classList.toggle('show');
         }
     </script>
 </body>
