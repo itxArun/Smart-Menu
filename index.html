@@ -3,42 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Royal AR Menu</title>
+    <title>Grand Italiano AR Smart Menu</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .header { padding: 20px; text-align: center; background: #111; border-bottom: 1px solid #D4AF37; }
-        .gold { color: #D4AF37; font-weight: bold; letter-spacing: 2px; }
-        model-viewer { width: 100%; height: 50vh; background: #000; }
-        .menu { flex-grow: 1; padding: 20px; text-align: center; background: #111; border-radius: 30px 30px 0 0; }
-        .dish-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
-        .btn { padding: 15px 40px; background: linear-gradient(45deg, #D4AF37, #f1c40f); color: #000; border: none; border-radius: 50px; font-weight: 800; width: 80%; cursor: pointer; }
+        :root {
+            --gold: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            --gold-static: #AA771C;
+        }
+
+        body {
+            margin: 0;
+            background-color: #0d0d0d;
+            /* WhatsApp-style food pattern background */
+            background-image: url('https://raw.githubusercontent.com/satyasricharan/WhatsApp-Doodle/master/whatsapp-doodle-dark.webp');
+            background-size: 400px;
+            color: #fff;
+            font-family: 'Times New Roman', Times, serif; /* Premium feeling font */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid var(--gold-static);
+            background-color: rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        .gold-title {
+            background: var(--gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 55vh;
+            --poster-color: transparent;
+            background-color: rgba(0,0,0,0.2);
+        }
+
+        .bottom-section {
+            flex-grow: 1;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid var(--gold-static);
+            border-radius: 40px 40px 0 0;
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        .dish-name {
+            font-size: 22px;
+            font-style: italic;
+            margin: 0 0 10px 0;
+        }
+
+        .dish-price {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--gold-static);
+            margin: 0 0 20px 0;
+        }
+
+        /* Original, direct-trigger AR button */
+        #ar-button {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            max-width: 300px;
+            transition: 0.3s;
+        }
+
+        #ar-button:active {
+            transform: scale(0.95);
+        }
+
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="gold">ROYAL AR DINING</div>
+        <h1 class="gold-title">Grand Italiano</h1>
     </div>
 
     <model-viewer 
-        id="ar-viewer"
+        id="ar-model"
         src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" 
         ios-src="https://modelviewer.dev/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.usdz"
-        ar ar-modes="webxr scene-viewer quick-look" 
-        camera-controls auto-rotate shadow-intensity="1">
+        ar 
+        ar-modes="webxr quick-look" 
+        camera-controls 
+        auto-rotate 
+        shadow-intensity="1.5"
+        exposure="1"
+        alt="Premium Neapolitan Pizza">
         
-        <button slot="ar-button" style="display:none;"></button>
+        <button slot="ar-button" id="ar-button">
+            ✨ View on Table
+        </button>
     </model-viewer>
 
-    <div class="menu">
-        <h2 id="name">Classic Pepperoni Pizza</h2>
-        <p id="price" style="color:#D4AF37; font-size: 24px;">₹599</p>
-        
-        <button class="btn" onclick="document.querySelector('#ar-viewer').activateAR()">
-            ✨ VIEW ON TABLE
-        </button>
-        <p style="font-size: 10px; margin-top: 15px; opacity: 0.5;">Note: Refresh page if you see old model</p>
+    <div class="bottom-section">
+        <div>
+            <h2 class="dish-name">Classic Neapolitan Pizza</h2>
+            <p class="dish-price">₹599</p>
+        </div>
+        <p style="font-size: 11px; color: #aaa; font-family: sans-serif;">Point phone at an empty space for AR</p>
     </div>
 
 </body>
