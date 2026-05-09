@@ -75,10 +75,7 @@
         <div class="sidebar"></div>
         <div class="main-content">
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-title">Menu Items</div>
-                    <div class="stat-value" id="total-dishes">0</div>
-                </div>
+                <div class="stat-card"><div class="stat-title">Menu Items</div><div class="stat-value" id="total-dishes">0</div></div>
                 <div class="stat-card"><div class="stat-title">Orders</div><div class="stat-value">0</div></div>
                 <div class="stat-card"><div class="stat-title">Revenue</div><div class="stat-value green">₹0</div></div>
                 <div class="stat-card"><div class="stat-title">AR Views</div><div class="stat-value">0</div></div>
@@ -89,7 +86,6 @@
                     <h3>Menu Management</h3>
                     <button class="btn-add" onclick="openModal()">+ Add Dish</button>
                 </div>
-                
                 <div class="menu-list" id="menu-body">
                     <div style="padding: 20px; text-align: center; color: var(--gray); font-size: 13px;">
                         Loading your digital menu...
@@ -110,7 +106,7 @@
     <div class="modal-overlay" id="dishModal">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <h2 style="margin:0; font-size: 18px;">Add New Dish</h2>
+                <h2 style="margin:0; font-size: 18px;" id="modalTitle">Add New Dish</h2>
                 <button onclick="closeModal()" style="border:none; background:none; font-size: 20px; cursor:pointer;">✕</button>
             </div>
             <div class="form-group">
@@ -137,9 +133,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Tumhari Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
             authDomain: "itx-arun-bdf24.firebaseapp.com",
@@ -149,15 +144,32 @@
             appId: "1:442083262265:web:3e023b1211f752cb3132e8"
         };
 
-        // Initialize App & Database
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Modal Functions
-        window.openModal = function() { document.getElementById('dishModal').classList.add('show'); }
-        window.closeModal = function() { document.getElementById('dishModal').classList.remove('show'); }
+        // Global variable to track if we are editing an existing dish
+        let editingDishId = null;
 
-        // Save Dish to Database
+        // Open Modal (Add Mode)
+        window.openModal = function() { 
+            editingDishId = null; // Reset ID for new dish
+            document.getElementById('modalTitle').innerText = "Add New Dish";
+            document.getElementById('saveBtn').innerText = "Save & Publish";
+            
+            // Clear fields
+            document.getElementById('dishName').value = '';
+            document.getElementById('dishEmoji').value = '';
+            document.getElementById('dishPrice').value = '';
+            document.getElementById('dishModel').value = '';
+            
+            document.getElementById('dishModal').classList.add('show'); 
+        }
+
+        window.closeModal = function() { 
+            document.getElementById('dishModal').classList.remove('show'); 
+        }
+
+        // Save or Update Dish
         window.saveDish = async function() {
             const name = document.getElementById('dishName').value;
             const emoji = document.getElementById('dishEmoji').value || "🍲";
@@ -165,41 +177,64 @@
             const modelUrl = document.getElementById('dishModel').value;
 
             if(!name || !price || !modelUrl) {
-                alert("Bhai, Name, Price aur Model URL daalna zaroori hai!");
+                alert("Please fill in the Name, Price, and 3D Model URL fields!");
                 return;
             }
 
             const btn = document.getElementById('saveBtn');
-            btn.innerText = "Saving to Database...";
+            btn.innerText = "Saving...";
 
             try {
-                await addDoc(collection(db, "menu_items"), {
-                    name: name,
-                    emoji: emoji,
-                    price: Number(price),
-                    modelUrl: modelUrl,
-                    timestamp: new Date()
-                });
+                if (editingDishId) {
+                    // Update existing dish
+                    const dishRef = doc(db, "menu_items", editingDishId);
+                    await updateDoc(dishRef, {
+                        name: name,
+                        emoji: emoji,
+                        price: Number(price),
+                        modelUrl: modelUrl
+                    });
+                } else {
+                    // Add new dish
+                    await addDoc(collection(db, "menu_items"), {
+                        name: name,
+                        emoji: emoji,
+                        price: Number(price),
+                        modelUrl: modelUrl,
+                        timestamp: new Date()
+                    });
+                }
                 closeModal();
-                document.getElementById('dishName').value = '';
-                document.getElementById('dishEmoji').value = '';
-                document.getElementById('dishPrice').value = '';
-                document.getElementById('dishModel').value = '';
             } catch (e) {
                 console.error(e);
-                alert("Save fail ho gaya. Kya tumne Firebase mein Database (Test Mode) On kiya tha?");
+                alert("Error saving data. Please check console.");
             }
             btn.innerText = "Save & Publish";
         };
 
-        // Read Data Real-time
+        // Open Modal (Edit Mode)
+        window.editDish = function(id, name, emoji, price, modelUrl) {
+            editingDishId = id; // Set the ID of the dish being edited
+            document.getElementById('modalTitle').innerText = "Edit Dish";
+            document.getElementById('saveBtn').innerText = "Update Dish";
+            
+            // Pre-fill fields with existing data
+            document.getElementById('dishName').value = name;
+            document.getElementById('dishEmoji').value = emoji;
+            document.getElementById('dishPrice').value = price;
+            document.getElementById('dishModel').value = modelUrl;
+            
+            document.getElementById('dishModal').classList.add('show');
+        }
+
+        // Fetch Live Data
         const menuBody = document.getElementById('menu-body');
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
             menuBody.innerHTML = ''; 
             let count = 0;
             
             if(snapshot.empty) {
-                menuBody.innerHTML = '<div style="padding:20px; text-align:center; color:#686B78;">Abhi koi dish nahi hai. Add Dish par click karo!</div>';
+                menuBody.innerHTML = '<div style="padding:20px; text-align:center; color:#686B78;">No dishes found. Click "+ Add Dish" to get started!</div>';
                 document.getElementById('total-dishes').innerText = "0";
                 return;
             }
@@ -219,6 +254,7 @@
                             </div>
                         </div>
                         <div class="menu-item-actions">
+                            <button class="action-btn" onclick="editDish('${id}', '${data.name}', '${data.emoji}', ${data.price}, '${data.modelUrl}')">✏️</button>
                             <button class="action-btn" onclick="deleteDish('${id}')">🗑️</button>
                         </div>
                     </div>
@@ -227,9 +263,9 @@
             document.getElementById('total-dishes').innerText = count;
         });
 
-        // Delete Dish from Database
+        // Delete Dish
         window.deleteDish = async function(id) {
-            if(confirm("Confirm Delete? Yeh dish database se hamesha ke liye hat jayegi!")) {
+            if(confirm("Are you sure you want to delete this dish? This action cannot be undone.")) {
                 await deleteDoc(doc(db, "menu_items", id));
             }
         };
