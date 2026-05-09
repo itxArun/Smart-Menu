@@ -7,172 +7,78 @@
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-light: #F8F9FA; --white: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78;
-            --zomato-red: #E23744; --border-light: #E8E8E8; --gold: #FFB75E;
-        }
-
+        :root { --bg-light: #F8F9FA; --white: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78; --zomato-red: #E23744; --border-light: #E8E8E8; }
         body { margin: 0; padding: 0; background: var(--bg-light); color: var(--text-main); font-family: 'Okra', sans-serif; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-
-        /* HEADER */
         .header { flex-shrink: 0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); border-bottom: 1px solid var(--border-light); z-index: 20; }
         .brand-name { font-size: 24px; font-weight: 800; color: var(--zomato-red); margin: 0; }
         .cart-icon { position: relative; font-size: 22px; cursor: pointer; padding: 8px; background: #FDEEEE; border-radius: 50%; color: var(--zomato-red); transition: transform 0.2s; }
-        .cart-icon:active { transform: scale(0.9); }
         .cart-badge { position: absolute; top: -2px; right: -2px; background: var(--zomato-red); color: white; font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
-
         .app-layout { display: flex; flex: 1; overflow: hidden; }
-
-        /* SIDEBAR WITH 15 ITEMS & ANIMATIONS */
-        .sidebar { width: 90px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; scroll-behavior: smooth; }
+        .sidebar { width: 90px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; }
         .sidebar::-webkit-scrollbar { display: none; }
-        
-        /* Smooth bounce animation on click */
-        .side-item { padding: 18px 5px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .side-item:active { transform: scale(0.92); } /* Click effect */
-        
+        .side-item { padding: 18px 5px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: all 0.2s; }
+        .side-item:active { transform: scale(0.9); }
         .side-item.active { border-left-color: var(--zomato-red); background: #FDEEEE; }
-        .side-emoji { font-size: 30px; margin-bottom: 8px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .side-item.active .side-emoji { transform: scale(1.15); }
+        .side-emoji { font-size: 30px; margin-bottom: 8px; }
         .side-name { font-size: 11px; font-weight: 600; color: var(--text-main); }
-        .side-item:not(.active) .side-name { color: var(--text-sub); }
-
-        /* MAIN CONTENT */
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
-        
         .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; }
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
-
-        /* Loader */
-        .progress-bar { display: block; width: 50%; height: 4px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EEE; border-radius: 10px; overflow: hidden;}
+        .progress-bar { display: block; width: 50%; height: 4px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EEE; border-radius: 10px; overflow: hidden; }
         .progress-bar.hide { visibility: hidden; }
         .update-bar { background: var(--zomato-red); width: 0%; height: 100%; transition: width 0.3s; }
-
-        /* BOTTOM UI */
         .bottom-ui { flex-shrink: 0; background: var(--white); border-top: 1px solid var(--border-light); border-radius: 24px 24px 0 0; padding: 15px 20px 25px 20px; text-align: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); z-index: 10; }
-        
         .dish-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .dish-title { font-size: 20px; font-weight: 700; margin: 0; text-align: left; }
-        .price { color: var(--text-main); font-size: 22px; font-weight: 800; margin: 0; transition: color 0.3s; }
-
-        /* Half/Full Variant Selector (Cleaned Up Text & Animation) */
+        .dish-title { font-size: 20px; font-weight: 700; margin: 0; }
+        .price { color: var(--text-main); font-size: 22px; font-weight: 800; margin: 0; }
         .variant-selector { display: flex; background: #F1F1F6; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
         .variant-selector.hide { display: none; }
-        .var-btn { flex: 1; padding: 10px 0; border: none; background: transparent; font-size: 14px; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: all 0.2s ease; }
-        .var-btn:active { transform: scale(0.95); } /* Click effect */
+        .var-btn { flex: 1; padding: 10px 0; border: none; background: transparent; font-size: 14px; font-weight: 700; color: var(--text-sub); cursor: pointer; }
         .var-btn.active { background: var(--text-main); color: var(--white); }
-
-        /* Action Buttons with Animations */
         .action-row { display: flex; gap: 10px; width: 100%; }
-        .btn-cart { background: var(--white); color: var(--zomato-red); border: 1px solid var(--zomato-red); padding: 12px 0; border-radius: 12px; font-size: 14px; font-weight: 700; flex: 1; cursor: pointer; transition: all 0.2s; }
-        .btn-cart:active { background: #FDEEEE; transform: scale(0.96); }
-        .btn-premium { background: var(--zomato-red); color: var(--white); border: none; padding: 12px 0; border-radius: 12px; font-size: 14px; font-weight: 700; flex: 1.3; cursor: pointer; box-shadow: 0 4px 8px rgba(226, 55, 68, 0.2); transition: all 0.2s; }
-        .btn-premium:active { transform: scale(0.96); box-shadow: 0 2px 4px rgba(226, 55, 68, 0.2); }
-
-        /* CART MODAL (Full Bill UI) */
+        .btn-cart { background: var(--white); color: var(--zomato-red); border: 1px solid var(--zomato-red); padding: 12px 0; border-radius: 12px; font-size: 14px; font-weight: 700; flex: 1; cursor: pointer; }
+        .btn-premium { background: var(--zomato-red); color: var(--white); border: none; padding: 12px 0; border-radius: 12px; font-size: 14px; font-weight: 700; flex: 1.3; cursor: pointer; }
+        .toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; transition: 0.3s; z-index: 1000; opacity: 0; visibility: hidden; }
+        .toast.show { opacity: 1; visibility: visible; top: 85px; }
         .cart-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-end; z-index: 100; visibility: hidden; opacity: 0; transition: 0.3s; }
         .cart-modal.show { visibility: visible; opacity: 1; }
         .cart-content { background: var(--white); width: 100%; max-height: 80vh; border-radius: 24px 24px 0 0; padding: 25px 20px; display: flex; flex-direction: column; }
         .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; margin-bottom: 15px; }
-        .cart-header h2 { margin: 0; font-size: 20px; font-weight: 800; }
-        .close-btn { background: #EEE; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .close-btn:active { transform: scale(0.8); }
-        
         .cart-items-container { overflow-y: auto; flex: 1; margin-bottom: 15px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border-light); }
-        .item-details { display: flex; flex-direction: column; text-align: left; }
-        .item-name { font-size: 14px; font-weight: 700; color: var(--text-main); }
-        .item-variant { font-size: 11px; color: var(--text-sub); }
-        .item-price { font-size: 15px; font-weight: 800; color: var(--text-main); }
-        
         .bill-details { background: #F8F9FA; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .bill-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-sub); margin-bottom: 8px; }
         .bill-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; color: var(--zomato-red); margin-top: 10px; border-top: 1px solid var(--border-light); padding-top: 10px; }
-        
-        .btn-checkout { background: #28A745; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; width: 100%; cursor: pointer; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3); transition: 0.2s; }
-        .btn-checkout:active { transform: scale(0.97); }
-
-        .toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; opacity: 0; visibility: hidden; }
-        .toast.show { opacity: 1; visibility: visible; top: 85px; }
+        .btn-checkout { background: #28A745; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; width: 100%; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1 class="brand-name">Crave AR</h1>
-        <div class="cart-icon" onclick="toggleCart()">
-            🛒 <div class="cart-badge" id="cart-count">0</div>
-        </div>
+        <div class="cart-icon" onclick="toggleCart()">🛒 <div class="cart-badge" id="cart-count">0</div></div>
     </div>
 
     <div class="app-layout">
         <div class="sidebar" id="sidebar-menu">
-            <div class="side-item active" onclick="changeDish(this, 'Spicy Pepperoni Pizza', 599, null, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
-                <div class="side-emoji">🍕</div><div class="side-name">Pizza</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Crispy Veg Burger', 249, null, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
-                <div class="side-emoji">🍔</div><div class="side-name">Burger</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Hyderabadi Biryani', 399, 249, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
-                <div class="side-emoji">🥘</div><div class="side-name">Biryani</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Steamed Momos', 149, 80, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
-                <div class="side-emoji">🥟</div><div class="side-name">Momos</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Cheesy White Pasta', 299, null, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
-                <div class="side-emoji">🍝</div><div class="side-name">Pasta</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Hakka Noodles', 229, 149, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
-                <div class="side-emoji">🍜</div><div class="side-name">Noodles</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Peri Peri Fries', 129, null, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
-                <div class="side-emoji">🍟</div><div class="side-name">Fries</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Crispy Tacos', 279, null, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
-                <div class="side-emoji">🌮</div><div class="side-name">Tacos</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Paneer Tikka', 249, 149, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
-                <div class="side-emoji">🍢</div><div class="side-name">Tikka</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Butter Chicken', 349, 199, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
-                <div class="side-emoji">🍛</div><div class="side-name">Chicken</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Garlic Bread', 129, null, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
-                <div class="side-emoji">🥖</div><div class="side-name">Garlic Brd</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Chole Bhature', 180, null, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
-                <div class="side-emoji">🍲</div><div class="side-name">Chole</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Choco Lava Cake', 199, null, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
-                <div class="side-emoji">🍰</div><div class="side-name">Dessert</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Cold Coffee', 120, null, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
-                <div class="side-emoji">🧋</div><div class="side-name">Coffee</div>
-            </div>
-            <div class="side-item" onclick="changeDish(this, 'Virgin Mojito', 159, null, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
-                <div class="side-emoji">🍹</div><div class="side-name">Mojito</div>
-            </div>
+            <div style="padding:20px; font-size:10px; color:#999; text-align:center;">Loading Menu...</div>
         </div>
 
         <div class="main-content">
             <div class="viewer-container">
-                <model-viewer id="ar-viewer" src="https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral">
+                <model-viewer id="ar-viewer" src="" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral">
                     <div slot="progress-bar" class="progress-bar"><div class="update-bar" id="update-bar"></div></div>
-                    <button slot="ar-button" style="display:none;"></button>
                 </model-viewer>
             </div>
 
             <div class="bottom-ui">
                 <div class="dish-header">
-                    <h2 class="dish-title" id="display-name">Spicy Pepperoni Pizza</h2>
-                    <p class="price" id="display-price">₹599</p>
+                    <h2 class="dish-title" id="display-name">Select a Dish</h2>
+                    <p class="price" id="display-price">₹0</p>
                 </div>
-                
                 <div class="variant-selector hide" id="variant-box">
                     <button class="var-btn" id="btn-half" onclick="selectVariant('half')">Half</button>
                     <button class="var-btn active" id="btn-full" onclick="selectVariant('full')">Full</button>
                 </div>
-
                 <div class="action-row">
                     <button class="btn-cart" onclick="addToCart()">Add to Cart</button>
                     <button class="btn-premium" onclick="document.querySelector('#ar-viewer').activateAR()">View on Table 📸</button>
@@ -183,150 +89,117 @@
 
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
-            <div class="cart-header">
-                <h2>Your Bill</h2>
-                <button class="close-btn" onclick="toggleCart()">✕</button>
-            </div>
-            
+            <div class="cart-header"><h2>Your Bill</h2><button style="border:none; background:#eee; width:30px; height:30px; border-radius:50%;" onclick="toggleCart()">✕</button></div>
             <div class="cart-items-container" id="cart-items-list"></div>
-
-            <div class="bill-details">
-                <div class="bill-row"><span>Item Total</span><span id="bill-subtotal">₹0</span></div>
-                <div class="bill-row"><span>Taxes (5%)</span><span id="bill-tax">₹0</span></div>
-                <div class="bill-total"><span>To Pay</span><span id="bill-final">₹0</span></div>
-            </div>
-            
-            <button class="btn-checkout" onclick="alert('Order Sent Successfully! 🚀')">Place Order Now</button>
+            <div class="bill-details"><div class="bill-total"><span>To Pay</span><span id="bill-final">₹0</span></div></div>
+            <button class="btn-checkout" onclick="alert('Order Sent! 🚀')">Place Order Now</button>
         </div>
     </div>
 
     <div class="toast" id="toast">✅ Added to Cart!</div>
 
-    <script>
-        const viewer = document.querySelector('#ar-viewer');
-        const updateBar = document.querySelector('#update-bar');
-        const progressBar = document.querySelector('.progress-bar');
-        const variantBox = document.getElementById('variant-box');
-        
-        let currentDish = { name: 'Spicy Pepperoni Pizza', priceFull: 599, priceHalf: null, selectedType: 'full', currentPrice: 599 };
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
+            authDomain: "itx-arun-bdf24.firebaseapp.com",
+            projectId: "itx-arun-bdf24",
+            storageBucket: "itx-arun-bdf24.firebasestorage.app",
+            messagingSenderId: "442083262265",
+            appId: "1:442083262265:web:3e023b1211f752cb3132e8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let currentDish = null;
         let cart = [];
 
-        viewer.addEventListener('progress', (event) => {
-            const progress = event.detail.totalProgress;
-            updateBar.style.width = `${progress * 100}%`;
-            if (progress === 1) progressBar.classList.add('hide');
-            else progressBar.classList.remove('hide');
+        const viewer = document.querySelector('#ar-viewer');
+        const updateBar = document.querySelector('#update-bar');
+
+        viewer.addEventListener('progress', (e) => {
+            updateBar.style.width = `${e.detail.totalProgress * 100}%`;
+            if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
-        function changeDish(element, name, priceFull, priceHalf, modelUrl) {
-            currentDish = { 
-                name: name, 
-                priceFull: priceFull, 
-                priceHalf: priceHalf, 
-                selectedType: 'full', 
-                currentPrice: priceFull 
-            };
+        // FETCH MENU FROM FIREBASE
+        onSnapshot(collection(db, "menu_items"), (snapshot) => {
+            const sidebar = document.getElementById('sidebar-menu');
+            sidebar.innerHTML = '';
             
-            document.getElementById('display-name').innerText = name;
-            document.getElementById('display-price').innerText = '₹' + priceFull;
+            snapshot.forEach((doc, index) => {
+                const data = doc.data();
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `side-item ${index === 0 ? 'active' : ''}`;
+                itemDiv.innerHTML = `<div class="side-emoji">${data.emoji}</div><div class="side-name">${data.name}</div>`;
+                
+                itemDiv.onclick = () => {
+                    document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active'));
+                    itemDiv.classList.add('active');
+                    loadDish(data);
+                };
+                sidebar.appendChild(itemDiv);
+                if(index === 0 && !currentDish) loadDish(data);
+            });
+        });
+
+        function loadDish(data) {
+            currentDish = { ...data, selectedType: 'full', currentPrice: data.price };
+            document.getElementById('display-name').innerText = data.name;
+            document.getElementById('display-price').innerText = '₹' + data.price;
             
-            if(priceHalf !== null) {
+            const variantBox = document.getElementById('variant-box');
+            if(data.priceHalf) {
                 variantBox.classList.remove('hide');
                 document.getElementById('btn-full').classList.add('active');
                 document.getElementById('btn-half').classList.remove('active');
-            } else {
-                variantBox.classList.add('hide');
-            }
-            
-            progressBar.classList.remove('hide'); updateBar.style.width = '0%';
-            viewer.src = modelUrl;
+            } else { variantBox.classList.add('hide'); }
 
-            document.querySelectorAll('.side-item').forEach(card => card.classList.remove('active'));
-            element.classList.add('active');
-            element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            document.querySelector('.progress-bar').classList.remove('hide');
+            updateBar.style.width = '0%';
+            viewer.src = data.modelUrl;
         }
 
-        function selectVariant(type) {
+        window.selectVariant = (type) => {
             document.getElementById('btn-half').classList.remove('active');
             document.getElementById('btn-full').classList.remove('active');
-            
             if(type === 'half') {
                 currentDish.selectedType = 'half';
                 currentDish.currentPrice = currentDish.priceHalf;
                 document.getElementById('btn-half').classList.add('active');
             } else {
                 currentDish.selectedType = 'full';
-                currentDish.currentPrice = currentDish.priceFull;
+                currentDish.currentPrice = currentDish.price;
                 document.getElementById('btn-full').classList.add('active');
             }
-            
-            // Text scale animation trigger for price update
-            const priceEl = document.getElementById('display-price');
-            priceEl.style.transform = 'scale(1.2)';
-            setTimeout(() => priceEl.style.transform = 'scale(1)', 200);
-            priceEl.innerText = '₹' + currentDish.currentPrice;
-        }
+            document.getElementById('display-price').innerText = '₹' + currentDish.currentPrice;
+        };
 
-        function addToCart() {
-            let finalName = currentDish.name;
-            let variantText = '';
-            
-            // Fixed text to "Half" and "Full"
-            if(currentDish.priceHalf !== null) {
-                variantText = currentDish.selectedType === 'half' ? '(Half)' : '(Full)';
-            }
-
-            cart.push({
-                name: finalName,
-                variant: variantText,
-                price: currentDish.currentPrice
-            });
-            
-            // Cart Icon animation
-            const cartIcon = document.querySelector('.cart-icon');
-            cartIcon.style.transform = 'scale(1.2)';
-            setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
-            
+        window.addToCart = () => {
+            cart.push({ name: currentDish.name, price: currentDish.currentPrice, variant: currentDish.selectedType === 'half' ? '(Half)' : '' });
             document.getElementById('cart-count').innerText = cart.length;
             const toast = document.getElementById('toast');
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2000);
-        }
+        };
 
-        function toggleCart() {
+        window.toggleCart = () => {
             const modal = document.getElementById('cart-modal');
-            const itemsList = document.getElementById('cart-items-list');
-            
-            if (!modal.classList.contains('show')) {
-                itemsList.innerHTML = '';
-                let subtotal = 0;
-                
-                if(cart.length === 0) {
-                    itemsList.innerHTML = '<p style="text-align:center; color:#888; margin-top:20px;">Cart is empty!</p>';
-                } else {
-                    cart.forEach((item) => {
-                        subtotal += item.price;
-                        itemsList.innerHTML += `
-                            <div class="cart-item">
-                                <div class="item-details">
-                                    <span class="item-name">${item.name}</span>
-                                    ${item.variant ? `<span class="item-variant">${item.variant}</span>` : ''}
-                                </div>
-                                <span class="item-price">₹${item.price}</span>
-                            </div>
-                        `;
-                    });
-                }
-                
-                let tax = Math.round(subtotal * 0.05); 
-                let total = subtotal + tax;
-                
-                document.getElementById('bill-subtotal').innerText = '₹' + subtotal;
-                document.getElementById('bill-tax').innerText = '₹' + tax;
+            const list = document.getElementById('cart-items-list');
+            if(!modal.classList.contains('show')) {
+                list.innerHTML = '';
+                let total = 0;
+                cart.forEach(item => {
+                    total += item.price;
+                    list.innerHTML += `<div class="cart-item"><div><b>${item.name}</b> ${item.variant}</div><span>₹${item.price}</span></div>`;
+                });
                 document.getElementById('bill-final').innerText = '₹' + total;
             }
             modal.classList.toggle('show');
-        }
+        };
     </script>
 </body>
 </html>
