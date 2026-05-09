@@ -3,113 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crave AR - Pro Menu</title>
+    <title>Crave AR - Fresh Menu</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* ZOMATO/SWIGGY STYLE FRESH PALETTE */
         :root {
-            --dark-bg: #0a0202;
-            --main-bg: radial-gradient(circle at center, #2a0b0b, #0f0303);
-            --brand-color: #FF4B2B;
-            --gold: #FFB75E;
+            --bg-light: #F8F9FA; /* Super Light Grey for Freshness */
+            --white: #FFFFFF;
+            --text-main: #282C3F; /* Dark Grey for Readability */
+            --text-sub: #686B78;
+            --zomato-red: #E23744; /* Appetite Stimulant Red */
+            --swiggy-orange: #FC8019;
+            --border-light: #E8E8E8;
         }
 
         body {
-            margin: 0; background: var(--dark-bg); color: #fff;
-            font-family: 'Poppins', sans-serif; height: 100vh;
+            margin: 0; background: var(--bg-light); color: var(--text-main);
+            font-family: 'Okra', 'Poppins', sans-serif; height: 100vh;
             display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* Top Header */
+        /* Clean White Top Header */
         .header {
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(10, 2, 2, 0.95); border-bottom: 1px solid rgba(255, 75, 43, 0.3); z-index: 20;
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+            background: var(--white); border-bottom: 1px solid var(--border-light); z-index: 20;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
         }
         .brand-name {
-            font-family: 'Playfair Display', serif; font-size: 24px; color: var(--brand-color);
-            margin: 0; font-style: italic; letter-spacing: 1px;
+            font-size: 24px; font-weight: 800; color: var(--zomato-red);
+            margin: 0; letter-spacing: -0.5px;
         }
-        .cart-icon { position: relative; font-size: 24px; cursor: pointer; padding: 5px; }
+        .cart-icon { position: relative; font-size: 22px; cursor: pointer; padding: 8px; background: #FDEEEE; border-radius: 50%; color: var(--zomato-red); }
         .cart-badge {
-            position: absolute; top: -2px; right: -5px; background: #FFB75E; color: #000;
-            font-size: 10px; font-weight: 800; width: 18px; height: 18px;
+            position: absolute; top: 0px; right: 0px; background: var(--zomato-red); color: white;
+            font-size: 10px; font-weight: 700; width: 18px; height: 18px;
             border-radius: 50%; display: flex; justify-content: center; align-items: center;
         }
 
-        /* Main Layout Setup */
-        .app-layout {
-            display: flex; flex: 1; overflow: hidden;
-        }
+        /* App Layout */
+        .app-layout { display: flex; flex: 1; overflow: hidden; }
 
-        /* Left Sidebar (Foods List) */
+        /* Left Sidebar (Clean & Light) */
         .sidebar {
-            width: 85px; background: #050101; border-right: 1px solid #331111;
+            width: 90px; background: var(--white); border-right: 1px solid var(--border-light);
             overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px;
-            scroll-behavior: smooth;
         }
         .sidebar::-webkit-scrollbar { display: none; }
         
         .side-item {
-            padding: 15px 5px; text-align: center; cursor: pointer;
-            border-left: 3px solid transparent; transition: 0.3s; opacity: 0.5;
+            padding: 18px 5px; text-align: center; cursor: pointer;
+            border-left: 4px solid transparent; transition: 0.2s all ease-in-out;
         }
         .side-item.active {
-            border-left-color: var(--brand-color); background: rgba(255, 75, 43, 0.1);
-            opacity: 1;
+            border-left-color: var(--zomato-red); background: #FDEEEE; /* Light Red BG */
         }
-        .side-emoji { font-size: 28px; margin-bottom: 5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-        .side-name { font-size: 10px; font-weight: 600; color: #fcc; line-height: 1.2; }
+        
+        .side-emoji { font-size: 30px; margin-bottom: 8px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); transition: 0.2s; }
+        .side-item.active .side-emoji { transform: scale(1.1); }
+        
+        .side-name { font-size: 11px; font-weight: 600; color: var(--text-main); line-height: 1.2; }
+        .side-item:not(.active) .side-name { color: var(--text-sub); }
 
-        /* Right Main Content */
-        .main-content {
-            flex: 1; display: flex; flex-direction: column; position: relative; background: var(--main-bg);
-        }
+        /* Right Content Area */
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg-light); }
 
-        /* 3D Viewer */
-        model-viewer { flex: 1; width: 100%; --poster-color: transparent; }
+        /* 3D Viewer on Light Background */
+        model-viewer { flex: 1; width: 100%; --poster-color: transparent; background-color: var(--bg-light); }
 
-        /* Loader */
-        .progress-bar {
-            display: block; width: 50%; height: 5px; position: absolute; top: 40%; left: 50%;
-            transform: translate(-50%, -50%); background-color: rgba(255, 75, 43, 0.2); border-radius: 10px;
-        }
+        /* Modern Loader */
+        .progress-bar { display: block; width: 50%; height: 4px; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); background-color: #EEE; border-radius: 10px; overflow: hidden;}
         .progress-bar.hide { visibility: hidden; }
-        .update-bar { background: var(--brand-color); width: 0%; height: 100%; transition: width 0.3s; }
-        .loading-text {
-            position: absolute; top: calc(40% + 15px); left: 50%; transform: translateX(-50%);
-            color: var(--brand-color); font-size: 11px; font-weight: 800; text-transform: uppercase;
-        }
+        .update-bar { background: var(--zomato-red); width: 0%; height: 100%; transition: width 0.3s; }
+        .loading-text { position: absolute; top: calc(40% + 12px); left: 50%; transform: translateX(-50%); color: var(--zomato-red); font-size: 12px; font-weight: 700; text-transform: uppercase; }
         .loading-text.hide { visibility: hidden; }
 
-        /* Bottom Details & Price UI */
+        /* Bottom Details (White Card) */
         .bottom-ui {
-            background: rgba(10, 2, 2, 0.95); border-top: 2px solid var(--brand-color);
-            border-radius: 30px 0 0 0; padding: 25px 20px; text-align: center;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5); z-index: 10;
+            background: var(--white); border-top: 1px solid var(--border-light);
+            border-radius: 24px 24px 0 0; padding: 20px; text-align: center;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05); z-index: 10;
         }
 
-        .dish-title { font-size: 24px; font-weight: 800; margin: 0 0 5px 0; color: #fff; }
-        /* Price is initially hidden in the sidebar, only shows here */
-        .price { color: var(--gold); font-size: 28px; font-weight: 800; margin: 0 0 20px 0; }
+        .dish-title { font-size: 22px; font-weight: 700; margin: 0 0 4px 0; color: var(--text-main); }
+        .price { color: var(--text-main); font-size: 26px; font-weight: 800; margin: 0 0 15px 0; }
 
-        /* Action Buttons */
-        .action-row { display: flex; gap: 10px; width: 100%; }
+        /* Action Buttons (Modern & Flat) */
+        .action-row { display: flex; gap: 12px; width: 100%; max-width: 400px; margin: 0 auto; }
+        
         .btn-cart {
-            background: rgba(255, 75, 43, 0.1); color: var(--brand-color); border: 1px solid var(--brand-color);
-            padding: 14px 0; border-radius: 15px; font-size: 14px; font-weight: 800; flex: 1; cursor: pointer;
+            background: var(--white); color: var(--zomato-red); border: 1px solid var(--zomato-red);
+            padding: 14px 0; border-radius: 12px; font-size: 15px; font-weight: 700; flex: 1; cursor: pointer;
+            transition: 0.2s;
         }
-        .btn-premium {
-            background: linear-gradient(45deg, #FF4B2B, #FF416C); color: #fff; border: none;
-            padding: 14px 0; border-radius: 15px; font-size: 14px; font-weight: 800; flex: 1.2; cursor: pointer;
-        }
+        .btn-cart:active { background: #FDEEEE; }
 
-        /* Essential Toast & Modal for Cart */
-        .toast {
-            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-            background: #2ed573; color: white; padding: 10px 20px; border-radius: 50px;
-            font-size: 12px; font-weight: bold; transition: 0.3s; z-index: 1000; opacity: 0; visibility: hidden;
+        .btn-premium {
+            background: var(--zomato-red); color: var(--white); border: none;
+            padding: 14px 0; border-radius: 12px; font-size: 15px; font-weight: 700; flex: 1.3; cursor: pointer;
+            box-shadow: 0 4px 8px rgba(226, 55, 68, 0.2); transition: 0.2s;
         }
-        .toast.show { opacity: 1; visibility: visible; }
+        .btn-premium:active { transform: translateY(1px); box-shadow: 0 2px 4px rgba(226, 55, 68, 0.2); }
+
+        /* Toast */
+        .toast {
+            position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+            background: #1C1C1C; color: white; padding: 12px 20px; border-radius: 8px;
+            font-size: 13px; font-weight: 600; transition: 0.3s; z-index: 1000; opacity: 0; visibility: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px;
+        }
+        .toast.show { opacity: 1; visibility: visible; top: 80px; }
     </style>
 </head>
 <body>
@@ -123,32 +126,32 @@
 
     <div class="app-layout">
         <div class="sidebar">
-            <div class="side-item active" onclick="changeDish(this, 'Spicy Pizza', 599, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+            <div class="side-item active" onclick="changeDish(this, 'Spicy Pepperoni Pizza', 599, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
                 <div class="side-emoji">🍕</div><div class="side-name">Pizza</div>
             </div>
-            <div class="side-item" onclick="changeDish(this, 'Juicy Burger', 249, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+            <div class="side-item" onclick="changeDish(this, 'Crispy Veg Burger', 249, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
                 <div class="side-emoji">🍔</div><div class="side-name">Burger</div>
             </div>
-            <div class="side-item" onclick="changeDish(this, 'Dum Biryani', 399, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+            <div class="side-item" onclick="changeDish(this, 'Hyderabadi Biryani', 399, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
                 <div class="side-emoji">🥘</div><div class="side-name">Biryani</div>
             </div>
-            <div class="side-item" onclick="changeDish(this, 'Desi Momos', 149, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+            <div class="side-item" onclick="changeDish(this, 'Steamed Momos', 149, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
                 <div class="side-emoji">🥟</div><div class="side-name">Momos</div>
             </div>
-            <div class="side-item" onclick="changeDish(this, 'White Pasta', 299, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+            <div class="side-item" onclick="changeDish(this, 'Cheesy White Pasta', 299, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
                 <div class="side-emoji">🍝</div><div class="side-name">Pasta</div>
             </div>
             <div class="side-item" onclick="changeDish(this, 'Hakka Noodles', 229, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
                 <div class="side-emoji">🍜</div><div class="side-name">Noodles</div>
             </div>
-            <div class="side-item" onclick="changeDish(this, 'Peri Fries', 129, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+            <div class="side-item" onclick="changeDish(this, 'Peri Peri Fries', 129, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
                 <div class="side-emoji">🍟</div><div class="side-name">Fries</div>
             </div>
             <div class="side-item" onclick="changeDish(this, 'Crispy Tacos', 279, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
                 <div class="side-emoji">🌮</div><div class="side-name">Tacos</div>
             </div>
-            <div class="side-item" onclick="changeDish(this, 'Vanilla Sundae', 199, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
-                <div class="side-emoji">🍦</div><div class="side-name">Ice Cream</div>
+            <div class="side-item" onclick="changeDish(this, 'Choco Lava Cake', 199, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
+                <div class="side-emoji">🍰</div><div class="side-name">Dessert</div>
             </div>
             <div class="side-item" onclick="changeDish(this, 'Virgin Mojito', 159, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
                 <div class="side-emoji">🍹</div><div class="side-name">Mojito</div>
@@ -156,27 +159,27 @@
         </div>
 
         <div class="main-content">
-            <model-viewer id="ar-viewer" src="https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="2" environment-image="neutral">
+            <model-viewer id="ar-viewer" src="https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral">
                 
                 <div slot="progress-bar" class="progress-bar"><div class="update-bar" id="update-bar"></div></div>
-                <div id="loading-text" class="loading-text">Cooking...</div>
+                <div id="loading-text" class="loading-text">Preparing...</div>
                 
                 <button slot="ar-button" style="display:none;"></button>
             </model-viewer>
 
             <div class="bottom-ui">
-                <h2 class="dish-title" id="display-name">Spicy Pizza</h2>
+                <h2 class="dish-title" id="display-name">Spicy Pepperoni Pizza</h2>
                 <p class="price" id="display-price">₹599</p>
                 
                 <div class="action-row">
-                    <button class="btn-cart" onclick="addToCart()">+ ADD</button>
-                    <button class="btn-premium" onclick="document.querySelector('#ar-viewer').activateAR()">VIEW ON TABLE 📸</button>
+                    <button class="btn-cart" onclick="addToCart()">Add to Cart</button>
+                    <button class="btn-premium" onclick="document.querySelector('#ar-viewer').activateAR()">View on Table 📸</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="toast" id="toast">Added to Cravings! 😋</div>
+    <div class="toast" id="toast">✅ Added to your cravings!</div>
 
     <script>
         const viewer = document.querySelector('#ar-viewer');
@@ -184,7 +187,7 @@
         const progressBar = document.querySelector('.progress-bar');
         const loadingText = document.querySelector('#loading-text');
 
-        let currentDish = { name: 'Spicy Pizza', price: 599 };
+        let currentDish = { name: 'Spicy Pepperoni Pizza', price: 599 };
         let cart = [];
 
         viewer.addEventListener('progress', (event) => {
@@ -200,7 +203,6 @@
         function changeDish(element, name, price, modelUrl) {
             currentDish = { name: name, price: price };
             
-            // Show price and name only in the main panel
             document.getElementById('display-name').innerText = name;
             document.getElementById('display-price').innerText = '₹' + price;
             
@@ -220,7 +222,7 @@
             
             const toast = document.getElementById('toast');
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+            setTimeout(() => toast.classList.remove('show'), 2500);
         }
     </script>
 </body>
