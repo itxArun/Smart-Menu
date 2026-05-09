@@ -22,7 +22,7 @@
             height: 100dvh; display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* 1. TOP HEADER (Fixed) */
+        /* 1. TOP HEADER */
         .top-nav {
             flex-shrink: 0; background: var(--white); padding: 12px 20px;
             display: flex; justify-content: space-between; align-items: center;
@@ -35,16 +35,13 @@
         /* 2. MAIN LAYOUT */
         .app-container { display: flex; flex: 1; overflow: hidden; }
 
-        /* DESKTOP SIDEBAR (Hidden on Mobile) */
-        .sidebar {
-            width: 240px; background: var(--white); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column;
-        }
+        /* DESKTOP SIDEBAR */
+        .sidebar { width: 240px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
 
         /* 3. SCROLLABLE CONTENT AREA */
         .main-content {
             flex: 1; overflow-y: auto; padding: 20px;
-            padding-bottom: 100px; /* Space for Bottom Nav */
+            padding-bottom: 100px;
         }
 
         /* QUICK STATS CARDS */
@@ -57,14 +54,14 @@
         .stat-value { font-size: 20px; font-weight: 800; margin: 0; }
         .stat-value.green { color: var(--success); }
 
-        /* TABLE SECTION */
+        /* MENU LIST SECTION (Mobile Optimized) */
         .section-card {
             background: var(--white); border-radius: 16px; border: 1px solid var(--border);
             overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
         .section-header {
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border); background: #F8F9FA;
         }
         .section-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
         
@@ -74,20 +71,28 @@
         }
         .btn-add:active { transform: scale(0.95); }
 
-        /* RESPONSIVE TABLE */
-        .table-wrapper { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th { padding: 12px 20px; background: #F8F9FA; text-align: left; font-size: 11px; color: var(--gray); font-weight: 700; text-transform: uppercase; }
-        td { padding: 15px 20px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600; }
+        /* THE NEW LIST VIEW (No more tables) */
+        .menu-list { display: flex; flex-direction: column; }
+        
+        .menu-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; border-bottom: 1px solid var(--border);
+        }
+        .menu-item:last-child { border-bottom: none; }
+        
+        .menu-item-left { display: flex; align-items: center; gap: 15px; }
+        
+        .dish-icon { font-size: 24px; background: #F4F6F8; padding: 10px; border-radius: 12px; }
+        
+        .dish-details { display: flex; flex-direction: column; gap: 2px; }
+        .dish-name { font-size: 14px; font-weight: 700; color: var(--dark); }
+        .dish-price { font-size: 13px; font-weight: 600; color: var(--gray); }
 
-        .dish-info { display: flex; align-items: center; gap: 10px; }
-        .dish-icon { font-size: 20px; background: #F4F6F8; padding: 8px; border-radius: 8px; }
+        .menu-item-actions { display: flex; gap: 15px; }
+        .action-btn { background: transparent; border: none; font-size: 18px; cursor: pointer; padding: 5px; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.85); }
 
-        .action-btns { display: flex; gap: 10px; }
-        .edit-btn { color: #007BFF; background: none; border: none; font-size: 16px; cursor: pointer; }
-        .del-btn { color: var(--primary); background: none; border: none; font-size: 16px; cursor: pointer; }
-
-        /* 4. MOBILE BOTTOM NAV (Option 1 Style) */
+        /* 4. MOBILE BOTTOM NAV */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
             background: var(--white); border-top: 1px solid var(--border);
@@ -103,7 +108,7 @@
         .nav-tab label { font-size: 10px; font-weight: 700; }
         .nav-tab:active { transform: scale(0.9); }
 
-        /* HIDE ELEMENTS BASED ON SCREEN */
+        /* MEDIA QUERIES */
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -130,7 +135,8 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--gray); }
         .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; font-family: inherit; }
-        .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; margin-top: 10px; cursor: pointer; }
+        .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; margin-top: 10px; cursor: pointer; transition: 0.2s;}
+        .btn-save:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
@@ -144,8 +150,7 @@
     </div>
 
     <div class="app-container">
-        <div class="sidebar">
-            </div>
+        <div class="sidebar"></div>
 
         <div class="main-content">
             
@@ -173,69 +178,61 @@
                     <h3>Menu Management</h3>
                     <button class="btn-add" onclick="openModal()">+ Add Dish</button>
                 </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Price</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="menu-body">
-                            <tr>
-                                <td>
-                                    <div class="dish-info">
-                                        <span class="dish-icon">🍕</span>
-                                        <span>Spicy Pizza</span>
-                                    </div>
-                                </td>
-                                <td>₹599</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="edit-btn">✏️</button>
-                                        <button class="del-btn">🗑️</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="dish-info">
-                                        <span class="dish-icon">🥘</span>
-                                        <span>Veg Biryani</span>
-                                    </div>
-                                </td>
-                                <td>₹399</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="edit-btn">✏️</button>
-                                        <button class="del-btn">🗑️</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                
+                <div class="menu-list">
+                    <div class="menu-item">
+                        <div class="menu-item-left">
+                            <div class="dish-icon">🍕</div>
+                            <div class="dish-details">
+                                <div class="dish-name">Spicy Pizza</div>
+                                <div class="dish-price">₹599</div>
+                            </div>
+                        </div>
+                        <div class="menu-item-actions">
+                            <button class="action-btn">✏️</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-item-left">
+                            <div class="dish-icon">🥘</div>
+                            <div class="dish-details">
+                                <div class="dish-name">Veg Biryani</div>
+                                <div class="dish-price">₹399</div>
+                            </div>
+                        </div>
+                        <div class="menu-item-actions">
+                            <button class="action-btn">✏️</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-item-left">
+                            <div class="dish-icon">🍔</div>
+                            <div class="dish-details">
+                                <div class="dish-name">Crispy Burger</div>
+                                <div class="dish-price">₹249</div>
+                            </div>
+                        </div>
+                        <div class="menu-item-actions">
+                            <button class="action-btn">✏️</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </div>
                 </div>
+                
             </div>
         </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-tab active">
-            <span>🍲</span><label>Menu</label>
-        </div>
-        <div class="nav-tab">
-            <span>📝</span><label>Orders</label>
-        </div>
-        <div class="nav-tab">
-            <span>📊</span><label>Stats</label>
-        </div>
-        <div class="nav-tab">
-            <span>📱</span><label>QR Code</label>
-        </div>
-        <div class="nav-tab">
-            <span>⚙️</span><label>Settings</label>
-        </div>
+        <div class="nav-tab active"><span>🍲</span><label>Menu</label></div>
+        <div class="nav-tab"><span>📝</span><label>Orders</label></div>
+        <div class="nav-tab"><span>📊</span><label>Stats</label></div>
+        <div class="nav-tab"><span>📱</span><label>QR Code</label></div>
+        <div class="nav-tab"><span>⚙️</span><label>Settings</label></div>
     </div>
 
     <div class="modal-overlay" id="dishModal">
@@ -268,8 +265,8 @@
 
     <script>
         function openModal() { document.getElementById('dishModal').classList.add('show'); }
-        function closeModal() { document.getElementById('dishModal').classList.remove('hide'); document.getElementById('dishModal').classList.remove('show'); }
-        function saveDish() { alert("Connected to Firebase soon!"); closeModal(); }
+        function closeModal() { document.getElementById('dishModal').classList.remove('show'); }
+        function saveDish() { alert("Firebase setup incoming!"); closeModal(); }
     </script>
 </body>
 </html>
