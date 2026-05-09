@@ -3,206 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crave AR - Smart Menu</title>
+    <title>Crave AR - Pro Menu</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* PSYCHOLOGICAL FOOD COLORS: Deep Maroon, Spicy Orange, Golden Yellow */
         :root {
-            --appetite-bg: radial-gradient(circle at top, #3a1515, #110505);
-            --juicy-btn: linear-gradient(45deg, #FF4B2B, #FF416C);
-            --warm-gold: #FFB75E;
-            --text-light: #FFF3E0;
+            --dark-bg: #0a0202;
+            --main-bg: radial-gradient(circle at center, #2a0b0b, #0f0303);
+            --brand-color: #FF4B2B;
+            --gold: #FFB75E;
         }
 
         body {
-            margin: 0; background: var(--appetite-bg); color: var(--text-light);
+            margin: 0; background: var(--dark-bg); color: #fff;
             font-family: 'Poppins', sans-serif; height: 100vh;
             display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* Subtle warm pattern */
-        .bg-pattern {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.05;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 10c-5 0-10 5-10 10s5 10 10 10 10-5 10-10-5-10-10-10zm0 15c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z' fill='%23FF4B2B' fill-rule='evenodd'/%3E%3C/svg%3E");
-        }
-
+        /* Top Header */
         .header {
-            padding: 20px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(20, 5, 5, 0.7); backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 75, 43, 0.3); z-index: 10;
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(10, 2, 2, 0.95); border-bottom: 1px solid rgba(255, 75, 43, 0.3); z-index: 20;
         }
         .brand-name {
-            font-family: 'Playfair Display', serif; font-size: 26px; color: var(--warm-gold);
+            font-family: 'Playfair Display', serif; font-size: 24px; color: var(--brand-color);
             margin: 0; font-style: italic; letter-spacing: 1px;
         }
-
-        /* Cart Icon */
-        .cart-icon { position: relative; font-size: 26px; cursor: pointer; background: rgba(255,255,255,0.1); padding: 8px; border-radius: 50%; }
+        .cart-icon { position: relative; font-size: 24px; cursor: pointer; padding: 5px; }
         .cart-badge {
-            position: absolute; top: 0px; right: -5px; background: #FF416C; color: white;
-            font-size: 11px; font-weight: 800; width: 20px; height: 20px;
+            position: absolute; top: -2px; right: -5px; background: #FFB75E; color: #000;
+            font-size: 10px; font-weight: 800; width: 18px; height: 18px;
             border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        /* 3D Viewer Area */
-        .viewer-wrapper { position: relative; width: 100%; height: 38vh; z-index: 1; }
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+        /* Main Layout Setup */
+        .app-layout {
+            display: flex; flex: 1; overflow: hidden;
+        }
+
+        /* Left Sidebar (Foods List) */
+        .sidebar {
+            width: 85px; background: #050101; border-right: 1px solid #331111;
+            overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px;
+            scroll-behavior: smooth;
+        }
+        .sidebar::-webkit-scrollbar { display: none; }
+        
+        .side-item {
+            padding: 15px 5px; text-align: center; cursor: pointer;
+            border-left: 3px solid transparent; transition: 0.3s; opacity: 0.5;
+        }
+        .side-item.active {
+            border-left-color: var(--brand-color); background: rgba(255, 75, 43, 0.1);
+            opacity: 1;
+        }
+        .side-emoji { font-size: 28px; margin-bottom: 5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        .side-name { font-size: 10px; font-weight: 600; color: #fcc; line-height: 1.2; }
+
+        /* Right Main Content */
+        .main-content {
+            flex: 1; display: flex; flex-direction: column; position: relative; background: var(--main-bg);
+        }
+
+        /* 3D Viewer */
+        model-viewer { flex: 1; width: 100%; --poster-color: transparent; }
 
         /* Loader */
         .progress-bar {
-            display: block; width: 40%; height: 6px; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); background-color: rgba(255, 75, 43, 0.2);
-            border-radius: 20px; overflow: hidden;
+            display: block; width: 50%; height: 5px; position: absolute; top: 40%; left: 50%;
+            transform: translate(-50%, -50%); background-color: rgba(255, 75, 43, 0.2); border-radius: 10px;
         }
         .progress-bar.hide { visibility: hidden; }
-        .update-bar { background: var(--juicy-btn); width: 0%; height: 100%; transition: width 0.3s; }
+        .update-bar { background: var(--brand-color); width: 0%; height: 100%; transition: width 0.3s; }
         .loading-text {
-            position: absolute; top: calc(50% + 20px); left: 50%; transform: translateX(-50%);
-            color: #FF4B2B; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+            position: absolute; top: calc(40% + 15px); left: 50%; transform: translateX(-50%);
+            color: var(--brand-color); font-size: 11px; font-weight: 800; text-transform: uppercase;
         }
         .loading-text.hide { visibility: hidden; }
 
-        /* UI Panel */
+        /* Bottom Details & Price UI */
         .bottom-ui {
-            flex-grow: 1; background: rgba(20, 5, 5, 0.95);
-            border-top: 2px solid #FF4B2B; border-radius: 35px 35px 0 0;
-            padding: 25px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; z-index: 10;
-            box-shadow: 0 -10px 30px rgba(255, 75, 43, 0.15);
+            background: rgba(10, 2, 2, 0.95); border-top: 2px solid var(--brand-color);
+            border-radius: 30px 0 0 0; padding: 25px 20px; text-align: center;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5); z-index: 10;
         }
 
-        /* 5 Dishes Horizontal Scroll */
-        .dish-scroll-container {
-            width: 100%; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;
-            scroll-behavior: smooth;
-        }
-        .dish-scroll-container::-webkit-scrollbar { display: none; } /* Hide scrollbar */
-        
-        .dish-list { display: flex; gap: 12px; width: max-content; padding: 0 10px; }
-        
-        .dish-card {
-            background: rgba(255,255,255,0.03); border: 2px solid transparent;
-            border-radius: 20px; padding: 12px 15px; cursor: pointer; transition: 0.3s;
-            text-align: center; width: 65px; display: flex; flex-direction: column; align-items: center;
-        }
-        .dish-card.active {
-            background: rgba(255, 75, 43, 0.1); border-color: #FF4B2B; transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(255, 75, 43, 0.3);
-        }
-        .dish-emoji { font-size: 32px; margin-bottom: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-        .dish-name-small { font-size: 11px; margin: 0; color: #fcc; font-weight: 600; letter-spacing: 0.5px;}
-
-        /* Price & Title */
-        .price-container { margin-bottom: 20px; width: 100%; text-align: center; }
-        .dish-title { font-size: 24px; font-weight: 800; margin: 0; letter-spacing: 0.5px; }
-        .price { color: var(--warm-gold); font-size: 28px; font-weight: 800; margin: 5px 0 0 0; }
+        .dish-title { font-size: 24px; font-weight: 800; margin: 0 0 5px 0; color: #fff; }
+        /* Price is initially hidden in the sidebar, only shows here */
+        .price { color: var(--gold); font-size: 28px; font-weight: 800; margin: 0 0 20px 0; }
 
         /* Action Buttons */
-        .action-row { display: flex; gap: 12px; width: 100%; max-width: 400px; }
-        .btn-premium {
-            background: var(--juicy-btn); color: #fff; border: none;
-            padding: 16px 0; border-radius: 20px; font-size: 15px; font-weight: 800; flex: 1.2;
-            cursor: pointer; box-shadow: 0 5px 20px rgba(255, 75, 43, 0.4); transition: 0.3s;
-        }
-        .btn-premium:active { transform: scale(0.95); }
-        
+        .action-row { display: flex; gap: 10px; width: 100%; }
         .btn-cart {
-            background: rgba(255, 75, 43, 0.1); color: #FF4B2B; border: 2px solid #FF4B2B;
-            padding: 16px 0; border-radius: 20px; font-size: 15px; font-weight: 800; flex: 1;
-            cursor: pointer; transition: 0.3s;
+            background: rgba(255, 75, 43, 0.1); color: var(--brand-color); border: 1px solid var(--brand-color);
+            padding: 14px 0; border-radius: 15px; font-size: 14px; font-weight: 800; flex: 1; cursor: pointer;
         }
-        .btn-cart:active { background: rgba(255, 75, 43, 0.3); }
+        .btn-premium {
+            background: linear-gradient(45deg, #FF4B2B, #FF416C); color: #fff; border: none;
+            padding: 14px 0; border-radius: 15px; font-size: 14px; font-weight: 800; flex: 1.2; cursor: pointer;
+        }
 
-        /* Toast & Modal (Unchanged functionality, updated colors) */
+        /* Essential Toast & Modal for Cart */
         .toast {
-            position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%);
-            background: #FF4B2B; color: white; padding: 12px 25px; border-radius: 50px;
-            font-size: 14px; font-weight: bold; transition: bottom 0.3s; z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            background: #2ed573; color: white; padding: 10px 20px; border-radius: 50px;
+            font-size: 12px; font-weight: bold; transition: 0.3s; z-index: 1000; opacity: 0; visibility: hidden;
         }
-        .toast.show { bottom: 30px; }
-
-        .cart-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-            display: flex; justify-content: center; align-items: flex-end;
-            z-index: 500; visibility: hidden; opacity: 0; transition: 0.3s;
-        }
-        .cart-modal.show { visibility: visible; opacity: 1; }
-        .cart-content {
-            background: #1a0808; width: 100%; border-radius: 35px 35px 0 0;
-            padding: 30px 25px; border-top: 2px solid #FF4B2B; box-sizing: border-box;
-        }
-        .cart-item { display: flex; justify-content: space-between; border-bottom: 1px solid #331111; padding: 15px 0; font-size: 16px;}
-        .cart-total { display: flex; justify-content: space-between; font-size: 22px; font-weight: 800; color: var(--warm-gold); margin: 25px 0; }
-        .close-cart { text-align: center; color: #FF4B2B; font-size: 14px; font-weight: bold; margin-top: 20px; cursor: pointer; text-decoration: underline; }
-
+        .toast.show { opacity: 1; visibility: visible; }
     </style>
 </head>
 <body>
-    <div class="bg-pattern"></div>
 
     <div class="header">
         <h1 class="brand-name">Crave AR</h1>
-        <div class="cart-icon" onclick="toggleCart()">
+        <div class="cart-icon" onclick="alert('Cart feature active! Total Items: ' + cart.length)">
             🛒 <div class="cart-badge" id="cart-count">0</div>
         </div>
     </div>
 
-    <div class="viewer-wrapper">
-        <model-viewer id="ar-viewer" src="https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="2" environment-image="neutral">
-            <div slot="progress-bar" class="progress-bar"><div class="update-bar" id="update-bar"></div></div>
-            <div id="loading-text" class="loading-text">Cooking...</div>
-        </model-viewer>
-    </div>
-
-    <div class="bottom-ui">
-        <div class="dish-scroll-container">
-            <div class="dish-list">
-                <div class="dish-card active" onclick="changeDish(this, 'Spicy Pepperoni Pizza', 599, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
-                    <div class="dish-emoji">🍕</div><p class="dish-name-small">Pizza</p>
-                </div>
-                <div class="dish-card" onclick="changeDish(this, 'Smoky Veg Burger', 249, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
-                    <div class="dish-emoji">🍔</div><p class="dish-name-small">Burger</p>
-                </div>
-                <div class="dish-card" onclick="changeDish(this, 'Avocado Super Bowl', 349, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
-                    <div class="dish-emoji">🥗</div><p class="dish-name-small">Salad</p>
-                </div>
-                <div class="dish-card" onclick="changeDish(this, 'Choco Lava Cake', 199, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
-                    <div class="dish-emoji">🍰</div><p class="dish-name-small">Dessert</p>
-                </div>
-                <div class="dish-card" onclick="changeDish(this, 'Fizzy Mojito', 149, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
-                    <div class="dish-emoji">🍹</div><p class="dish-name-small">Drink</p>
-                </div>
+    <div class="app-layout">
+        <div class="sidebar">
+            <div class="side-item active" onclick="changeDish(this, 'Spicy Pizza', 599, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="side-emoji">🍕</div><div class="side-name">Pizza</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Juicy Burger', 249, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="side-emoji">🍔</div><div class="side-name">Burger</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Dum Biryani', 399, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+                <div class="side-emoji">🥘</div><div class="side-name">Biryani</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Desi Momos', 149, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+                <div class="side-emoji">🥟</div><div class="side-name">Momos</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'White Pasta', 299, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="side-emoji">🍝</div><div class="side-name">Pasta</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Hakka Noodles', 229, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+                <div class="side-emoji">🍜</div><div class="side-name">Noodles</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Peri Fries', 129, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="side-emoji">🍟</div><div class="side-name">Fries</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Crispy Tacos', 279, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="side-emoji">🌮</div><div class="side-name">Tacos</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Vanilla Sundae', 199, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
+                <div class="side-emoji">🍦</div><div class="side-name">Ice Cream</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Virgin Mojito', 159, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
+                <div class="side-emoji">🍹</div><div class="side-name">Mojito</div>
             </div>
         </div>
 
-        <div class="price-container">
-            <h2 class="dish-title" id="display-name">Spicy Pepperoni Pizza</h2>
-            <p class="price" id="display-price">₹599</p>
-        </div>
-        
-        <div class="action-row">
-            <button class="btn-cart" onclick="addToCart()">+ ADD ITEM</button>
-            <button class="btn-premium" onclick="document.querySelector('#ar-viewer').activateAR()">VIEW ON TABLE 📸</button>
-        </div>
-    </div>
+        <div class="main-content">
+            <model-viewer id="ar-viewer" src="https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="2" environment-image="neutral">
+                
+                <div slot="progress-bar" class="progress-bar"><div class="update-bar" id="update-bar"></div></div>
+                <div id="loading-text" class="loading-text">Cooking...</div>
+                
+                <button slot="ar-button" style="display:none;"></button>
+            </model-viewer>
 
-    <div class="toast" id="toast">Deliciously added to cart! 😋</div>
-
-    <div class="cart-modal" id="cart-modal">
-        <div class="cart-content">
-            <h2 style="margin:0 0 20px 0; color:#fff; font-size: 26px;">Your Cravings</h2>
-            <div id="cart-items-list" style="max-height: 40vh; overflow-y: auto;"></div>
-            <div class="cart-total">
-                <span>Total Amount:</span>
-                <span id="cart-total-price">₹0</span>
+            <div class="bottom-ui">
+                <h2 class="dish-title" id="display-name">Spicy Pizza</h2>
+                <p class="price" id="display-price">₹599</p>
+                
+                <div class="action-row">
+                    <button class="btn-cart" onclick="addToCart()">+ ADD</button>
+                    <button class="btn-premium" onclick="document.querySelector('#ar-viewer').activateAR()">VIEW ON TABLE 📸</button>
+                </div>
             </div>
-            <button class="btn-premium" style="width:100%" onclick="alert('Order Sent to Kitchen! 👨‍🍳')">CONFIRM ORDER</button>
-            <div class="close-cart" onclick="toggleCart()">Close Tab</div>
         </div>
     </div>
+
+    <div class="toast" id="toast">Added to Cravings! 😋</div>
 
     <script>
         const viewer = document.querySelector('#ar-viewer');
@@ -210,7 +184,7 @@
         const progressBar = document.querySelector('.progress-bar');
         const loadingText = document.querySelector('#loading-text');
 
-        let currentDish = { name: 'Spicy Pepperoni Pizza', price: 599 };
+        let currentDish = { name: 'Spicy Pizza', price: 599 };
         let cart = [];
 
         viewer.addEventListener('progress', (event) => {
@@ -225,6 +199,8 @@
 
         function changeDish(element, name, price, modelUrl) {
             currentDish = { name: name, price: price };
+            
+            // Show price and name only in the main panel
             document.getElementById('display-name').innerText = name;
             document.getElementById('display-price').innerText = '₹' + price;
             
@@ -232,11 +208,10 @@
             updateBar.style.width = '0%';
             viewer.src = modelUrl;
 
-            document.querySelectorAll('.dish-card').forEach(card => card.classList.remove('active'));
+            document.querySelectorAll('.side-item').forEach(card => card.classList.remove('active'));
             element.classList.add('active');
             
-            // Scroll selected item into view nicely
-            element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function addToCart() {
@@ -246,33 +221,6 @@
             const toast = document.getElementById('toast');
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        function toggleCart() {
-            const modal = document.getElementById('cart-modal');
-            const itemsList = document.getElementById('cart-items-list');
-            const totalPrice = document.getElementById('cart-total-price');
-            
-            if (!modal.classList.contains('show')) {
-                itemsList.innerHTML = '';
-                let total = 0;
-                
-                if(cart.length === 0) {
-                    itemsList.innerHTML = '<p style="text-align:center; color:#888; padding: 20px 0;">No cravings added yet!</p>';
-                } else {
-                    cart.forEach((item) => {
-                        total += item.price;
-                        itemsList.innerHTML += `
-                            <div class="cart-item">
-                                <span style="color:#ddd">${item.name}</span>
-                                <span style="color:#FFB75E">₹${item.price}</span>
-                            </div>
-                        `;
-                    });
-                }
-                totalPrice.innerText = '₹' + total;
-            }
-            modal.classList.toggle('show');
         }
     </script>
 </body>
