@@ -17,18 +17,23 @@
         /* HEADER */
         .header { flex-shrink: 0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); border-bottom: 1px solid var(--border-light); z-index: 20; }
         .brand-name { font-size: 24px; font-weight: 800; color: var(--zomato-red); margin: 0; }
-        .cart-icon { position: relative; font-size: 22px; cursor: pointer; padding: 8px; background: #FDEEEE; border-radius: 50%; color: var(--zomato-red); }
+        .cart-icon { position: relative; font-size: 22px; cursor: pointer; padding: 8px; background: #FDEEEE; border-radius: 50%; color: var(--zomato-red); transition: transform 0.2s; }
+        .cart-icon:active { transform: scale(0.9); }
         .cart-badge { position: absolute; top: -2px; right: -2px; background: var(--zomato-red); color: white; font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
 
         .app-layout { display: flex; flex: 1; overflow: hidden; }
 
-        /* SIDEBAR */
-        .sidebar { width: 90px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; }
+        /* SIDEBAR WITH 15 ITEMS & ANIMATIONS */
+        .sidebar { width: 90px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; scroll-behavior: smooth; }
         .sidebar::-webkit-scrollbar { display: none; }
-        .side-item { padding: 18px 5px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: 0.2s; }
+        
+        /* Smooth bounce animation on click */
+        .side-item { padding: 18px 5px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .side-item:active { transform: scale(0.92); } /* Click effect */
+        
         .side-item.active { border-left-color: var(--zomato-red); background: #FDEEEE; }
-        .side-emoji { font-size: 30px; margin-bottom: 8px; transition: 0.2s; }
-        .side-item.active .side-emoji { transform: scale(1.1); }
+        .side-emoji { font-size: 30px; margin-bottom: 8px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .side-item.active .side-emoji { transform: scale(1.15); }
         .side-name { font-size: 11px; font-weight: 600; color: var(--text-main); }
         .side-item:not(.active) .side-name { color: var(--text-sub); }
 
@@ -48,18 +53,21 @@
         
         .dish-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .dish-title { font-size: 20px; font-weight: 700; margin: 0; text-align: left; }
-        .price { color: var(--text-main); font-size: 22px; font-weight: 800; margin: 0; }
+        .price { color: var(--text-main); font-size: 22px; font-weight: 800; margin: 0; transition: color 0.3s; }
 
-        /* Half/Full Variant Selector */
+        /* Half/Full Variant Selector (Cleaned Up Text & Animation) */
         .variant-selector { display: flex; background: #F1F1F6; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
         .variant-selector.hide { display: none; }
-        .var-btn { flex: 1; padding: 8px 0; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: 0.3s; }
+        .var-btn { flex: 1; padding: 10px 0; border: none; background: transparent; font-size: 14px; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: all 0.2s ease; }
+        .var-btn:active { transform: scale(0.95); } /* Click effect */
         .var-btn.active { background: var(--text-main); color: var(--white); }
 
+        /* Action Buttons with Animations */
         .action-row { display: flex; gap: 10px; width: 100%; }
-        .btn-cart { background: var(--white); color: var(--zomato-red); border: 1px solid var(--zomato-red); padding: 12px 0; border-radius: 12px; font-size: 14px; font-weight: 700; flex: 1; cursor: pointer; }
-        .btn-cart:active { background: #FDEEEE; }
-        .btn-premium { background: var(--zomato-red); color: var(--white); border: none; padding: 12px 0; border-radius: 12px; font-size: 14px; font-weight: 700; flex: 1.3; cursor: pointer; box-shadow: 0 4px 8px rgba(226, 55, 68, 0.2); }
+        .btn-cart { background: var(--white); color: var(--zomato-red); border: 1px solid var(--zomato-red); padding: 12px 0; border-radius: 12px; font-size: 14px; font-weight: 700; flex: 1; cursor: pointer; transition: all 0.2s; }
+        .btn-cart:active { background: #FDEEEE; transform: scale(0.96); }
+        .btn-premium { background: var(--zomato-red); color: var(--white); border: none; padding: 12px 0; border-radius: 12px; font-size: 14px; font-weight: 700; flex: 1.3; cursor: pointer; box-shadow: 0 4px 8px rgba(226, 55, 68, 0.2); transition: all 0.2s; }
+        .btn-premium:active { transform: scale(0.96); box-shadow: 0 2px 4px rgba(226, 55, 68, 0.2); }
 
         /* CART MODAL (Full Bill UI) */
         .cart-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-end; z-index: 100; visibility: hidden; opacity: 0; transition: 0.3s; }
@@ -67,7 +75,8 @@
         .cart-content { background: var(--white); width: 100%; max-height: 80vh; border-radius: 24px 24px 0 0; padding: 25px 20px; display: flex; flex-direction: column; }
         .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; margin-bottom: 15px; }
         .cart-header h2 { margin: 0; font-size: 20px; font-weight: 800; }
-        .close-btn { background: #EEE; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; }
+        .close-btn { background: #EEE; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .close-btn:active { transform: scale(0.8); }
         
         .cart-items-container { overflow-y: auto; flex: 1; margin-bottom: 15px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border-light); }
@@ -80,10 +89,11 @@
         .bill-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-sub); margin-bottom: 8px; }
         .bill-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; color: var(--zomato-red); margin-top: 10px; border-top: 1px solid var(--border-light); padding-top: 10px; }
         
-        .btn-checkout { background: #28A745; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; width: 100%; cursor: pointer; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3); }
+        .btn-checkout { background: #28A745; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; width: 100%; cursor: pointer; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3); transition: 0.2s; }
+        .btn-checkout:active { transform: scale(0.97); }
 
-        .toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; transition: 0.3s; z-index: 1000; opacity: 0; visibility: hidden; }
-        .toast.show { opacity: 1; visibility: visible; top: 80px; }
+        .toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; opacity: 0; visibility: hidden; }
+        .toast.show { opacity: 1; visibility: visible; top: 85px; }
     </style>
 </head>
 <body>
@@ -115,6 +125,33 @@
             <div class="side-item" onclick="changeDish(this, 'Hakka Noodles', 229, 149, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
                 <div class="side-emoji">🍜</div><div class="side-name">Noodles</div>
             </div>
+            <div class="side-item" onclick="changeDish(this, 'Peri Peri Fries', 129, null, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="side-emoji">🍟</div><div class="side-name">Fries</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Crispy Tacos', 279, null, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="side-emoji">🌮</div><div class="side-name">Tacos</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Paneer Tikka', 249, 149, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+                <div class="side-emoji">🍢</div><div class="side-name">Tikka</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Butter Chicken', 349, 199, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+                <div class="side-emoji">🍛</div><div class="side-name">Chicken</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Garlic Bread', 129, null, 'https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/glTFSampleModels/Pizza/glTF-Binary/Pizza.glb')">
+                <div class="side-emoji">🥖</div><div class="side-name">Garlic Brd</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Chole Bhature', 180, null, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb')">
+                <div class="side-emoji">🍲</div><div class="side-name">Chole</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Choco Lava Cake', 199, null, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
+                <div class="side-emoji">🍰</div><div class="side-name">Dessert</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Cold Coffee', 120, null, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
+                <div class="side-emoji">🧋</div><div class="side-name">Coffee</div>
+            </div>
+            <div class="side-item" onclick="changeDish(this, 'Virgin Mojito', 159, null, 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb')">
+                <div class="side-emoji">🍹</div><div class="side-name">Mojito</div>
+            </div>
         </div>
 
         <div class="main-content">
@@ -132,8 +169,8 @@
                 </div>
                 
                 <div class="variant-selector hide" id="variant-box">
-                    <button class="var-btn" id="btn-half" onclick="selectVariant('half')">Half Portion</button>
-                    <button class="var-btn active" id="btn-full" onclick="selectVariant('full')">Full Portion</button>
+                    <button class="var-btn" id="btn-half" onclick="selectVariant('half')">Half</button>
+                    <button class="var-btn active" id="btn-full" onclick="selectVariant('full')">Full</button>
                 </div>
 
                 <div class="action-row">
@@ -151,8 +188,7 @@
                 <button class="close-btn" onclick="toggleCart()">✕</button>
             </div>
             
-            <div class="cart-items-container" id="cart-items-list">
-                </div>
+            <div class="cart-items-container" id="cart-items-list"></div>
 
             <div class="bill-details">
                 <div class="bill-row"><span>Item Total</span><span id="bill-subtotal">₹0</span></div>
@@ -187,14 +223,13 @@
                 name: name, 
                 priceFull: priceFull, 
                 priceHalf: priceHalf, 
-                selectedType: 'full', // Default to full
+                selectedType: 'full', 
                 currentPrice: priceFull 
             };
             
             document.getElementById('display-name').innerText = name;
             document.getElementById('display-price').innerText = '₹' + priceFull;
             
-            // Show/Hide Half/Full toggle based on data
             if(priceHalf !== null) {
                 variantBox.classList.remove('hide');
                 document.getElementById('btn-full').classList.add('active');
@@ -211,7 +246,6 @@
             element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // Half or Full Switcher
         function selectVariant(type) {
             document.getElementById('btn-half').classList.remove('active');
             document.getElementById('btn-full').classList.remove('active');
@@ -225,16 +259,21 @@
                 currentDish.currentPrice = currentDish.priceFull;
                 document.getElementById('btn-full').classList.add('active');
             }
-            document.getElementById('display-price').innerText = '₹' + currentDish.currentPrice;
+            
+            // Text scale animation trigger for price update
+            const priceEl = document.getElementById('display-price');
+            priceEl.style.transform = 'scale(1.2)';
+            setTimeout(() => priceEl.style.transform = 'scale(1)', 200);
+            priceEl.innerText = '₹' + currentDish.currentPrice;
         }
 
         function addToCart() {
             let finalName = currentDish.name;
             let variantText = '';
             
-            // Agar half/full wala item hai, toh cart me pata chalna chahiye
+            // Fixed text to "Half" and "Full"
             if(currentDish.priceHalf !== null) {
-                variantText = currentDish.selectedType === 'half' ? '(Half Portion)' : '(Full Portion)';
+                variantText = currentDish.selectedType === 'half' ? '(Half)' : '(Full)';
             }
 
             cart.push({
@@ -242,6 +281,11 @@
                 variant: variantText,
                 price: currentDish.currentPrice
             });
+            
+            // Cart Icon animation
+            const cartIcon = document.querySelector('.cart-icon');
+            cartIcon.style.transform = 'scale(1.2)';
+            setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
             
             document.getElementById('cart-count').innerText = cart.length;
             const toast = document.getElementById('toast');
@@ -274,8 +318,7 @@
                     });
                 }
                 
-                // Calculate Bill
-                let tax = Math.round(subtotal * 0.05); // 5% Demo Tax
+                let tax = Math.round(subtotal * 0.05); 
                 let total = subtotal + tax;
                 
                 document.getElementById('bill-subtotal').innerText = '₹' + subtotal;
