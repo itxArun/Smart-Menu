@@ -6,131 +6,54 @@
     <title>Crave AR - Merchant Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #E23744;
-            --dark: #282C3F;
-            --gray: #686B78;
-            --light-bg: #F4F6F8;
-            --white: #FFFFFF;
-            --border: #E8E8E8;
-            --success: #24963F;
-        }
-
-        body {
-            margin: 0; padding: 0; font-family: 'Poppins', sans-serif;
-            background-color: var(--light-bg); color: var(--dark);
-            height: 100dvh; display: flex; flex-direction: column; overflow: hidden;
-        }
-
-        /* 1. TOP HEADER */
-        .top-nav {
-            flex-shrink: 0; background: var(--white); padding: 12px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border); z-index: 100;
-        }
+        :root { --primary: #E23744; --dark: #282C3F; --gray: #686B78; --light-bg: #F4F6F8; --white: #FFFFFF; --border: #E8E8E8; --success: #24963F; }
+        body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--light-bg); color: var(--dark); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .top-nav { flex-shrink: 0; background: var(--white); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 100; }
         .brand-logo { font-family: 'Okra', sans-serif; font-size: 22px; color: var(--primary); font-weight: 800; margin: 0; }
         .admin-profile { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
         .avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; }
 
-        /* 2. MAIN LAYOUT */
         .app-container { display: flex; flex: 1; overflow: hidden; }
-
-        /* DESKTOP SIDEBAR */
         .sidebar { width: 240px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-
-        /* 3. SCROLLABLE CONTENT AREA */
-        .main-content {
-            flex: 1; overflow-y: auto; padding: 20px;
-            padding-bottom: 100px;
-        }
-
-        /* QUICK STATS CARDS */
+        
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-card {
-            background: var(--white); padding: 15px; border-radius: 12px;
-            border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-        }
+        .stat-card { background: var(--white); padding: 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         .stat-title { font-size: 11px; color: var(--gray); font-weight: 600; margin-bottom: 5px; text-transform: uppercase; }
         .stat-value { font-size: 20px; font-weight: 800; margin: 0; }
         .stat-value.green { color: var(--success); }
 
-        /* MENU LIST SECTION (Mobile Optimized) */
-        .section-card {
-            background: var(--white); border-radius: 16px; border: 1px solid var(--border);
-            overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        .section-header {
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border); background: #F8F9FA;
-        }
+        .section-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .section-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: #F8F9FA; }
         .section-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
-        
-        .btn-add {
-            background: var(--primary); color: var(--white); border: none; padding: 10px 16px;
-            border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s;
-        }
+        .btn-add { background: var(--primary); color: var(--white); border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); }
 
-        /* THE NEW LIST VIEW (No more tables) */
         .menu-list { display: flex; flex-direction: column; }
-        
-        .menu-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; border-bottom: 1px solid var(--border);
-        }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border); }
         .menu-item:last-child { border-bottom: none; }
-        
         .menu-item-left { display: flex; align-items: center; gap: 15px; }
-        
         .dish-icon { font-size: 24px; background: #F4F6F8; padding: 10px; border-radius: 12px; }
-        
         .dish-details { display: flex; flex-direction: column; gap: 2px; }
         .dish-name { font-size: 14px; font-weight: 700; color: var(--dark); }
         .dish-price { font-size: 13px; font-weight: 600; color: var(--gray); }
-
         .menu-item-actions { display: flex; gap: 15px; }
         .action-btn { background: transparent; border: none; font-size: 18px; cursor: pointer; padding: 5px; transition: 0.2s; }
         .action-btn:active { transform: scale(0.85); }
 
-        /* 4. MOBILE BOTTOM NAV */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
-            background: var(--white); border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); z-index: 1000;
-        }
-        .nav-tab {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            color: var(--gray); cursor: pointer; transition: 0.2s; text-decoration: none;
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
+        .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); cursor: pointer; transition: 0.2s; text-decoration: none; }
         .nav-tab.active { color: var(--primary); }
         .nav-tab span { font-size: 20px; }
         .nav-tab label { font-size: 10px; font-weight: 700; }
-        .nav-tab:active { transform: scale(0.9); }
 
-        /* MEDIA QUERIES */
-        @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (min-width: 769px) {
-            .bottom-nav { display: none; }
-            .main-content { padding-bottom: 20px; }
-            .stats-grid { grid-template-columns: repeat(4, 1fr); }
-        }
+        @media (max-width: 768px) { .sidebar { display: none; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 769px) { .bottom-nav { display: none; } .main-content { padding-bottom: 20px; } .stats-grid { grid-template-columns: repeat(4, 1fr); } }
 
-        /* MODAL */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-            display: flex; justify-content: center; align-items: flex-end;
-            z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
-        .modal-card {
-            background: var(--white); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0;
-            padding: 25px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .modal-card { background: var(--white); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 25px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .modal-overlay.show .modal-card { transform: translateY(0); }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--gray); }
@@ -144,33 +67,21 @@
     <div class="top-nav">
         <h1 class="brand-logo">Crave AR</h1>
         <div class="admin-profile">
-            <span>Grand Italiano</span>
-            <div class="avatar">G</div>
+            <span>Grand Italiano</span><div class="avatar">G</div>
         </div>
     </div>
 
     <div class="app-container">
         <div class="sidebar"></div>
-
         <div class="main-content">
-            
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-title">Menu Items</div>
-                    <div class="stat-value">15</div>
+                    <div class="stat-value" id="total-dishes">0</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-title">Orders</div>
-                    <div class="stat-value">42</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">Revenue</div>
-                    <div class="stat-value green">₹12.4k</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">AR Views</div>
-                    <div class="stat-value">1.2k</div>
-                </div>
+                <div class="stat-card"><div class="stat-title">Orders</div><div class="stat-value">0</div></div>
+                <div class="stat-card"><div class="stat-title">Revenue</div><div class="stat-value green">₹0</div></div>
+                <div class="stat-card"><div class="stat-title">AR Views</div><div class="stat-value">0</div></div>
             </div>
 
             <div class="section-card">
@@ -179,50 +90,11 @@
                     <button class="btn-add" onclick="openModal()">+ Add Dish</button>
                 </div>
                 
-                <div class="menu-list">
-                    <div class="menu-item">
-                        <div class="menu-item-left">
-                            <div class="dish-icon">🍕</div>
-                            <div class="dish-details">
-                                <div class="dish-name">Spicy Pizza</div>
-                                <div class="dish-price">₹599</div>
-                            </div>
-                        </div>
-                        <div class="menu-item-actions">
-                            <button class="action-btn">✏️</button>
-                            <button class="action-btn">🗑️</button>
-                        </div>
-                    </div>
-
-                    <div class="menu-item">
-                        <div class="menu-item-left">
-                            <div class="dish-icon">🥘</div>
-                            <div class="dish-details">
-                                <div class="dish-name">Veg Biryani</div>
-                                <div class="dish-price">₹399</div>
-                            </div>
-                        </div>
-                        <div class="menu-item-actions">
-                            <button class="action-btn">✏️</button>
-                            <button class="action-btn">🗑️</button>
-                        </div>
-                    </div>
-                    
-                    <div class="menu-item">
-                        <div class="menu-item-left">
-                            <div class="dish-icon">🍔</div>
-                            <div class="dish-details">
-                                <div class="dish-name">Crispy Burger</div>
-                                <div class="dish-price">₹249</div>
-                            </div>
-                        </div>
-                        <div class="menu-item-actions">
-                            <button class="action-btn">✏️</button>
-                            <button class="action-btn">🗑️</button>
-                        </div>
+                <div class="menu-list" id="menu-body">
+                    <div style="padding: 20px; text-align: center; color: var(--gray); font-size: 13px;">
+                        Loading your digital menu...
                     </div>
                 </div>
-                
             </div>
         </div>
     </div>
@@ -243,30 +115,124 @@
             </div>
             <div class="form-group">
                 <label>Dish Name</label>
-                <input type="text" placeholder="e.g. Paneer Tikka">
+                <input type="text" id="dishName" placeholder="e.g. Paneer Tikka">
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group">
                     <label>Emoji</label>
-                    <input type="text" placeholder="🍢">
+                    <input type="text" id="dishEmoji" placeholder="🍢">
                 </div>
                 <div class="form-group">
                     <label>Price (₹)</label>
-                    <input type="number" placeholder="299">
+                    <input type="number" id="dishPrice" placeholder="299">
                 </div>
             </div>
             <div class="form-group">
                 <label>3D Model URL (.glb)</label>
-                <input type="text" placeholder="https://model-link.com/dish.glb">
+                <input type="text" id="dishModel" placeholder="https://model-link.com/dish.glb">
             </div>
-            <button class="btn-save" onclick="saveDish()">Save & Publish</button>
+            <button class="btn-save" id="saveBtn" onclick="saveDish()">Save & Publish</button>
         </div>
     </div>
 
-    <script>
-        function openModal() { document.getElementById('dishModal').classList.add('show'); }
-        function closeModal() { document.getElementById('dishModal').classList.remove('show'); }
-        function saveDish() { alert("Firebase setup incoming!"); closeModal(); }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // Tumhari Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
+            authDomain: "itx-arun-bdf24.firebaseapp.com",
+            projectId: "itx-arun-bdf24",
+            storageBucket: "itx-arun-bdf24.firebasestorage.app",
+            messagingSenderId: "442083262265",
+            appId: "1:442083262265:web:3e023b1211f752cb3132e8"
+        };
+
+        // Initialize App & Database
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Modal Functions
+        window.openModal = function() { document.getElementById('dishModal').classList.add('show'); }
+        window.closeModal = function() { document.getElementById('dishModal').classList.remove('show'); }
+
+        // Save Dish to Database
+        window.saveDish = async function() {
+            const name = document.getElementById('dishName').value;
+            const emoji = document.getElementById('dishEmoji').value || "🍲";
+            const price = document.getElementById('dishPrice').value;
+            const modelUrl = document.getElementById('dishModel').value;
+
+            if(!name || !price || !modelUrl) {
+                alert("Bhai, Name, Price aur Model URL daalna zaroori hai!");
+                return;
+            }
+
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "Saving to Database...";
+
+            try {
+                await addDoc(collection(db, "menu_items"), {
+                    name: name,
+                    emoji: emoji,
+                    price: Number(price),
+                    modelUrl: modelUrl,
+                    timestamp: new Date()
+                });
+                closeModal();
+                document.getElementById('dishName').value = '';
+                document.getElementById('dishEmoji').value = '';
+                document.getElementById('dishPrice').value = '';
+                document.getElementById('dishModel').value = '';
+            } catch (e) {
+                console.error(e);
+                alert("Save fail ho gaya. Kya tumne Firebase mein Database (Test Mode) On kiya tha?");
+            }
+            btn.innerText = "Save & Publish";
+        };
+
+        // Read Data Real-time
+        const menuBody = document.getElementById('menu-body');
+        onSnapshot(collection(db, "menu_items"), (snapshot) => {
+            menuBody.innerHTML = ''; 
+            let count = 0;
+            
+            if(snapshot.empty) {
+                menuBody.innerHTML = '<div style="padding:20px; text-align:center; color:#686B78;">Abhi koi dish nahi hai. Add Dish par click karo!</div>';
+                document.getElementById('total-dishes').innerText = "0";
+                return;
+            }
+
+            snapshot.forEach((docSnap) => {
+                count++;
+                const data = docSnap.data();
+                const id = docSnap.id;
+                
+                menuBody.innerHTML += `
+                    <div class="menu-item">
+                        <div class="menu-item-left">
+                            <div class="dish-icon">${data.emoji}</div>
+                            <div class="dish-details">
+                                <div class="dish-name">${data.name}</div>
+                                <div class="dish-price">₹${data.price}</div>
+                            </div>
+                        </div>
+                        <div class="menu-item-actions">
+                            <button class="action-btn" onclick="deleteDish('${id}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('total-dishes').innerText = count;
+        });
+
+        // Delete Dish from Database
+        window.deleteDish = async function(id) {
+            if(confirm("Confirm Delete? Yeh dish database se hamesha ke liye hat jayegi!")) {
+                await deleteDoc(doc(db, "menu_items", id));
+            }
+        };
     </script>
 </body>
 </html>
