@@ -13,7 +13,6 @@
         .header { flex-shrink: 0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); border-bottom: 1px solid var(--border-light); z-index: 20; }
         .brand-name { font-size: 24px; font-weight: 800; color: var(--zomato-red); margin: 0; }
         
-        /* Top Cart Icon kept for backup, but less prominent now */
         .cart-icon { position: relative; font-size: 22px; cursor: pointer; padding: 8px; background: #FDEEEE; border-radius: 50%; color: var(--zomato-red); transition: transform 0.2s; }
         .cart-icon:active { transform: scale(0.9); }
         .cart-badge { position: absolute; top: -2px; right: -2px; background: var(--zomato-red); color: white; font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
@@ -34,13 +33,22 @@
         .progress-bar.hide { visibility: hidden; }
         .update-bar { background: var(--zomato-red); width: 0%; height: 100%; transition: width 0.3s; }
         
-        /* Bottom Card */
-        .bottom-ui { flex-shrink: 0; background: var(--white); border-top: 1px solid var(--border-light); border-radius: 30px 30px 0 0; padding: 20px 20px 30px 20px; text-align: center; box-shadow: 0 -4px 15px rgba(0,0,0,0.06); z-index: 10; }
+        /* THE FIX: Dynamic Bottom UI */
+        .bottom-ui { 
+            flex-shrink: 0; background: var(--white); border-top: 1px solid var(--border-light); 
+            border-radius: 30px 30px 0 0; padding: 20px 20px 25px 20px; text-align: center; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.06); z-index: 10;
+            transition: padding-bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        /* Jab cart mein item hoga, toh bottom padding badh jayegi taaki buttons upar aa jayein */
+        .bottom-ui.with-cart {
+            padding-bottom: 90px; 
+        }
+
         .dish-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .dish-title { font-size: 20px; font-weight: 700; margin: 0; }
         .price { color: var(--text-main); font-size: 22px; font-weight: 800; margin: 0; }
         
-        /* FULLY CURVED BUTTONS */
         .variant-selector { display: flex; background: #F1F1F6; border-radius: 50px; overflow: hidden; margin-bottom: 15px; padding: 4px; gap: 4px; }
         .variant-selector.hide { display: none; }
         .var-btn { flex: 1; padding: 10px 0; border: none; background: transparent; font-size: 14px; font-weight: 700; color: var(--text-sub); border-radius: 50px; cursor: pointer; transition: 0.2s; }
@@ -53,7 +61,7 @@
         .btn-premium { background: var(--zomato-red); color: var(--white); border: none; padding: 14px 0; border-radius: 50px; font-size: 14px; font-weight: 800; flex: 1.3; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(226, 55, 68, 0.2); }
         .btn-premium:active { transform: scale(0.95); }
         
-        /* NEW: ZOMATO STYLE FLOATING CHECKOUT BAR */
+        /* FLOATING CHECKOUT BAR */
         .floating-checkout {
             position: fixed; bottom: -100px; left: 15px; right: 15px;
             background: #28A745; color: white; padding: 16px 20px;
@@ -61,7 +69,7 @@
             z-index: 1000; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4); border-radius: 50px; cursor: pointer;
         }
-        .floating-checkout.show { bottom: 20px; }
+        .floating-checkout.show { bottom: 15px; }
         .checkout-info { display: flex; flex-direction: column; text-align: left; }
         .checkout-items { font-size: 12px; font-weight: 600; opacity: 0.9; }
         .checkout-total { font-size: 16px; font-weight: 800; }
@@ -103,7 +111,7 @@
                 </model-viewer>
             </div>
 
-            <div class="bottom-ui">
+            <div class="bottom-ui" id="bottom-ui-card">
                 <div class="dish-header">
                     <h2 class="dish-title" id="display-name">Select a Dish</h2>
                     <p class="price" id="display-price">₹0</p>
@@ -236,14 +244,19 @@
             document.getElementById('display-price').innerText = '₹' + currentDish.currentPrice;
         };
 
+        // NEW LOGIC: Dynamic padding to prevent overlap
         function updateFloatingBar() {
             const floatingBar = document.getElementById('floating-checkout');
+            const bottomUiCard = document.getElementById('bottom-ui-card'); // Target bottom card
+            
             if(cart.length > 0) {
                 document.getElementById('float-items').innerText = cart.length === 1 ? '1 ITEM' : `${cart.length} ITEMS`;
                 document.getElementById('float-total').innerText = '₹' + billTotalAmount;
                 floatingBar.classList.add('show');
+                bottomUiCard.classList.add('with-cart'); // Add extra padding
             } else {
                 floatingBar.classList.remove('show');
+                bottomUiCard.classList.remove('with-cart'); // Remove extra padding
             }
         }
 
@@ -301,7 +314,7 @@
                 billTotalAmount = 0;
                 document.getElementById('cart-count').innerText = 0;
                 document.getElementById('tableNumber').value = '';
-                updateFloatingBar();
+                updateFloatingBar(); // Hide floating bar and reset padding
                 toggleCart(); 
                 
                 const toast = document.getElementById('toast');
