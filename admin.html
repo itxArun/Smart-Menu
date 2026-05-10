@@ -10,10 +10,24 @@
         :root { --primary: #E23744; --dark: #282C3F; --gray: #686B78; --light-bg: #F4F6F8; --white: #FFFFFF; --border: #E8E8E8; --success: #24963F; --warning: #FFB75E; }
         body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--light-bg); color: var(--dark); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
         
+        /* LOGIN SCREEN UI */
+        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--light-bg); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; transition: opacity 0.4s; }
+        .login-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
+        .login-card { background: var(--white); width: 100%; max-width: 400px; border-radius: 24px; padding: 40px 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: center; }
+        .login-card h2 { color: var(--primary); font-family: 'Okra', sans-serif; margin: 0 0 5px 0; font-size: 32px; font-weight: 800;}
+        .login-card p { color: var(--gray); font-size: 14px; margin-bottom: 25px; }
+        .login-input { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; background: #F8F9FA; outline: none; transition: 0.2s;}
+        .login-input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.1); }
+        .btn-login { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.2); margin-top: 10px;}
+        .btn-login:active { transform: scale(0.97); }
+
+        /* MAIN APP UI */
         .top-nav { flex-shrink: 0; background: var(--white); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 100; }
         .brand-logo { font-family: 'Okra', sans-serif; font-size: 22px; color: var(--primary); font-weight: 800; margin: 0; }
-        .admin-profile { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
+        .admin-profile { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 13px; }
         .avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; }
+        .btn-logout { background: #FDEEEE; color: var(--primary); border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;}
+        .btn-logout:active { transform: scale(0.95); }
 
         .app-container { display: flex; flex: 1; overflow: hidden; }
         .sidebar { width: 240px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
@@ -31,6 +45,7 @@
         .btn-add { background: var(--primary); color: var(--white); border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); }
 
+        /* LISTS */
         .menu-list { display: flex; flex-direction: column; }
         .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border); }
         .menu-item:last-child { border-bottom: none; }
@@ -39,6 +54,7 @@
         .dish-details { display: flex; flex-direction: column; gap: 2px; }
         .dish-name { font-size: 14px; font-weight: 700; color: var(--dark); }
         .dish-price { font-size: 13px; font-weight: 600; color: var(--gray); }
+        .half-badge { font-size: 10px; background: #FDEEEE; color: var(--primary); padding: 2px 6px; border-radius: 4px; margin-left: 5px; font-weight: 700;}
         .menu-item-actions { display: flex; gap: 15px; }
         .action-btn { background: transparent; border: none; font-size: 18px; cursor: pointer; padding: 5px; transition: 0.2s; }
         .action-btn:active { transform: scale(0.85); }
@@ -54,7 +70,7 @@
         .btn-done { background: var(--success); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(36, 150, 63, 0.3);}
         .btn-done:active { transform: scale(0.95); }
 
-        /* QR Code Container Styling */
+        /* QR & Bottom Nav */
         .qr-container { padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
         #qrcode-box { padding: 20px; background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: inline-block; }
         .link-input { width: 90%; max-width: 350px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 13px; text-align: center; color: var(--gray); background: #F8F9FA; }
@@ -70,9 +86,10 @@
         @media (max-width: 768px) { .sidebar { display: none; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 769px) { .bottom-nav { display: none; } .main-content { padding-bottom: 20px; } .stats-grid { grid-template-columns: repeat(4, 1fr); } }
 
+        /* MODAL */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
-        .modal-card { background: var(--white); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 25px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal-card { background: var(--white); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 25px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 90vh; overflow-y: auto;}
         .modal-overlay.show .modal-card { transform: translateY(0); }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--gray); }
@@ -86,10 +103,21 @@
 </head>
 <body>
 
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <h2>Crave AR</h2>
+            <p>Merchant Panel Login</p>
+            <input type="email" id="adminEmail" class="login-input" placeholder="Admin Email" required>
+            <input type="password" id="adminPass" class="login-input" placeholder="Password" required>
+            <button class="btn-login" id="loginBtn" onclick="loginAdmin()">Secure Login</button>
+        </div>
+    </div>
+
     <div class="top-nav">
         <h1 class="brand-logo">Crave AR</h1>
         <div class="admin-profile">
-            <span>Grand Italiano</span><div class="avatar">G</div>
+            <button class="btn-logout" onclick="logoutAdmin()">Logout</button>
+            <div class="avatar">A</div>
         </div>
     </div>
 
@@ -99,7 +127,7 @@
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-title">Menu Items</div><div class="stat-value" id="total-dishes">0</div></div>
                 <div class="stat-card"><div class="stat-title">Live Orders</div><div class="stat-value" id="total-orders" style="color:var(--warning);">0</div></div>
-                <div class="stat-card"><div class="stat-title">Revenue</div><div class="stat-value green">₹0</div></div>
+                <div class="stat-card"><div class="stat-title">Revenue</div><div class="stat-value green" id="total-revenue">₹0</div></div>
                 <div class="stat-card"><div class="stat-title">AR Views</div><div class="stat-value">0</div></div>
             </div>
 
@@ -128,15 +156,11 @@
                 </div>
                 <div class="qr-container">
                     <p style="color: var(--gray); font-size: 14px; margin: 0;">Scan this to open your Smart AR Menu</p>
-                    
                     <div id="qrcode-box"></div>
-                    
                     <input type="text" id="menu-link" class="link-input" value="https://itxarun.github.io/Smart-Menu/index.html" readonly>
-                    
                     <button class="btn-download" onclick="downloadQR()">Download QR Code</button>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -154,12 +178,19 @@
                 <h2 style="margin:0; font-size: 18px;" id="modalTitle">Add New Dish</h2>
                 <button onclick="closeModal()" style="border:none; background:none; font-size: 20px; cursor:pointer;">✕</button>
             </div>
-            <div class="form-group"><label>Dish Name</label><input type="text" id="dishName" placeholder="e.g. Paneer Tikka"></div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+                <div class="form-group"><label>Dish Name</label><input type="text" id="dishName" placeholder="Paneer Tikka"></div>
                 <div class="form-group"><label>Emoji</label><input type="text" id="dishEmoji" placeholder="🍢"></div>
-                <div class="form-group"><label>Price (₹)</label><input type="number" id="dishPrice" placeholder="299"></div>
             </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group"><label>Full Price (₹)</label><input type="number" id="dishPrice" placeholder="299"></div>
+                <div class="form-group"><label>Half Price (₹) <span style="font-size:10px; color:var(--gray);">(Optional)</span></label><input type="number" id="dishPriceHalf" placeholder="149"></div>
+            </div>
+            
             <div class="form-group"><label>3D Model URL (.glb)</label><input type="text" id="dishModel" placeholder="https://model-link.com/dish.glb"></div>
+            
             <button class="btn-save" id="saveBtn" onclick="saveDish()">Save & Publish</button>
         </div>
     </div>
@@ -167,6 +198,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
@@ -179,57 +211,51 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        // --- TAB SWITCHING & QR GENERATION LOGIC ---
+        let currentRevenue = 0;
+
+        // AUTHENTICATION
+        onAuthStateChanged(auth, (user) => {
+            if (user) { document.getElementById('loginScreen').classList.add('hidden'); } 
+            else { document.getElementById('loginScreen').classList.remove('hidden'); }
+        });
+
+        window.loginAdmin = async function() {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPass').value;
+            const btn = document.getElementById('loginBtn');
+            if(!email || !pass) { alert("Enter Email & Password"); return; }
+            btn.innerText = "Verifying...";
+            try { await signInWithEmailAndPassword(auth, email, pass); btn.innerText = "Secure Login"; } 
+            catch (error) { alert("Wrong Details!"); btn.innerText = "Secure Login"; }
+        };
+
+        window.logoutAdmin = function() { signOut(auth); };
+
+        // TAB SWITCHING
         let qrGenerated = false;
-
         window.switchTab = function(tabName) {
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            
             if(tabName === 'menu') {
-                document.getElementById('tab-menu').classList.add('active');
-                document.getElementById('section-menu').classList.add('active');
+                document.getElementById('tab-menu').classList.add('active'); document.getElementById('section-menu').classList.add('active');
             } else if (tabName === 'orders') {
-                document.getElementById('tab-orders').classList.add('active');
-                document.getElementById('section-orders').classList.add('active');
+                document.getElementById('tab-orders').classList.add('active'); document.getElementById('section-orders').classList.add('active');
             } else if (tabName === 'qr') {
-                document.getElementById('tab-qr').classList.add('active');
-                document.getElementById('section-qr').classList.add('active');
-                
-                // Generate QR only the first time they open the tab
+                document.getElementById('tab-qr').classList.add('active'); document.getElementById('section-qr').classList.add('active');
                 if(!qrGenerated) {
-                    const link = document.getElementById('menu-link').value;
-                    new QRCode(document.getElementById("qrcode-box"), {
-                        text: link,
-                        width: 220,
-                        height: 220,
-                        colorDark : "#282C3F",
-                        colorLight : "#ffffff",
-                        correctLevel : QRCode.CorrectLevel.H
-                    });
+                    new QRCode(document.getElementById("qrcode-box"), { text: document.getElementById('menu-link').value, width: 220, height: 220, colorDark : "#282C3F", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
                     qrGenerated = true;
                 }
             }
         }
-
-        // --- DOWNLOAD QR CODE LOGIC ---
         window.downloadQR = function() {
             const canvas = document.querySelector('#qrcode-box canvas');
-            if(canvas) {
-                const url = canvas.toDataURL("image/png");
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = "CraveAR_Table_QR.png";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            } else {
-                alert("QR Code abhi ready nahi hai, please wait!");
-            }
+            if(canvas) { const a = document.createElement('a'); a.href = canvas.toDataURL("image/png"); a.download = "CraveAR_QR.png"; document.body.appendChild(a); a.click(); document.body.removeChild(a); } 
         }
 
-        // --- MENU LOGIC (Add/Edit/Delete) ---
+        // MENU LOGIC
         let editingDishId = null;
 
         window.openModal = function() { 
@@ -239,6 +265,7 @@
             document.getElementById('dishName').value = '';
             document.getElementById('dishEmoji').value = '';
             document.getElementById('dishPrice').value = '';
+            document.getElementById('dishPriceHalf').value = ''; // Clear half price
             document.getElementById('dishModel').value = '';
             document.getElementById('dishModal').classList.add('show'); 
         }
@@ -249,29 +276,41 @@
             const name = document.getElementById('dishName').value;
             const emoji = document.getElementById('dishEmoji').value || "🍲";
             const price = document.getElementById('dishPrice').value;
+            const priceHalf = document.getElementById('dishPriceHalf').value; // Get Half Price
             const modelUrl = document.getElementById('dishModel').value;
 
-            if(!name || !price || !modelUrl) { alert("Please fill all fields!"); return; }
+            if(!name || !price || !modelUrl) { alert("Please fill Name, Price & Model URL!"); return; }
             document.getElementById('saveBtn').innerText = "Saving...";
+
+            // Create data object
+            let dishData = {
+                name: name,
+                emoji: emoji,
+                price: Number(price),
+                priceHalf: priceHalf ? Number(priceHalf) : null, // Save Half Price logic
+                modelUrl: modelUrl
+            };
 
             try {
                 if (editingDishId) {
-                    await updateDoc(doc(db, "menu_items", editingDishId), { name, emoji, price: Number(price), modelUrl });
+                    await updateDoc(doc(db, "menu_items", editingDishId), dishData);
                 } else {
-                    await addDoc(collection(db, "menu_items"), { name, emoji, price: Number(price), modelUrl, timestamp: new Date() });
+                    dishData.timestamp = new Date();
+                    await addDoc(collection(db, "menu_items"), dishData);
                 }
                 closeModal();
             } catch (e) { console.error(e); alert("Error saving data."); }
             document.getElementById('saveBtn').innerText = "Save & Publish";
         };
 
-        window.editDish = function(id, name, emoji, price, modelUrl) {
+        window.editDish = function(id, name, emoji, price, priceHalf, modelUrl) {
             editingDishId = id;
             document.getElementById('modalTitle').innerText = "Edit Dish";
             document.getElementById('saveBtn').innerText = "Update Dish";
             document.getElementById('dishName').value = name;
             document.getElementById('dishEmoji').value = emoji;
             document.getElementById('dishPrice').value = price;
+            document.getElementById('dishPriceHalf').value = (priceHalf && priceHalf !== 'null') ? priceHalf : ''; // Set Half Price
             document.getElementById('dishModel').value = modelUrl;
             document.getElementById('dishModal').classList.add('show');
         }
@@ -280,20 +319,26 @@
             if(confirm("Delete this dish forever?")) { await deleteDoc(doc(db, "menu_items", id)); }
         };
 
-        // Fetch Menu
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
             const menuBody = document.getElementById('menu-body');
             menuBody.innerHTML = ''; 
             let count = 0;
-            if(snapshot.empty) { menuBody.innerHTML = '<div style="padding:20px; text-align:center; color:#686B78;">No dishes found. Click "+ Add Dish"</div>'; document.getElementById('total-dishes').innerText = "0"; return; }
+            if(snapshot.empty) { menuBody.innerHTML = '<div style="padding:20px; text-align:center; color:#686B78;">No dishes found.</div>'; document.getElementById('total-dishes').innerText = "0"; return; }
 
             snapshot.forEach((docSnap) => {
                 count++; const data = docSnap.data(); const id = docSnap.id;
+                
+                // Show half price badge if it exists
+                let priceDisplay = `₹${data.price}`;
+                if(data.priceHalf) {
+                    priceDisplay += ` <span class="half-badge">Half: ₹${data.priceHalf}</span>`;
+                }
+
                 menuBody.innerHTML += `
                     <div class="menu-item">
-                        <div class="menu-item-left"><div class="dish-icon">${data.emoji}</div><div class="dish-details"><div class="dish-name">${data.name}</div><div class="dish-price">₹${data.price}</div></div></div>
+                        <div class="menu-item-left"><div class="dish-icon">${data.emoji}</div><div class="dish-details"><div class="dish-name">${data.name}</div><div class="dish-price">${priceDisplay}</div></div></div>
                         <div class="menu-item-actions">
-                            <button class="action-btn" onclick="editDish('${id}', '${data.name}', '${data.emoji}', ${data.price}, '${data.modelUrl}')">✏️</button>
+                            <button class="action-btn" onclick="editDish('${id}', '${data.name}', '${data.emoji}', ${data.price}, ${data.priceHalf || null}, '${data.modelUrl}')">✏️</button>
                             <button class="action-btn" onclick="deleteDish('${id}')">🗑️</button>
                         </div>
                     </div>`;
@@ -301,54 +346,31 @@
             document.getElementById('total-dishes').innerText = count;
         });
 
-        // --- LIVE ORDERS LOGIC ---
+        // ORDERS LOGIC
         const ordersQuery = query(collection(db, "orders"), orderBy("timestamp", "desc"));
-        
         onSnapshot(ordersQuery, (snapshot) => {
             const ordersBody = document.getElementById('orders-body');
-            ordersBody.innerHTML = '';
-            let activeOrdersCount = 0;
-
-            if(snapshot.empty) {
-                ordersBody.innerHTML = '<div style="padding:40px 20px; text-align:center; color:#686B78;">📭<br>No new orders right now.</div>';
-                document.getElementById('total-orders').innerText = "0";
-                return;
-            }
-
+            ordersBody.innerHTML = ''; let activeOrdersCount = 0;
+            if(snapshot.empty) { ordersBody.innerHTML = '<div style="padding:40px 20px; text-align:center; color:#686B78;">📭<br>No new orders right now.</div>'; document.getElementById('total-orders').innerText = "0"; return; }
             snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const id = docSnap.id;
-                activeOrdersCount++;
-                
+                const data = docSnap.data(); const id = docSnap.id; activeOrdersCount++;
                 const time = data.timestamp ? data.timestamp.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now';
-                
-                let itemsHtml = '';
-                data.items.forEach(item => { itemsHtml += `<div>1x <b>${item.name}</b> ${item.variant}</div>`; });
-
+                let itemsHtml = ''; data.items.forEach(item => { itemsHtml += `<div>1x <b>${item.name}</b> ${item.variant}</div>`; });
                 ordersBody.innerHTML += `
                     <div class="order-card" id="order-${id}">
-                        <div class="order-header">
-                            <div class="table-badge">Table ${data.tableNumber}</div>
-                            <div class="order-time">🕒 ${time}</div>
-                        </div>
+                        <div class="order-header"><div class="table-badge">Table ${data.tableNumber}</div><div class="order-time">🕒 ${time}</div></div>
                         <div class="order-items">${itemsHtml}</div>
-                        <div class="order-footer">
-                            <div class="order-total">₹${data.totalAmount}</div>
-                            <button class="btn-done" onclick="completeOrder('${id}')">✓ Mark Done</button>
-                        </div>
-                    </div>
-                `;
+                        <div class="order-footer"><div class="order-total">₹${data.totalAmount}</div><button class="btn-done" onclick="completeOrder('${id}', ${data.totalAmount})">✓ Mark Done</button></div>
+                    </div>`;
             });
             document.getElementById('total-orders').innerText = activeOrdersCount;
         });
 
-        window.completeOrder = async function(id) {
-            const card = document.getElementById(`order-${id}`);
-            card.style.opacity = "0.5"; 
-            try { await deleteDoc(doc(db, "orders", id)); } 
-            catch (error) { console.error("Error:", error); alert("Failed."); card.style.opacity = "1"; }
+        window.completeOrder = async function(id, amount) {
+            const card = document.getElementById(`order-${id}`); card.style.opacity = "0.5"; 
+            try { await deleteDoc(doc(db, "orders", id)); currentRevenue += amount; document.getElementById('total-revenue').innerText = "₹" + currentRevenue.toLocaleString('en-IN'); } 
+            catch (error) { alert("Failed."); card.style.opacity = "1"; }
         };
-
     </script>
 </body>
 </html>
