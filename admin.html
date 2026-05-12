@@ -6,6 +6,19 @@
     <title>Crave AR - Merchant Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+       <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#E23744">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then((reg) => {
+                    console.log('App ready for install!', reg);
+                });
+            });
+        }
+    </script>
+    
     <style>
         /* CSS VARIABLES */
         :root { 
