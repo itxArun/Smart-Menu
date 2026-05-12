@@ -91,7 +91,10 @@
         .cart-item-qty button { border: none; background: transparent; font-size: 16px; font-weight: 800; color: var(--zomato-red); cursor: pointer; }
         .bill-details { background: #F8F9FA; padding: 15px; border-radius: 20px; margin-bottom: 15px; }
         .bill-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; color: var(--zomato-red); }
-        .btn-checkout { background: var(--green); color: white; border: none; padding: 16px; border-radius: 50px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); }
+        
+        .btn-checkout-upi { background: #007AFF; color: white; border: none; padding: 16px; border-radius: 15px; font-size: 15px; font-weight: 800; flex: 1; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3); transition: 0.2s;}
+        .btn-checkout-cash { background: var(--green); color: white; border: none; padding: 16px; border-radius: 15px; font-size: 15px; font-weight: 800; flex: 1; cursor: pointer; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); transition: 0.2s;}
+        .btn-checkout-upi:active, .btn-checkout-cash:active { transform: scale(0.96); }
         
         .toast { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s; z-index: 1000; opacity: 0; visibility: hidden; }
         .toast.show { opacity: 1; visibility: visible; top: 135px; }
@@ -195,7 +198,11 @@
                 <input type="number" id="tableNumber" placeholder="Enter Table Number (e.g. 5)" style="width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 15px; box-sizing: border-box; font-family: inherit; font-size: 15px; font-weight: 600;" required>
             </div>
 
-            <button class="btn-checkout" id="checkoutBtn" onclick="placeOrder()">Place Order</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-checkout-upi" id="btnUPI" onclick="processOrder('UPI')">Pay via UPI ⚡</button>
+                <button class="btn-checkout-cash" id="btnCash" onclick="processOrder('Cash')">Pay at Counter 💵</button>
+            </div>
+            
         </div>
     </div>
 
@@ -252,7 +259,7 @@
 
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
-        // 🛡️ ANTI-CRASH SYSTEM
+        // ANTI-CRASH SYSTEM
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
             allDishes = [];
             snapshot.forEach((doc) => { 
@@ -446,18 +453,26 @@
             setTimeout(() => toast.classList.remove('show'), 1500);
         }
 
-        window.placeOrder = async () => {
+        // --- PAYMENT & ORDER PROCESSOR (UPDATED UPI ID) ---
+        
+        const merchantUPI = "itzarun@ptyes"; 
+        const merchantName = "ARUN KUMAR"; 
+        const restaurantWhatsApp = "917870276466"; 
+
+        window.processOrder = async (paymentMode) => {
             if(Object.keys(cart).length === 0) { customAlert("Please add items to your cart first!", "🛒"); return; }
             const tableNo = document.getElementById('tableNumber').value;
             if(!tableNo) { customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; }
 
-            const btn = document.getElementById('checkoutBtn');
-            btn.innerText = "Processing..."; btn.style.background = "#FFB75E"; btn.disabled = true;
+            // UI Disable
+            document.getElementById('btnUPI').disabled = true;
+            document.getElementById('btnCash').disabled = true;
+            
+            const modalContent = document.querySelector('.cart-content');
+            modalContent.style.opacity = "0.5";
 
             let orderItems = []; let grandTotal = 0;
-            
-            // WHATSAPP BILL FORMAT
-            let waText = `*New Order - Crave AR*%0A*Table No:* ${tableNo}%0A-------------------%0A`;
+            let waText = `*New Order - Crave AR*%0A*Table No:* ${tableNo}%0A*Payment Mode:* ${paymentMode}%0A-------------------%0A`;
 
             for(let k in cart) { 
                 orderItems.push(cart[k]); 
@@ -466,24 +481,53 @@
             }
             waText += `-------------------%0A*Total to Pay:* ₹${grandTotal}`;
 
-            // RESTAURANT WHATSAPP NUMBER (Updated with user's number)
-            const restaurantWhatsApp = "917870276466"; 
-
             try {
-                // 1. Send Order to Admin Panel
-                await addDoc(collection(db, "orders"), { tableNumber: tableNo, items: orderItems, totalAmount: grandTotal, status: 'New', timestamp: new Date() });
+                // 1. Send Order to Firebase Admin Panel
+                await addDoc(collection(db, "orders"), { 
+                    tableNumber: tableNo, 
+                    items: orderItems, 
+                    totalAmount: grandTotal, 
+                    status: 'New', 
+                    paymentMethod: paymentMode,
+                    timestamp: new Date() 
+                });
                 
-                // 2. Open WhatsApp for Customer to send bill
-                window.open(`https://wa.me/${restaurantWhatsApp}?text=${waText}`, '_blank');
-
-                // 3. Clear App Data
+                // 2. Clear App Data
                 cart = {}; document.getElementById('tableNumber').value = '';
                 updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
-                showToast("🎉 Order Placed Successfully!");
+                modalContent.style.opacity = "1";
+
+                // 3. PAYMENT & ROUTING LOGIC
+                if (paymentMode === 'UPI') {
+                    // Generates UPI Link with Your Details
+                    const upiLink = `upi://pay?pa=${merchantUPI}&pn=${encodeURIComponent(merchantName)}&am=${grandTotal}&cu=INR&tn=Table_${tableNo}_Order`;
+                    showToast("Redirecting to UPI App... 💸");
+                    
+                    // Direct opening of UPI app
+                    window.location.href = upiLink;
+
+                    // Fallback: Send WhatsApp details so you have the record too
+                    setTimeout(() => {
+                        window.open(`https://wa.me/${restaurantWhatsApp}?text=${waText}`, '_blank');
+                    }, 2000);
+
+                } else {
+                    // Cash Option - Just sends WhatsApp
+                    showToast("🎉 Order Placed! Please pay at counter.");
+                    setTimeout(() => {
+                        window.open(`https://wa.me/${restaurantWhatsApp}?text=${waText}`, '_blank');
+                    }, 500);
+                }
+
             } catch (e) { 
-                console.error(e); customAlert("Order Failed. Please check your connection and try again.", "❌"); 
+                console.error(e); 
+                modalContent.style.opacity = "1";
+                customAlert("Order Failed. Please check your connection and try again.", "❌"); 
             }
-            btn.innerText = "Place Order"; btn.style.background = "var(--green)"; btn.disabled = false;
+
+            // Restore UI Buttons
+            document.getElementById('btnUPI').disabled = false;
+            document.getElementById('btnCash').disabled = false;
         };
     </script>
 </body>
