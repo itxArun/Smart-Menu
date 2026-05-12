@@ -231,21 +231,16 @@
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
-        // --- NEW: AR VIEW TRACKING FUNCTION ---
+        // AR TRACKING SYSTEM
         window.viewOnTable = async () => {
-            // 1. Open the AR Camera (Model Viewer Native Function)
             document.querySelector('#ar-viewer').activateAR();
-
-            // 2. Secretly send data to Firebase
             if(currentDish) {
                 try {
                     await addDoc(collection(db, "ar_views"), {
                         dishName: currentDish.name,
                         timestamp: new Date()
                     });
-                } catch(e) {
-                    console.error("Tracker error:", e);
-                }
+                } catch(e) { console.error("Tracker error:", e); }
             }
         };
 
@@ -257,9 +252,21 @@
 
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
+        // 🛡️ ANTI-CRASH SYSTEM
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
             allDishes = [];
-            snapshot.forEach((doc) => { allDishes.push({ id: doc.id, ...doc.data() }); });
+            snapshot.forEach((doc) => { 
+                let d = doc.data();
+                allDishes.push({ 
+                    id: doc.id, 
+                    name: d.name || "Special Dish",
+                    emoji: d.emoji || "🍲",
+                    category: d.category || "Veg",
+                    price: d.price || 0,
+                    priceHalf: d.priceHalf || null,
+                    modelUrl: d.modelUrl || ""
+                }); 
+            });
             applyFilters(); 
             if(allDishes.length > 0 && !currentDish) loadDish(allDishes[0]);
         });
@@ -439,7 +446,7 @@
             setTimeout(() => toast.classList.remove('show'), 1500);
         }
 
-                window.placeOrder = async () => {
+        window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { customAlert("Please add items to your cart first!", "🛒"); return; }
             const tableNo = document.getElementById('tableNumber').value;
             if(!tableNo) { customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; }
@@ -448,7 +455,8 @@
             btn.innerText = "Processing..."; btn.style.background = "#FFB75E"; btn.disabled = true;
 
             let orderItems = []; let grandTotal = 0;
-            // PREPARE WHATSAPP TEXT
+            
+            // WHATSAPP BILL FORMAT
             let waText = `*New Order - Crave AR*%0A*Table No:* ${tableNo}%0A-------------------%0A`;
 
             for(let k in cart) { 
@@ -458,23 +466,25 @@
             }
             waText += `-------------------%0A*Total to Pay:* ₹${grandTotal}`;
 
-            // RESTAURANT WHATSAPP NUMBER (Replace with your own 10-digit number with country code like 91)
+            // RESTAURANT WHATSAPP NUMBER (Updated with user's number)
             const restaurantWhatsApp = "917870276466"; 
 
             try {
-                // 1. Send to Firebase
+                // 1. Send Order to Admin Panel
                 await addDoc(collection(db, "orders"), { tableNumber: tableNo, items: orderItems, totalAmount: grandTotal, status: 'New', timestamp: new Date() });
                 
-                // 2. Open WhatsApp for Direct Routing
+                // 2. Open WhatsApp for Customer to send bill
                 window.open(`https://wa.me/${restaurantWhatsApp}?text=${waText}`, '_blank');
 
-                // Clear cart
+                // 3. Clear App Data
                 cart = {}; document.getElementById('tableNumber').value = '';
                 updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
                 showToast("🎉 Order Placed Successfully!");
             } catch (e) { 
-                console.error(e); customAlert("Order Failed. Please try again.", "❌"); 
+                console.error(e); customAlert("Order Failed. Please check your connection and try again.", "❌"); 
             }
             btn.innerText = "Place Order"; btn.style.background = "var(--green)"; btn.disabled = false;
         };
-        
+    </script>
+</body>
+</html>
