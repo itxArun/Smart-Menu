@@ -6,6 +6,19 @@
     <title>Crave AR - Smart Menu</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+       <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#E23744">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then((reg) => {
+                    console.log('App ready for install!', reg);
+                });
+            });
+        }
+    </script>
+
     <style>
         :root { --bg-light: #F8F9FA; --white: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78; --zomato-red: #E23744; --border-light: #E8E8E8; --green: #28A745; }
         body { margin: 0; padding: 0; background: var(--bg-light); color: var(--text-main); font-family: 'Okra', sans-serif; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
