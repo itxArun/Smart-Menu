@@ -439,7 +439,7 @@
             setTimeout(() => toast.classList.remove('show'), 1500);
         }
 
-        window.placeOrder = async () => {
+                window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { customAlert("Please add items to your cart first!", "🛒"); return; }
             const tableNo = document.getElementById('tableNumber').value;
             if(!tableNo) { customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; }
@@ -448,16 +448,33 @@
             btn.innerText = "Processing..."; btn.style.background = "#FFB75E"; btn.disabled = true;
 
             let orderItems = []; let grandTotal = 0;
-            for(let k in cart) { orderItems.push(cart[k]); grandTotal += (cart[k].price * cart[k].qty); }
+            // PREPARE WHATSAPP TEXT
+            let waText = `*New Order - Crave AR*%0A*Table No:* ${tableNo}%0A-------------------%0A`;
+
+            for(let k in cart) { 
+                orderItems.push(cart[k]); 
+                grandTotal += (cart[k].price * cart[k].qty); 
+                waText += `${cart[k].qty}x ${cart[k].name} ${cart[k].variant} - ₹${cart[k].price * cart[k].qty}%0A`;
+            }
+            waText += `-------------------%0A*Total to Pay:* ₹${grandTotal}`;
+
+            // RESTAURANT WHATSAPP NUMBER (Replace with your own 10-digit number with country code like 91)
+            const restaurantWhatsApp = "919876543210"; 
 
             try {
+                // 1. Send to Firebase
                 await addDoc(collection(db, "orders"), { tableNumber: tableNo, items: orderItems, totalAmount: grandTotal, status: 'New', timestamp: new Date() });
+                
+                // 2. Open WhatsApp for Direct Routing
+                window.open(`https://wa.me/${restaurantWhatsApp}?text=${waText}`, '_blank');
+
+                // Clear cart
                 cart = {}; document.getElementById('tableNumber').value = '';
                 updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
-                showToast("🎉 Order Sent to Kitchen!");
-            } catch (e) { console.error(e); customAlert("Order Failed. Please check your connection and try again.", "❌"); }
+                showToast("🎉 Order Placed Successfully!");
+            } catch (e) { 
+                console.error(e); customAlert("Order Failed. Please try again.", "❌"); 
+            }
             btn.innerText = "Place Order"; btn.style.background = "var(--green)"; btn.disabled = false;
         };
-    </script>
-</body>
-</html>
+        
