@@ -76,33 +76,31 @@
         .search-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; background: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none; transition: 0.2s; }
         .search-input:focus { border-color: var(--primary); }
 
-        /* MODERN LISTS WITH NEW DELETE AND EDIT BUTTONS */
+        /* MODERN LISTS WITH CATEGORY BADGE */
         .menu-list { display: flex; flex-direction: column; }
         .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 22px 20px; border-bottom: 1px solid var(--border); transition: 0.2s; background: var(--bg-card); }
         .menu-item-row:last-child { border-bottom: none; }
         .menu-item-row:hover { background: var(--bg-main); }
         
-        /* The Corner Cross Button (Delete) */
         .btn-del-corner { position: absolute; top: 12px; right: 15px; background: transparent; border: none; color: var(--text-sub); font-size: 16px; font-weight: bold; cursor: pointer; padding: 5px; transition: 0.2s; opacity: 0.6; }
         .btn-del-corner:hover, .btn-del-corner:active { color: var(--del-text); opacity: 1; transform: scale(1.1); }
 
         .menu-item-left { display: flex; align-items: center; gap: 15px; }
         .dish-icon { font-size: 28px; background: var(--input-bg); padding: 10px; border-radius: 14px; }
         .dish-details { display: flex; flex-direction: column; gap: 4px; padding-right: 40px;}
-        .dish-name { font-size: 15px; font-weight: 700; color: var(--text-main); }
+        .dish-name { font-size: 15px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 5px;}
         .dish-price { font-size: 13px; font-weight: 600; color: var(--text-sub); }
-        .half-badge { font-size: 10px; background: rgba(226,55,68,0.1); color: var(--primary); padding: 2px 6px; border-radius: 6px; margin-left: 5px; font-weight: 700;}
+        .half-badge { font-size: 10px; background: rgba(226,55,68,0.1); color: var(--primary); padding: 2px 6px; border-radius: 6px; font-weight: 700;}
+        .cat-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700; white-space: nowrap;}
         
-        /* The Round Edit Button */
         .btn-edit-round { background: var(--edit-bg); color: var(--edit-text); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: 0.2s; margin-top: 5px;}
         .btn-edit-round:active { transform: scale(0.9); background: var(--edit-text); color: white;}
 
-        /* SETTINGS SWITCH LOGIC */
+        /* SETTINGS & ORDERS & QR (Same as before) */
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); }
         .setting-row:last-child { border-bottom: none; }
         .setting-label { font-size: 15px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px;}
         .setting-desc { font-size: 12px; color: var(--text-sub); font-weight: 400; margin-top: 4px; display: block; }
-        
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px; }
@@ -110,7 +108,6 @@
         input:checked + .slider { background-color: var(--success); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* ORDERS & QR */
         .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
         .order-card:last-child { border-bottom: none; }
         .order-header { display: flex; justify-content: space-between; align-items: center; }
@@ -140,12 +137,11 @@
         .modal-overlay.show .modal-card { transform: translateY(0); }
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-sub); }
-        .form-group input { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: var(--input-bg); color: var(--text-main); outline: none; transition: 0.2s; }
-        .form-group input:focus { border-color: var(--primary); }
+        .form-group input, .form-group select { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: var(--input-bg); color: var(--text-main); outline: none; transition: 0.2s; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
         .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 15px; font-size: 16px; font-weight: 800; margin-top: 10px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.2);}
         .btn-save:active { transform: scale(0.97); }
         
-        /* PREMIUM CUSTOM DELETE POPUP */
         .custom-confirm { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 3000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .custom-confirm.show { visibility: visible; opacity: 1; }
         .confirm-box { background: var(--bg-card); padding: 30px 25px; border-radius: 24px; text-align: center; max-width: 320px; width: 85%; transform: scale(0.9); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--border);}
@@ -244,22 +240,12 @@
                     <h3>App Settings ⚙️</h3>
                 </div>
                 <div class="setting-row">
-                    <div class="setting-label">
-                        🌙 <div>Dark Mode <span class="setting-desc">Switch to dark theme</span></div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="darkModeToggle" onchange="toggleTheme()">
-                        <span class="slider"></span>
-                    </label>
+                    <div class="setting-label">🌙 <div>Dark Mode <span class="setting-desc">Switch to dark theme</span></div></div>
+                    <label class="switch"><input type="checkbox" id="darkModeToggle" onchange="toggleTheme()"><span class="slider"></span></label>
                 </div>
                 <div class="setting-row">
-                    <div class="setting-label">
-                        🔔 <div>Order Alerts <span class="setting-desc">Sound notifications for new orders</span></div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
+                    <div class="setting-label">🔔 <div>Order Alerts <span class="setting-desc">Sound notifications for new orders</span></div></div>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
                 </div>
             </div>
 
@@ -284,6 +270,16 @@
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
                 <div class="form-group"><label>Dish Name</label><input type="text" id="dishName" placeholder="Paneer Tikka"></div>
                 <div class="form-group"><label>Emoji</label><input type="text" id="dishEmoji" placeholder="🍢"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select id="dishCategory">
+                    <option value="Veg">🟢 Veg</option>
+                    <option value="Non-Veg">🔴 Non-Veg</option>
+                    <option value="Drinks">🥤 Drinks</option>
+                    <option value="Desserts">🍰 Desserts</option>
+                </select>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -317,7 +313,6 @@
 
         let currentRevenue = 0;
 
-        // --- DARK MODE LOGIC ---
         window.toggleTheme = function() {
             const isDark = document.getElementById('darkModeToggle').checked;
             if(isDark) { document.body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); } 
@@ -325,7 +320,6 @@
         }
         if(localStorage.getItem('theme') === 'dark') { document.body.setAttribute('data-theme', 'dark'); document.getElementById('darkModeToggle').checked = true; }
 
-        // --- AUTHENTICATION ---
         onAuthStateChanged(auth, (user) => {
             if (user) { document.getElementById('loginScreen').classList.add('hidden'); } 
             else { document.getElementById('loginScreen').classList.remove('hidden'); }
@@ -343,7 +337,6 @@
 
         window.logoutAdmin = function() { signOut(auth); };
 
-        // --- TAB SWITCHING ---
         let qrGenerated = false;
         window.switchTab = function(tabName) {
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -361,35 +354,23 @@
             if(canvas) { const a = document.createElement('a'); a.href = canvas.toDataURL("image/png"); a.download = "CraveAR_QR.png"; document.body.appendChild(a); a.click(); document.body.removeChild(a); } 
         }
 
-        // --- CUSTOM DELETE MODAL LOGIC ---
         let dishToDeleteId = null;
-        
         window.deleteDish = function(id) {
-            dishToDeleteId = id;
-            document.getElementById('deleteConfirmModal').classList.add('show');
+            dishToDeleteId = id; document.getElementById('deleteConfirmModal').classList.add('show');
         };
-
         window.closeDeleteModal = function() {
-            dishToDeleteId = null;
-            document.getElementById('deleteConfirmModal').classList.remove('show');
+            dishToDeleteId = null; document.getElementById('deleteConfirmModal').classList.remove('show');
         };
 
         document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
             if(dishToDeleteId) {
-                const btn = document.getElementById('confirmDeleteBtn');
-                btn.innerText = "Deleting...";
-                try {
-                    await deleteDoc(doc(db, "menu_items", dishToDeleteId));
-                    closeDeleteModal();
-                } catch (error) {
-                    console.error("Error deleting dish:", error);
-                    alert("Error deleting dish. Please try again.");
-                }
+                const btn = document.getElementById('confirmDeleteBtn'); btn.innerText = "Deleting...";
+                try { await deleteDoc(doc(db, "menu_items", dishToDeleteId)); closeDeleteModal(); } 
+                catch (error) { console.error("Error:", error); alert("Error deleting dish."); }
                 btn.innerText = "Yes, Delete";
             }
         });
 
-        // --- MENU LOGIC & SEARCH ---
         let editingDishId = null;
 
         window.openModal = function() { 
@@ -398,6 +379,7 @@
             document.getElementById('saveBtn').innerText = "Save & Publish";
             document.getElementById('dishName').value = '';
             document.getElementById('dishEmoji').value = '';
+            document.getElementById('dishCategory').value = 'Veg'; // Default Category
             document.getElementById('dishPrice').value = '';
             document.getElementById('dishPriceHalf').value = ''; 
             document.getElementById('dishModel').value = '';
@@ -409,6 +391,7 @@
         window.saveDish = async function() {
             const name = document.getElementById('dishName').value;
             const emoji = document.getElementById('dishEmoji').value || "🍲";
+            const category = document.getElementById('dishCategory').value; // Get Category
             const price = document.getElementById('dishPrice').value;
             const priceHalf = document.getElementById('dishPriceHalf').value; 
             const modelUrl = document.getElementById('dishModel').value;
@@ -416,7 +399,11 @@
             if(!name || !price || !modelUrl) { alert("Please fill Name, Price & Model URL!"); return; }
             document.getElementById('saveBtn').innerText = "Saving...";
 
-            let dishData = { name: name, emoji: emoji, price: Number(price), priceHalf: priceHalf ? Number(priceHalf) : null, modelUrl: modelUrl };
+            let dishData = { 
+                name: name, emoji: emoji, category: category, 
+                price: Number(price), priceHalf: priceHalf ? Number(priceHalf) : null, 
+                modelUrl: modelUrl 
+            };
 
             try {
                 if (editingDishId) { await updateDoc(doc(db, "menu_items", editingDishId), dishData); } 
@@ -426,12 +413,13 @@
             document.getElementById('saveBtn').innerText = "Save & Publish";
         };
 
-        window.editDish = function(id, name, emoji, price, priceHalf, modelUrl) {
+        window.editDish = function(id, name, emoji, category, price, priceHalf, modelUrl) {
             editingDishId = id;
             document.getElementById('modalTitle').innerText = "Edit Dish";
             document.getElementById('saveBtn').innerText = "Update Dish";
             document.getElementById('dishName').value = name;
             document.getElementById('dishEmoji').value = emoji;
+            document.getElementById('dishCategory').value = category || 'Veg'; // Set Category
             document.getElementById('dishPrice').value = price;
             document.getElementById('dishPriceHalf').value = (priceHalf && priceHalf !== 'null') ? priceHalf : ''; 
             document.getElementById('dishModel').value = modelUrl;
@@ -458,8 +446,14 @@
                 
                 let priceDisplay = `₹${data.price}`;
                 if(data.priceHalf) { priceDisplay += ` <span class="half-badge">Half: ₹${data.priceHalf}</span>`; }
+                
+                // Set Category Badge
+                let catBadge = '';
+                if(data.category === 'Veg') catBadge = '<span class="cat-badge" style="background:#E5F8ED; color:#28A745;">🟢 Veg</span>';
+                else if(data.category === 'Non-Veg') catBadge = '<span class="cat-badge" style="background:#FDEEEE; color:#E23744;">🔴 Non-Veg</span>';
+                else if(data.category === 'Drinks') catBadge = '<span class="cat-badge" style="background:#E5F1FF; color:#007AFF;">🥤 Drink</span>';
+                else if(data.category === 'Desserts') catBadge = '<span class="cat-badge" style="background:#FFF0E5; color:#FF9500;">🍰 Dessert</span>';
 
-                // MODIFIED: Corner Cross Delete Button & Round Edit Button
                 menuBody.innerHTML += `
                     <div class="menu-item menu-item-row">
                         <button class="btn-del-corner" onclick="deleteDish('${id}')">✕</button>
@@ -467,19 +461,19 @@
                         <div class="menu-item-left">
                             <div class="dish-icon">${data.emoji}</div>
                             <div class="dish-details">
-                                <div class="dish-name">${data.name}</div>
+                                <div class="dish-name">${data.name} ${catBadge}</div>
                                 <div class="dish-price">${priceDisplay}</div>
                             </div>
                         </div>
                         <div class="menu-item-actions">
-                            <button class="btn-edit-round" onclick="editDish('${id}', '${data.name}', '${data.emoji}', ${data.price}, ${data.priceHalf || null}, '${data.modelUrl}')">✏️</button>
+                            <button class="btn-edit-round" onclick="editDish('${id}', '${data.name}', '${data.emoji}', '${data.category}', ${data.price}, ${data.priceHalf || null}, '${data.modelUrl}')">✏️</button>
                         </div>
                     </div>`;
             });
             document.getElementById('total-dishes').innerText = count;
         });
 
-        // --- ORDERS LOGIC ---
+        // ORDERS LOGIC
         const ordersQuery = query(collection(db, "orders"), orderBy("timestamp", "desc"));
         onSnapshot(ordersQuery, (snapshot) => {
             const ordersBody = document.getElementById('orders-body');
