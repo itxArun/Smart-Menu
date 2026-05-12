@@ -62,20 +62,22 @@
         .search-container { padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
         .search-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; background: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none; transition: 0.2s; }
 
-        /* MENU LIST & 3 DOTS */
+        /* NEW FAST MENU UX */
         .menu-list { display: flex; flex-direction: column; }
-        .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--border); transition: 0.2s; background: var(--bg-card); }
+        .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); transition: 0.2s; background: var(--bg-card); cursor: pointer; }
         .menu-item-row:last-child { border-bottom: none; }
+        .menu-item-row:active { background: var(--input-bg); } /* Click feedback */
         
-        .btn-dots { background: transparent; border: none; color: var(--text-sub); font-size: 24px; font-weight: bold; cursor: pointer; padding: 5px 15px; line-height: 1; transition: 0.2s; border-radius: 8px;}
-        .btn-dots:active { background: var(--input-bg); color: var(--text-main); }
-
-        .menu-item-left { display: flex; align-items: center; gap: 15px; }
+        .menu-item-info { display: flex; align-items: center; gap: 15px; flex: 1; }
         .dish-icon { font-size: 28px; background: var(--input-bg); padding: 10px; border-radius: 14px; }
         .dish-details { display: flex; flex-direction: column; gap: 4px; padding-right: 10px;}
         .dish-name { font-size: 15px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 5px;}
         .dish-price { font-size: 13px; font-weight: 600; color: var(--text-sub); }
         .cat-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700; white-space: nowrap;}
+
+        /* Modern Delete Button on Row */
+        .btn-delete-modern { background: var(--del-bg); color: var(--del-text); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: 0.2s; z-index: 2;}
+        .btn-delete-modern:active { transform: scale(0.9); background: var(--del-text); color: white;}
 
         /* ORDERS LIST */
         .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
@@ -108,6 +110,17 @@
         .nav-tab span { font-size: 22px; }
         .nav-tab label { font-size: 10px; font-weight: 800; }
 
+        /* SETTINGS SWITCH */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+        .setting-label { font-size: 15px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px;}
+        .setting-desc { font-size: 12px; color: var(--text-sub); font-weight: 400; margin-top: 4px; display: block; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
         /* MODALS */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
@@ -117,18 +130,6 @@
         .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-sub); }
         .form-group input, .form-group select { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: var(--input-bg); color: var(--text-main); outline: none; transition: 0.2s; }
         .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 15px; font-size: 16px; font-weight: 800; margin-top: 10px; cursor: pointer; transition: 0.2s;}
-
-        /* CUTE BOTTOM ACTION SHEET (3 DOTS MENU) */
-        .action-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 3000; visibility: hidden; opacity: 0; transition: 0.3s; display: flex; flex-direction: column; justify-content: flex-end;}
-        .action-sheet-overlay.show { visibility: visible; opacity: 1; }
-        .action-sheet { background: var(--bg-card); border-radius: 24px 24px 0 0; padding: 25px 20px; padding-bottom: calc(25px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-align: center;}
-        .action-sheet-overlay.show .action-sheet { transform: translateY(0); }
-        .sheet-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px;}
-        .sheet-btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-size: 15px; font-weight: 700; margin-bottom: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;}
-        .sheet-btn:active { transform: scale(0.97); }
-        .sheet-btn.edit { background: var(--edit-bg); color: var(--edit-text); }
-        .sheet-btn.delete { background: var(--del-bg); color: var(--del-text); }
-        .sheet-btn.cancel { background: var(--input-bg); color: var(--text-main); margin-bottom: 0;}
 
         /* CUSTOM CONFIRM DELETE */
         .custom-confirm { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
@@ -142,6 +143,7 @@
         .btn-cancel, .btn-confirm-del { flex: 1; padding: 14px 0; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s;}
         .btn-cancel { background: var(--input-bg); color: var(--text-main); }
         .btn-confirm-del { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(226,55,68,0.2);}
+        .btn-cancel:active, .btn-confirm-del:active { transform: scale(0.95); }
 
         .view-section { display: none; animation: fadeIn 0.3s; }
         .view-section.active { display: block; }
@@ -149,15 +151,6 @@
     </style>
 </head>
 <body>
-
-    <div class="action-sheet-overlay" id="dishActionSheet" onclick="closeActionSheet(event)">
-        <div class="action-sheet" onclick="event.stopPropagation()">
-            <div class="sheet-title" id="sheetDishName">Dish Name</div>
-            <button class="sheet-btn edit" id="btnEditDish">✏️ Edit Dish</button>
-            <button class="sheet-btn delete" id="btnDeleteDish">🗑️ Delete Dish</button>
-            <button class="sheet-btn cancel" onclick="closeActionSheet(null, true)">✕ Cancel</button>
-        </div>
-    </div>
 
     <div class="custom-confirm" id="deleteConfirmModal">
         <div class="confirm-box">
@@ -345,34 +338,16 @@
             if(canvas) { const a = document.createElement('a'); a.href = canvas.toDataURL("image/png"); a.download = "CraveAR_QR.png"; document.body.appendChild(a); a.click(); document.body.removeChild(a); } 
         }
 
-        // --- 3-DOT ACTION SHEET & DELETE LOGIC ---
-        let selectedDish = null;
-
-        window.openActionSheet = function(id, name, emoji, category, price, priceHalf, modelUrl) {
-            selectedDish = { id, name, emoji, category, price, priceHalf, modelUrl };
-            document.getElementById('sheetDishName').innerText = `${emoji} ${name}`;
-            
-            document.getElementById('btnEditDish').onclick = () => {
-                closeActionSheet();
-                editDish(id, name, emoji, category, price, priceHalf, modelUrl);
-            };
-            document.getElementById('btnDeleteDish').onclick = () => {
-                closeActionSheet();
-                dishToDeleteId = id; 
-                document.getElementById('deleteConfirmModal').classList.add('show');
-            };
-            
-            document.getElementById('dishActionSheet').classList.add('show');
-        };
-
-        window.closeActionSheet = function(event, force) {
-            if(force || event.target === document.getElementById('dishActionSheet')) {
-                document.getElementById('dishActionSheet').classList.remove('show');
-            }
-        };
-
+        // --- DIRECT DELETE LOGIC ---
         let dishToDeleteId = null;
-        window.closeDeleteModal = function() { dishToDeleteId = null; document.getElementById('deleteConfirmModal').classList.remove('show'); };
+        window.deleteDish = function(id) { 
+            dishToDeleteId = id; 
+            document.getElementById('deleteConfirmModal').classList.add('show'); 
+        };
+        window.closeDeleteModal = function() { 
+            dishToDeleteId = null; 
+            document.getElementById('deleteConfirmModal').classList.remove('show'); 
+        };
 
         document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
             if(dishToDeleteId) {
@@ -383,7 +358,7 @@
             }
         });
 
-        // MENU CRUD
+        // --- MENU CRUD ---
         let editingDishId = null;
         window.openModal = function() { 
             editingDishId = null; document.getElementById('modalTitle').innerText = "Add New Dish"; document.getElementById('saveBtn').innerText = "Save & Publish";
@@ -422,6 +397,7 @@
             items.forEach(item => { const name = item.querySelector('.dish-name').innerText.toLowerCase(); item.style.display = name.includes(query) ? 'flex' : 'none'; });
         };
 
+        // --- RENDER MENU LIST (FAST UX) ---
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
             const menuBody = document.getElementById('menu-body'); menuBody.innerHTML = ''; let count = 0;
             if(snapshot.empty) { menuBody.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-sub);">No dishes found.</div>'; document.getElementById('total-dishes').innerText = "0"; return; }
@@ -435,23 +411,23 @@
                 else if(data.category === 'Drinks') catBadge = '<span class="cat-badge" style="background:#E5F1FF; color:#007AFF;">🥤 Drink</span>';
                 else if(data.category === 'Desserts') catBadge = '<span class="cat-badge" style="background:#FFF0E5; color:#FF9500;">🍰 Dessert</span>';
 
-                // THE 3 DOTS MENU BUTTON
+                // THE NEW CLICKABLE ROW WITH DIRECT DELETE BUTTON
                 menuBody.innerHTML += `
-                    <div class="menu-item menu-item-row">
-                        <div class="menu-item-left">
+                    <div class="menu-item menu-item-row" onclick="editDish('${id}', '${data.name.replace(/'/g, "\\'")}', '${data.emoji}', '${data.category}', ${data.price}, ${data.priceHalf || null}, '${data.modelUrl}')">
+                        <div class="menu-item-info">
                             <div class="dish-icon">${data.emoji}</div>
                             <div class="dish-details">
                                 <div class="dish-name">${data.name} ${catBadge}</div>
                                 <div class="dish-price">${priceDisplay}</div>
                             </div>
                         </div>
-                        <button class="btn-dots" onclick="openActionSheet('${id}', '${data.name.replace(/'/g, "\\'")}', '${data.emoji}', '${data.category}', ${data.price}, ${data.priceHalf || null}, '${data.modelUrl}')">⋮</button>
+                        <button class="btn-delete-modern" onclick="event.stopPropagation(); deleteDish('${id}')">🗑️</button>
                     </div>`;
             });
             document.getElementById('total-dishes').innerText = count;
         });
 
-        // --- NEW: ADVANCED ORDERS & REVENUE LOGIC (Never Delete Orders) ---
+        // --- ORDERS & REVENUE LOGIC ---
         const ordersQuery = query(collection(db, "orders"), orderBy("timestamp", "desc"));
         onSnapshot(ordersQuery, (snapshot) => {
             const ordersBody = document.getElementById('orders-body');
@@ -469,12 +445,11 @@
                 const data = docSnap.data(); const id = docSnap.id;
                 const dateObj = data.timestamp ? data.timestamp.toDate() : new Date();
                 const timeStr = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                const dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); // e.g. 15 Oct 2023
+                const dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); 
                 
                 let itemsHtml = ''; data.items.forEach(item => { itemsHtml += `<div>1x <b>${item.name}</b> ${item.variant}</div>`; });
 
                 if (data.status === 'New') {
-                    // LIVE ORDERS
                     activeOrdersCount++;
                     ordersBody.innerHTML += `
                         <div class="order-card" id="order-${id}">
@@ -483,15 +458,11 @@
                             <div class="order-footer"><div class="order-total">₹${data.totalAmount}</div><button class="btn-done" onclick="completeOrder('${id}')">✓ Mark Done</button></div>
                         </div>`;
                 } else if (data.status === 'Completed') {
-                    // HISTORY & REVENUE
                     totalRevenue += data.totalAmount;
-                    
-                    // Add Date Header if it changes
                     if (currentHistoryDate !== dateStr) {
                         historyBody.innerHTML += `<div class="history-date-header">${dateStr}</div>`;
                         currentHistoryDate = dateStr;
                     }
-
                     historyBody.innerHTML += `
                         <div class="history-item">
                             <div class="history-item-left">
@@ -510,15 +481,9 @@
             document.getElementById('total-revenue').innerText = "₹" + totalRevenue.toLocaleString('en-IN');
         });
 
-        // MARK ORDER AS DONE (STATUS UPDATE, NOT DELETE)
         window.completeOrder = async function(id) {
             const card = document.getElementById(`order-${id}`); card.style.opacity = "0.5"; 
-            try { 
-                await updateDoc(doc(db, "orders", id), { 
-                    status: 'Completed', 
-                    completedAt: serverTimestamp() 
-                }); 
-            } 
+            try { await updateDoc(doc(db, "orders", id), { status: 'Completed', completedAt: serverTimestamp() }); } 
             catch (error) { alert("Failed to update status."); card.style.opacity = "1"; }
         };
 
