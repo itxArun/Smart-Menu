@@ -23,29 +23,24 @@
 
         body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-main); color: var(--text-main); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; }
         
-        /* LOGIN UI */
         .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s; backdrop-filter: blur(5px); }
         .login-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
         .login-card { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 30px; padding: 45px 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border); }
         .login-card h2 { color: var(--primary); font-family: 'Okra', sans-serif; margin: 0 0 5px 0; font-size: 34px; font-weight: 800;}
         .login-card p { color: var(--text-sub); font-size: 14px; margin-bottom: 30px; }
         .login-input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 15px; font-family: inherit; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; background: var(--input-bg); color: var(--text-main); outline: none; transition: 0.3s;}
-        .login-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(226, 55, 68, 0.1); }
         .btn-login { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(226, 55, 68, 0.3); margin-top: 10px;}
         .btn-login:active { transform: scale(0.96); }
 
-        /* HEADER */
         .top-nav { flex-shrink: 0; background: var(--bg-card); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 100; transition: 0.3s; }
         .brand-logo { font-family: 'Okra', sans-serif; font-size: 22px; color: var(--primary); font-weight: 800; margin: 0; }
         .admin-profile { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 13px; }
         .avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; }
         .btn-logout { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;}
-        .btn-logout:active { background: var(--primary); color: white; }
-
+        
         .app-container { display: flex; flex: 1; overflow: hidden; }
         .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
         
-        /* CLICKABLE STATS CARDS */
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
         .stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.3s; cursor: pointer;}
         .stat-card:active { transform: scale(0.96); }
@@ -57,29 +52,22 @@
         .section-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: transparent; }
         .section-header h3 { margin: 0; font-size: 17px; font-weight: 800; color: var(--text-main); }
         .btn-add { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 8px rgba(226,55,68,0.2);}
-        .btn-add:active { transform: scale(0.95); }
-
+        
         .search-container { padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
         .search-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; background: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none; transition: 0.2s; }
 
-        /* NEW FAST MENU UX */
         .menu-list { display: flex; flex-direction: column; }
         .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); transition: 0.2s; background: var(--bg-card); cursor: pointer; }
         .menu-item-row:last-child { border-bottom: none; }
-        .menu-item-row:active { background: var(--input-bg); } /* Click feedback */
-        
         .menu-item-info { display: flex; align-items: center; gap: 15px; flex: 1; }
         .dish-icon { font-size: 28px; background: var(--input-bg); padding: 10px; border-radius: 14px; }
         .dish-details { display: flex; flex-direction: column; gap: 4px; padding-right: 10px;}
         .dish-name { font-size: 15px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 5px;}
         .dish-price { font-size: 13px; font-weight: 600; color: var(--text-sub); }
         .cat-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700; white-space: nowrap;}
-
-        /* Modern Delete Button on Row */
         .btn-delete-modern { background: var(--del-bg); color: var(--del-text); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: 0.2s; z-index: 2;}
-        .btn-delete-modern:active { transform: scale(0.9); background: var(--del-text); color: white;}
 
-        /* ORDERS LIST */
+        /* UPDATED ORDERS LIST */
         .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
         .order-card:last-child { border-bottom: none; }
         .order-header { display: flex; justify-content: space-between; align-items: center; }
@@ -88,10 +76,13 @@
         .order-items { font-size: 13px; font-weight: 600; color: var(--text-main); line-height: 1.6; background: var(--input-bg); padding: 12px; border-radius: 10px; border: 1px dashed var(--border);}
         .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
         .order-total { font-size: 18px; font-weight: 800; color: var(--primary); }
-        .btn-done { background: var(--success); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);}
+        
+        .order-actions-row { display: flex; gap: 8px; }
+        .btn-small-action { width: 36px; height: 36px; border-radius: 10px; border: none; font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .btn-small-action:active { transform: scale(0.9); }
+        .btn-done { background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);}
         .btn-done:active { transform: scale(0.95); }
 
-        /* HISTORY/STATS STYLES */
         .history-date-header { background: var(--input-bg); padding: 8px 20px; font-size: 12px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
         .history-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .history-item-left { display: flex; flex-direction: column; gap: 4px; }
@@ -102,7 +93,7 @@
         .qr-container { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
         #qrcode-box { padding: 20px; background: white; border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.08); display: inline-block; }
         .link-input { width: 90%; max-width: 350px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; text-align: center; color: var(--text-sub); background: var(--input-bg); outline: none; }
-        .btn-download { background: var(--primary); color: white; border: none; padding: 16px 35px; border-radius: 50px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(226, 55, 68, 0.3); }
+        .btn-download { background: var(--primary); color: white; border: none; padding: 16px 35px; border-radius: 50px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; transition: 0.3s; }
         .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-sub); cursor: pointer; transition: 0.2s; text-decoration: none; }
@@ -110,7 +101,6 @@
         .nav-tab span { font-size: 22px; }
         .nav-tab label { font-size: 10px; font-weight: 800; }
 
-        /* SETTINGS SWITCH */
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); }
         .setting-label { font-size: 15px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px;}
         .setting-desc { font-size: 12px; color: var(--text-sub); font-weight: 400; margin-top: 4px; display: block; }
@@ -121,7 +111,6 @@
         input:checked + .slider { background-color: var(--success); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* MODALS */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
         .modal-card { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 30px 30px 0 0; padding: 30px 25px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 90vh; overflow-y: auto;}
@@ -131,7 +120,6 @@
         .form-group input, .form-group select { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: var(--input-bg); color: var(--text-main); outline: none; transition: 0.2s; }
         .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 15px; font-size: 16px; font-weight: 800; margin-top: 10px; cursor: pointer; transition: 0.2s;}
 
-        /* CUSTOM CONFIRM DELETE */
         .custom-confirm { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .custom-confirm.show { visibility: visible; opacity: 1; }
         .confirm-box { background: var(--bg-card); padding: 30px 25px; border-radius: 24px; text-align: center; max-width: 320px; width: 85%; transform: scale(0.9); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--border);}
@@ -143,14 +131,15 @@
         .btn-cancel, .btn-confirm-del { flex: 1; padding: 14px 0; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s;}
         .btn-cancel { background: var(--input-bg); color: var(--text-main); }
         .btn-confirm-del { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(226,55,68,0.2);}
-        .btn-cancel:active, .btn-confirm-del:active { transform: scale(0.95); }
-
+        
         .view-section { display: none; animation: fadeIn 0.3s; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+    
+    <audio id="orderSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
     <div class="custom-confirm" id="deleteConfirmModal">
         <div class="confirm-box">
@@ -214,16 +203,10 @@
                 <div class="section-header" style="background: rgba(40,167,69,0.1);">
                     <h3>Business Analytics 📈</h3>
                 </div>
-                
                 <div class="history-date-header">Order History & Revenue</div>
-                <div class="menu-list" id="history-body">
-                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div>
-                </div>
-
+                <div class="menu-list" id="history-body"><div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div></div>
                 <div class="history-date-header" style="margin-top: 20px;">AR View Logs 📸</div>
-                <div class="menu-list" id="ar-views-body">
-                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Waiting for customers to view AR...</div>
-                </div>
+                <div class="menu-list" id="ar-views-body"><div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Waiting for customers to view AR...</div></div>
             </div>
 
             <div class="section-card view-section" id="section-qr">
@@ -243,6 +226,10 @@
                 <div class="setting-row">
                     <div class="setting-label">🌙 <div>Dark Mode <span class="setting-desc">Switch to dark theme</span></div></div>
                     <label class="switch"><input type="checkbox" id="darkModeToggle" onchange="toggleTheme()"><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">🔔 <div>Order Alerts <span class="setting-desc">Sound notifications for new orders</span></div></div>
+                    <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
                 </div>
             </div>
 
@@ -321,7 +308,6 @@
         };
         window.logoutAdmin = function() { signOut(auth); };
 
-        // TAB SWITCHING
         let qrGenerated = false;
         window.switchTab = function(tabName) {
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -338,27 +324,18 @@
             if(canvas) { const a = document.createElement('a'); a.href = canvas.toDataURL("image/png"); a.download = "CraveAR_QR.png"; document.body.appendChild(a); a.click(); document.body.removeChild(a); } 
         }
 
-        // --- DIRECT DELETE LOGIC ---
         let dishToDeleteId = null;
-        window.deleteDish = function(id) { 
-            dishToDeleteId = id; 
-            document.getElementById('deleteConfirmModal').classList.add('show'); 
-        };
-        window.closeDeleteModal = function() { 
-            dishToDeleteId = null; 
-            document.getElementById('deleteConfirmModal').classList.remove('show'); 
-        };
+        window.deleteDish = function(id) { dishToDeleteId = id; document.getElementById('deleteConfirmModal').classList.add('show'); };
+        window.closeDeleteModal = function() { dishToDeleteId = null; document.getElementById('deleteConfirmModal').classList.remove('show'); };
 
         document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
             if(dishToDeleteId) {
                 const btn = document.getElementById('confirmDeleteBtn'); btn.innerText = "Deleting...";
-                try { await deleteDoc(doc(db, "menu_items", dishToDeleteId)); closeDeleteModal(); } 
-                catch (error) { alert("Error deleting dish."); }
+                try { await deleteDoc(doc(db, "menu_items", dishToDeleteId)); closeDeleteModal(); } catch (error) { alert("Error deleting dish."); }
                 btn.innerText = "Yes, Delete";
             }
         });
 
-        // --- MENU CRUD ---
         let editingDishId = null;
         window.openModal = function() { 
             editingDishId = null; document.getElementById('modalTitle').innerText = "Add New Dish"; document.getElementById('saveBtn').innerText = "Save & Publish";
@@ -397,7 +374,6 @@
             items.forEach(item => { const name = item.querySelector('.dish-name').innerText.toLowerCase(); item.style.display = name.includes(query) ? 'flex' : 'none'; });
         };
 
-        // --- RENDER MENU LIST (FAST UX) ---
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
             const menuBody = document.getElementById('menu-body'); menuBody.innerHTML = ''; let count = 0;
             if(snapshot.empty) { menuBody.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-sub);">No dishes found.</div>'; document.getElementById('total-dishes').innerText = "0"; return; }
@@ -411,7 +387,6 @@
                 else if(data.category === 'Drinks') catBadge = '<span class="cat-badge" style="background:#E5F1FF; color:#007AFF;">🥤 Drink</span>';
                 else if(data.category === 'Desserts') catBadge = '<span class="cat-badge" style="background:#FFF0E5; color:#FF9500;">🍰 Dessert</span>';
 
-                // THE NEW CLICKABLE ROW WITH DIRECT DELETE BUTTON
                 menuBody.innerHTML += `
                     <div class="menu-item menu-item-row" onclick="editDish('${id}', '${data.name.replace(/'/g, "\\'")}', '${data.emoji}', '${data.category}', ${data.price}, ${data.priceHalf || null}, '${data.modelUrl}')">
                         <div class="menu-item-info">
@@ -427,14 +402,50 @@
             document.getElementById('total-dishes').innerText = count;
         });
 
-        // --- ORDERS & REVENUE LOGIC ---
+        // --- PRINT & WHATSAPP FUNCTIONS ---
+        window.printBill = function(table, itemsText, total, time) {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html><head><title>Print KOT</title>
+                <style>body{font-family:monospace; padding:20px; font-size:14px; max-width:300px; margin:auto;} .center{text-align:center;} hr{border-top:1px dashed #000;}</style>
+                </head><body>
+                <h2 class="center">CRAVE AR</h2>
+                <p class="center">Table: ${table} | Time: ${time}</p>
+                <hr>
+                ${itemsText.replace(/\n/g, '<br>')}
+                <hr>
+                <h3 class="center">Total: Rs ${total}</h3>
+                <p class="center">Thank you!</p>
+                <script>window.print(); window.close();<\/script>
+                </body></html>
+            `);
+        }
+
+        window.shareBillWA = function(table, itemsText, total) {
+            let text = `*CRAVE AR - New Order*%0A*Table No:* ${table}%0A-------------------%0A${itemsText.replace(/\n/g, '%0A')}%0A-------------------%0A*Total Amount:* ₹${total}`;
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        // --- ADVANCED ORDERS LOGIC (WITH SOUND) ---
+        let isInitialLoad = true;
         const ordersQuery = query(collection(db, "orders"), orderBy("timestamp", "desc"));
+        
         onSnapshot(ordersQuery, (snapshot) => {
             const ordersBody = document.getElementById('orders-body');
             const historyBody = document.getElementById('history-body');
             
             ordersBody.innerHTML = ''; historyBody.innerHTML = '';
             let activeOrdersCount = 0; let totalRevenue = 0; let currentHistoryDate = '';
+
+            // Play sound for NEW incoming orders only (if setting is on)
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added" && !isInitialLoad && change.doc.data().status === 'New') {
+                    if(document.getElementById('soundToggle').checked) {
+                        document.getElementById('orderSound').play();
+                    }
+                }
+            });
+            isInitialLoad = false;
 
             if(snapshot.empty) { 
                 ordersBody.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--text-sub);">📭<br>No new orders right now.</div>'; 
@@ -447,7 +458,12 @@
                 const timeStr = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 const dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); 
                 
-                let itemsHtml = ''; data.items.forEach(item => { itemsHtml += `<div>1x <b>${item.name}</b> ${item.variant}</div>`; });
+                let itemsHtml = ''; 
+                let plainItemsText = ''; // For Print/WA
+                data.items.forEach(item => { 
+                    itemsHtml += `<div>1x <b>${item.name}</b> ${item.variant}</div>`; 
+                    plainItemsText += `1x ${item.name} ${item.variant} - Rs ${item.price * item.qty}\n`;
+                });
 
                 if (data.status === 'New') {
                     activeOrdersCount++;
@@ -455,7 +471,14 @@
                         <div class="order-card" id="order-${id}">
                             <div class="order-header"><div class="table-badge">Table ${data.tableNumber}</div><div class="order-time">🕒 ${timeStr}</div></div>
                             <div class="order-items">${itemsHtml}</div>
-                            <div class="order-footer"><div class="order-total">₹${data.totalAmount}</div><button class="btn-done" onclick="completeOrder('${id}')">✓ Mark Done</button></div>
+                            <div class="order-footer">
+                                <div class="order-total">₹${data.totalAmount}</div>
+                                <div class="order-actions-row">
+                                    <button class="btn-small-action" style="background:#E5F1FF; color:#007AFF;" onclick="printBill('${data.tableNumber}', \`${plainItemsText}\`, ${data.totalAmount}, '${timeStr}')">🖨️</button>
+                                    <button class="btn-small-action" style="background:#E5F8ED; color:#28A745;" onclick="shareBillWA('${data.tableNumber}', \`${plainItemsText}\`, ${data.totalAmount})">💬</button>
+                                    <button class="btn-done" onclick="completeOrder('${id}')">✓ Done</button>
+                                </div>
+                            </div>
                         </div>`;
                 } else if (data.status === 'Completed') {
                     totalRevenue += data.totalAmount;
@@ -487,30 +510,16 @@
             catch (error) { alert("Failed to update status."); card.style.opacity = "1"; }
         };
 
-        // --- AR VIEWS LISTENER ---
         const arViewsQuery = query(collection(db, "ar_views"), orderBy("timestamp", "desc"));
         onSnapshot(arViewsQuery, (snapshot) => {
-            const arViewsBody = document.getElementById('ar-views-body');
-            arViewsBody.innerHTML = '';
-            let totalViews = 0;
-
-            if(snapshot.empty) {
-                arViewsBody.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Waiting for customers to view AR...</div>';
-                document.getElementById('total-ar-views').innerText = "0";
-                return;
-            }
-
+            const arViewsBody = document.getElementById('ar-views-body'); arViewsBody.innerHTML = ''; let totalViews = 0;
+            if(snapshot.empty) { arViewsBody.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Waiting for customers...</div>'; document.getElementById('total-ar-views').innerText = "0"; return; }
             snapshot.forEach((docSnap) => {
-                totalViews++;
-                const data = docSnap.data();
+                totalViews++; const data = docSnap.data();
                 const timeStr = data.timestamp ? data.timestamp.toDate().toLocaleString([], {day: 'numeric', month:'short', hour: '2-digit', minute:'2-digit'}) : 'Just now';
-                
                 arViewsBody.innerHTML += `
                     <div class="history-item">
-                        <div class="history-item-left">
-                            <span class="history-item-table">${data.dishName || 'A Dish'}</span>
-                            <span class="history-item-time">🕒 ${timeStr}</span>
-                        </div>
+                        <div class="history-item-left"><span class="history-item-table">${data.dishName || 'A Dish'}</span><span class="history-item-time">🕒 ${timeStr}</span></div>
                         <div class="history-item-amount" style="color:var(--text-main); font-size:18px;">📸</div>
                     </div>`;
             });
