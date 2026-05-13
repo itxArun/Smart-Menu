@@ -307,30 +307,51 @@
             renderSidebar(filtered);
         };
 
-        window.renderSidebar = function(dishesToRender) {
+                window.renderSidebar = function(dishesToRender) {
             const sidebar = document.getElementById('sidebar-menu');
             sidebar.innerHTML = '';
             if(dishesToRender.length === 0) { sidebar.innerHTML = '<div style="padding:20px; font-size:10px; color:#999; text-align:center;">No match</div>'; return; }
             
-            dishesToRender.forEach((data) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = `side-item ${currentDish && currentDish.id === data.id ? 'active' : ''}`;
-                
-                let dotClass = ''; if(data.category) dotClass = `dot-${data.category.replace(' ', '-')}`;
-
-                itemDiv.innerHTML = `
-                    ${data.category ? `<div class="side-dot ${dotClass}"></div>` : ''}
-                    <div class="side-emoji">${data.emoji}</div>
-                    <div class="side-name">${data.name}</div>
-                `;
-                itemDiv.onclick = () => {
-                    document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active'));
-                    itemDiv.classList.add('active');
-                    loadDish(data);
-                };
-                sidebar.appendChild(itemDiv);
+            // 1. Khane ko Category ke hisaab se alag-alag group karna
+            const groupedDishes = {};
+            dishesToRender.forEach(dish => {
+                const cat = dish.category || "Uncategorized";
+                if (!groupedDishes[cat]) groupedDishes[cat] = [];
+                groupedDishes[cat].push(dish);
             });
+
+            // 2. Har Category ka Title lagana aur uske niche uske item dikhana
+            for (let cat in groupedDishes) {
+                // Title (Heading) design
+                const header = document.createElement('div');
+                header.style.padding = "15px 5px 5px 5px";
+                header.style.fontSize = "10px";
+                header.style.fontWeight = "800";
+                header.style.color = "var(--text-sub)";
+                header.style.textAlign = "center";
+                header.style.borderBottom = "1px solid #f0f0f0";
+                header.innerText = "— " + cat.toUpperCase() + " —";
+                sidebar.appendChild(header);
+
+                // Us Title ke dishes
+                groupedDishes[cat].forEach((data) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = `side-item ${currentDish && currentDish.id === data.id ? 'active' : ''}`;
+                    
+                    itemDiv.innerHTML = `
+                        <div class="side-emoji">${data.emoji || "🍲"}</div>
+                        <div class="side-name">${data.name}</div>
+                    `;
+                    itemDiv.onclick = () => {
+                        document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active'));
+                        itemDiv.classList.add('active');
+                        loadDish(data);
+                    };
+                    sidebar.appendChild(itemDiv);
+                });
+            }
         };
+
 
         function loadDish(data) {
             currentDish = data;
