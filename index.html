@@ -68,18 +68,28 @@
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
 
-        .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; display: flex; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: 0.3s; overflow: hidden; }
+        /* 🔥 UPDATED FULLSCREEN VIEWER CSS FOR BUG FIXES 🔥 */
+        .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; visibility: hidden; opacity: 0; transition: 0.3s; }
         .fullscreen-viewer.show { visibility: visible; opacity: 1; }
-        .fullscreen-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; touch-action: none; pointer-events: auto; }
-        .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10000; display: flex; justify-content: center; align-items: center;}
         
-        .fs-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.4); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10000; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        /* Naya Background Layer jo sirf click catch karega */
+        .fs-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        
+        /* Naya Image Container jo perfectly center karega aur zoom handle karega */
+        .fs-img-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; pointer-events: none; }
+        .fs-img-container img { max-width: 100%; max-height: 100%; width: auto; height: auto; transform-origin: center; pointer-events: auto; touch-action: none; }
+        
+        /* UI Elements Layer - Hamesha sabse upar (z-index: 10) */
+        .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: 0.2s;}
+        .fs-close:active { transform: scale(0.9); background: rgba(226,55,68,0.8); }
+        
+        .fs-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.4); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
         .fs-nav:active { background: rgba(255,255,255,0.3); }
         .fs-nav.hide { display: none; }
         .fs-prev { left: 15px; }
         .fs-next { right: 15px; }
         
-        .fs-dots { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10000; }
+        .fs-dots { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10; pointer-events: none; }
         .fs-dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; transition: 0.3s; }
         .fs-dot.active { background: white; transform: scale(1.3); }
 
@@ -148,10 +158,14 @@
 <body>
 
     <div class="fullscreen-viewer" id="fs-viewer">
-        <button class="fs-close" onclick="closeFullscreen()">✕</button>
+        <div class="fs-bg" onclick="closeFullscreen(event)"></div> <button class="fs-close" onclick="closeFullscreen(event)">✕</button>
         <button class="fs-nav fs-prev" onclick="navigateFs(-1)">&#10094;</button>
         <button class="fs-nav fs-next" onclick="navigateFs(1)">&#10095;</button>
-        <img id="fs-img" src="" alt="Full Screen">
+        
+        <div class="fs-img-container">
+            <img id="fs-img" src="" alt="Full Screen">
+        </div>
+        
         <div class="fs-dots" id="fs-dots"></div>
     </div>
 
@@ -298,12 +312,26 @@
             document.getElementById('fs-viewer').classList.add('show');
             updateFsImage();
             
-            // 🔥 NAYA: Phone ka hardware back button dabane pe app band na ho
             history.pushState({ fsOpen: true }, "", "#photo");
         };
 
         window.updateFsImage = () => {
             const img = document.getElementById('fs-img');
+            
+            // Clean up old instance before replacing image
+            if(pzInstance) { pzInstance.dispose(); pzInstance = null; }
+            img.style.transform = ''; // Reset transform
+            
+            img.onload = () => {
+                // Initialize Panzoom only AFTER image loads to get perfect dimensions
+                pzInstance = panzoom(img, {
+                    maxZoom: 5,        
+                    minZoom: 1,        
+                    bounds: true,      
+                    boundsPadding: 0
+                });
+            };
+            
             img.src = fsImages[fsCurrentIndex];
             
             const prevBtn = document.querySelector('.fs-prev');
@@ -323,14 +351,6 @@
                     dotsContainer.appendChild(dot);
                 });
             }
-
-            if(pzInstance) { pzInstance.dispose(); }
-            pzInstance = panzoom(img, {
-                maxZoom: 5,        
-                minZoom: 1,        
-                bounds: true,      
-                boundsPadding: 0.1
-            });
         };
 
         window.navigateFs = (direction) => {
@@ -340,34 +360,27 @@
             updateFsImage();
         };
 
-        window.closeFullscreen = () => { 
+        window.closeFullscreen = (e) => { 
+            if(e) e.stopPropagation(); // Click event rokna taaki double click issue na ho
             document.getElementById('fs-viewer').classList.remove('show'); 
+            
+            // Panzoom ko bilkul destroy kar do taaki background state clear ho jaye
             if(pzInstance) {
-                pzInstance.zoomAbs(0, 0, 1);
-                pzInstance.moveTo(0, 0);
+                pzInstance.dispose();
+                pzInstance = null;
             }
-            // URL se #photo hatana
             if(window.location.hash === "#photo") {
-                history.back();
+                history.back(); 
             }
         };
 
-        // 🔥 NAYA: Hardware Back Button sunne wala event
         window.addEventListener('popstate', (e) => {
             if (document.getElementById('fs-viewer').classList.contains('show')) {
                 document.getElementById('fs-viewer').classList.remove('show');
                 if(pzInstance) {
-                    pzInstance.zoomAbs(0, 0, 1);
-                    pzInstance.moveTo(0, 0);
+                    pzInstance.dispose();
+                    pzInstance = null;
                 }
-            }
-        });
-
-        // 🔥 NAYA: Background par tap karne se close hona
-        document.getElementById('fs-viewer').addEventListener('click', (e) => {
-            // Check kar rahe hain ki sirf background pe click ho (photo ya button pe nahi)
-            if(e.target.id === 'fs-viewer') {
-                closeFullscreen();
             }
         });
 
@@ -392,6 +405,7 @@
             if(pzInstance) {
                 currentScale = pzInstance.getTransform().scale;
             }
+            // Agar zoom 1.1x se zyada hai, toh swipe change mat karo (drag ho raha hoga)
             if(currentScale > 1.1) return; 
 
             const threshold = 50; 
