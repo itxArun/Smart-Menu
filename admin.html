@@ -268,6 +268,7 @@
         <a class="nav-tab" onclick="switchTab('settings', this)"><span>⚙️</span><label>SETTINGS</label></a>
     </div>
 
+    <!-- ADD DISH MODAL -->
     <div class="modal-overlay" id="addModal">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -276,17 +277,20 @@
             </div>
             
             <input type="hidden" id="dishId">
-            <div class="form-group">
-                <label>Emoji Icon</label>
-                <input type="text" id="dishEmoji" placeholder="e.g. 🍕" style="font-size: 20px;" required>
+            
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="width: 80px;">
+                    <label>Emoji</label>
+                    <input type="text" id="dishEmoji" placeholder="🍕" style="font-size: 20px; text-align: center;" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Dish Name</label>
+                    <input type="text" id="dishName" placeholder="Enter dish name" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Dish Name</label>
-                <input type="text" id="dishName" placeholder="Enter dish name" required>
-            </div>
+
             <div class="form-group">
                 <label>Category</label>
-                <!-- UPDATED CATEGORY DROPDOWN -->
                 <select id="dishCategory" class="input-field" style="width: 100%; padding: 15px; border-radius: 12px; font-family: inherit; font-size: 14px; background: var(--input-bg); color: var(--text-main); outline: none; border: 1px solid var(--border);">
                     <option value="Starters">🔥 Starters</option>
                     <option value="Main Course">🍛 Main Course</option>
@@ -296,27 +300,41 @@
                     <option value="Desserts">🍰 Desserts</option>
                 </select>
             </div>
+            
             <div style="display: flex; gap: 15px;">
                 <div class="form-group" style="flex: 1;">
                     <label>Full Price (₹)</label>
                     <input type="number" id="dishPrice" placeholder="0" required>
                 </div>
                 <div class="form-group" style="flex: 1;">
-                    <label>Half Price (₹) - Optional</label>
-                    <input type="number" id="dishPriceHalf" placeholder="Leave empty if N/A">
+                    <label>Half Price (₹)</label>
+                    <input type="number" id="dishPriceHalf" placeholder="Optional">
                 </div>
             </div>
+
             <div class="form-group">
                 <label>3D Model URL (.glb)</label>
                 <input type="url" id="dishModel" placeholder="https://raw.githubusercontent.com/..." required>
             </div>
+
+            <!-- NEW: HD PHOTO URLS -->
+            <div class="form-group" style="background: var(--input-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--border);">
+                <label style="color: var(--primary);">📸 Dish Photos (Up to 4)</label>
+                <p style="font-size: 11px; color: var(--text-sub); margin-top: -5px; margin-bottom: 10px;">Provide image URLs. Customers can swipe these photos.</p>
+                
+                <input type="url" id="dishPhoto1" placeholder="1. Main Photo URL (Required)" style="margin-bottom: 10px; background: var(--bg-card);" required>
+                <input type="url" id="dishPhoto2" placeholder="2. Extra Photo URL (Optional)" style="margin-bottom: 10px; background: var(--bg-card);">
+                <input type="url" id="dishPhoto3" placeholder="3. Extra Photo URL (Optional)" style="margin-bottom: 10px; background: var(--bg-card);">
+                <input type="url" id="dishPhoto4" placeholder="4. Extra Photo URL (Optional)" style="background: var(--bg-card);">
+            </div>
+
             <button class="btn-save" id="saveBtn" onclick="saveDish()">Save & Publish</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -474,7 +492,6 @@
             list.innerHTML = '';
             data.forEach(item => {
                 
-                // UPDATED BADGE LOGIC
                 let catBadgeClass = ''; let icon = '';
                 if(item.category === 'Veg' || item.category === 'Starters') { catBadgeClass = 'color:#28A745; background:rgba(40,167,69,0.1)'; icon='🟢';}
                 else if(item.category === 'Non-Veg' || item.category === 'Main Course') { catBadgeClass = 'color:#E23744; background:rgba(226,55,68,0.1)'; icon='🔴';}
@@ -527,6 +544,13 @@
             document.getElementById('dishPrice').value = "";
             document.getElementById('dishPriceHalf').value = "";
             document.getElementById('dishModel').value = "";
+            
+            // Clear Image Fields
+            document.getElementById('dishPhoto1').value = "";
+            document.getElementById('dishPhoto2').value = "";
+            document.getElementById('dishPhoto3').value = "";
+            document.getElementById('dishPhoto4').value = "";
+
             document.getElementById('addModal').classList.add('show');
         };
 
@@ -543,6 +567,13 @@
                 document.getElementById('dishPrice').value = dish.price;
                 document.getElementById('dishPriceHalf').value = dish.priceHalf || "";
                 document.getElementById('dishModel').value = dish.modelUrl || "";
+
+                // Populate Image Fields (if they exist)
+                document.getElementById('dishPhoto1').value = (dish.images && dish.images[0]) ? dish.images[0] : "";
+                document.getElementById('dishPhoto2').value = (dish.images && dish.images[1]) ? dish.images[1] : "";
+                document.getElementById('dishPhoto3').value = (dish.images && dish.images[2]) ? dish.images[2] : "";
+                document.getElementById('dishPhoto4').value = (dish.images && dish.images[3]) ? dish.images[3] : "";
+
                 document.getElementById('addModal').classList.add('show');
             }
         };
@@ -552,13 +583,22 @@
             btn.innerText = "Saving..."; btn.disabled = true;
 
             const id = document.getElementById('dishId').value;
+            
+            // Gather Image URLs and filter out empty ones
+            const img1 = document.getElementById('dishPhoto1').value;
+            const img2 = document.getElementById('dishPhoto2').value;
+            const img3 = document.getElementById('dishPhoto3').value;
+            const img4 = document.getElementById('dishPhoto4').value;
+            const imagesArray = [img1, img2, img3, img4].filter(url => url.trim() !== "");
+
             const data = {
                 emoji: document.getElementById('dishEmoji').value,
                 name: document.getElementById('dishName').value,
                 category: document.getElementById('dishCategory').value,
                 price: parseFloat(document.getElementById('dishPrice').value),
                 priceHalf: parseFloat(document.getElementById('dishPriceHalf').value) || null,
-                modelUrl: document.getElementById('dishModel').value
+                modelUrl: document.getElementById('dishModel').value,
+                images: imagesArray // Saved as array in Firebase
             };
 
             try {
