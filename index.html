@@ -18,6 +18,8 @@
             });
         }
     </script>
+    
+    <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
 
     <style>
         :root { --bg-light: #F8F9FA; --white: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78; --zomato-red: #E23744; --border-light: #E8E8E8; --green: #28A745; }
@@ -51,7 +53,6 @@
 
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
         
-        /* UPDATED VIEWER CONTAINER FOR SLIDER */
         .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; background: #E8E8E8; }
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
         .progress-bar { display: block; width: 50%; height: 4px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EEE; border-radius: 10px; overflow: hidden; }
@@ -68,11 +69,10 @@
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
 
-        /* FULLSCREEN VIEWER CSS */
+        /* UPDATED FULLSCREEN VIEWER CSS FOR ZOOM */
         .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; display: flex; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: 0.3s; }
         .fullscreen-viewer.show { visibility: visible; opacity: 1; }
-        .fullscreen-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; transform: scale(0.9); transition: 0.3s; }
-        .fullscreen-viewer.show img { transform: scale(1); }
+        .fullscreen-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; } /* REMOVED TRANSITION/SCALE TO FIX LAG */
         .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10000; display: flex; justify-content: center; align-items: center;}
         
         .bottom-ui { flex-shrink: 0; background: var(--white); border-top: 1px solid var(--border-light); border-radius: 30px 30px 0 0; padding: 20px 20px 25px 20px; text-align: center; box-shadow: 0 -4px 15px rgba(0,0,0,0.06); z-index: 10; transition: padding-bottom 0.4s; }
@@ -275,14 +275,31 @@
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
-        // FULLSCREEN LOGIC
+        // UPDATED FULLSCREEN LOGIC WITH PINCH ZOOM
+        let pzInstance = null;
         window.openFullscreen = (src) => {
-            document.getElementById('fs-img').src = src;
+            const img = document.getElementById('fs-img');
+            img.src = src;
             document.getElementById('fs-viewer').classList.add('show');
+            
+            // Purana zoom clear karke naya activate karna
+            if(pzInstance) { pzInstance.dispose(); }
+            pzInstance = panzoom(img, {
+                maxZoom: 5,        // 5x tak zoom kar sakte hain
+                minZoom: 1,        // Normal size
+                bounds: true,      // Screen ke bahar jane se rokega
+                boundsPadding: 0.1
+            });
         };
-        window.closeFullscreen = () => { document.getElementById('fs-viewer').classList.remove('show'); };
 
-        // MEDIA TOGGLE LOGIC
+        window.closeFullscreen = () => { 
+            document.getElementById('fs-viewer').classList.remove('show'); 
+            if(pzInstance) {
+                pzInstance.zoomAbs(0, 0, 1); // Photo band hone par zoom reset karna
+                pzInstance.moveTo(0, 0);     // Wapas center mein lana
+            }
+        };
+
         window.toggleMedia = () => {
             const slider = document.getElementById('photo-slider');
             const toggleBtn = document.getElementById('media-toggle');
@@ -326,7 +343,7 @@
                     price: d.price || 0,
                     priceHalf: d.priceHalf || null,
                     modelUrl: d.modelUrl || "",
-                    images: d.images || [] // FETCH IMAGES FROM DATABASE
+                    images: d.images || []
                 }); 
             });
             applyFilters(); 
@@ -418,7 +435,6 @@
             updateBar.style.width = '0%';
             viewer.src = data.modelUrl;
 
-            // IMAGE SLIDER LOGIC
             const slider = document.getElementById('photo-slider');
             const toggleBtn = document.getElementById('media-toggle');
             slider.innerHTML = '';
