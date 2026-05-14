@@ -6,7 +6,7 @@
     <title>Crave AR - Smart Menu</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-       <link rel="manifest" href="./manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
     <script>
@@ -48,19 +48,32 @@
         .side-item.active { border-left-color: var(--zomato-red); background: #FDEEEE; }
         .side-emoji { font-size: 28px; margin-bottom: 5px; }
         .side-name { font-size: 10px; font-weight: 700; color: var(--text-main); line-height: 1.2; word-wrap: break-word;}
-        
-        .side-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white; box-shadow: 0 1px 2px rgba(0,0,0,0.2);}
-        .dot-Veg { background: #28A745; }
-        .dot-Non-Veg { background: #E23744; }
-        .dot-Drinks { background: #007AFF; }
-        .dot-Desserts { background: #FF9500; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
-        .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; }
+        
+        /* UPDATED VIEWER CONTAINER FOR SLIDER */
+        .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; background: #E8E8E8; }
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
         .progress-bar { display: block; width: 50%; height: 4px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EEE; border-radius: 10px; overflow: hidden; }
         .progress-bar.hide { visibility: hidden; }
         .update-bar { background: var(--zomato-red); width: 0%; height: 100%; transition: width 0.3s; }
+
+        /* IMAGE SLIDER CSS */
+        .photo-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; background: var(--bg-light); z-index: 5; }
+        .photo-slider::-webkit-scrollbar { display: none; }
+        .photo-slider.hide { display: none; }
+        .slide-img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: center; cursor: zoom-in; }
+        
+        .media-toggle { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: var(--text-main); border: 1px solid var(--border-light); padding: 8px 14px; border-radius: 50px; font-size: 12px; font-weight: 800; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s;}
+        .media-toggle:active { transform: scale(0.95); }
+        .media-toggle.hide { display: none; }
+
+        /* FULLSCREEN VIEWER CSS */
+        .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; display: flex; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: 0.3s; }
+        .fullscreen-viewer.show { visibility: visible; opacity: 1; }
+        .fullscreen-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; transform: scale(0.9); transition: 0.3s; }
+        .fullscreen-viewer.show img { transform: scale(1); }
+        .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10000; display: flex; justify-content: center; align-items: center;}
         
         .bottom-ui { flex-shrink: 0; background: var(--white); border-top: 1px solid var(--border-light); border-radius: 30px 30px 0 0; padding: 20px 20px 25px 20px; text-align: center; box-shadow: 0 -4px 15px rgba(0,0,0,0.06); z-index: 10; transition: padding-bottom 0.4s; }
         .bottom-ui.with-cart { padding-bottom: 90px; }
@@ -126,6 +139,11 @@
 </head>
 <body>
 
+    <div class="fullscreen-viewer" id="fs-viewer">
+        <button class="fs-close" onclick="closeFullscreen()">✕</button>
+        <img id="fs-img" src="" alt="Full Screen">
+    </div>
+
     <div class="custom-alert" id="customAlert">
         <div class="alert-box">
             <div class="alert-icon" id="alertIcon">🔢</div>
@@ -139,7 +157,7 @@
         <div class="cart-icon" onclick="toggleCart()">🛒 <div class="cart-badge" id="cart-count">0</div></div>
     </div>
 
-        <div class="category-scroll" id="category-scroll">
+    <div class="category-scroll" id="category-scroll">
         <div class="cat-pill active" onclick="filterCategory('All', this)">All</div>
         <div class="cat-pill" onclick="filterCategory('Starters', this)">🔥 Starters</div>
         <div class="cat-pill" onclick="filterCategory('Main Course', this)">🍛 Main Course</div>
@@ -161,6 +179,9 @@
 
         <div class="main-content">
             <div class="viewer-container">
+                <div id="photo-slider" class="photo-slider hide"></div>
+                <div class="media-toggle hide" id="media-toggle" onclick="toggleMedia()">🧊 View 3D</div>
+
                 <model-viewer id="ar-viewer" src="" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral">
                     <div slot="progress-bar" class="progress-bar"><div class="update-bar" id="update-bar"></div></div>
                 </model-viewer>
@@ -254,6 +275,26 @@
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
+        // FULLSCREEN LOGIC
+        window.openFullscreen = (src) => {
+            document.getElementById('fs-img').src = src;
+            document.getElementById('fs-viewer').classList.add('show');
+        };
+        window.closeFullscreen = () => { document.getElementById('fs-viewer').classList.remove('show'); };
+
+        // MEDIA TOGGLE LOGIC
+        window.toggleMedia = () => {
+            const slider = document.getElementById('photo-slider');
+            const toggleBtn = document.getElementById('media-toggle');
+            if (slider.classList.contains('hide')) {
+                slider.classList.remove('hide');
+                toggleBtn.innerHTML = '🧊 View 3D';
+            } else {
+                slider.classList.add('hide');
+                toggleBtn.innerHTML = '📸 View Photos';
+            }
+        };
+
         window.viewOnTable = async () => {
             document.querySelector('#ar-viewer').activateAR();
             if(currentDish) {
@@ -271,7 +312,6 @@
             document.getElementById('alertIcon').innerText = icon;
             document.getElementById('customAlert').classList.add('show');
         }
-
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
@@ -285,7 +325,8 @@
                     category: d.category || "Veg",
                     price: d.price || 0,
                     priceHalf: d.priceHalf || null,
-                    modelUrl: d.modelUrl || ""
+                    modelUrl: d.modelUrl || "",
+                    images: d.images || [] // FETCH IMAGES FROM DATABASE
                 }); 
             });
             applyFilters(); 
@@ -307,12 +348,11 @@
             renderSidebar(filtered);
         };
 
-                window.renderSidebar = function(dishesToRender) {
+        window.renderSidebar = function(dishesToRender) {
             const sidebar = document.getElementById('sidebar-menu');
             sidebar.innerHTML = '';
             if(dishesToRender.length === 0) { sidebar.innerHTML = '<div style="padding:20px; font-size:10px; color:#999; text-align:center;">No match</div>'; return; }
             
-            // 1. Khane ko Category ke hisaab se alag-alag group karna
             const groupedDishes = {};
             dishesToRender.forEach(dish => {
                 const cat = dish.category || "Uncategorized";
@@ -320,9 +360,7 @@
                 groupedDishes[cat].push(dish);
             });
 
-            // 2. Har Category ka Title lagana aur uske niche uske item dikhana
             for (let cat in groupedDishes) {
-                // Title (Heading) design
                 const header = document.createElement('div');
                 header.style.padding = "15px 5px 5px 5px";
                 header.style.fontSize = "10px";
@@ -333,7 +371,6 @@
                 header.innerText = "— " + cat.toUpperCase() + " —";
                 sidebar.appendChild(header);
 
-                // Us Title ke dishes
                 groupedDishes[cat].forEach((data) => {
                     const itemDiv = document.createElement('div');
                     itemDiv.className = `side-item ${currentDish && currentDish.id === data.id ? 'active' : ''}`;
@@ -351,7 +388,6 @@
                 });
             }
         };
-
 
         function loadDish(data) {
             currentDish = data;
@@ -381,6 +417,27 @@
             document.querySelector('.progress-bar').classList.remove('hide');
             updateBar.style.width = '0%';
             viewer.src = data.modelUrl;
+
+            // IMAGE SLIDER LOGIC
+            const slider = document.getElementById('photo-slider');
+            const toggleBtn = document.getElementById('media-toggle');
+            slider.innerHTML = '';
+            
+            if (data.images && data.images.length > 0) {
+                data.images.forEach(imgUrl => {
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.className = 'slide-img';
+                    img.onclick = () => openFullscreen(imgUrl);
+                    slider.appendChild(img);
+                });
+                slider.classList.remove('hide');
+                toggleBtn.classList.remove('hide');
+                toggleBtn.innerHTML = '🧊 View 3D';
+            } else {
+                slider.classList.add('hide');
+                toggleBtn.classList.add('hide');
+            }
 
             checkCartForCurrentDish();
         }
@@ -470,8 +527,8 @@
                 list.innerHTML += `
                     <div class="cart-item">
                         <div class="cart-item-info">
-                            <b style="color:var(--dark); font-size:14px;">${item.name}</b> <span style="font-size:12px; color:var(--gray);">${item.variant}</span>
-                            <div style="font-weight:700; color:var(--gray); margin-top:3px;">₹${item.price} x ${item.qty} = ₹${item.price * item.qty}</div>
+                            <b style="color:var(--text-main); font-size:14px;">${item.name}</b> <span style="font-size:12px; color:var(--text-sub);">${item.variant}</span>
+                            <div style="font-weight:700; color:var(--text-sub); margin-top:3px;">₹${item.price} x ${item.qty} = ₹${item.price * item.qty}</div>
                         </div>
                         <div class="cart-item-qty">
                             <button onclick="changeCartQty('${key}', -1)">-</button><span>${item.qty}</span><button onclick="changeCartQty('${key}', 1)">+</button>
@@ -488,7 +545,6 @@
             setTimeout(() => toast.classList.remove('show'), 1500);
         }
 
-        // --- ORDER PROCESSOR WITH OPTIONAL FIELDS ---
         const restaurantWhatsApp = "917870276466"; 
 
         window.placeOrder = async () => {
@@ -508,7 +564,6 @@
 
             let orderItems = []; let grandTotal = 0;
             
-            // Build WhatsApp Text
             let waText = `*New Order - Crave AR*%0A*Table No:* ${tableNo}%0A`;
             if(custName) waText += `*Name:* ${custName}%0A`;
             if(custPhone) waText += `*Phone:* ${custPhone}%0A`;
@@ -522,7 +577,6 @@
             waText += `-------------------%0A*Total to Pay:* ₹${grandTotal}`;
 
             try {
-                // 1. Send Order to Firebase Admin Panel
                 await addDoc(collection(db, "orders"), { 
                     tableNumber: tableNo, 
                     customerName: custName || "N/A",
@@ -530,11 +584,10 @@
                     items: orderItems, 
                     totalAmount: grandTotal, 
                     status: 'New', 
-                    paymentMethod: 'Cash', // Default to Cash/Counter since UPI is removed
+                    paymentMethod: 'Cash', 
                     timestamp: new Date() 
                 });
                 
-                // 2. Clear App Data
                 cart = {}; 
                 document.getElementById('tableNumber').value = '';
                 document.getElementById('customerName').value = '';
@@ -543,7 +596,6 @@
                 updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
                 modalContent.style.opacity = "1";
 
-                // 3. Simple Routing to WhatsApp
                 showToast("🎉 Order Placed!");
                 setTimeout(() => {
                     window.open(`https://wa.me/${restaurantWhatsApp}?text=${waText}`, '_blank');
@@ -555,7 +607,6 @@
                 customAlert("Order Failed. Please check your connection and try again.", "❌"); 
             }
 
-            // Restore UI Button
             btn.innerText = "Place Order"; 
             btn.style.background = "var(--green)"; 
             btn.disabled = false;
