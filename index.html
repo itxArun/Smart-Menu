@@ -59,7 +59,6 @@
         .progress-bar.hide { visibility: hidden; }
         .update-bar { background: var(--zomato-red); width: 0%; height: 100%; transition: width 0.3s; }
 
-        /* IMAGE SLIDER CSS */
         .photo-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; background: var(--bg-light); z-index: 5; }
         .photo-slider::-webkit-scrollbar { display: none; }
         .photo-slider.hide { display: none; }
@@ -69,12 +68,24 @@
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
 
-        /* UPDATED FULLSCREEN VIEWER CSS FOR ZOOM */
-        .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; display: flex; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: 0.3s; }
+        /* FULLSCREEN VIEWER WITH NAVIGATION CSS */
+        .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; display: flex; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: 0.3s; overflow: hidden; }
         .fullscreen-viewer.show { visibility: visible; opacity: 1; }
-        .fullscreen-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; } /* REMOVED TRANSITION/SCALE TO FIX LAG */
+        .fullscreen-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; touch-action: none; }
         .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10000; display: flex; justify-content: center; align-items: center;}
         
+        /* Left Right Navigation Buttons */
+        .fs-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.4); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10000; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .fs-nav:active { background: rgba(255,255,255,0.3); }
+        .fs-nav.hide { display: none; }
+        .fs-prev { left: 15px; }
+        .fs-next { right: 15px; }
+        
+        /* Pagination Dots in Fullscreen */
+        .fs-dots { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10000; }
+        .fs-dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; transition: 0.3s; }
+        .fs-dot.active { background: white; transform: scale(1.3); }
+
         .bottom-ui { flex-shrink: 0; background: var(--white); border-top: 1px solid var(--border-light); border-radius: 30px 30px 0 0; padding: 20px 20px 25px 20px; text-align: center; box-shadow: 0 -4px 15px rgba(0,0,0,0.06); z-index: 10; transition: padding-bottom 0.4s; }
         .bottom-ui.with-cart { padding-bottom: 90px; }
         .dish-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -141,7 +152,10 @@
 
     <div class="fullscreen-viewer" id="fs-viewer">
         <button class="fs-close" onclick="closeFullscreen()">✕</button>
+        <button class="fs-nav fs-prev" onclick="navigateFs(-1)">&#10094;</button>
+        <button class="fs-nav fs-next" onclick="navigateFs(1)">&#10095;</button>
         <img id="fs-img" src="" alt="Full Screen">
+        <div class="fs-dots" id="fs-dots"></div>
     </div>
 
     <div class="custom-alert" id="customAlert">
@@ -275,30 +289,97 @@
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
-        // UPDATED FULLSCREEN LOGIC WITH PINCH ZOOM
+        // ------------------ FULLSCREEN SLIDE & ZOOM LOGIC ------------------
         let pzInstance = null;
-        window.openFullscreen = (src) => {
-            const img = document.getElementById('fs-img');
-            img.src = src;
+        let fsImages = [];
+        let fsCurrentIndex = 0;
+
+        window.openFullscreen = (index) => {
+            if (!currentDish || !currentDish.images) return;
+            fsImages = currentDish.images;
+            fsCurrentIndex = index;
             document.getElementById('fs-viewer').classList.add('show');
+            updateFsImage();
+        };
+
+        window.updateFsImage = () => {
+            const img = document.getElementById('fs-img');
+            img.src = fsImages[fsCurrentIndex];
             
-            // Purana zoom clear karke naya activate karna
+            // Handle Navigation Buttons Visibility
+            const prevBtn = document.querySelector('.fs-prev');
+            const nextBtn = document.querySelector('.fs-next');
+            if(fsImages.length <= 1) {
+                prevBtn.classList.add('hide'); nextBtn.classList.add('hide');
+            } else {
+                prevBtn.classList.remove('hide'); nextBtn.classList.remove('hide');
+            }
+
+            // Update Dots
+            const dotsContainer = document.getElementById('fs-dots');
+            dotsContainer.innerHTML = '';
+            if(fsImages.length > 1) {
+                fsImages.forEach((_, idx) => {
+                    const dot = document.createElement('div');
+                    dot.className = `fs-dot ${idx === fsCurrentIndex ? 'active' : ''}`;
+                    dotsContainer.appendChild(dot);
+                });
+            }
+
+            // Refresh Panzoom logic
             if(pzInstance) { pzInstance.dispose(); }
             pzInstance = panzoom(img, {
-                maxZoom: 5,        // 5x tak zoom kar sakte hain
-                minZoom: 1,        // Normal size
-                bounds: true,      // Screen ke bahar jane se rokega
+                maxZoom: 5,        
+                minZoom: 1,        
+                bounds: true,      
                 boundsPadding: 0.1
             });
+        };
+
+        window.navigateFs = (direction) => {
+            fsCurrentIndex += direction;
+            if (fsCurrentIndex < 0) fsCurrentIndex = fsImages.length - 1; // loop back
+            if (fsCurrentIndex >= fsImages.length) fsCurrentIndex = 0;   // loop forward
+            updateFsImage();
         };
 
         window.closeFullscreen = () => { 
             document.getElementById('fs-viewer').classList.remove('show'); 
             if(pzInstance) {
-                pzInstance.zoomAbs(0, 0, 1); // Photo band hone par zoom reset karna
-                pzInstance.moveTo(0, 0);     // Wapas center mein lana
+                pzInstance.zoomAbs(0, 0, 1);
+                pzInstance.moveTo(0, 0);
             }
         };
+
+        // Swipe Detection for Fullscreen
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const fsViewer = document.getElementById('fs-viewer');
+
+        fsViewer.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        fsViewer.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleFsSwipe();
+        }, {passive: true});
+
+        function handleFsSwipe() {
+            if(fsImages.length <= 1) return; // No swipe needed for 1 image
+
+            // Agar photo zoom kar rakhi hai, toh swipe disable kar do taaki drag kaam kare
+            let currentScale = 1;
+            if(pzInstance) {
+                currentScale = pzInstance.getTransform().scale;
+            }
+            if(currentScale > 1.1) return; 
+
+            const threshold = 50; 
+            if (touchEndX < touchStartX - threshold) navigateFs(1);  // Swiped Left -> Next
+            if (touchEndX > touchStartX + threshold) navigateFs(-1); // Swiped Right -> Prev
+        }
+        // ------------------------------------------------------------------
 
         window.toggleMedia = () => {
             const slider = document.getElementById('photo-slider');
@@ -435,16 +516,17 @@
             updateBar.style.width = '0%';
             viewer.src = data.modelUrl;
 
+            // Updated image slider rendering to pass INDEX instead of URL
             const slider = document.getElementById('photo-slider');
             const toggleBtn = document.getElementById('media-toggle');
             slider.innerHTML = '';
             
             if (data.images && data.images.length > 0) {
-                data.images.forEach(imgUrl => {
+                data.images.forEach((imgUrl, idx) => {
                     const img = document.createElement('img');
                     img.src = imgUrl;
                     img.className = 'slide-img';
-                    img.onclick = () => openFullscreen(imgUrl);
+                    img.onclick = () => openFullscreen(idx); // Sending index for navigation
                     slider.appendChild(img);
                 });
                 slider.classList.remove('hide');
