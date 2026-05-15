@@ -9,11 +9,20 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then((reg) => {
+                    console.log('App ready for install!', reg);
+                });
+            });
+        }
+    </script>
     
     <style>
         /* CSS VARIABLES */
         :root { 
-            --primary: #E23744; --success: #28A745; --warning: #FFB75E; --danger: #FF3B30;
+            --primary: #E23744; --success: #28A745; --warning: #FFB75E; 
             --edit-bg: #E5F1FF; --edit-text: #007AFF; --del-bg: #FFE5E5; --del-text: #FF3B30;
             --bg-main: #F4F6F8; --bg-card: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78; 
             --border: #E8E8E8; --input-bg: #F8F9FA;
@@ -27,41 +36,115 @@
 
         body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-main); color: var(--text-main); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; }
         
-        /* LOGIN FIX: Shuru me display none rahega */
-        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s; backdrop-filter: blur(5px); }
-        .login-screen.show { display: flex; }
+        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s; backdrop-filter: blur(5px); }
+        .login-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
         .login-card { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 30px; padding: 45px 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border); }
         .login-card h2 { color: var(--primary); font-family: 'Okra', sans-serif; margin: 0 0 5px 0; font-size: 34px; font-weight: 800;}
+        .login-card p { color: var(--text-sub); font-size: 14px; margin-bottom: 30px; }
+        .login-input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 15px; font-family: inherit; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; background: var(--input-bg); color: var(--text-main); outline: none; transition: 0.3s;}
+        .btn-login { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(226, 55, 68, 0.3); margin-top: 10px;}
+        .btn-login:active { transform: scale(0.96); }
 
         .top-nav { flex-shrink: 0; background: var(--bg-card); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 100; transition: 0.3s; }
         .brand-logo { font-family: 'Okra', sans-serif; font-size: 22px; color: var(--primary); font-weight: 800; margin: 0; }
+        .admin-profile { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 13px; }
+        .avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; }
+        .btn-logout { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;}
         
         .app-container { display: flex; flex: 1; overflow: hidden; }
         .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
         .stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.3s; cursor: pointer;}
-        
+        .stat-card:active { transform: scale(0.96); }
+        .stat-title { font-size: 11px; color: var(--text-sub); font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .stat-value { font-size: 22px; font-weight: 800; margin: 0; color: var(--text-main); }
+        .stat-value.green { color: var(--success); }
+
         .section-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: 0.3s; margin-bottom: 20px; }
-        .section-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .section-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: transparent; }
+        .section-header h3 { margin: 0; font-size: 17px; font-weight: 800; color: var(--text-main); }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 8px rgba(226,55,68,0.2);}
         
         .search-container { padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
         .search-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; background: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none; transition: 0.2s; }
 
-        /* Dustbin Icon Style */
+        .menu-list { display: flex; flex-direction: column; }
+        .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); transition: 0.2s; background: var(--bg-card); cursor: pointer; }
+        .menu-item-row:last-child { border-bottom: none; }
+        .menu-item-info { display: flex; align-items: center; gap: 15px; flex: 1; }
+        .dish-icon { font-size: 28px; background: var(--input-bg); padding: 10px; border-radius: 14px; }
+        .dish-details { display: flex; flex-direction: column; gap: 4px; padding-right: 10px;}
+        .dish-name { font-size: 15px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 5px;}
+        .dish-price { font-size: 13px; font-weight: 600; color: var(--text-sub); }
+        .cat-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700; white-space: nowrap;}
         .btn-delete-modern { background: var(--del-bg); color: var(--del-text); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: 0.2s; z-index: 2;}
 
         .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+        .order-card:last-child { border-bottom: none; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; }
+        .table-badge { background: var(--text-main); color: var(--bg-card); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; }
+        .order-time { font-size: 11px; color: var(--text-sub); font-weight: 600; }
+        .order-items { font-size: 13px; font-weight: 600; color: var(--text-main); line-height: 1.6; background: var(--input-bg); padding: 12px; border-radius: 10px; border: 1px dashed var(--border);}
+        .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .order-total { font-size: 18px; font-weight: 800; color: var(--primary); }
+        
         .order-actions-row { display: flex; gap: 8px; }
-        .btn-action-new { border: none; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; color: white; flex: 1; }
+        .btn-done { background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);}
+        .btn-done:active { transform: scale(0.95); }
+
+        .history-date-header { background: var(--input-bg); padding: 8px 20px; font-size: 12px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
+        .history-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .history-item-left { display: flex; flex-direction: column; gap: 4px; }
+        .history-item-table { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .history-item-time { font-size: 11px; color: var(--text-sub); font-weight: 600; }
+        .history-item-amount { font-size: 15px; font-weight: 800; color: var(--success); }
+
+        .qr-container { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+        #qrcode-box { padding: 20px; background: white; border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.08); display: inline-block; }
+        .link-input { width: 90%; max-width: 350px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; text-align: center; color: var(--text-sub); background: var(--input-bg); outline: none; }
+        .btn-download { background: var(--primary); color: white; border: none; padding: 16px 35px; border-radius: 50px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; transition: 0.3s; }
         .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-sub); cursor: pointer; transition: 0.2s; text-decoration: none; }
         .nav-tab.active { color: var(--primary); }
+        .nav-tab span { font-size: 22px; }
+        .nav-tab label { font-size: 10px; font-weight: 800; }
+
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+        .setting-label { font-size: 15px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px;}
+        .setting-desc { font-size: 12px; color: var(--text-sub); font-weight: 400; margin-top: 4px; display: block; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
-        .modal-card { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 30px 30px 0 0; padding: 30px 25px; transform: translateY(100%); transition: 0.3s; max-height: 90vh; overflow-y: auto;}
+        .modal-card { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 30px 30px 0 0; padding: 30px 25px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 90vh; overflow-y: auto;}
+        .modal-overlay.show .modal-card { transform: translateY(0); }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-sub); }
+        .form-group input, .form-group select { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: var(--input-bg); color: var(--text-main); outline: none; transition: 0.2s; }
+        .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 15px; font-size: 16px; font-weight: 800; margin-top: 10px; cursor: pointer; transition: 0.2s;}
+
+        .custom-confirm { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
+        .custom-confirm.show { visibility: visible; opacity: 1; }
+        .confirm-box { background: var(--bg-card); padding: 30px 25px; border-radius: 24px; text-align: center; max-width: 320px; width: 85%; transform: scale(0.9); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--border);}
+        .custom-confirm.show .confirm-box { transform: scale(1); }
+        .confirm-icon { font-size: 45px; margin-bottom: 15px; }
+        .confirm-box h3 { margin: 0 0 10px 0; font-size: 18px; color: var(--text-main); font-weight: 800; }
+        .confirm-box p { color: var(--text-sub); font-size: 13px; margin: 0 0 25px 0; line-height: 1.5; }
+        .confirm-actions { display: flex; gap: 10px; }
+        .btn-cancel, .btn-confirm-del { flex: 1; padding: 14px 0; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s;}
+        .btn-cancel { background: var(--input-bg); color: var(--text-main); }
+        .btn-confirm-del { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(226,55,68,0.2);}
+        
+        .view-section { display: none; animation: fadeIn 0.3s; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -84,17 +167,17 @@
         <div class="login-card">
             <h2>Crave AR</h2>
             <p>Merchant Panel Login</p>
-            <input type="email" id="adminEmail" class="login-input" placeholder="Email Address">
-            <input type="password" id="adminPass" class="login-input" placeholder="Password">
-            <button class="btn-login" onclick="loginAdmin()">Login</button>
+            <input type="email" id="adminEmail" class="login-input" placeholder="Email Address" required>
+            <input type="password" id="adminPass" class="login-input" placeholder="Password" required>
+            <button class="btn-login" id="loginBtn" onclick="loginAdmin()">Login</button>
         </div>
     </div>
 
     <div class="top-nav">
         <h1 class="brand-logo">Crave AR</h1>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <input type="date" id="reportDate" style="padding:8px; border-radius:8px; border:1px solid var(--border); font-family:inherit;" onchange="initAdminData()">
+        <div class="admin-profile">
             <button class="btn-logout" onclick="logoutAdmin()">Logout</button>
+            <div class="avatar">A</div>
         </div>
     </div>
 
@@ -104,7 +187,7 @@
             <div class="stats-grid">
                 <div class="stat-card" onclick="switchTab('menu')"><div class="stat-title">Menu Items</div><div class="stat-value" id="total-dishes">0</div></div>
                 <div class="stat-card" onclick="switchTab('orders')"><div class="stat-title">Live Orders</div><div class="stat-value" id="total-orders" style="color:var(--warning);">0</div></div>
-                <div class="stat-card" onclick="switchTab('stats')"><div class="stat-title">Revenue (Selected)</div><div class="stat-value green" id="total-revenue" style="color:var(--success);">₹0</div></div>
+                <div class="stat-card" onclick="switchTab('stats')"><div class="stat-title">Revenue</div><div class="stat-value green" id="total-revenue">₹0</div></div>
                 <div class="stat-card" onclick="switchTab('stats')"><div class="stat-title">AR Views</div><div class="stat-value" id="total-ar-views">0</div></div>
             </div>
 
@@ -116,39 +199,61 @@
                 <div class="search-container">
                     <input type="text" class="search-input" id="adminSearchInput" placeholder="🔍 Search dishes..." onkeyup="filterAdminMenu()">
                 </div>
-                <div class="menu-list" id="menu-body"></div>
+                <div class="menu-list" id="menu-body"><div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Loading...</div></div>
             </div>
 
             <div class="section-card view-section" id="section-orders">
-                <div class="section-header"><h3>Live Orders 🔔</h3></div>
-                <div id="orders-body"></div>
+                <div class="section-header">
+                    <h3>Live Kitchen Orders 🔔</h3>
+                </div>
+                <div class="menu-list" id="orders-body"><div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for new orders...</div></div>
             </div>
 
             <div class="section-card view-section" id="section-stats">
-                <div class="section-header"><h3>Business Analytics 📈</h3></div>
-                <div class="history-date-header">History & Revenue</div>
-                <div id="history-body"></div>
-                <div class="history-date-header">AR View Logs</div>
-                <div id="ar-views-body"></div>
+                <div class="section-header" style="background: rgba(40,167,69,0.1);">
+                    <h3>Business Analytics 📈</h3>
+                </div>
+                <div class="history-date-header">Order History & Revenue</div>
+                <div class="menu-list" id="history-body"><div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div></div>
+                <div class="history-date-header" style="margin-top: 20px;">AR View Logs 📸</div>
+                <div class="menu-list" id="ar-views-body"><div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Waiting for customers to view AR...</div></div>
             </div>
 
             <div class="section-card view-section" id="section-qr">
-                <div class="section-header"><h3>Table QR Code</h3></div>
+                <div class="section-header">
+                    <h3>Table QR Code 📱</h3>
+                </div>
                 <div class="qr-container">
+                    <p style="color: var(--text-sub); font-size: 14px; margin: 0; font-weight: 600;">Scan this to open Smart AR Menu</p>
                     <div id="qrcode-box"></div>
+                    <input type="text" id="menu-link" class="link-input" value="https://itxarun.github.io/Smart-Menu/index.html" readonly>
                     <button class="btn-download" onclick="downloadQR()">Download Print Version</button>
                 </div>
             </div>
 
             <div class="section-card view-section" id="section-settings">
-                <div class="section-header"><h3>App Settings ⚙️</h3></div>
-                <div class="setting-row">
-                    <div class="setting-label">🔊 Sound Alerts</div>
-                    <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
+                <div class="section-header">
+                    <h3>App Settings ⚙️</h3>
                 </div>
                 <div class="setting-row">
-                    <div class="setting-label">🌙 Dark Mode</div>
-                    <label class="switch"><input type="checkbox" id="themeToggle" onchange="toggleTheme()"><span class="slider"></span></label>
+                    <div class="setting-label">
+                        🔊 Sound Alerts
+                        <span class="setting-desc">Play sound for new orders</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">
+                        🌙 Dark Mode
+                        <span class="setting-desc">Switch dashboard theme</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
 
@@ -163,14 +268,30 @@
         <a class="nav-tab" onclick="switchTab('settings', this)"><span>⚙️</span><label>SETTINGS</label></a>
     </div>
 
+    <!-- ADD DISH MODAL -->
     <div class="modal-overlay" id="addModal">
         <div class="modal-card">
-            <h3 id="modalTitle">Add New Dish</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 id="modalTitle" style="margin: 0; font-size: 20px; font-weight: 800; color: var(--primary);">Add New Dish</h3>
+                <button onclick="closeModal()" style="background: var(--input-bg); border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; color: var(--text-sub); cursor: pointer;">✕</button>
+            </div>
+            
             <input type="hidden" id="dishId">
-            <div class="form-group"><label>Dish Name</label><input type="text" id="dishName"></div>
+            
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="width: 80px;">
+                    <label>Emoji</label>
+                    <input type="text" id="dishEmoji" placeholder="🍕" style="font-size: 20px; text-align: center;" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Dish Name</label>
+                    <input type="text" id="dishName" placeholder="Enter dish name" required>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Category</label>
-                <select id="dishCategory">
+                <select id="dishCategory" class="input-field" style="width: 100%; padding: 15px; border-radius: 12px; font-family: inherit; font-size: 14px; background: var(--input-bg); color: var(--text-main); outline: none; border: 1px solid var(--border);">
                     <option value="Starters">🔥 Starters</option>
                     <option value="Main Course">🍛 Main Course</option>
                     <option value="Breads">🥖 Breads</option>
@@ -179,21 +300,39 @@
                     <option value="Desserts">🍰 Desserts</option>
                 </select>
             </div>
-            <div style="display:flex; gap:10px;">
-                <div class="form-group" style="flex:1;"><label>Full Price (₹)</label><input type="number" id="dishPrice"></div>
-                <div class="form-group" style="flex:1;"><label>Half Price (₹)</label><input type="number" id="dishPriceHalf"></div>
-                <div class="form-group" style="flex:1;"><label>Per Piece (₹)</label><input type="number" id="dishPricePiece"></div>
+            
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Full Price (₹)</label>
+                    <input type="number" id="dishPrice" placeholder="0" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Half Price (₹)</label>
+                    <input type="number" id="dishPriceHalf" placeholder="Optional">
+                </div>
             </div>
-            <div class="form-group"><label>Emoji</label><input type="text" id="dishEmoji"></div>
-            <div class="form-group"><label>3D Model URL</label><input type="url" id="dishModel"></div>
-            <div class="form-group"><label>Photo URL (Required)</label><input type="url" id="dishPhoto1"></div>
-            <button class="btn-save" onclick="saveDish()">Save & Publish</button>
-            <button onclick="closeModal()" style="width:100%; background:none; border:none; margin-top:10px; color:var(--text-sub);">Cancel</button>
+
+            <div class="form-group">
+                <label>3D Model URL (.glb)</label>
+                <input type="url" id="dishModel" placeholder="https://raw.githubusercontent.com/..." required>
+            </div>
+
+            <!-- NEW: HD PHOTO URLS -->
+            <div class="form-group" style="background: var(--input-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--border);">
+                <label style="color: var(--primary);">📸 Dish Photos (Up to 4)</label>
+                <p style="font-size: 11px; color: var(--text-sub); margin-top: -5px; margin-bottom: 10px;">Provide image URLs. Customers can swipe these photos.</p>
+                
+                <input type="url" id="dishPhoto1" placeholder="1. Main Photo URL (Required)" style="margin-bottom: 10px; background: var(--bg-card);" required>
+                <input type="url" id="dishPhoto2" placeholder="2. Extra Photo URL (Optional)" style="margin-bottom: 10px; background: var(--bg-card);">
+                <input type="url" id="dishPhoto3" placeholder="3. Extra Photo URL (Optional)" style="margin-bottom: 10px; background: var(--bg-card);">
+                <input type="url" id="dishPhoto4" placeholder="4. Extra Photo URL (Optional)" style="background: var(--bg-card);">
+            </div>
+
+            <button class="btn-save" id="saveBtn" onclick="saveDish()">Save & Publish</button>
         </div>
     </div>
 
     <script type="module">
-        /* Original Logic + New Features */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -206,118 +345,317 @@
             messagingSenderId: "442083262265",
             appId: "1:442083262265:web:3e023b1211f752cb3132e8"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // LOGIN FIX Logic
+        // Sound Interaction Logic
+        let soundActivated = false;
+        window.addEventListener('click', () => {
+            if(!soundActivated) {
+                const audio = document.getElementById('orderSound');
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    soundActivated = true;
+                    console.log("Sound Alerts Enabled! 🔔");
+                }).catch(e => console.log("Sound activation pending user click"));
+            }
+        }, { once: true });
+
+        // Generate QR Code
+        new QRCode(document.getElementById("qrcode-box"), { text: document.getElementById("menu-link").value, width: 220, height: 220, colorDark: "#282C3F", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+
+        // Authentication State
         onAuthStateChanged(auth, (user) => {
-            const ls = document.getElementById('loginScreen');
-            if (user) { ls.style.display = 'none'; initAdminData(); } 
-            else { ls.style.display = 'flex'; }
+            const loginScreen = document.getElementById('loginScreen');
+            if (user) { loginScreen.classList.add('hidden'); initAdminData(); } 
+            else { loginScreen.classList.remove('hidden'); }
         });
 
-        window.loginAdmin = () => { signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPass').value).catch(e => alert(e.message)); };
-        window.logoutAdmin = () => signOut(auth);
+        window.loginAdmin = () => {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPass').value;
+            const btn = document.getElementById('loginBtn');
+            btn.innerText = "Loading..."; btn.disabled = true;
+            
+            signInWithEmailAndPassword(auth, email, pass).catch(error => {
+                alert("Login Failed: " + error.message);
+                btn.innerText = "Login"; btn.disabled = false;
+            });
+        };
 
-        document.getElementById('reportDate').valueAsDate = new Date();
+        window.logoutAdmin = () => { signOut(auth); };
+
         let allMenuData = [];
+        let isInitialLoad = true;
 
-        window.initAdminData = () => {
-            const selDate = document.getElementById('reportDate').value;
-
-            // Menu Display (With Dustbin Icon 🗑️)
+        function initAdminData() {
+            // Stats Sync
             onSnapshot(collection(db, "menu_items"), (snap) => {
-                const list = document.getElementById('menu-body'); list.innerHTML = '';
-                allMenuData = [];
-                snap.forEach(d => {
-                    const item = d.data(); item.id = d.id; allMenuData.push(item);
-                    list.innerHTML += `<div class="menu-item-row" onclick="editDish('${d.id}')">
-                        <div class="menu-item-info">
-                            <div class="dish-icon">${item.emoji}</div>
-                            <div class="dish-details"><span class="dish-name">${item.name}</span><span class="dish-price">₹${item.price}</span></div>
-                        </div>
-                        <button class="btn-delete-modern" onclick="event.stopPropagation(); triggerDeleteModal('${d.id}')">🗑️</button>
-                    </div>`;
-                });
                 document.getElementById('total-dishes').innerText = snap.size;
+                allMenuData = [];
+                snap.forEach(doc => { let d = doc.data(); d.id = doc.id; allMenuData.push(d); });
+                renderAdminMenu(allMenuData);
             });
 
-            // Orders (With Cancel Button & Earnings)
-            onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
-                const oBody = document.getElementById('orders-body'); oBody.innerHTML = '';
-                let active = 0, rev = 0;
-                snap.forEach(oDoc => {
-                    const data = oDoc.data();
-                    const oDate = data.timestamp.toDate().toISOString().split('T')[0];
-                    if(data.status === 'New') { if(document.getElementById('soundToggle').checked) document.getElementById('orderSound').play(); active++; }
-                    else if(data.status === 'Preparing') active++;
-                    if(oDate === selDate && data.status === 'Completed') rev += data.totalAmount;
+            onSnapshot(collection(db, "ar_views"), (snap) => {
+                document.getElementById('total-ar-views').innerText = snap.size;
+                renderARViews(snap);
+            });
 
-                    if(oDate === selDate || data.status === 'New' || data.status === 'Preparing') {
-                        oBody.innerHTML += `<div class="order-card">
-                            <div style="display:flex; justify-content:space-between;"><b>Table ${data.tableNumber}</b><span style="color:var(--primary); font-weight:800;">${data.status}</span></div>
-                            <div style="font-size:13px; margin:5px 0;">${data.items.map(i => i.name).join(', ')}</div>
-                            <b>Total: ₹${data.totalAmount}</b>
-                            <div class="order-actions-row">
-                                ${data.status === 'New' ? `<button class="btn-action-new" style="background:var(--warning);" onclick="upStatus('${oDoc.id}', 'Preparing')">Prepare</button>` : ''}
-                                ${data.status === 'Preparing' ? `<button class="btn-action-new" style="background:var(--success);" onclick="upStatus('${oDoc.id}', 'Completed')">Serve</button>` : ''}
-                                ${data.status !== 'Completed' && data.status !== 'Cancelled' ? `<button class="btn-action-new" style="background:var(--danger);" onclick="upStatus('${oDoc.id}', 'Cancelled')">Cancel</button>` : ''}
-                            </div>
-                        </div>`;
+            // Orders Sync (Live + History)
+            const qLive = query(collection(db, "orders"), orderBy("timestamp", "desc"));
+            onSnapshot(qLive, (snap) => {
+                const ordersList = document.getElementById('orders-body');
+                const historyList = document.getElementById('history-body');
+                ordersList.innerHTML = ''; historyList.innerHTML = '';
+                
+                let activeCount = 0; let totalRev = 0;
+
+                snap.docChanges().forEach((change) => {
+                    if (change.type === "added" && !isInitialLoad && change.doc.data().status === 'New') {
+                        if(document.getElementById('soundToggle').checked) {
+                            const audio = document.getElementById('orderSound');
+                            audio.currentTime = 0;
+                            audio.play().catch(err => console.log("Play failed: Interaction needed"));
+                        }
                     }
                 });
-                document.getElementById('total-revenue').innerText = '₹' + rev;
-                document.getElementById('total-orders').innerText = active;
-            });
+                isInitialLoad = false;
 
-            // AR Views
-            onSnapshot(collection(db, "ar_views"), (snap) => { document.getElementById('total-ar-views').innerText = snap.size; });
+                snap.forEach((doc) => {
+                    const data = doc.data();
+                    const date = data.timestamp ? data.timestamp.toDate() : new Date();
+                    const timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    if(data.status === 'New') {
+                        activeCount++;
+                        
+                        let itemsHTML = '';
+                        data.items.forEach(item => {
+                            itemsHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                <span>${item.qty}x ${item.name} <span style="color:var(--text-sub); font-size:11px;">${item.variant}</span></span>
+                                <span>₹${item.price * item.qty}</span>
+                            </div>`;
+                        });
+
+                        const orderCard = `
+                            <div class="order-card" style="background:var(--edit-bg); border-radius:12px; border:1px solid rgba(0,122,255,0.2); margin-bottom:15px;">
+                                <div class="order-header">
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <span class="table-badge">T-${data.tableNumber}</span>
+                                        <span class="order-time">${timeStr}</span>
+                                    </div>
+                                    <span style="font-size:11px; font-weight:800; background:rgba(226,55,68,0.1); color:var(--primary); padding:4px 8px; border-radius:6px;">${data.paymentMethod}</span>
+                                </div>
+                                <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:5px;">
+                                    Cust: ${data.customerName || "N/A"} | Ph: ${data.customerPhone || "N/A"}
+                                </div>
+                                <div class="order-items" style="background:rgba(255,255,255,0.5); border-color:rgba(0,122,255,0.1); margin-top:8px;">
+                                    ${itemsHTML}
+                                </div>
+                                <div class="order-footer">
+                                    <span class="order-total">₹${data.totalAmount}</span>
+                                    <div class="order-actions-row">
+                                        <button class="btn-done" onclick="completeOrder('${doc.id}')">Serve & Clear ➔</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        ordersList.innerHTML += orderCard;
+                    } else if (data.status === 'Completed') {
+                        totalRev += data.totalAmount;
+                        historyList.innerHTML += `
+                            <div class="history-item">
+                                <div class="history-item-left">
+                                    <span class="history-item-table">Table ${data.tableNumber} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod})</span></span>
+                                    <span class="history-item-time">${timeStr} • ${data.items.length} items</span>
+                                </div>
+                                <span class="history-item-amount">+₹${data.totalAmount}</span>
+                            </div>
+                        `;
+                    }
+                });
+
+                document.getElementById('total-orders').innerText = activeCount;
+                document.getElementById('total-revenue').innerText = '₹' + totalRev;
+                
+                if(activeCount === 0) ordersList.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No active orders. Kitchen is clear! 🎉</div>';
+                if(totalRev === 0) historyList.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div>';
+            });
+        }
+
+        window.renderAdminMenu = (data) => {
+            const list = document.getElementById('menu-body');
+            list.innerHTML = '';
+            data.forEach(item => {
+                
+                let catBadgeClass = ''; let icon = '';
+                if(item.category === 'Veg' || item.category === 'Starters') { catBadgeClass = 'color:#28A745; background:rgba(40,167,69,0.1)'; icon='🟢';}
+                else if(item.category === 'Non-Veg' || item.category === 'Main Course') { catBadgeClass = 'color:#E23744; background:rgba(226,55,68,0.1)'; icon='🔴';}
+                else if(item.category === 'Breads' || item.category === 'Rice') { catBadgeClass = 'color:#FF9500; background:rgba(255,149,0,0.1)'; icon='🌾';}
+                else { catBadgeClass = 'color:#007AFF; background:rgba(0,122,255,0.1)'; icon='🥤';}
+                
+                list.innerHTML += `
+                    <div class="menu-item-row" onclick="editDish('${item.id}')">
+                        <div class="menu-item-info">
+                            <div class="dish-icon">${item.emoji || "🍲"}</div>
+                            <div class="dish-details">
+                                <span class="dish-name">${item.name}</span>
+                                <span class="dish-price">₹${item.price} <span class="cat-badge" style="${catBadgeClass}">${icon} ${item.category}</span></span>
+                            </div>
+                        </div>
+                        <button class="btn-delete-modern" onclick="event.stopPropagation(); triggerDeleteModal('${item.id}')">🗑️</button>
+                    </div>
+                `;
+            });
         };
 
         window.filterAdminMenu = () => {
             const q = document.getElementById('adminSearchInput').value.toLowerCase();
-            const list = document.getElementById('menu-body'); list.innerHTML = '';
-            allMenuData.filter(d => d.name.toLowerCase().includes(q)).forEach(item => {
-                list.innerHTML += `<div class="menu-item-row" onclick="editDish('${item.id}')">
-                    <div class="menu-item-info"><div class="dish-icon">${item.emoji}</div><div class="dish-details"><span>${item.name}</span><span>₹${item.price}</span></div></div>
-                    <button class="btn-delete-modern" onclick="event.stopPropagation(); triggerDeleteModal('${item.id}')">🗑️</button>
-                </div>`;
-            });
+            renderAdminMenu(allMenuData.filter(d => d.name.toLowerCase().includes(q)));
         };
 
-        window.upStatus = async (id, s) => await updateDoc(doc(db, "orders", id), {status: s});
+        function renderARViews(snap) {
+            const list = document.getElementById('ar-views-body');
+            list.innerHTML = ''; let count = 0;
+            snap.forEach(doc => {
+                count++;
+                const data = doc.data();
+                const dDate = data.timestamp ? data.timestamp.toDate() : new Date();
+                list.innerHTML += `
+                    <div class="history-item" style="padding: 10px 20px;">
+                        <span style="font-size:13px; font-weight:600; color:var(--text-main);">📸 ${data.dishName}</span>
+                        <span style="font-size:10px; color:var(--text-sub);">${dDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                `;
+            });
+            if(count === 0) list.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No AR views recorded.</div>';
+        }
+
+        window.openModal = () => {
+            document.getElementById('modalTitle').innerText = "Add New Dish";
+            document.getElementById('dishId').value = "";
+            document.getElementById('dishEmoji').value = "";
+            document.getElementById('dishName').value = "";
+            document.getElementById('dishCategory').value = "Starters";
+            document.getElementById('dishPrice').value = "";
+            document.getElementById('dishPriceHalf').value = "";
+            document.getElementById('dishModel').value = "";
+            
+            // Clear Image Fields
+            document.getElementById('dishPhoto1').value = "";
+            document.getElementById('dishPhoto2').value = "";
+            document.getElementById('dishPhoto3').value = "";
+            document.getElementById('dishPhoto4').value = "";
+
+            document.getElementById('addModal').classList.add('show');
+        };
+
+        window.closeModal = () => { document.getElementById('addModal').classList.remove('show'); };
+
+        window.editDish = (id) => {
+            const dish = allMenuData.find(d => d.id === id);
+            if(dish) {
+                document.getElementById('modalTitle').innerText = "Edit Dish";
+                document.getElementById('dishId').value = dish.id;
+                document.getElementById('dishEmoji').value = dish.emoji || "🍲";
+                document.getElementById('dishName').value = dish.name;
+                document.getElementById('dishCategory').value = dish.category;
+                document.getElementById('dishPrice').value = dish.price;
+                document.getElementById('dishPriceHalf').value = dish.priceHalf || "";
+                document.getElementById('dishModel').value = dish.modelUrl || "";
+
+                // Populate Image Fields (if they exist)
+                document.getElementById('dishPhoto1').value = (dish.images && dish.images[0]) ? dish.images[0] : "";
+                document.getElementById('dishPhoto2').value = (dish.images && dish.images[1]) ? dish.images[1] : "";
+                document.getElementById('dishPhoto3').value = (dish.images && dish.images[2]) ? dish.images[2] : "";
+                document.getElementById('dishPhoto4').value = (dish.images && dish.images[3]) ? dish.images[3] : "";
+
+                document.getElementById('addModal').classList.add('show');
+            }
+        };
+
         window.saveDish = async () => {
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "Saving..."; btn.disabled = true;
+
             const id = document.getElementById('dishId').value;
+            
+            // Gather Image URLs and filter out empty ones
+            const img1 = document.getElementById('dishPhoto1').value;
+            const img2 = document.getElementById('dishPhoto2').value;
+            const img3 = document.getElementById('dishPhoto3').value;
+            const img4 = document.getElementById('dishPhoto4').value;
+            const imagesArray = [img1, img2, img3, img4].filter(url => url.trim() !== "");
+
             const data = {
+                emoji: document.getElementById('dishEmoji').value,
                 name: document.getElementById('dishName').value,
+                category: document.getElementById('dishCategory').value,
                 price: parseFloat(document.getElementById('dishPrice').value),
                 priceHalf: parseFloat(document.getElementById('dishPriceHalf').value) || null,
-                pricePiece: parseFloat(document.getElementById('dishPricePiece').value) || null,
-                emoji: document.getElementById('dishEmoji').value,
-                category: document.getElementById('dishCategory').value,
                 modelUrl: document.getElementById('dishModel').value,
-                images: [document.getElementById('dishPhoto1').value]
+                images: imagesArray // Saved as array in Firebase
             };
-            if(id) await updateDoc(doc(db, "menu_items", id), data);
-            else await addDoc(collection(db, "menu_items"), data);
-            closeModal();
+
+            try {
+                if(id) await updateDoc(doc(db, "menu_items", id), data);
+                else await addDoc(collection(db, "menu_items"), data);
+                closeModal();
+            } catch(e) { alert("Error: " + e.message); }
+
+            btn.innerText = "Save & Publish"; btn.disabled = false;
         };
 
-        window.triggerDeleteModal = (id) => { window.delId = id; document.getElementById('deleteConfirmModal').classList.add('show'); };
-        window.closeDeleteModal = () => document.getElementById('deleteConfirmModal').classList.remove('show');
-        document.getElementById('confirmDeleteBtn').onclick = async () => { await deleteDoc(doc(db, "menu_items", window.delId)); closeDeleteModal(); };
+        let deleteIdTemp = null;
+        window.triggerDeleteModal = (id) => { deleteIdTemp = id; document.getElementById('deleteConfirmModal').classList.add('show'); };
+        window.closeDeleteModal = () => { deleteIdTemp = null; document.getElementById('deleteConfirmModal').classList.remove('show'); };
+        
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if(deleteIdTemp) {
+                const btn = document.getElementById('confirmDeleteBtn');
+                btn.innerText = "Deleting..."; btn.disabled = true;
+                try {
+                    await deleteDoc(doc(db, "menu_items", deleteIdTemp));
+                    closeDeleteModal();
+                } catch(e) { alert("Delete failed: " + e.message); }
+                btn.innerText = "Yes, Delete"; btn.disabled = false;
+            }
+        });
 
-        window.openModal = () => { document.getElementById('addModal').classList.add('show'); document.getElementById('dishId').value = ""; };
-        window.closeModal = () => document.getElementById('addModal').classList.remove('show');
-        window.switchTab = (t, el) => {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.getElementById('section-'+t).classList.add('active');
-            document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
+        window.completeOrder = async (orderId) => {
+            try { await updateDoc(doc(db, "orders", orderId), { status: 'Completed' }); } 
+            catch(e) { alert("Error completing order: " + e.message); }
         };
-        window.toggleTheme = () => { document.body.setAttribute('data-theme', document.getElementById('themeToggle').checked ? 'dark' : ''); };
-        new QRCode(document.getElementById("qrcode-box"), { text: "https://itxarun.github.io/Smart-Menu/index.html", width: 180, height: 180 });
+
+        window.switchTab = (tabId, element = null) => {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-' + tabId).classList.add('active');
+            
+            if(element) {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                element.classList.add('active');
+            }
+        };
+
+        window.downloadQR = () => {
+            const canvas = document.querySelector("#qrcode-box canvas");
+            if(canvas) {
+                const url = canvas.toDataURL("image/png");
+                const a = document.createElement('a');
+                a.href = url; a.download = "CraveAR_Table_QR.png";
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            } else { alert("QR Code not generated yet!"); }
+        };
+
+        window.toggleTheme = () => {
+            if(document.getElementById('themeToggle').checked) document.body.setAttribute('data-theme', 'dark');
+            else document.body.removeAttribute('data-theme');
+        };
+
     </script>
 </body>
 </html>
