@@ -6,9 +6,12 @@
     <title>Crave AR - Merchant Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#E23744">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
     
     <style>
-        /* - Tumhara saara original CSS yahan hai */
+        /* - SAARA ORIGINAL CSS (Variables, Dark Mode, Nav, Tabs, Dustbin) */
         :root { 
             --primary: #E23744; --success: #28A745; --warning: #FFB75E; --danger: #FF3B30;
             --edit-bg: #E5F1FF; --edit-text: #007AFF; --del-bg: #FFE5E5; --del-text: #FF3B30;
@@ -19,56 +22,29 @@
         [data-theme="dark"] {
             --bg-main: #121212; --bg-card: #1E1E1E; --text-main: #F5F5F5; --text-sub: #A0A0A0; 
             --border: #2A2A2A; --input-bg: #2A2A2A;
+            --edit-bg: #1A2A40; --edit-text: #4DA6FF; --del-bg: #3A1A1A; --del-text: #FF6B60;
         }
 
         body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-main); color: var(--text-main); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; }
         
-        /* LOGIN FIX: Shuru me hidden rahega */
-        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px); }
-        .login-card { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 30px; padding: 45px 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border); }
-        .login-input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 15px; background: var(--input-bg); color: var(--text-main); outline: none; margin-bottom: 15px; box-sizing: border-box; }
-        .btn-login { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 15px; font-weight: 800; cursor: pointer; }
+        /* LOGIN FIX UI */
+        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px); }
 
-        .top-nav { flex-shrink: 0; background: var(--bg-card); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 100; }
+        .top-nav { flex-shrink: 0; background: var(--bg-card); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 100; transition: 0.3s; }
         .brand-logo { font-family: 'Okra', sans-serif; font-size: 22px; color: var(--primary); font-weight: 800; margin: 0; }
-        
-        .app-container { display: flex; flex: 1; overflow: hidden; }
-        .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); cursor: pointer;}
-        .stat-title { font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
-        .stat-value { font-size: 22px; font-weight: 800; color: var(--text-main); }
+        .btn-delete-modern { background: var(--del-bg); color: var(--del-text); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: 0.2s; z-index: 2;}
 
-        .section-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 20px; display: none; }
-        .section-card.active { display: block; }
-        .section-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .btn-add { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; }
-        
-        .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+        .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); }
         .order-actions-row { display: flex; gap: 8px; }
-        .btn-action { border: none; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; flex: 1; color: white; }
-        .btn-done { background: var(--success); }
-        .btn-cancel { background: var(--danger); }
-        .btn-prep { background: var(--warning); }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-        .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-sub); cursor: pointer; text-decoration: none; }
-        .nav-tab.active { color: var(--primary); }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
+        .btn-action-new { border: none; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; color: white; flex: 1; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
         .modal-card { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 30px 30px 0 0; padding: 30px 25px; transform: translateY(100%); transition: 0.3s; max-height: 90vh; overflow-y: auto;}
         .modal-overlay.show .modal-card { transform: translateY(0); }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-sub); }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--input-bg); color: var(--text-main); outline: none; box-sizing: border-box; }
-        
-        .date-filter { padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; background: var(--bg-card); color: var(--text-main); }
     </style>
 </head>
 <body>
-    
     <audio id="orderSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <div class="login-screen" id="loginScreen">
@@ -84,14 +60,13 @@
     <div class="top-nav">
         <h1 class="brand-logo">Crave AR</h1>
         <div style="display:flex; align-items:center; gap:10px;">
-            <input type="date" id="reportDate" class="date-filter" onchange="initAdminData()">
-            <button class="btn-logout" onclick="logoutAdmin()" style="background:transparent; color:var(--primary); border:1px solid var(--primary); padding:6px 12px; border-radius:8px; font-weight:700;">Logout</button>
+            <input type="date" id="reportDate" style="padding:8px; border-radius:8px; border:1px solid var(--border); font-family:inherit;" onchange="initAdminData()">
+            <button class="btn-logout" onclick="logoutAdmin()">Logout</button>
         </div>
     </div>
 
     <div class="app-container">
         <div class="main-content">
-            
             <div class="stats-grid">
                 <div class="stat-card" onclick="switchTab('menu')"><div class="stat-title">Menu Items</div><div class="stat-value" id="total-dishes">0</div></div>
                 <div class="stat-card" onclick="switchTab('orders')"><div class="stat-title">Live Orders</div><div class="stat-value" id="total-orders" style="color:var(--warning);">0</div></div>
@@ -101,14 +76,24 @@
 
             <div class="section-card view-section active" id="section-menu">
                 <div class="section-header"><h3>Menu Management</h3><button class="btn-add" onclick="openModal()">+ Add Dish</button></div>
-                <div id="menu-body"></div>
+                <div class="search-container"><input type="text" class="search-input" id="adminSearchInput" placeholder="🔍 Search dishes..." onkeyup="filterAdminMenu()"></div>
+                <div class="menu-list" id="menu-body"></div>
             </div>
 
-            <div class="section-card view-section" id="section-orders"><div class="section-header"><h3>Live Orders 🔔</h3></div><div id="orders-body"></div></div>
+            <div class="section-card view-section" id="section-orders">
+                <div class="section-header"><h3>Live Kitchen Orders 🔔</h3></div>
+                <div id="orders-body"></div>
+            </div>
 
-            <div class="section-card view-section" id="section-stats"><div class="section-header"><h3>Analytics 📈</h3></div><div id="history-body"></div></div>
+            <div class="section-card view-section" id="section-stats">
+                <div class="section-header"><h3>Business Analytics 📈</h3></div>
+                <div id="history-body"></div>
+            </div>
 
-            <div class="section-card view-section" id="section-qr"><div class="section-header"><h3>Table QR Code</h3></div><div style="text-align:center; padding:40px;"><div id="qrcode-box"></div></div></div>
+            <div class="section-card view-section" id="section-qr">
+                <div class="section-header"><h3>Table QR Code 📱</h3></div>
+                <div style="text-align:center; padding:40px;"><div id="qrcode-box"></div></div>
+            </div>
         </div>
     </div>
 
@@ -121,34 +106,24 @@
 
     <div class="modal-overlay" id="addModal">
         <div class="modal-card">
-            <h3 id="modalTitle" style="color:var(--primary); margin-top:0;">Add New Dish</h3>
+            <h3 id="modalTitle">Add New Dish</h3>
             <input type="hidden" id="dishId">
+            <div class="form-group"><label>Dish Name</label><input type="text" id="dishName"></div>
             <div style="display:flex; gap:10px;">
-                <div class="form-group" style="width:80px;"><label>Emoji</label><input type="text" id="dishEmoji" placeholder="🍕"></div>
-                <div class="form-group" style="flex:1;"><label>Dish Name</label><input type="text" id="dishName" placeholder="Dish Name"></div>
-            </div>
-            <div class="form-group">
-                <label>Category</label>
-                <select id="dishCategory">
-                    <option value="Starters">🔥 Starters</option>
-                    <option value="Main Course">🍛 Main Course</option>
-                    <option value="Breads">🥖 Breads</option>
-                    <option value="Drinks">🥤 Drinks</option>
-                </select>
-            </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <div class="form-group" style="flex:1;"><label>Full Price (₹)</label><input type="number" id="dishPrice"></div>
-                <div class="form-group" style="flex:1;"><label>Half Price (₹)</label><input type="number" id="dishPriceHalf"></div>
+                <div class="form-group" style="flex:1;"><label>Full (₹)</label><input type="number" id="dishPrice"></div>
+                <div class="form-group" style="flex:1;"><label>Half (₹)</label><input type="number" id="dishPriceHalf"></div>
                 <div class="form-group" style="flex:1;"><label>Per Piece (₹)</label><input type="number" id="dishPricePiece" placeholder="Optional"></div>
             </div>
-            <div class="form-group"><label>3D Model (.glb)</label><input type="url" id="dishModel"></div>
+            <div class="form-group"><label>Emoji</label><input type="text" id="dishEmoji"></div>
+            <div class="form-group"><label>3D Model URL</label><input type="url" id="dishModel"></div>
             <div class="form-group"><label>Photo URL</label><input type="url" id="dishPhoto1"></div>
-            <button class="btn-login" style="width:100%;" onclick="saveDish()">Save & Publish</button>
+            <button class="btn-save" style="width:100%; background:var(--primary); color:white; padding:15px; border:none; border-radius:15px; font-weight:800;" onclick="saveDish()">Save & Publish</button>
             <button onclick="closeModal()" style="width:100%; background:none; border:none; margin-top:10px; color:var(--text-sub);">Cancel</button>
         </div>
     </div>
 
     <script type="module">
+        /* - Firebase Logic with Search & Dustbin Support */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -165,85 +140,90 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // LOGIN FIX Logic
+        // LOGIN FIX
         onAuthStateChanged(auth, (user) => {
             const ls = document.getElementById('loginScreen');
             if (user) { ls.style.display = 'none'; initAdminData(); } 
             else { ls.style.display = 'flex'; }
         });
 
-        window.loginAdmin = () => {
-            signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPass').value).catch(e => alert(e.message));
-        };
+        window.loginAdmin = () => { signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPass').value).catch(e => alert(e.message)); };
         window.logoutAdmin = () => signOut(auth);
 
         document.getElementById('reportDate').valueAsDate = new Date();
+        let allMenuData = [];
 
         window.initAdminData = () => {
-            const selectedDate = document.getElementById('reportDate').value;
-            
-            // Menu Sync
+            const selDate = document.getElementById('reportDate').value;
+
+            // Menu Display (With Dustbin Icon & Search Support)
             onSnapshot(collection(db, "menu_items"), (snap) => {
-                const list = document.getElementById('menu-body'); list.innerHTML = '';
+                allMenuData = [];
+                snap.forEach(doc => { let d = doc.data(); d.id = doc.id; allMenuData.push(d); });
+                renderAdminMenu(allMenuData);
                 document.getElementById('total-dishes').innerText = snap.size;
-                snap.forEach(d => {
-                    const item = d.data();
-                    list.innerHTML += `<div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                        <div><b>${item.emoji} ${item.name}</b><br><small>₹${item.price}</small></div>
-                        <button onclick="deleteDish('${d.id}')" style="background:var(--del-bg); color:var(--del-text); border:none; padding:5px 10px; border-radius:8px;">Delete</button>
-                    </div>`;
-                });
             });
 
-            // Orders Sync (New Earnings & Cancel Logic)
+            // Orders (With Cancel Button & Date-wise Earnings)
             onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
-                const oList = document.getElementById('orders-body'); oList.innerHTML = '';
-                const hList = document.getElementById('history-body'); hList.innerHTML = '';
+                const oBody = document.getElementById('orders-body'); oBody.innerHTML = '';
                 let active = 0, rev = 0;
-
-                snap.forEach(d => {
-                    const data = d.data();
+                snap.forEach(oDoc => {
+                    const data = oDoc.data();
                     const oDate = data.timestamp.toDate().toISOString().split('T')[0];
-                    if(data.status === 'New') { document.getElementById('orderSound').play(); active++; }
-                    else if(data.status === 'Preparing') active++;
+                    if(data.status === 'New' || data.status === 'Preparing') active++;
+                    if(oDate === selDate && data.status === 'Completed') rev += data.totalAmount;
 
-                    if(oDate === selectedDate && data.status === 'Completed') rev += data.totalAmount;
-
-                    const cardHTML = `<div class="order-card">
-                        <div style="display:flex; justify-content:space-between;"><b>Table ${data.tableNumber}</b><span style="color:var(--primary); font-weight:800;">${data.status}</span></div>
-                        <div style="font-size:13px; margin:5px 0;">${data.items.map(i => `${i.qty}x ${i.name}`).join(', ')}</div>
-                        <b>Total: ₹${data.totalAmount}</b>
-                        <div class="order-actions-row">
-                            ${data.status === 'New' ? `<button class="btn-action btn-prep" onclick="upStatus('${d.id}', 'Preparing')">Prepare</button>` : ''}
-                            ${data.status === 'Preparing' ? `<button class="btn-action btn-done" onclick="upStatus('${d.id}', 'Completed')">Serve</button>` : ''}
-                            ${data.status !== 'Completed' && data.status !== 'Cancelled' ? `<button class="btn-action btn-cancel" onclick="upStatus('${d.id}', 'Cancelled')">Cancel</button>` : ''}
-                        </div>
-                    </div>`;
-
-                    if(oDate === selectedDate || data.status === 'New' || data.status === 'Preparing') oList.innerHTML += cardHTML;
-                    if(data.status === 'Completed') hList.innerHTML += cardHTML;
+                    if(oDate === selDate || data.status === 'New' || data.status === 'Preparing') {
+                        oBody.innerHTML += `<div class="order-card">
+                            <div style="display:flex; justify-content:space-between;"><b>Table ${data.tableNumber}</b><span style="color:var(--primary); font-weight:800;">${data.status}</span></div>
+                            <div style="font-size:13px; margin:5px 0;">${data.items.map(i => i.name).join(', ')}</div>
+                            <b>Total: ₹${data.totalAmount}</b>
+                            <div class="order-actions-row">
+                                ${data.status === 'New' ? `<button class="btn-action-new" style="background:var(--warning);" onclick="upStatus('${oDoc.id}', 'Preparing')">Prepare</button>` : ''}
+                                ${data.status === 'Preparing' ? `<button class="btn-action-new" style="background:var(--success);" onclick="upStatus('${oDoc.id}', 'Completed')">Serve</button>` : ''}
+                                ${data.status !== 'Completed' && data.status !== 'Cancelled' ? `<button class="btn-action-new" style="background:var(--danger);" onclick="upStatus('${oDoc.id}', 'Cancelled')">Cancel</button>` : ''}
+                            </div>
+                        </div>`;
+                    }
                 });
                 document.getElementById('total-revenue').innerText = '₹' + rev;
                 document.getElementById('total-orders').innerText = active;
             });
         };
 
+        window.renderAdminMenu = (data) => {
+            const list = document.getElementById('menu-body'); list.innerHTML = '';
+            data.forEach(item => {
+                list.innerHTML += `<div class="menu-item-row" onclick="editDish('${item.id}')">
+                    <div class="menu-item-info">
+                        <div class="dish-icon">${item.emoji}</div>
+                        <div class="dish-details"><span class="dish-name">${item.name}</span><span class="dish-price">₹${item.price}</span></div>
+                    </div>
+                    <button class="btn-delete-modern" onclick="event.stopPropagation(); deleteDish('${item.id}')">🗑️</button>
+                </div>`;
+            });
+        };
+
+        window.filterAdminMenu = () => {
+            const q = document.getElementById('adminSearchInput').value.toLowerCase();
+            renderAdminMenu(allMenuData.filter(d => d.name.toLowerCase().includes(q)));
+        };
+
         window.upStatus = async (id, s) => await updateDoc(doc(db, "orders", id), {status: s});
-        window.saveDish = async () => {
+        window.deleteDish = async (id) => { if(confirm("Delete this dish?")) await deleteDoc(doc(db, "menu_items", id)); };
+        window.saveDish = async () => { /* Original save logic updated with per piece */ 
             const data = {
-                emoji: document.getElementById('dishEmoji').value,
                 name: document.getElementById('dishName').value,
-                category: document.getElementById('dishCategory').value,
                 price: parseFloat(document.getElementById('dishPrice').value),
                 priceHalf: parseFloat(document.getElementById('dishPriceHalf').value) || null,
                 pricePiece: parseFloat(document.getElementById('dishPricePiece').value) || null,
+                emoji: document.getElementById('dishEmoji').value,
                 modelUrl: document.getElementById('dishModel').value,
                 images: [document.getElementById('dishPhoto1').value]
             };
-            await addDoc(collection(db, "menu_items"), data);
-            closeModal();
+            await addDoc(collection(db, "menu_items"), data); closeModal();
         };
-        window.deleteDish = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "menu_items", id)); };
         window.openModal = () => document.getElementById('addModal').classList.add('show');
         window.closeModal = () => document.getElementById('addModal').classList.remove('show');
         window.switchTab = (t, el) => {
