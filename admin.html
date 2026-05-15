@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
     
     <style>
-        /* - SAARA ORIGINAL CSS (Variables, Dark Mode, Nav, Tabs, Dustbin) */
+        /* CSS VARIABLES */
         :root { 
             --primary: #E23744; --success: #28A745; --warning: #FFB75E; --danger: #FF3B30;
             --edit-bg: #E5F1FF; --edit-text: #007AFF; --del-bg: #FFE5E5; --del-text: #FF3B30;
@@ -27,25 +27,58 @@
 
         body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-main); color: var(--text-main); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; }
         
-        /* LOGIN FIX UI */
-        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px); }
+        /* LOGIN FIX: Shuru me display none rahega */
+        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s; backdrop-filter: blur(5px); }
+        .login-screen.show { display: flex; }
+        .login-card { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 30px; padding: 45px 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border); }
+        .login-card h2 { color: var(--primary); font-family: 'Okra', sans-serif; margin: 0 0 5px 0; font-size: 34px; font-weight: 800;}
 
         .top-nav { flex-shrink: 0; background: var(--bg-card); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 100; transition: 0.3s; }
         .brand-logo { font-family: 'Okra', sans-serif; font-size: 22px; color: var(--primary); font-weight: 800; margin: 0; }
+        
+        .app-container { display: flex; flex: 1; overflow: hidden; }
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.3s; cursor: pointer;}
+        
+        .section-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: 0.3s; margin-bottom: 20px; }
+        .section-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        
+        .search-container { padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
+        .search-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; background: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none; transition: 0.2s; }
+
+        /* Dustbin Icon Style */
         .btn-delete-modern { background: var(--del-bg); color: var(--del-text); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: 0.2s; z-index: 2;}
 
-        .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); }
+        .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
         .order-actions-row { display: flex; gap: 8px; }
         .btn-action-new { border: none; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; color: white; flex: 1; }
-        
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; transition: 0.3s; }
+        .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-sub); cursor: pointer; transition: 0.2s; text-decoration: none; }
+        .nav-tab.active { color: var(--primary); }
+
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
         .modal-card { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 30px 30px 0 0; padding: 30px 25px; transform: translateY(100%); transition: 0.3s; max-height: 90vh; overflow-y: auto;}
-        .modal-overlay.show .modal-card { transform: translateY(0); }
     </style>
 </head>
 <body>
-    <audio id="orderSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+    
+    <audio id="orderSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+    <div class="custom-confirm" id="deleteConfirmModal">
+        <div class="confirm-box">
+            <div class="confirm-icon">🥺</div>
+            <h3>Delete Dish?</h3>
+            <p>Are you sure you want to remove this dish? It will be gone forever.</p>
+            <div class="confirm-actions">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-confirm-del" id="confirmDeleteBtn">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
 
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
@@ -67,6 +100,7 @@
 
     <div class="app-container">
         <div class="main-content">
+            
             <div class="stats-grid">
                 <div class="stat-card" onclick="switchTab('menu')"><div class="stat-title">Menu Items</div><div class="stat-value" id="total-dishes">0</div></div>
                 <div class="stat-card" onclick="switchTab('orders')"><div class="stat-title">Live Orders</div><div class="stat-value" id="total-orders" style="color:var(--warning);">0</div></div>
@@ -75,25 +109,49 @@
             </div>
 
             <div class="section-card view-section active" id="section-menu">
-                <div class="section-header"><h3>Menu Management</h3><button class="btn-add" onclick="openModal()">+ Add Dish</button></div>
-                <div class="search-container"><input type="text" class="search-input" id="adminSearchInput" placeholder="🔍 Search dishes..." onkeyup="filterAdminMenu()"></div>
+                <div class="section-header">
+                    <h3>Menu Management</h3>
+                    <button class="btn-add" onclick="openModal()">+ Add Dish</button>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="adminSearchInput" placeholder="🔍 Search dishes..." onkeyup="filterAdminMenu()">
+                </div>
                 <div class="menu-list" id="menu-body"></div>
             </div>
 
             <div class="section-card view-section" id="section-orders">
-                <div class="section-header"><h3>Live Kitchen Orders 🔔</h3></div>
+                <div class="section-header"><h3>Live Orders 🔔</h3></div>
                 <div id="orders-body"></div>
             </div>
 
             <div class="section-card view-section" id="section-stats">
                 <div class="section-header"><h3>Business Analytics 📈</h3></div>
+                <div class="history-date-header">History & Revenue</div>
                 <div id="history-body"></div>
+                <div class="history-date-header">AR View Logs</div>
+                <div id="ar-views-body"></div>
             </div>
 
             <div class="section-card view-section" id="section-qr">
-                <div class="section-header"><h3>Table QR Code 📱</h3></div>
-                <div style="text-align:center; padding:40px;"><div id="qrcode-box"></div></div>
+                <div class="section-header"><h3>Table QR Code</h3></div>
+                <div class="qr-container">
+                    <div id="qrcode-box"></div>
+                    <button class="btn-download" onclick="downloadQR()">Download Print Version</button>
+                </div>
             </div>
+
+            <div class="section-card view-section" id="section-settings">
+                <div class="section-header"><h3>App Settings ⚙️</h3></div>
+                <div class="setting-row">
+                    <div class="setting-label">🔊 Sound Alerts</div>
+                    <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">🌙 Dark Mode</div>
+                    <label class="switch"><input type="checkbox" id="themeToggle" onchange="toggleTheme()"><span class="slider"></span></label>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -102,6 +160,7 @@
         <a class="nav-tab" onclick="switchTab('orders', this)"><span>🔔</span><label>ORDERS</label></a>
         <a class="nav-tab" onclick="switchTab('stats', this)"><span>📈</span><label>STATS</label></a>
         <a class="nav-tab" onclick="switchTab('qr', this)"><span>📱</span><label>QR</label></a>
+        <a class="nav-tab" onclick="switchTab('settings', this)"><span>⚙️</span><label>SETTINGS</label></a>
     </div>
 
     <div class="modal-overlay" id="addModal">
@@ -109,21 +168,32 @@
             <h3 id="modalTitle">Add New Dish</h3>
             <input type="hidden" id="dishId">
             <div class="form-group"><label>Dish Name</label><input type="text" id="dishName"></div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="dishCategory">
+                    <option value="Starters">🔥 Starters</option>
+                    <option value="Main Course">🍛 Main Course</option>
+                    <option value="Breads">🥖 Breads</option>
+                    <option value="Rice">🍚 Rice</option>
+                    <option value="Drinks">🥤 Drinks</option>
+                    <option value="Desserts">🍰 Desserts</option>
+                </select>
+            </div>
             <div style="display:flex; gap:10px;">
-                <div class="form-group" style="flex:1;"><label>Full (₹)</label><input type="number" id="dishPrice"></div>
-                <div class="form-group" style="flex:1;"><label>Half (₹)</label><input type="number" id="dishPriceHalf"></div>
-                <div class="form-group" style="flex:1;"><label>Per Piece (₹)</label><input type="number" id="dishPricePiece" placeholder="Optional"></div>
+                <div class="form-group" style="flex:1;"><label>Full Price (₹)</label><input type="number" id="dishPrice"></div>
+                <div class="form-group" style="flex:1;"><label>Half Price (₹)</label><input type="number" id="dishPriceHalf"></div>
+                <div class="form-group" style="flex:1;"><label>Per Piece (₹)</label><input type="number" id="dishPricePiece"></div>
             </div>
             <div class="form-group"><label>Emoji</label><input type="text" id="dishEmoji"></div>
             <div class="form-group"><label>3D Model URL</label><input type="url" id="dishModel"></div>
-            <div class="form-group"><label>Photo URL</label><input type="url" id="dishPhoto1"></div>
-            <button class="btn-save" style="width:100%; background:var(--primary); color:white; padding:15px; border:none; border-radius:15px; font-weight:800;" onclick="saveDish()">Save & Publish</button>
+            <div class="form-group"><label>Photo URL (Required)</label><input type="url" id="dishPhoto1"></div>
+            <button class="btn-save" onclick="saveDish()">Save & Publish</button>
             <button onclick="closeModal()" style="width:100%; background:none; border:none; margin-top:10px; color:var(--text-sub);">Cancel</button>
         </div>
     </div>
 
     <script type="module">
-        /* - Firebase Logic with Search & Dustbin Support */
+        /* Original Logic + New Features */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -140,7 +210,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // LOGIN FIX
+        // LOGIN FIX Logic
         onAuthStateChanged(auth, (user) => {
             const ls = document.getElementById('loginScreen');
             if (user) { ls.style.display = 'none'; initAdminData(); } 
@@ -156,22 +226,32 @@
         window.initAdminData = () => {
             const selDate = document.getElementById('reportDate').value;
 
-            // Menu Display (With Dustbin Icon & Search Support)
+            // Menu Display (With Dustbin Icon 🗑️)
             onSnapshot(collection(db, "menu_items"), (snap) => {
+                const list = document.getElementById('menu-body'); list.innerHTML = '';
                 allMenuData = [];
-                snap.forEach(doc => { let d = doc.data(); d.id = doc.id; allMenuData.push(d); });
-                renderAdminMenu(allMenuData);
+                snap.forEach(d => {
+                    const item = d.data(); item.id = d.id; allMenuData.push(item);
+                    list.innerHTML += `<div class="menu-item-row" onclick="editDish('${d.id}')">
+                        <div class="menu-item-info">
+                            <div class="dish-icon">${item.emoji}</div>
+                            <div class="dish-details"><span class="dish-name">${item.name}</span><span class="dish-price">₹${item.price}</span></div>
+                        </div>
+                        <button class="btn-delete-modern" onclick="event.stopPropagation(); triggerDeleteModal('${d.id}')">🗑️</button>
+                    </div>`;
+                });
                 document.getElementById('total-dishes').innerText = snap.size;
             });
 
-            // Orders (With Cancel Button & Date-wise Earnings)
+            // Orders (With Cancel Button & Earnings)
             onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
                 const oBody = document.getElementById('orders-body'); oBody.innerHTML = '';
                 let active = 0, rev = 0;
                 snap.forEach(oDoc => {
                     const data = oDoc.data();
                     const oDate = data.timestamp.toDate().toISOString().split('T')[0];
-                    if(data.status === 'New' || data.status === 'Preparing') active++;
+                    if(data.status === 'New') { if(document.getElementById('soundToggle').checked) document.getElementById('orderSound').play(); active++; }
+                    else if(data.status === 'Preparing') active++;
                     if(oDate === selDate && data.status === 'Completed') rev += data.totalAmount;
 
                     if(oDate === selDate || data.status === 'New' || data.status === 'Preparing') {
@@ -190,41 +270,45 @@
                 document.getElementById('total-revenue').innerText = '₹' + rev;
                 document.getElementById('total-orders').innerText = active;
             });
-        };
 
-        window.renderAdminMenu = (data) => {
-            const list = document.getElementById('menu-body'); list.innerHTML = '';
-            data.forEach(item => {
-                list.innerHTML += `<div class="menu-item-row" onclick="editDish('${item.id}')">
-                    <div class="menu-item-info">
-                        <div class="dish-icon">${item.emoji}</div>
-                        <div class="dish-details"><span class="dish-name">${item.name}</span><span class="dish-price">₹${item.price}</span></div>
-                    </div>
-                    <button class="btn-delete-modern" onclick="event.stopPropagation(); deleteDish('${item.id}')">🗑️</button>
-                </div>`;
-            });
+            // AR Views
+            onSnapshot(collection(db, "ar_views"), (snap) => { document.getElementById('total-ar-views').innerText = snap.size; });
         };
 
         window.filterAdminMenu = () => {
             const q = document.getElementById('adminSearchInput').value.toLowerCase();
-            renderAdminMenu(allMenuData.filter(d => d.name.toLowerCase().includes(q)));
+            const list = document.getElementById('menu-body'); list.innerHTML = '';
+            allMenuData.filter(d => d.name.toLowerCase().includes(q)).forEach(item => {
+                list.innerHTML += `<div class="menu-item-row" onclick="editDish('${item.id}')">
+                    <div class="menu-item-info"><div class="dish-icon">${item.emoji}</div><div class="dish-details"><span>${item.name}</span><span>₹${item.price}</span></div></div>
+                    <button class="btn-delete-modern" onclick="event.stopPropagation(); triggerDeleteModal('${item.id}')">🗑️</button>
+                </div>`;
+            });
         };
 
         window.upStatus = async (id, s) => await updateDoc(doc(db, "orders", id), {status: s});
-        window.deleteDish = async (id) => { if(confirm("Delete this dish?")) await deleteDoc(doc(db, "menu_items", id)); };
-        window.saveDish = async () => { /* Original save logic updated with per piece */ 
+        window.saveDish = async () => {
+            const id = document.getElementById('dishId').value;
             const data = {
                 name: document.getElementById('dishName').value,
                 price: parseFloat(document.getElementById('dishPrice').value),
                 priceHalf: parseFloat(document.getElementById('dishPriceHalf').value) || null,
                 pricePiece: parseFloat(document.getElementById('dishPricePiece').value) || null,
                 emoji: document.getElementById('dishEmoji').value,
+                category: document.getElementById('dishCategory').value,
                 modelUrl: document.getElementById('dishModel').value,
                 images: [document.getElementById('dishPhoto1').value]
             };
-            await addDoc(collection(db, "menu_items"), data); closeModal();
+            if(id) await updateDoc(doc(db, "menu_items", id), data);
+            else await addDoc(collection(db, "menu_items"), data);
+            closeModal();
         };
-        window.openModal = () => document.getElementById('addModal').classList.add('show');
+
+        window.triggerDeleteModal = (id) => { window.delId = id; document.getElementById('deleteConfirmModal').classList.add('show'); };
+        window.closeDeleteModal = () => document.getElementById('deleteConfirmModal').classList.remove('show');
+        document.getElementById('confirmDeleteBtn').onclick = async () => { await deleteDoc(doc(db, "menu_items", window.delId)); closeDeleteModal(); };
+
+        window.openModal = () => { document.getElementById('addModal').classList.add('show'); document.getElementById('dishId').value = ""; };
         window.closeModal = () => document.getElementById('addModal').classList.remove('show');
         window.switchTab = (t, el) => {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -232,6 +316,7 @@
             document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
         };
+        window.toggleTheme = () => { document.body.setAttribute('data-theme', document.getElementById('themeToggle').checked ? 'dark' : ''); };
         new QRCode(document.getElementById("qrcode-box"), { text: "https://itxarun.github.io/Smart-Menu/index.html", width: 180, height: 180 });
     </script>
 </body>
