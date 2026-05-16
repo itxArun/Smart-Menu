@@ -156,11 +156,11 @@
         .input-field { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: border-color 0.2s; background: #F8F9FA;}
         .input-field:focus { border-color: var(--zomato-red); }
 
-        /* NEW: LIVE TRACKER BANNER */
-        .tracker-banner { position: fixed; top: 75px; left: 15px; right: 15px; background: white; border-radius: 16px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 900; border: 1px solid var(--border-light); transform: translateY(-150%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* 🔥 NEW: LIVE TRACKER BANNER (FIXED BUG) 🔥 */
+        .tracker-banner { position: fixed; top: 15px; left: 15px; right: 15px; background: white; border-radius: 16px; padding: 15px 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); z-index: 9999; border: 2px solid var(--zomato-red); transform: translateY(-150%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .tracker-banner.show { transform: translateY(0); }
         .tracker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .tracker-status { font-weight: 800; color: var(--zomato-red); font-size: 15px; }
+        .tracker-status { font-weight: 800; color: var(--zomato-red); font-size: 16px; display: flex; align-items: center; gap: 8px;}
         .tracker-desc { font-size: 12px; color: var(--text-sub); font-weight: 600; }
         .pulse-dot { width: 10px; height: 10px; background: var(--zomato-red); border-radius: 50%; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(226, 55, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(226, 55, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(226, 55, 68, 0); } }
@@ -170,8 +170,11 @@
 
     <div class="tracker-banner" id="tracker-banner">
         <div class="tracker-header">
-            <div class="tracker-status" id="track-status-text">Order Received</div>
-            <div class="pulse-dot" id="track-pulse"></div>
+            <div class="tracker-status">
+                <span id="track-status-text">Order Received</span>
+                <div class="pulse-dot" id="track-pulse"></div>
+            </div>
+            <button onclick="document.getElementById('tracker-banner').classList.remove('show')" style="background:none; border:none; font-size:18px; color:#999; cursor:pointer; padding:0; line-height:1;">✕</button>
         </div>
         <div class="tracker-desc" id="track-desc-text">Kitchen has received your order.</div>
     </div>
@@ -320,7 +323,7 @@
         let currentVariant = 'full'; 
         let cart = {}; 
         let activeCategory = 'All'; 
-        let trendingIds = []; // Stores IDs of top ordered items
+        let trendingIds = []; 
         
         const viewer = document.querySelector('#ar-viewer');
         const updateBar = document.querySelector('#update-bar');
@@ -551,7 +554,8 @@
                 const header = document.createElement('div');
                 header.style.padding = "15px 5px 5px 5px"; header.style.fontSize = "10px"; header.style.fontWeight = "800";
                 header.style.color = "var(--text-sub)"; header.style.textAlign = "center"; header.style.borderBottom = "1px solid #f0f0f0";
-                header.innerText = "— " + cat.toUpperCase() + " —";
+                // 🔥 BUG FIX: Removed dashes to prevent awkward text wrapping on small sidebar 🔥
+                header.innerText = cat.toUpperCase();
                 sidebar.appendChild(header);
 
                 groupedDishes[cat].forEach((data) => {
