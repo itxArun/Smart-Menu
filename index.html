@@ -28,7 +28,14 @@
         .header { flex-shrink: 0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); border-bottom: 1px solid var(--border-light); z-index: 20; }
         .brand-name { font-size: 24px; font-weight: 800; color: var(--zomato-red); margin: 0; }
         
-        /* NEW: HINDI/ENGLISH TOGGLE */
+        /* NEW: TRACK ORDER ICON (Language ke bagal me) */
+        .track-icon { position: relative; font-size: 20px; cursor: pointer; padding: 6px 10px; background: #FFF0E5; border-radius: 50px; color: #FF9500; transition: 0.2s; margin-right: 10px; display: none; align-items: center; gap: 5px; border: 1px solid rgba(255,149,0,0.3); }
+        .track-icon.show { display: flex; }
+        .track-icon:active { transform: scale(0.9); }
+        .track-pulse { position: absolute; top: -2px; right: -2px; background: #FF9500; width: 10px; height: 10px; border-radius: 50%; animation: pulse-orange 1.5s infinite; }
+        @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } }
+
+        /* HINDI/ENGLISH TOGGLE */
         .lang-switch { display: flex; background: #F1F1F6; padding: 3px; border-radius: 50px; margin-right: 15px; }
         .lang-btn { border: none; background: transparent; padding: 5px 12px; font-size: 11px; font-weight: 800; border-radius: 50px; cursor: pointer; color: var(--text-sub); transition: 0.2s; }
         .lang-btn.active { background: var(--zomato-red); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -56,7 +63,7 @@
         .side-emoji { font-size: 28px; margin-bottom: 5px; }
         .side-name { font-size: 10px; font-weight: 700; color: var(--text-main); line-height: 1.2; word-wrap: break-word;}
         
-        /* NEW: TRENDING BADGE */
+        /* TRENDING BADGE */
         .best-seller-tag { display: inline-block; background: #FFF0E5; color: #FF9500; font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-top: 5px; border: 1px solid rgba(255,149,0,0.2); }
 
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
@@ -155,28 +162,22 @@
         
         .input-field { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: border-color 0.2s; background: #F8F9FA;}
         .input-field:focus { border-color: var(--zomato-red); }
-
-        /* 🔥 NEW: LIVE TRACKER BANNER (FIXED BUG) 🔥 */
-        .tracker-banner { position: fixed; top: 15px; left: 15px; right: 15px; background: white; border-radius: 16px; padding: 15px 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); z-index: 9999; border: 2px solid var(--zomato-red); transform: translateY(-150%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .tracker-banner.show { transform: translateY(0); }
-        .tracker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .tracker-status { font-weight: 800; color: var(--zomato-red); font-size: 16px; display: flex; align-items: center; gap: 8px;}
-        .tracker-desc { font-size: 12px; color: var(--text-sub); font-weight: 600; }
-        .pulse-dot { width: 10px; height: 10px; background: var(--zomato-red); border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(226, 55, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(226, 55, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(226, 55, 68, 0); } }
     </style>
 </head>
 <body>
 
-    <div class="tracker-banner" id="tracker-banner">
-        <div class="tracker-header">
-            <div class="tracker-status">
-                <span id="track-status-text">Order Received</span>
-                <div class="pulse-dot" id="track-pulse"></div>
+    <div class="cart-modal" id="tracker-modal">
+        <div class="cart-content" style="text-align: center;">
+            <div class="cart-header">
+                <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;">Order Status</h2>
+                <button style="border:none; background:#eee; width:30px; height:30px; border-radius:50%; font-weight: bold; cursor:pointer;" onclick="toggleTracker()">✕</button>
             </div>
-            <button onclick="document.getElementById('tracker-banner').classList.remove('show')" style="background:none; border:none; font-size:18px; color:#999; cursor:pointer; padding:0; line-height:1;">✕</button>
+            <div style="padding: 20px 0 10px 0;">
+                <div id="track-modal-icon" style="font-size: 50px; margin-bottom: 15px;">🕒</div>
+                <h3 id="track-modal-status" style="margin: 0 0 8px 0; font-size: 22px; font-weight: 800; color: var(--zomato-red);">Order Received</h3>
+                <p id="track-modal-desc" style="margin: 0; font-size: 14px; color: var(--text-sub); font-weight: 500;">Kitchen has received your order.</p>
+            </div>
         </div>
-        <div class="tracker-desc" id="track-desc-text">Kitchen has received your order.</div>
     </div>
 
     <div class="fullscreen-viewer" id="fs-viewer">
@@ -202,6 +203,12 @@
     <div class="header">
         <h1 class="brand-name">Crave AR</h1>
         <div style="display:flex; align-items:center;">
+            
+            <div class="track-icon" id="btn-track-order" onclick="toggleTracker()">
+                <span style="font-size: 14px; font-weight:800; color:inherit;" id="track-btn-text">Track</span> 📦
+                <div class="track-pulse" id="track-badge-pulse"></div>
+            </div>
+
             <div class="lang-switch">
                 <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</button>
                 <button class="lang-btn" id="btn-hi" onclick="setLanguage('hi')">हिंदी</button>
@@ -333,10 +340,9 @@
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
-        // HINDI/ENGLISH TRANSLATION DICTIONARY
         const i18n = {
-            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "🔍 Search" },
-            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "🔍 खोजें" }
+            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "🔍 Search", trackTitle: "Order Status", trackBtn: "Track" },
+            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "🔍 खोजें", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक" }
         };
         let currentLang = 'en';
 
@@ -353,8 +359,13 @@
             document.getElementById('bill-total-text').innerText = i18n[l].totalPay;
             document.getElementById('btn-alert-ok').innerText = i18n[l].alertOk;
             document.getElementById('searchInput').placeholder = i18n[l].search;
+            document.getElementById('tracker-title-text').innerText = i18n[l].trackTitle;
+            document.getElementById('track-btn-text').innerText = i18n[l].trackBtn;
             updateGlobalCartUI();
         };
+
+        // TRACKER MODAL TOGGLE
+        window.toggleTracker = () => { document.getElementById('tracker-modal').classList.toggle('show'); };
 
         // ------------------ FULLSCREEN SLIDE & ZOOM LOGIC ------------------
         let pzInstance = null;
@@ -374,9 +385,7 @@
             const img = document.getElementById('fs-img');
             if(pzInstance) { pzInstance.dispose(); pzInstance = null; }
             img.style.transform = ''; 
-            img.onload = () => {
-                pzInstance = panzoom(img, { maxZoom: 5, minZoom: 1, bounds: true, boundsPadding: 0 });
-            };
+            img.onload = () => { pzInstance = panzoom(img, { maxZoom: 5, minZoom: 1, bounds: true, boundsPadding: 0 }); };
             img.src = fsImages[fsCurrentIndex];
             
             const prevBtn = document.querySelector('.fs-prev');
@@ -458,31 +467,42 @@
         }
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
-        // LIVE ORDER TRACKER LOGIC
+        // LIVE ORDER TRACKER LOGIC (MODAL VERSION)
         function listenToLiveOrder(orderId) {
             onSnapshot(doc(db, "orders", orderId), (d) => {
                 if(!d.exists()) return;
                 const data = d.data();
-                const banner = document.getElementById('tracker-banner');
-                const statusTxt = document.getElementById('track-status-text');
-                const descTxt = document.getElementById('track-desc-text');
-                const pulse = document.getElementById('track-pulse');
                 
-                banner.classList.add('show');
+                const trackBtn = document.getElementById('btn-track-order');
+                const pulse = document.getElementById('track-badge-pulse');
+                const statusTxt = document.getElementById('track-modal-status');
+                const descTxt = document.getElementById('track-modal-desc');
+                const iconTxt = document.getElementById('track-modal-icon');
+                
+                trackBtn.classList.add('show'); // Button dikhao language ke bagal me
+                
                 if(data.status === 'New') {
-                    statusTxt.innerText = 'Order Received'; descTxt.innerText = 'Kitchen has received your order.';
-                    statusTxt.style.color = 'var(--zomato-red)'; pulse.style.display = 'block'; pulse.style.background = 'var(--zomato-red)';
+                    statusTxt.innerText = currentLang === 'hi' ? 'ऑर्डर मिल गया' : 'Order Received';
+                    descTxt.innerText = currentLang === 'hi' ? 'किचन को आपका ऑर्डर मिल गया है।' : 'Kitchen has received your order.';
+                    statusTxt.style.color = 'var(--zomato-red)'; iconTxt.innerText = '🧾';
+                    pulse.style.display = 'block'; pulse.style.background = 'var(--zomato-red)';
                 } else if(data.status === 'Preparing') {
-                    statusTxt.innerText = 'Preparing... 👨‍🍳'; descTxt.innerText = 'Your food is being cooked!';
-                    statusTxt.style.color = '#FF9500'; pulse.style.display = 'block'; pulse.style.background = '#FF9500';
+                    statusTxt.innerText = currentLang === 'hi' ? 'तैयार हो रहा है...' : 'Preparing...';
+                    descTxt.innerText = currentLang === 'hi' ? 'आपका खाना पकाया जा रहा है!' : 'Your food is being cooked!';
+                    statusTxt.style.color = '#FF9500'; iconTxt.innerText = '👨‍🍳';
+                    pulse.style.display = 'block'; pulse.style.background = '#FF9500';
                 } else if(data.status === 'Completed') {
-                    statusTxt.innerText = 'Served ✅'; descTxt.innerText = 'Enjoy your meal!';
-                    statusTxt.style.color = 'var(--green)'; pulse.style.display = 'none';
-                    setTimeout(() => { banner.classList.remove('show'); localStorage.removeItem('craveCurrentOrderId'); }, 10000);
+                    statusTxt.innerText = currentLang === 'hi' ? 'परोसा गया ✅' : 'Served ✅';
+                    descTxt.innerText = currentLang === 'hi' ? 'अपने भोजन का आनंद लें!' : 'Enjoy your meal!';
+                    statusTxt.style.color = 'var(--green)'; iconTxt.innerText = '🍽️';
+                    pulse.style.display = 'none';
+                    setTimeout(() => { trackBtn.classList.remove('show'); localStorage.removeItem('craveCurrentOrderId'); }, 10000);
                 } else if(data.status === 'Cancelled') {
-                    statusTxt.innerText = 'Cancelled ❌'; descTxt.innerText = 'Your order was cancelled.';
-                    statusTxt.style.color = 'var(--text-sub)'; pulse.style.display = 'none';
-                    setTimeout(() => { banner.classList.remove('show'); localStorage.removeItem('craveCurrentOrderId'); }, 10000);
+                    statusTxt.innerText = currentLang === 'hi' ? 'रद्द हो गया ❌' : 'Cancelled ❌';
+                    descTxt.innerText = currentLang === 'hi' ? 'आपका ऑर्डर रद्द कर दिया गया है।' : 'Your order was cancelled.';
+                    statusTxt.style.color = 'var(--text-sub)'; iconTxt.innerText = '😔';
+                    pulse.style.display = 'none';
+                    setTimeout(() => { trackBtn.classList.remove('show'); localStorage.removeItem('craveCurrentOrderId'); }, 10000);
                 }
             });
         }
@@ -528,7 +548,6 @@
             const queryText = document.getElementById('searchInput').value.toLowerCase();
             let filtered = allDishes;
             
-            // SMART FILTERS (Veg, Non-Veg, Trending)
             if (activeCategory === 'Veg Only') filtered = filtered.filter(d => (d.emoji && d.emoji.includes('🟢')) || d.category === 'Veg' || d.category === 'Desserts' || d.category === 'Drinks');
             else if (activeCategory === 'Non-Veg Only') filtered = filtered.filter(d => (d.emoji && d.emoji.includes('🔴')) || d.category === 'Non-Veg');
             else if (activeCategory === 'Trending') filtered = filtered.filter(d => trendingIds.includes(d.id));
@@ -554,7 +573,6 @@
                 const header = document.createElement('div');
                 header.style.padding = "15px 5px 5px 5px"; header.style.fontSize = "10px"; header.style.fontWeight = "800";
                 header.style.color = "var(--text-sub)"; header.style.textAlign = "center"; header.style.borderBottom = "1px solid #f0f0f0";
-                // 🔥 BUG FIX: Removed dashes to prevent awkward text wrapping on small sidebar 🔥
                 header.innerText = cat.toUpperCase();
                 sidebar.appendChild(header);
 
@@ -587,7 +605,6 @@
             document.getElementById('display-name').innerHTML = `${data.name} ${catBadgeHtml}`;
             document.getElementById('display-price').innerText = '₹' + data.price;
             
-            // SMART VARIANT BOX: Half, Full, Per Piece Logic
             const variantBox = document.getElementById('variant-box');
             const btnHalf = document.getElementById('btn-half');
             const btnFull = document.getElementById('btn-full');
@@ -750,7 +767,6 @@
             waText += `-------------------%0A*Total to Pay:* ₹${grandTotal}`;
 
             try {
-                // ORDER PLACE KARNA AUR LIVE TRACKER START KARNA
                 const docRef = await addDoc(collection(db, "orders"), { 
                     tableNumber: tableNo, 
                     customerName: custName || "N/A",
@@ -762,7 +778,6 @@
                     timestamp: new Date() 
                 });
                 
-                // Track Order logic
                 localStorage.setItem('craveCurrentOrderId', docRef.id);
                 listenToLiveOrder(docRef.id);
 
