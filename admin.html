@@ -22,7 +22,7 @@
     <style>
         /* CSS VARIABLES */
         :root { 
-            --primary: #E23744; --success: #28A745; --warning: #FFB75E; 
+            --primary: #E23744; --success: #28A745; --warning: #FFB75E; --danger: #FF3B30;
             --edit-bg: #E5F1FF; --edit-text: #007AFF; --del-bg: #FFE5E5; --del-text: #FF3B30;
             --bg-main: #F4F6F8; --bg-card: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78; 
             --border: #E8E8E8; --input-bg: #F8F9FA;
@@ -36,7 +36,8 @@
 
         body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-main); color: var(--text-main); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; }
         
-        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s; backdrop-filter: blur(5px); }
+        /* LOGIN FIX: Shuru me display none taaki 2 second ka lag na aaye */
+        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s; backdrop-filter: blur(5px); }
         .login-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
         .login-card { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 30px; padding: 45px 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border); }
         .login-card h2 { color: var(--primary); font-family: 'Okra', sans-serif; margin: 0 0 5px 0; font-size: 34px; font-weight: 800;}
@@ -92,6 +93,8 @@
         .order-actions-row { display: flex; gap: 8px; }
         .btn-done { background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);}
         .btn-done:active { transform: scale(0.95); }
+        /* Cancel Button CSS Style */
+        .btn-cancel-new { background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(255, 59, 48, 0.2); }
 
         .history-date-header { background: var(--input-bg); padding: 8px 20px; font-size: 12px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
         .history-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -145,6 +148,9 @@
         .view-section { display: none; animation: fadeIn 0.3s; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Date Filter Box Style */
+        .date-filter-box { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; background: var(--bg-card); color: var(--text-main); outline: none; }
     </style>
 </head>
 <body>
@@ -175,7 +181,8 @@
 
     <div class="top-nav">
         <h1 class="brand-logo">Crave AR</h1>
-        <div class="admin-profile">
+        <div class="admin-profile" style="gap: 10px;">
+            <input type="date" id="reportDate" class="date-filter-box" onchange="initAdminData()">
             <button class="btn-logout" onclick="logoutAdmin()">Logout</button>
             <div class="avatar">A</div>
         </div>
@@ -187,7 +194,7 @@
             <div class="stats-grid">
                 <div class="stat-card" onclick="switchTab('menu')"><div class="stat-title">Menu Items</div><div class="stat-value" id="total-dishes">0</div></div>
                 <div class="stat-card" onclick="switchTab('orders')"><div class="stat-title">Live Orders</div><div class="stat-value" id="total-orders" style="color:var(--warning);">0</div></div>
-                <div class="stat-card" onclick="switchTab('stats')"><div class="stat-title">Revenue</div><div class="stat-value green" id="total-revenue">₹0</div></div>
+                <div class="stat-card" onclick="switchTab('stats')"><div class="stat-title">Revenue (Selected Date)</div><div class="stat-value green" id="total-revenue">₹0</div></div>
                 <div class="stat-card" onclick="switchTab('stats')"><div class="stat-title">AR Views</div><div class="stat-value" id="total-ar-views">0</div></div>
             </div>
 
@@ -268,7 +275,6 @@
         <a class="nav-tab" onclick="switchTab('settings', this)"><span>⚙️</span><label>SETTINGS</label></a>
     </div>
 
-    <!-- ADD DISH MODAL -->
     <div class="modal-overlay" id="addModal">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -310,6 +316,10 @@
                     <label>Half Price (₹)</label>
                     <input type="number" id="dishPriceHalf" placeholder="Optional">
                 </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Per Piece (₹)</label>
+                    <input type="number" id="dishPricePiece" placeholder="Optional">
+                </div>
             </div>
 
             <div class="form-group">
@@ -317,7 +327,6 @@
                 <input type="url" id="dishModel" placeholder="https://raw.githubusercontent.com/..." required>
             </div>
 
-            <!-- NEW: HD PHOTO URLS -->
             <div class="form-group" style="background: var(--input-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--border);">
                 <label style="color: var(--primary);">📸 Dish Photos (Up to 4)</label>
                 <p style="font-size: 11px; color: var(--text-sub); margin-top: -5px; margin-bottom: 10px;">Provide image URLs. Customers can swipe these photos.</p>
@@ -367,11 +376,15 @@
         // Generate QR Code
         new QRCode(document.getElementById("qrcode-box"), { text: document.getElementById("menu-link").value, width: 220, height: 220, colorDark: "#282C3F", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
 
-        // Authentication State
+        // LOGIN FIX Logic: Avoiding 2-second screen lag
         onAuthStateChanged(auth, (user) => {
             const loginScreen = document.getElementById('loginScreen');
-            if (user) { loginScreen.classList.add('hidden'); initAdminData(); } 
-            else { loginScreen.classList.remove('hidden'); }
+            if (user) { 
+                loginScreen.style.display = 'none'; 
+                initAdminData(); 
+            } else { 
+                loginScreen.style.display = 'flex'; 
+            }
         });
 
         window.loginAdmin = () => {
@@ -388,11 +401,14 @@
 
         window.logoutAdmin = () => { signOut(auth); };
 
+        document.getElementById('reportDate').valueAsDate = new Date();
         let allMenuData = [];
         let isInitialLoad = true;
 
         function initAdminData() {
-            // Stats Sync
+            const selectedDate = document.getElementById('reportDate').value;
+
+            // Stats & Menu Sync with Original Render Function
             onSnapshot(collection(db, "menu_items"), (snap) => {
                 document.getElementById('total-dishes').innerText = snap.size;
                 allMenuData = [];
@@ -405,7 +421,7 @@
                 renderARViews(snap);
             });
 
-            // Orders Sync (Live + History)
+            // Orders Listener with Date Filter & Cancel Action Logic
             const qLive = query(collection(db, "orders"), orderBy("timestamp", "desc"));
             onSnapshot(qLive, (snap) => {
                 const ordersList = document.getElementById('orders-body');
@@ -429,53 +445,59 @@
                     const data = doc.data();
                     const date = data.timestamp ? data.timestamp.toDate() : new Date();
                     const timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const orderDate = date.toISOString().split('T')[0];
                     
-                    if(data.status === 'New') {
-                        activeCount++;
-                        
-                        let itemsHTML = '';
-                        data.items.forEach(item => {
-                            itemsHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                                <span>${item.qty}x ${item.name} <span style="color:var(--text-sub); font-size:11px;">${item.variant}</span></span>
-                                <span>₹${item.price * item.qty}</span>
-                            </div>`;
-                        });
+                    if(data.status === 'New' || data.status === 'Preparing') {
+                        if(orderDate === selectedDate || data.status === 'New' || data.status === 'Preparing') {
+                            activeCount++;
+                            let itemsHTML = '';
+                            data.items.forEach(item => {
+                                itemsHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                    <span>${item.qty}x ${item.name} <span style="color:var(--text-sub); font-size:11px;">${item.variant || ""}</span></span>
+                                    <span>₹${item.price * item.qty}</span>
+                                </div>`;
+                            });
 
-                        const orderCard = `
-                            <div class="order-card" style="background:var(--edit-bg); border-radius:12px; border:1px solid rgba(0,122,255,0.2); margin-bottom:15px;">
-                                <div class="order-header">
-                                    <div style="display:flex; align-items:center; gap:10px;">
-                                        <span class="table-badge">T-${data.tableNumber}</span>
-                                        <span class="order-time">${timeStr}</span>
+                            const orderCard = `
+                                <div class="order-card" style="background:var(--edit-bg); border-radius:12px; border:1px solid rgba(0,122,255,0.2); margin-bottom:15px;">
+                                    <div class="order-header">
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <span class="table-badge">T-${data.tableNumber}</span>
+                                            <span class="order-time">${timeStr} (${data.status})</span>
+                                        </div>
+                                        <span style="font-size:11px; font-weight:800; background:rgba(226,55,68,0.1); color:var(--primary); padding:4px 8px; border-radius:6px;">${data.paymentMethod || "COD"}</span>
                                     </div>
-                                    <span style="font-size:11px; font-weight:800; background:rgba(226,55,68,0.1); color:var(--primary); padding:4px 8px; border-radius:6px;">${data.paymentMethod}</span>
-                                </div>
-                                <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:5px;">
-                                    Cust: ${data.customerName || "N/A"} | Ph: ${data.customerPhone || "N/A"}
-                                </div>
-                                <div class="order-items" style="background:rgba(255,255,255,0.5); border-color:rgba(0,122,255,0.1); margin-top:8px;">
-                                    ${itemsHTML}
-                                </div>
-                                <div class="order-footer">
-                                    <span class="order-total">₹${data.totalAmount}</span>
-                                    <div class="order-actions-row">
-                                        <button class="btn-done" onclick="completeOrder('${doc.id}')">Serve & Clear ➔</button>
+                                    <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:5px;">
+                                        Cust: ${data.customerName || "N/A"} | Ph: ${data.customerPhone || "N/A"}
+                                    </div>
+                                    <div class="order-items" style="background:rgba(255,255,255,0.5); border-color:rgba(0,122,255,0.1); margin-top:8px;">
+                                        ${itemsHTML}
+                                    </div>
+                                    <div class="order-footer">
+                                        <span class="order-total">₹${data.totalAmount}</span>
+                                        <div class="order-actions-row">
+                                            ${data.status === 'New' ? `<button class="btn-done" style="background:var(--warning);" onclick="updateOrderStatus('${doc.id}', 'Preparing')">Prepare ➔</button>` : ''}
+                                            ${data.status === 'Preparing' ? `<button class="btn-done" onclick="updateOrderStatus('${doc.id}', 'Completed')">Serve & Clear ➔</button>` : ''}
+                                            <button class="btn-cancel-new" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel ✕</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
-                        ordersList.innerHTML += orderCard;
+                            `;
+                            ordersList.innerHTML += orderCard;
+                        }
                     } else if (data.status === 'Completed') {
-                        totalRev += data.totalAmount;
-                        historyList.innerHTML += `
-                            <div class="history-item">
-                                <div class="history-item-left">
-                                    <span class="history-item-table">Table ${data.tableNumber} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod})</span></span>
-                                    <span class="history-item-time">${timeStr} • ${data.items.length} items</span>
+                        if(orderDate === selectedDate) {
+                            totalRev += data.totalAmount;
+                            historyList.innerHTML += `
+                                <div class="history-item">
+                                    <div class="history-item-left">
+                                        <span class="history-item-table">Table ${data.tableNumber} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "COD"})</span></span>
+                                        <span class="history-item-time">${timeStr} • ${data.items.length} items</span>
+                                    </div>
+                                    <span class="history-item-amount">+₹${data.totalAmount}</span>
                                 </div>
-                                <span class="history-item-amount">+₹${data.totalAmount}</span>
-                            </div>
-                        `;
+                            `;
+                        }
                     }
                 });
 
@@ -487,11 +509,11 @@
             });
         }
 
+        // Render Menu with original Dustbin styles
         window.renderAdminMenu = (data) => {
             const list = document.getElementById('menu-body');
             list.innerHTML = '';
             data.forEach(item => {
-                
                 let catBadgeClass = ''; let icon = '';
                 if(item.category === 'Veg' || item.category === 'Starters') { catBadgeClass = 'color:#28A745; background:rgba(40,167,69,0.1)'; icon='🟢';}
                 else if(item.category === 'Non-Veg' || item.category === 'Main Course') { catBadgeClass = 'color:#E23744; background:rgba(226,55,68,0.1)'; icon='🔴';}
@@ -543,9 +565,9 @@
             document.getElementById('dishCategory').value = "Starters";
             document.getElementById('dishPrice').value = "";
             document.getElementById('dishPriceHalf').value = "";
+            document.getElementById('dishPricePiece').value = "";
             document.getElementById('dishModel').value = "";
             
-            // Clear Image Fields
             document.getElementById('dishPhoto1').value = "";
             document.getElementById('dishPhoto2').value = "";
             document.getElementById('dishPhoto3').value = "";
@@ -566,9 +588,9 @@
                 document.getElementById('dishCategory').value = dish.category;
                 document.getElementById('dishPrice').value = dish.price;
                 document.getElementById('dishPriceHalf').value = dish.priceHalf || "";
+                document.getElementById('dishPricePiece').value = dish.pricePiece || "";
                 document.getElementById('dishModel').value = dish.modelUrl || "";
 
-                // Populate Image Fields (if they exist)
                 document.getElementById('dishPhoto1').value = (dish.images && dish.images[0]) ? dish.images[0] : "";
                 document.getElementById('dishPhoto2').value = (dish.images && dish.images[1]) ? dish.images[1] : "";
                 document.getElementById('dishPhoto3').value = (dish.images && dish.images[2]) ? dish.images[2] : "";
@@ -581,10 +603,8 @@
         window.saveDish = async () => {
             const btn = document.getElementById('saveBtn');
             btn.innerText = "Saving..."; btn.disabled = true;
-
             const id = document.getElementById('dishId').value;
             
-            // Gather Image URLs and filter out empty ones
             const img1 = document.getElementById('dishPhoto1').value;
             const img2 = document.getElementById('dishPhoto2').value;
             const img3 = document.getElementById('dishPhoto3').value;
@@ -597,8 +617,9 @@
                 category: document.getElementById('dishCategory').value,
                 price: parseFloat(document.getElementById('dishPrice').value),
                 priceHalf: parseFloat(document.getElementById('dishPriceHalf').value) || null,
+                pricePiece: parseFloat(document.getElementById('dishPricePiece').value) || null,
                 modelUrl: document.getElementById('dishModel').value,
-                images: imagesArray // Saved as array in Firebase
+                images: imagesArray
             };
 
             try {
@@ -606,7 +627,6 @@
                 else await addDoc(collection(db, "menu_items"), data);
                 closeModal();
             } catch(e) { alert("Error: " + e.message); }
-
             btn.innerText = "Save & Publish"; btn.disabled = false;
         };
 
@@ -626,9 +646,9 @@
             }
         });
 
-        window.completeOrder = async (orderId) => {
-            try { await updateDoc(doc(db, "orders", orderId), { status: 'Completed' }); } 
-            catch(e) { alert("Error completing order: " + e.message); }
+        window.updateOrderStatus = async (orderId, newStatus) => {
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus }); } 
+            catch(e) { alert("Error updating order: " + e.message); }
         };
 
         window.switchTab = (tabId, element = null) => {
@@ -655,7 +675,6 @@
             if(document.getElementById('themeToggle').checked) document.body.setAttribute('data-theme', 'dark');
             else document.body.removeAttribute('data-theme');
         };
-
     </script>
 </body>
 </html>
