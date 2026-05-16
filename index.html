@@ -28,6 +28,11 @@
         .header { flex-shrink: 0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); border-bottom: 1px solid var(--border-light); z-index: 20; }
         .brand-name { font-size: 24px; font-weight: 800; color: var(--zomato-red); margin: 0; }
         
+        /* NEW: HINDI/ENGLISH TOGGLE */
+        .lang-switch { display: flex; background: #F1F1F6; padding: 3px; border-radius: 50px; margin-right: 15px; }
+        .lang-btn { border: none; background: transparent; padding: 5px 12px; font-size: 11px; font-weight: 800; border-radius: 50px; cursor: pointer; color: var(--text-sub); transition: 0.2s; }
+        .lang-btn.active { background: var(--zomato-red); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
         .cart-icon { position: relative; font-size: 22px; cursor: pointer; padding: 8px; background: #FDEEEE; border-radius: 50%; color: var(--zomato-red); transition: transform 0.2s; }
         .cart-icon:active { transform: scale(0.9); }
         .cart-badge { position: absolute; top: -2px; right: -2px; background: var(--zomato-red); color: white; font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
@@ -50,6 +55,9 @@
         .side-item.active { border-left-color: var(--zomato-red); background: #FDEEEE; }
         .side-emoji { font-size: 28px; margin-bottom: 5px; }
         .side-name { font-size: 10px; font-weight: 700; color: var(--text-main); line-height: 1.2; word-wrap: break-word;}
+        
+        /* NEW: TRENDING BADGE */
+        .best-seller-tag { display: inline-block; background: #FFF0E5; color: #FF9500; font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-top: 5px; border: 1px solid rgba(255,149,0,0.2); }
 
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
         
@@ -68,18 +76,12 @@
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
 
-        /* 🔥 UPDATED FULLSCREEN VIEWER CSS FOR BUG FIXES 🔥 */
         .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; visibility: hidden; opacity: 0; transition: 0.3s; }
         .fullscreen-viewer.show { visibility: visible; opacity: 1; }
-        
-        /* Naya Background Layer jo sirf click catch karega */
         .fs-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        
-        /* Naya Image Container jo perfectly center karega aur zoom handle karega */
         .fs-img-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; pointer-events: none; }
         .fs-img-container img { max-width: 100%; max-height: 100%; width: auto; height: auto; transform-origin: center; pointer-events: auto; touch-action: none; }
         
-        /* UI Elements Layer - Hamesha sabse upar (z-index: 10) */
         .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: 0.2s;}
         .fs-close:active { transform: scale(0.9); background: rgba(226,55,68,0.8); }
         
@@ -153,9 +155,26 @@
         
         .input-field { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: border-color 0.2s; background: #F8F9FA;}
         .input-field:focus { border-color: var(--zomato-red); }
+
+        /* NEW: LIVE TRACKER BANNER */
+        .tracker-banner { position: fixed; top: 75px; left: 15px; right: 15px; background: white; border-radius: 16px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 900; border: 1px solid var(--border-light); transform: translateY(-150%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tracker-banner.show { transform: translateY(0); }
+        .tracker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .tracker-status { font-weight: 800; color: var(--zomato-red); font-size: 15px; }
+        .tracker-desc { font-size: 12px; color: var(--text-sub); font-weight: 600; }
+        .pulse-dot { width: 10px; height: 10px; background: var(--zomato-red); border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(226, 55, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(226, 55, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(226, 55, 68, 0); } }
     </style>
 </head>
 <body>
+
+    <div class="tracker-banner" id="tracker-banner">
+        <div class="tracker-header">
+            <div class="tracker-status" id="track-status-text">Order Received</div>
+            <div class="pulse-dot" id="track-pulse"></div>
+        </div>
+        <div class="tracker-desc" id="track-desc-text">Kitchen has received your order.</div>
+    </div>
 
     <div class="fullscreen-viewer" id="fs-viewer">
         <div class="fs-bg" onclick="closeFullscreen(event)"></div> <button class="fs-close" onclick="closeFullscreen(event)">✕</button>
@@ -173,17 +192,26 @@
         <div class="alert-box">
             <div class="alert-icon" id="alertIcon">🔢</div>
             <h3 id="alertMessage">Please enter Table Number!</h3>
-            <button onclick="closeAlert()">OK, Got it</button>
+            <button onclick="closeAlert()" id="btn-alert-ok">OK, Got it</button>
         </div>
     </div>
 
     <div class="header">
         <h1 class="brand-name">Crave AR</h1>
-        <div class="cart-icon" onclick="toggleCart()">🛒 <div class="cart-badge" id="cart-count">0</div></div>
+        <div style="display:flex; align-items:center;">
+            <div class="lang-switch">
+                <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</button>
+                <button class="lang-btn" id="btn-hi" onclick="setLanguage('hi')">हिंदी</button>
+            </div>
+            <div class="cart-icon" onclick="toggleCart()">🛒 <div class="cart-badge" id="cart-count">0</div></div>
+        </div>
     </div>
 
     <div class="category-scroll" id="category-scroll">
         <div class="cat-pill active" onclick="filterCategory('All', this)">All</div>
+        <div class="cat-pill" onclick="filterCategory('Trending', this)">🔥 Trending</div>
+        <div class="cat-pill" onclick="filterCategory('Veg Only', this)">🟢 Veg Only</div>
+        <div class="cat-pill" onclick="filterCategory('Non-Veg Only', this)">🔴 Non-Veg Only</div>
         <div class="cat-pill" onclick="filterCategory('Starters', this)">🔥 Starters</div>
         <div class="cat-pill" onclick="filterCategory('Main Course', this)">🍛 Main Course</div>
         <div class="cat-pill" onclick="filterCategory('Breads', this)">🥖 Breads</div>
@@ -221,6 +249,7 @@
                 <div class="variant-selector hide" id="variant-box">
                     <button class="var-btn" id="btn-half" onclick="selectVariant('half')">Half</button>
                     <button class="var-btn active" id="btn-full" onclick="selectVariant('full')">Full</button>
+                    <button class="var-btn" id="btn-piece" onclick="selectVariant('piece')">Per Piece</button>
                 </div>
                 
                 <div class="action-row">
@@ -230,7 +259,7 @@
                         <span id="current-qty-display">1</span>
                         <button onclick="changeCurrentQty(1)">+</button>
                     </div>
-                    <button class="btn-premium" onclick="viewOnTable()">View on Table 📸</button>
+                    <button class="btn-premium" id="btn-ar-view" onclick="viewOnTable()">View on Table 📸</button>
                 </div>
             </div>
         </div>
@@ -241,20 +270,20 @@
             <span class="checkout-items" id="float-items">1 Item</span>
             <span class="checkout-total" id="float-total">₹0</span>
         </div>
-        <div class="checkout-action">View Cart ➔</div>
+        <div class="checkout-action" id="float-btn-view">View Cart ➔</div>
     </div>
 
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <div class="cart-header">
-                <h2 style="margin: 0; font-size: 20px;">Your Cart</h2>
+                <h2 id="cart-title-text" style="margin: 0; font-size: 20px;">Your Cart</h2>
                 <button style="border:none; background:#eee; width:30px; height:30px; border-radius:50%; font-weight: bold; cursor:pointer;" onclick="toggleCart()">✕</button>
             </div>
             
             <div class="cart-items-container" id="cart-items-list"></div>
             
             <div class="bill-details">
-                <div class="bill-total"><span>Total to Pay</span><span id="bill-final">₹0</span></div>
+                <div class="bill-total"><span id="bill-total-text">Total to Pay</span><span id="bill-final">₹0</span></div>
             </div>
             
             <div style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px;">
@@ -272,7 +301,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
@@ -291,6 +320,7 @@
         let currentVariant = 'full'; 
         let cart = {}; 
         let activeCategory = 'All'; 
+        let trendingIds = []; // Stores IDs of top ordered items
         
         const viewer = document.querySelector('#ar-viewer');
         const updateBar = document.querySelector('#update-bar');
@@ -299,6 +329,29 @@
             updateBar.style.width = `${e.detail.totalProgress * 100}%`;
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
+
+        // HINDI/ENGLISH TRANSLATION DICTIONARY
+        const i18n = {
+            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "🔍 Search" },
+            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "🔍 खोजें" }
+        };
+        let currentLang = 'en';
+
+        window.setLanguage = (l) => {
+            currentLang = l;
+            document.getElementById('btn-en').classList.toggle('active', l==='en');
+            document.getElementById('btn-hi').classList.toggle('active', l==='hi');
+            
+            document.getElementById('btn-add-new').innerText = i18n[l].add;
+            document.getElementById('btn-ar-view').innerText = i18n[l].ar;
+            document.getElementById('float-btn-view').innerText = i18n[l].viewCart;
+            document.getElementById('cart-title-text').innerText = i18n[l].cartTitle;
+            document.getElementById('checkoutBtn').innerText = i18n[l].place;
+            document.getElementById('bill-total-text').innerText = i18n[l].totalPay;
+            document.getElementById('btn-alert-ok').innerText = i18n[l].alertOk;
+            document.getElementById('searchInput').placeholder = i18n[l].search;
+            updateGlobalCartUI();
+        };
 
         // ------------------ FULLSCREEN SLIDE & ZOOM LOGIC ------------------
         let pzInstance = null;
@@ -311,36 +364,22 @@
             fsCurrentIndex = index;
             document.getElementById('fs-viewer').classList.add('show');
             updateFsImage();
-            
             history.pushState({ fsOpen: true }, "", "#photo");
         };
 
         window.updateFsImage = () => {
             const img = document.getElementById('fs-img');
-            
-            // Clean up old instance before replacing image
             if(pzInstance) { pzInstance.dispose(); pzInstance = null; }
-            img.style.transform = ''; // Reset transform
-            
+            img.style.transform = ''; 
             img.onload = () => {
-                // Initialize Panzoom only AFTER image loads to get perfect dimensions
-                pzInstance = panzoom(img, {
-                    maxZoom: 5,        
-                    minZoom: 1,        
-                    bounds: true,      
-                    boundsPadding: 0
-                });
+                pzInstance = panzoom(img, { maxZoom: 5, minZoom: 1, bounds: true, boundsPadding: 0 });
             };
-            
             img.src = fsImages[fsCurrentIndex];
             
             const prevBtn = document.querySelector('.fs-prev');
             const nextBtn = document.querySelector('.fs-next');
-            if(fsImages.length <= 1) {
-                prevBtn.classList.add('hide'); nextBtn.classList.add('hide');
-            } else {
-                prevBtn.classList.remove('hide'); nextBtn.classList.remove('hide');
-            }
+            if(fsImages.length <= 1) { prevBtn.classList.add('hide'); nextBtn.classList.add('hide'); } 
+            else { prevBtn.classList.remove('hide'); nextBtn.classList.remove('hide'); }
 
             const dotsContainer = document.getElementById('fs-dots');
             dotsContainer.innerHTML = '';
@@ -361,58 +400,33 @@
         };
 
         window.closeFullscreen = (e) => { 
-            if(e) e.stopPropagation(); // Click event rokna taaki double click issue na ho
+            if(e) e.stopPropagation(); 
             document.getElementById('fs-viewer').classList.remove('show'); 
-            
-            // Panzoom ko bilkul destroy kar do taaki background state clear ho jaye
-            if(pzInstance) {
-                pzInstance.dispose();
-                pzInstance = null;
-            }
-            if(window.location.hash === "#photo") {
-                history.back(); 
-            }
+            if(pzInstance) { pzInstance.dispose(); pzInstance = null; }
+            if(window.location.hash === "#photo") { history.back(); }
         };
 
         window.addEventListener('popstate', (e) => {
             if (document.getElementById('fs-viewer').classList.contains('show')) {
                 document.getElementById('fs-viewer').classList.remove('show');
-                if(pzInstance) {
-                    pzInstance.dispose();
-                    pzInstance = null;
-                }
+                if(pzInstance) { pzInstance.dispose(); pzInstance = null; }
             }
         });
 
-        // Swipe Detection for Fullscreen
-        let touchStartX = 0;
-        let touchEndX = 0;
+        let touchStartX = 0; let touchEndX = 0;
         const fsViewer = document.getElementById('fs-viewer');
-
-        fsViewer.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-
-        fsViewer.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleFsSwipe();
-        }, {passive: true});
+        fsViewer.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+        fsViewer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleFsSwipe(); }, {passive: true});
 
         function handleFsSwipe() {
             if(fsImages.length <= 1) return; 
-
             let currentScale = 1;
-            if(pzInstance) {
-                currentScale = pzInstance.getTransform().scale;
-            }
-            // Agar zoom 1.1x se zyada hai, toh swipe change mat karo (drag ho raha hoga)
+            if(pzInstance) currentScale = pzInstance.getTransform().scale;
             if(currentScale > 1.1) return; 
-
             const threshold = 50; 
             if (touchEndX < touchStartX - threshold) navigateFs(1);  
             if (touchEndX > touchStartX + threshold) navigateFs(-1); 
         }
-        // ------------------------------------------------------------------
 
         window.toggleMedia = () => {
             const slider = document.getElementById('photo-slider');
@@ -429,12 +443,8 @@
         window.viewOnTable = async () => {
             document.querySelector('#ar-viewer').activateAR();
             if(currentDish) {
-                try {
-                    await addDoc(collection(db, "ar_views"), {
-                        dishName: currentDish.name,
-                        timestamp: new Date()
-                    });
-                } catch(e) { console.error("Tracker error:", e); }
+                try { await addDoc(collection(db, "ar_views"), { dishName: currentDish.name, timestamp: new Date() }); } 
+                catch(e) { console.error("Tracker error:", e); }
             }
         };
 
@@ -445,23 +455,63 @@
         }
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
-        onSnapshot(collection(db, "menu_items"), (snapshot) => {
-            allDishes = [];
-            snapshot.forEach((doc) => { 
-                let d = doc.data();
-                allDishes.push({ 
-                    id: doc.id, 
-                    name: d.name || "Special Dish",
-                    emoji: d.emoji || "🍲",
-                    category: d.category || "Veg",
-                    price: d.price || 0,
-                    priceHalf: d.priceHalf || null,
-                    modelUrl: d.modelUrl || "",
-                    images: d.images || []
-                }); 
+        // LIVE ORDER TRACKER LOGIC
+        function listenToLiveOrder(orderId) {
+            onSnapshot(doc(db, "orders", orderId), (d) => {
+                if(!d.exists()) return;
+                const data = d.data();
+                const banner = document.getElementById('tracker-banner');
+                const statusTxt = document.getElementById('track-status-text');
+                const descTxt = document.getElementById('track-desc-text');
+                const pulse = document.getElementById('track-pulse');
+                
+                banner.classList.add('show');
+                if(data.status === 'New') {
+                    statusTxt.innerText = 'Order Received'; descTxt.innerText = 'Kitchen has received your order.';
+                    statusTxt.style.color = 'var(--zomato-red)'; pulse.style.display = 'block'; pulse.style.background = 'var(--zomato-red)';
+                } else if(data.status === 'Preparing') {
+                    statusTxt.innerText = 'Preparing... 👨‍🍳'; descTxt.innerText = 'Your food is being cooked!';
+                    statusTxt.style.color = '#FF9500'; pulse.style.display = 'block'; pulse.style.background = '#FF9500';
+                } else if(data.status === 'Completed') {
+                    statusTxt.innerText = 'Served ✅'; descTxt.innerText = 'Enjoy your meal!';
+                    statusTxt.style.color = 'var(--green)'; pulse.style.display = 'none';
+                    setTimeout(() => { banner.classList.remove('show'); localStorage.removeItem('craveCurrentOrderId'); }, 10000);
+                } else if(data.status === 'Cancelled') {
+                    statusTxt.innerText = 'Cancelled ❌'; descTxt.innerText = 'Your order was cancelled.';
+                    statusTxt.style.color = 'var(--text-sub)'; pulse.style.display = 'none';
+                    setTimeout(() => { banner.classList.remove('show'); localStorage.removeItem('craveCurrentOrderId'); }, 10000);
+                }
             });
-            applyFilters(); 
-            if(allDishes.length > 0 && !currentDish) loadDish(allDishes[0]);
+        }
+        const savedOrderId = localStorage.getItem('craveCurrentOrderId');
+        if(savedOrderId) listenToLiveOrder(savedOrderId);
+
+        // TRENDING ITEMS ALGORITHM
+        async function fetchTrendingDishes() {
+            try {
+                const q = query(collection(db, "orders"), orderBy("timestamp", "desc"), limit(20));
+                const snap = await getDocs(q);
+                let counts = {};
+                snap.forEach(d => { d.data().items.forEach(i => { counts[i.id] = (counts[i.id] || 0) + i.qty; }); });
+                trendingIds = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 5);
+            } catch(e) { console.log(e); }
+        }
+
+        // INITIAL LOAD
+        fetchTrendingDishes().then(() => {
+            onSnapshot(collection(db, "menu_items"), (snapshot) => {
+                allDishes = [];
+                snapshot.forEach((doc) => { 
+                    let d = doc.data();
+                    allDishes.push({ 
+                        id: doc.id, name: d.name || "Special Dish", emoji: d.emoji || "🍲", category: d.category || "Veg",
+                        price: d.price || 0, priceHalf: d.priceHalf || null, pricePiece: d.pricePiece || null,
+                        modelUrl: d.modelUrl || "", images: d.images || []
+                    }); 
+                });
+                applyFilters(); 
+                if(allDishes.length > 0 && !currentDish) loadDish(allDishes[0]);
+            });
         });
 
         window.filterCategory = function(cat, element) {
@@ -472,10 +522,16 @@
         };
 
         window.applyFilters = function() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+            const queryText = document.getElementById('searchInput').value.toLowerCase();
             let filtered = allDishes;
-            if (activeCategory !== 'All') filtered = filtered.filter(dish => dish.category === activeCategory);
-            if (query) filtered = filtered.filter(dish => dish.name.toLowerCase().includes(query));
+            
+            // SMART FILTERS (Veg, Non-Veg, Trending)
+            if (activeCategory === 'Veg Only') filtered = filtered.filter(d => (d.emoji && d.emoji.includes('🟢')) || d.category === 'Veg' || d.category === 'Desserts' || d.category === 'Drinks');
+            else if (activeCategory === 'Non-Veg Only') filtered = filtered.filter(d => (d.emoji && d.emoji.includes('🔴')) || d.category === 'Non-Veg');
+            else if (activeCategory === 'Trending') filtered = filtered.filter(d => trendingIds.includes(d.id));
+            else if (activeCategory !== 'All') filtered = filtered.filter(dish => dish.category === activeCategory);
+            
+            if (queryText) filtered = filtered.filter(dish => dish.name.toLowerCase().includes(queryText));
             renderSidebar(filtered);
         };
 
@@ -486,34 +542,27 @@
             
             const groupedDishes = {};
             dishesToRender.forEach(dish => {
-                const cat = dish.category || "Uncategorized";
+                const cat = activeCategory === 'Trending' ? 'TRENDING' : (dish.category || "Uncategorized");
                 if (!groupedDishes[cat]) groupedDishes[cat] = [];
                 groupedDishes[cat].push(dish);
             });
 
             for (let cat in groupedDishes) {
                 const header = document.createElement('div');
-                header.style.padding = "15px 5px 5px 5px";
-                header.style.fontSize = "10px";
-                header.style.fontWeight = "800";
-                header.style.color = "var(--text-sub)";
-                header.style.textAlign = "center";
-                header.style.borderBottom = "1px solid #f0f0f0";
+                header.style.padding = "15px 5px 5px 5px"; header.style.fontSize = "10px"; header.style.fontWeight = "800";
+                header.style.color = "var(--text-sub)"; header.style.textAlign = "center"; header.style.borderBottom = "1px solid #f0f0f0";
                 header.innerText = "— " + cat.toUpperCase() + " —";
                 sidebar.appendChild(header);
 
                 groupedDishes[cat].forEach((data) => {
                     const itemDiv = document.createElement('div');
                     itemDiv.className = `side-item ${currentDish && currentDish.id === data.id ? 'active' : ''}`;
+                    let trendTag = trendingIds.includes(data.id) ? '<div class="best-seller-tag">⭐ Best Seller</div>' : '';
                     
-                    itemDiv.innerHTML = `
-                        <div class="side-emoji">${data.emoji || "🍲"}</div>
-                        <div class="side-name">${data.name}</div>
-                    `;
+                    itemDiv.innerHTML = `<div class="side-emoji">${data.emoji || "🍲"}</div><div class="side-name">${data.name}<br>${trendTag}</div>`;
                     itemDiv.onclick = () => {
                         document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active'));
-                        itemDiv.classList.add('active');
-                        loadDish(data);
+                        itemDiv.classList.add('active'); loadDish(data);
                     };
                     sidebar.appendChild(itemDiv);
                 });
@@ -521,28 +570,31 @@
         };
 
         function loadDish(data) {
-            currentDish = data;
-            currentVariant = 'full'; 
+            currentDish = data; currentVariant = 'full'; 
             
             let catBadgeHtml = '';
             if(data.category) {
-                let badgeClass = `cat-${data.category.replace(' ', '-')}`;
-                let icon = '';
-                if(data.category === 'Veg') icon = '🟢 Veg';
-                if(data.category === 'Non-Veg') icon = '🔴 Non-Veg';
-                if(data.category === 'Drinks') icon = '🥤 Drinks';
-                if(data.category === 'Desserts') icon = '🍰 Desserts';
+                let badgeClass = `cat-${data.category.replace(' ', '-')}`; let icon = '';
+                if(data.category === 'Veg') icon = '🟢 Veg'; else if(data.category === 'Non-Veg') icon = '🔴 Non-Veg';
+                else if(data.category === 'Drinks') icon = '🥤 Drinks'; else if(data.category === 'Desserts') icon = '🍰 Desserts';
                 catBadgeHtml = `<span class="main-cat-badge ${badgeClass}">${icon}</span>`;
             }
 
             document.getElementById('display-name').innerHTML = `${data.name} ${catBadgeHtml}`;
             document.getElementById('display-price').innerText = '₹' + data.price;
             
+            // SMART VARIANT BOX: Half, Full, Per Piece Logic
             const variantBox = document.getElementById('variant-box');
-            if(data.priceHalf) {
+            const btnHalf = document.getElementById('btn-half');
+            const btnFull = document.getElementById('btn-full');
+            const btnPiece = document.getElementById('btn-piece');
+            
+            btnHalf.style.display = data.priceHalf ? 'block' : 'none';
+            btnPiece.style.display = data.pricePiece ? 'block' : 'none';
+
+            if(data.priceHalf || data.pricePiece) {
                 variantBox.classList.remove('hide');
-                document.getElementById('btn-full').classList.add('active');
-                document.getElementById('btn-half').classList.remove('active');
+                btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active');
             } else { variantBox.classList.add('hide'); }
 
             document.querySelector('.progress-bar').classList.remove('hide');
@@ -555,35 +607,24 @@
             
             if (data.images && data.images.length > 0) {
                 data.images.forEach((imgUrl, idx) => {
-                    const img = document.createElement('img');
-                    img.src = imgUrl;
-                    img.className = 'slide-img';
-                    img.onclick = () => openFullscreen(idx); 
-                    slider.appendChild(img);
+                    const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img';
+                    img.onclick = () => openFullscreen(idx); slider.appendChild(img);
                 });
-                slider.classList.remove('hide');
-                toggleBtn.classList.remove('hide');
-                toggleBtn.innerHTML = '🧊 View 3D';
-            } else {
-                slider.classList.add('hide');
-                toggleBtn.classList.add('hide');
-            }
+                slider.classList.remove('hide'); toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '🧊 View 3D';
+            } else { slider.classList.add('hide'); toggleBtn.classList.add('hide'); }
 
             checkCartForCurrentDish();
         }
 
         window.selectVariant = (type) => {
             currentVariant = type;
-            document.getElementById('btn-half').classList.remove('active');
-            document.getElementById('btn-full').classList.remove('active');
+            document.querySelectorAll('.var-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + type).classList.add('active');
             
-            if(type === 'half') {
-                document.getElementById('btn-half').classList.add('active');
-                document.getElementById('display-price').innerText = '₹' + currentDish.priceHalf;
-            } else {
-                document.getElementById('btn-full').classList.add('active');
-                document.getElementById('display-price').innerText = '₹' + currentDish.price;
-            }
+            if(type === 'half') document.getElementById('display-price').innerText = '₹' + currentDish.priceHalf;
+            else if(type === 'piece') document.getElementById('display-price').innerText = '₹' + currentDish.pricePiece;
+            else document.getElementById('display-price').innerText = '₹' + currentDish.price;
+            
             checkCartForCurrentDish(); 
         };
 
@@ -597,21 +638,18 @@
             if(cart[key] && cart[key].qty > 0) {
                 btnAdd.style.display = 'none'; btnStepper.style.display = 'flex';
                 document.getElementById('current-qty-display').innerText = cart[key].qty;
-            } else {
-                btnAdd.style.display = 'block'; btnStepper.style.display = 'none';
-            }
+            } else { btnAdd.style.display = 'block'; btnStepper.style.display = 'none'; }
         }
 
         window.addCurrentToCart = () => {
             const key = getCartKey();
-            const price = currentVariant === 'half' ? currentDish.priceHalf : currentDish.price;
-            const variantText = currentVariant === 'half' ? '(Half)' : '';
+            let price = currentDish.price; let variantText = '';
+            if(currentVariant === 'half') { price = currentDish.priceHalf; variantText = '(Half)'; }
+            if(currentVariant === 'piece') { price = currentDish.pricePiece; variantText = '(Per Piece)'; }
 
             cart[key] = { id: currentDish.id, name: currentDish.name, price: price, variant: variantText, qty: 1 };
-            
-            showToast("✅ Added to Cart!");
-            updateGlobalCartUI();
-            checkCartForCurrentDish();
+            showToast(currentLang === 'hi' ? "✅ कार्ट में जुड़ गया!" : "✅ Added to Cart!");
+            updateGlobalCartUI(); checkCartForCurrentDish();
         };
 
         window.changeCurrentQty = (delta) => { const key = getCartKey(); changeCartQty(key, delta); };
@@ -634,7 +672,8 @@
             document.getElementById('cart-count').innerText = totalItems;
             
             if(totalItems > 0) {
-                document.getElementById('float-items').innerText = totalItems === 1 ? '1 ITEM' : `${totalItems} ITEMS`;
+                let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
+                document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
                 document.getElementById('float-total').innerText = '₹' + totalPrice;
                 floatingBar.classList.add('show'); bottomUiCard.classList.add('with-cart');
             } else {
@@ -707,7 +746,8 @@
             waText += `-------------------%0A*Total to Pay:* ₹${grandTotal}`;
 
             try {
-                await addDoc(collection(db, "orders"), { 
+                // ORDER PLACE KARNA AUR LIVE TRACKER START KARNA
+                const docRef = await addDoc(collection(db, "orders"), { 
                     tableNumber: tableNo, 
                     customerName: custName || "N/A",
                     customerPhone: custPhone || "N/A",
@@ -718,6 +758,10 @@
                     timestamp: new Date() 
                 });
                 
+                // Track Order logic
+                localStorage.setItem('craveCurrentOrderId', docRef.id);
+                listenToLiveOrder(docRef.id);
+
                 cart = {}; 
                 document.getElementById('tableNumber').value = '';
                 document.getElementById('customerName').value = '';
@@ -737,7 +781,7 @@
                 customAlert("Order Failed. Please check your connection and try again.", "❌"); 
             }
 
-            btn.innerText = "Place Order"; 
+            btn.innerText = currentLang === 'hi' ? i18n.hi.place : i18n.en.place;
             btn.style.background = "var(--green)"; 
             btn.disabled = false;
         };
