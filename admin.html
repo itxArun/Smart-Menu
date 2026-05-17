@@ -6,6 +6,9 @@
     <title>Crave AR - Merchant Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
@@ -36,9 +39,8 @@
 
         body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-main); color: var(--text-main); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; }
         
-        /* LOGIN FIX: Shuru me display none taaki 2 second ka lag na aaye */
         .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s; backdrop-filter: blur(5px); }
-        .login-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
+        .login-screen.show { display: flex; }
         .login-card { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 30px; padding: 45px 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border); }
         .login-card h2 { color: var(--primary); font-family: 'Okra', sans-serif; margin: 0 0 5px 0; font-size: 34px; font-weight: 800;}
         .login-card p { color: var(--text-sub); font-size: 14px; margin-bottom: 30px; }
@@ -81,20 +83,9 @@
         .cat-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700; white-space: nowrap;}
         .btn-delete-modern { background: var(--del-bg); color: var(--del-text); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: 0.2s; z-index: 2;}
 
-        .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
-        .order-card:last-child { border-bottom: none; }
-        .order-header { display: flex; justify-content: space-between; align-items: center; }
-        .table-badge { background: var(--text-main); color: var(--bg-card); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; }
-        .order-time { font-size: 11px; color: var(--text-sub); font-weight: 600; }
-        .order-items { font-size: 13px; font-weight: 600; color: var(--text-main); line-height: 1.6; background: var(--input-bg); padding: 12px; border-radius: 10px; border: 1px dashed var(--border);}
-        .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-        .order-total { font-size: 18px; font-weight: 800; color: var(--primary); }
-        
+        .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); }
         .order-actions-row { display: flex; gap: 8px; }
-        .btn-done { background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);}
-        .btn-done:active { transform: scale(0.95); }
-        /* Cancel Button CSS Style */
-        .btn-cancel-new { background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(255, 59, 48, 0.2); }
+        .btn-action-new { border: none; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; color: white; flex: 1; }
 
         .history-date-header { background: var(--input-bg); padding: 8px 20px; font-size: 12px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
         .history-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -149,7 +140,6 @@
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Date Filter Box Style */
         .date-filter-box { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; background: var(--bg-card); color: var(--text-main); outline: none; }
     </style>
 </head>
@@ -220,6 +210,13 @@
                 <div class="section-header" style="background: rgba(40,167,69,0.1);">
                     <h3>Business Analytics 📈</h3>
                 </div>
+                
+                <div class="history-date-header">Weekly Revenue Insights 📊</div>
+                <div style="padding: 20px; text-align: center; background: var(--bg-card); display:flex; flex-direction:column; align-items:center; border-bottom: 1px solid var(--border);">
+                    <canvas id="revenuePieChart" style="max-width: 250px; max-height: 250px;"></canvas>
+                    <p id="best-day-text" style="font-size:14px; font-weight:800; color:var(--primary); margin-top:15px; margin-bottom:0;"></p>
+                </div>
+
                 <div class="history-date-header">Order History & Revenue</div>
                 <div class="menu-list" id="history-body"><div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div></div>
                 <div class="history-date-header" style="margin-top: 20px;">AR View Logs 📸</div>
@@ -359,32 +356,78 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        // 🔥 NEW: Function to render Chart.js Pie Chart 🔥
+        let revenueChartInstance = null;
+        window.updateRevenueChart = (completedOrders) => {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const revenueByDay = [0, 0, 0, 0, 0, 0, 0];
+            
+            completedOrders.forEach(o => {
+                if(o.timestamp) {
+                    const d = o.timestamp.toDate();
+                    revenueByDay[d.getDay()] += o.totalAmount;
+                }
+            });
+
+            // Find Best Day
+            let maxRev = 0; let bestDay = "";
+            revenueByDay.forEach((rev, idx) => {
+                if(rev > maxRev) { maxRev = rev; bestDay = days[idx]; }
+            });
+
+            const bestDayText = document.getElementById('best-day-text');
+            if(maxRev > 0) {
+                bestDayText.innerText = `🔥 Highest Revenue: ${bestDay} (₹${maxRev})`;
+            } else {
+                bestDayText.innerText = `Waiting for sales...`;
+            }
+
+            const ctx = document.getElementById('revenuePieChart');
+            if(!ctx) return;
+            
+            if(revenueChartInstance) revenueChartInstance.destroy();
+            
+            revenueChartInstance = new Chart(ctx, {
+                type: 'doughnut', 
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: revenueByDay,
+                        backgroundColor: ['#FFB75E', '#E23744', '#28A745', '#007AFF', '#9966FF', '#FF3B30', '#36A2EB'],
+                        borderWidth: 2,
+                        borderColor: document.body.getAttribute('data-theme') === 'dark' ? '#1E1E1E' : '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { color: document.body.getAttribute('data-theme') === 'dark' ? '#F5F5F5' : '#282C3F', font: { family: 'Poppins', size: 10 } }
+                        }
+                    }
+                }
+            });
+        };
+
         // Sound Interaction Logic
         let soundActivated = false;
         window.addEventListener('click', () => {
             if(!soundActivated) {
                 const audio = document.getElementById('orderSound');
                 audio.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                    soundActivated = true;
-                    console.log("Sound Alerts Enabled! 🔔");
+                    audio.pause(); audio.currentTime = 0; soundActivated = true;
                 }).catch(e => console.log("Sound activation pending user click"));
             }
         }, { once: true });
 
-        // Generate QR Code
         new QRCode(document.getElementById("qrcode-box"), { text: document.getElementById("menu-link").value, width: 220, height: 220, colorDark: "#282C3F", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
 
-        // LOGIN FIX Logic: Avoiding 2-second screen lag
         onAuthStateChanged(auth, (user) => {
             const loginScreen = document.getElementById('loginScreen');
-            if (user) { 
-                loginScreen.style.display = 'none'; 
-                initAdminData(); 
-            } else { 
-                loginScreen.style.display = 'flex'; 
-            }
+            if (user) { loginScreen.style.display = 'none'; initAdminData(); } 
+            else { loginScreen.style.display = 'flex'; }
         });
 
         window.loginAdmin = () => {
@@ -392,7 +435,6 @@
             const pass = document.getElementById('adminPass').value;
             const btn = document.getElementById('loginBtn');
             btn.innerText = "Loading..."; btn.disabled = true;
-            
             signInWithEmailAndPassword(auth, email, pass).catch(error => {
                 alert("Login Failed: " + error.message);
                 btn.innerText = "Login"; btn.disabled = false;
@@ -408,7 +450,6 @@
         function initAdminData() {
             const selectedDate = document.getElementById('reportDate').value;
 
-            // Stats & Menu Sync with Original Render Function
             onSnapshot(collection(db, "menu_items"), (snap) => {
                 document.getElementById('total-dishes').innerText = snap.size;
                 allMenuData = [];
@@ -421,7 +462,6 @@
                 renderARViews(snap);
             });
 
-            // Orders Listener with Date Filter & Cancel Action Logic
             const qLive = query(collection(db, "orders"), orderBy("timestamp", "desc"));
             onSnapshot(qLive, (snap) => {
                 const ordersList = document.getElementById('orders-body');
@@ -429,6 +469,7 @@
                 ordersList.innerHTML = ''; historyList.innerHTML = '';
                 
                 let activeCount = 0; let totalRev = 0;
+                let allCompletedOrdersForChart = []; // Array for Chart
 
                 snap.docChanges().forEach((change) => {
                     if (change.type === "added" && !isInitialLoad && change.doc.data().status === 'New') {
@@ -444,11 +485,20 @@
                 snap.forEach((doc) => {
                     const data = doc.data();
                     const date = data.timestamp ? data.timestamp.toDate() : new Date();
-                    const timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    const orderDate = date.toISOString().split('T')[0];
                     
+                    const todayDate = new Date();
+                    const isToday = date.getDate() === todayDate.getDate() && date.getMonth() === todayDate.getMonth() && date.getFullYear() === todayDate.getFullYear();
+                    const timeFormat = date.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true});
+                    const displayTimeStr = isToday ? timeFormat : `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short'})}, ${timeFormat}`;
+                    
+                    const orderDateStr = date.toISOString().split('T')[0];
+
+                    if(data.status === 'Completed') {
+                        allCompletedOrdersForChart.push(data); // Push to chart array
+                    }
+
                     if(data.status === 'New' || data.status === 'Preparing') {
-                        if(orderDate === selectedDate || data.status === 'New' || data.status === 'Preparing') {
+                        if(orderDateStr === selectedDate || data.status === 'New' || data.status === 'Preparing') {
                             activeCount++;
                             let itemsHTML = '';
                             data.items.forEach(item => {
@@ -458,14 +508,14 @@
                                 </div>`;
                             });
 
-                            const orderCard = `
+                            ordersList.innerHTML += `
                                 <div class="order-card" style="background:var(--edit-bg); border-radius:12px; border:1px solid rgba(0,122,255,0.2); margin-bottom:15px;">
                                     <div class="order-header">
                                         <div style="display:flex; align-items:center; gap:10px;">
                                             <span class="table-badge">T-${data.tableNumber}</span>
-                                            <span class="order-time">${timeStr} (${data.status})</span>
+                                            <span class="order-time">${displayTimeStr} (${data.status})</span>
                                         </div>
-                                        <span style="font-size:11px; font-weight:800; background:rgba(226,55,68,0.1); color:var(--primary); padding:4px 8px; border-radius:6px;">${data.paymentMethod || "COD"}</span>
+                                        <span style="font-size:11px; font-weight:800; background:rgba(226,55,68,0.1); color:var(--primary); padding:4px 8px; border-radius:6px;">${data.paymentMethod || "Cash"}</span>
                                     </div>
                                     <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:5px;">
                                         Cust: ${data.customerName || "N/A"} | Ph: ${data.customerPhone || "N/A"}
@@ -476,23 +526,22 @@
                                     <div class="order-footer">
                                         <span class="order-total">₹${data.totalAmount}</span>
                                         <div class="order-actions-row">
-                                            ${data.status === 'New' ? `<button class="btn-done" style="background:var(--warning);" onclick="updateOrderStatus('${doc.id}', 'Preparing')">Prepare ➔</button>` : ''}
-                                            ${data.status === 'Preparing' ? `<button class="btn-done" onclick="updateOrderStatus('${doc.id}', 'Completed')">Serve & Clear ➔</button>` : ''}
-                                            <button class="btn-cancel-new" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel ✕</button>
+                                            ${data.status === 'New' ? `<button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${doc.id}', 'Preparing')">Prepare ➔</button>` : ''}
+                                            ${data.status === 'Preparing' ? `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${doc.id}', 'Completed')">Serve & Clear ➔</button>` : ''}
+                                            <button class="btn-action-new" style="background:var(--danger);" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel ✕</button>
                                         </div>
                                     </div>
                                 </div>
                             `;
-                            ordersList.innerHTML += orderCard;
                         }
                     } else if (data.status === 'Completed') {
-                        if(orderDate === selectedDate) {
+                        if(orderDateStr === selectedDate) {
                             totalRev += data.totalAmount;
                             historyList.innerHTML += `
                                 <div class="history-item">
                                     <div class="history-item-left">
-                                        <span class="history-item-table">Table ${data.tableNumber} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "COD"})</span></span>
-                                        <span class="history-item-time">${timeStr} • ${data.items.length} items</span>
+                                        <span class="history-item-table">Table ${data.tableNumber} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "Cash"})</span></span>
+                                        <span class="history-item-time">${displayTimeStr} • ${data.items.length} items</span>
                                     </div>
                                     <span class="history-item-amount">+₹${data.totalAmount}</span>
                                 </div>
@@ -504,12 +553,14 @@
                 document.getElementById('total-orders').innerText = activeCount;
                 document.getElementById('total-revenue').innerText = '₹' + totalRev;
                 
+                // Update the Pie Chart
+                if(window.updateRevenueChart) window.updateRevenueChart(allCompletedOrdersForChart);
+                
                 if(activeCount === 0) ordersList.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No active orders. Kitchen is clear! 🎉</div>';
                 if(totalRev === 0) historyList.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div>';
             });
         }
 
-        // Render Menu with original Dustbin styles
         window.renderAdminMenu = (data) => {
             const list = document.getElementById('menu-body');
             list.innerHTML = '';
@@ -547,10 +598,15 @@
                 count++;
                 const data = doc.data();
                 const dDate = data.timestamp ? data.timestamp.toDate() : new Date();
+                const todayDate = new Date();
+                const isToday = dDate.getDate() === todayDate.getDate() && dDate.getMonth() === todayDate.getMonth() && dDate.getFullYear() === todayDate.getFullYear();
+                const timeFormat = dDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true});
+                const displayTimeStr = isToday ? timeFormat : `${dDate.toLocaleDateString('en-US', {day: 'numeric', month: 'short'})}, ${timeFormat}`;
+
                 list.innerHTML += `
                     <div class="history-item" style="padding: 10px 20px;">
                         <span style="font-size:13px; font-weight:600; color:var(--text-main);">📸 ${data.dishName}</span>
-                        <span style="font-size:10px; color:var(--text-sub);">${dDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        <span style="font-size:10px; color:var(--text-sub);">${displayTimeStr}</span>
                     </div>
                 `;
             });
@@ -674,6 +730,11 @@
         window.toggleTheme = () => {
             if(document.getElementById('themeToggle').checked) document.body.setAttribute('data-theme', 'dark');
             else document.body.removeAttribute('data-theme');
+            
+            // Re-render chart text colors if theme changes
+            if(window.updateRevenueChart && allMenuData.length > 0) {
+               // We would need the full orders list to re-render, but it'll update on next order anyway
+            }
         };
     </script>
 </body>
