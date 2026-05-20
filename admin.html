@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
@@ -87,7 +88,7 @@
         .order-actions-row { display: flex; gap: 8px; }
         .btn-action-new { border: none; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; color: white; flex: 1; }
 
-        .history-date-header { background: var(--input-bg); padding: 8px 20px; font-size: 12px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
+        .history-date-header { background: var(--input-bg); padding: 12px 20px; font-size: 12px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
         .history-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .history-item-left { display: flex; flex-direction: column; gap: 4px; }
         .history-item-table { font-size: 14px; font-weight: 700; color: var(--text-main); }
@@ -141,6 +142,11 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
         .date-filter-box { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; background: var(--bg-card); color: var(--text-main); outline: none; }
+        
+        /* 🔥 Custom Chart Filter Styles 🔥 */
+        .chart-filter-select { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 12px; font-weight: 700; outline: none; cursor: pointer;}
+        .btn-view-all { background: var(--input-bg); color: var(--primary); border: 1px solid var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-view-all:active { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
@@ -211,14 +217,25 @@
                     <h3>Business Analytics 📈</h3>
                 </div>
                 
-                <div class="history-date-header">Weekly Revenue Insights 📊</div>
+                <div class="history-date-header" style="background: var(--bg-card); border-bottom: 1px solid var(--border);">
+                    <span>Revenue Insights 📊</span>
+                    <select id="chartFilter" class="chart-filter-select" onchange="if(window.allCompletedOrdersForChart) updateRevenueChart(window.allCompletedOrdersForChart)">
+                        <option value="weekly">Weekly (Mon-Sun)</option>
+                        <option value="monthly">Monthly (Jan-Dec)</option>
+                        <option value="yearly">Yearly (Last 5 Years)</option>
+                    </select>
+                </div>
                 <div style="padding: 20px; text-align: center; background: var(--bg-card); display:flex; flex-direction:column; align-items:center; border-bottom: 1px solid var(--border);">
-                    <canvas id="revenuePieChart" style="max-width: 250px; max-height: 250px;"></canvas>
-                    <p id="best-day-text" style="font-size:14px; font-weight:800; color:var(--primary); margin-top:15px; margin-bottom:0;"></p>
+                    <canvas id="revenueBarChart" style="width: 100%; max-height: 250px;"></canvas>
+                    <p id="best-day-text" style="font-size:14px; font-weight:800; color:var(--success); margin-top:15px; margin-bottom:0;"></p>
                 </div>
 
-                <div class="history-date-header">Order History & Revenue</div>
+                <div class="history-date-header">
+                    <span>Order History</span>
+                    <button class="btn-view-all" onclick="loadAllPastOrders()">View All Past</button>
+                </div>
                 <div class="menu-list" id="history-body"><div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div></div>
+                
                 <div class="history-date-header" style="margin-top: 20px;">AR View Logs 📸</div>
                 <div class="menu-list" id="ar-views-body"><div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Waiting for customers to view AR...</div></div>
             </div>
@@ -356,59 +373,139 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // 🔥 NEW: Function to render Chart.js Pie Chart 🔥
-        let revenueChartInstance = null;
-        window.updateRevenueChart = (completedOrders) => {
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const revenueByDay = [0, 0, 0, 0, 0, 0, 0];
-            
-            completedOrders.forEach(o => {
-                if(o.timestamp) {
-                    const d = o.timestamp.toDate();
-                    revenueByDay[d.getDay()] += o.totalAmount;
-                }
-            });
+        // 🔥 NEW: Register DataLabels Plugin for Chart.js 🔥
+        Chart.register(ChartDataLabels);
 
-            // Find Best Day
-            let maxRev = 0; let bestDay = "";
-            revenueByDay.forEach((rev, idx) => {
-                if(rev > maxRev) { maxRev = rev; bestDay = days[idx]; }
+        let revenueChartInstance = null;
+        window.allCompletedOrdersForChart = []; // Global array to store all completed orders
+
+        // 🔥 BAR GRAPH RENDER FUNCTION (Weekly, Monthly, Yearly) 🔥
+        window.updateRevenueChart = (completedOrders) => {
+            const filterType = document.getElementById('chartFilter').value;
+            let labels = [];
+            let revenueData = [];
+            
+            // Current Date References
+            const now = new Date();
+            const currentYear = now.getFullYear();
+
+            if (filterType === 'weekly') {
+                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                revenueData = [0, 0, 0, 0, 0, 0, 0];
+                completedOrders.forEach(o => {
+                    if(o.timestamp) {
+                        const d = o.timestamp.toDate();
+                        // Assuming current week data roughly (simple logic by day of week)
+                        let dayIdx = d.getDay() - 1; // Mon = 0, Sun = 6
+                        if(dayIdx === -1) dayIdx = 6;
+                        revenueData[dayIdx] += o.totalAmount;
+                    }
+                });
+            } 
+            else if (filterType === 'monthly') {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                revenueData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                completedOrders.forEach(o => {
+                    if(o.timestamp) {
+                        const d = o.timestamp.toDate();
+                        if(d.getFullYear() === currentYear) {
+                            revenueData[d.getMonth()] += o.totalAmount;
+                        }
+                    }
+                });
+            }
+            else if (filterType === 'yearly') {
+                labels = [currentYear-4, currentYear-3, currentYear-2, currentYear-1, currentYear];
+                revenueData = [0, 0, 0, 0, 0];
+                completedOrders.forEach(o => {
+                    if(o.timestamp) {
+                        const dYear = o.timestamp.toDate().getFullYear();
+                        const idx = labels.indexOf(dYear);
+                        if(idx !== -1) revenueData[idx] += o.totalAmount;
+                    }
+                });
+            }
+
+            // Find Best Performance Data
+            let maxRev = 0; let bestLabel = "";
+            revenueData.forEach((rev, idx) => {
+                if(rev > maxRev) { maxRev = rev; bestLabel = labels[idx]; }
             });
 
             const bestDayText = document.getElementById('best-day-text');
             if(maxRev > 0) {
-                bestDayText.innerText = `🔥 Highest Revenue: ${bestDay} (₹${maxRev})`;
+                bestDayText.innerText = `🔥 Highest: ${bestLabel} (₹${maxRev})`;
             } else {
                 bestDayText.innerText = `Waiting for sales...`;
             }
 
-            const ctx = document.getElementById('revenuePieChart');
+            const ctx = document.getElementById('revenueBarChart');
             if(!ctx) return;
             
             if(revenueChartInstance) revenueChartInstance.destroy();
             
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const textColor = isDark ? '#F5F5F5' : '#282C3F';
+
             revenueChartInstance = new Chart(ctx, {
-                type: 'doughnut', 
+                type: 'bar', 
                 data: {
-                    labels: days,
+                    labels: labels,
                     datasets: [{
                         label: 'Revenue (₹)',
-                        data: revenueByDay,
-                        backgroundColor: ['#FFB75E', '#E23744', '#28A745', '#007AFF', '#9966FF', '#FF3B30', '#36A2EB'],
-                        borderWidth: 2,
-                        borderColor: document.body.getAttribute('data-theme') === 'dark' ? '#1E1E1E' : '#ffffff'
+                        data: revenueData,
+                        backgroundColor: '#E23744',
+                        borderRadius: 6,
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { display: false, grid: { display: false } },
+                        x: { grid: { display: false }, ticks: { color: textColor, font: { family: 'Poppins', size: 10 } } }
+                    },
                     plugins: {
-                        legend: { 
-                            position: 'bottom', 
-                            labels: { color: document.body.getAttribute('data-theme') === 'dark' ? '#F5F5F5' : '#282C3F', font: { family: 'Poppins', size: 10 } }
+                        legend: { display: false },
+                        // Show Revenue on Top of Bars
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: textColor,
+                            font: { family: 'Poppins', weight: 'bold', size: 10 },
+                            formatter: (value) => value > 0 ? `₹${value}` : ''
                         }
-                    }
+                    },
+                    layout: { padding: { top: 20 } } // Space for top labels
                 }
             });
+        };
+
+        // 🔥 View All Past Orders Logic 🔥
+        window.loadAllPastOrders = () => {
+            const historyList = document.getElementById('history-body');
+            historyList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-sub);">Loading all history...</div>';
+            
+            let html = '';
+            window.allCompletedOrdersForChart.forEach(data => {
+                const date = data.timestamp ? data.timestamp.toDate() : new Date();
+                const timeFormat = date.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true});
+                const displayTimeStr = `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}, ${timeFormat}`;
+                
+                html += `
+                    <div class="history-item">
+                        <div class="history-item-left">
+                            <span class="history-item-table">Table ${data.tableNumber} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "Cash"})</span></span>
+                            <span class="history-item-time">${displayTimeStr} • ${data.items.length} items</span>
+                        </div>
+                        <span class="history-item-amount">+₹${data.totalAmount}</span>
+                    </div>
+                `;
+            });
+
+            if(html === '') historyList.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No past orders found.</div>';
+            else historyList.innerHTML = html;
         };
 
         // Sound Interaction Logic
@@ -469,7 +566,7 @@
                 ordersList.innerHTML = ''; historyList.innerHTML = '';
                 
                 let activeCount = 0; let totalRev = 0;
-                let allCompletedOrdersForChart = []; // Array for Chart
+                window.allCompletedOrdersForChart = []; // Reset global array for chart
 
                 snap.docChanges().forEach((change) => {
                     if (change.type === "added" && !isInitialLoad && change.doc.data().status === 'New') {
@@ -494,7 +591,7 @@
                     const orderDateStr = date.toISOString().split('T')[0];
 
                     if(data.status === 'Completed') {
-                        allCompletedOrdersForChart.push(data); // Push to chart array
+                        window.allCompletedOrdersForChart.push(data); // Fill array for chart & history
                     }
 
                     if(data.status === 'New' || data.status === 'Preparing') {
@@ -553,8 +650,8 @@
                 document.getElementById('total-orders').innerText = activeCount;
                 document.getElementById('total-revenue').innerText = '₹' + totalRev;
                 
-                // Update the Pie Chart
-                if(window.updateRevenueChart) window.updateRevenueChart(allCompletedOrdersForChart);
+                // Call Bar Chart Update
+                if(window.updateRevenueChart) window.updateRevenueChart(window.allCompletedOrdersForChart);
                 
                 if(activeCount === 0) ordersList.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No active orders. Kitchen is clear! 🎉</div>';
                 if(totalRev === 0) historyList.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div>';
@@ -565,6 +662,7 @@
             const list = document.getElementById('menu-body');
             list.innerHTML = '';
             data.forEach(item => {
+                
                 let catBadgeClass = ''; let icon = '';
                 if(item.category === 'Veg' || item.category === 'Starters') { catBadgeClass = 'color:#28A745; background:rgba(40,167,69,0.1)'; icon='🟢';}
                 else if(item.category === 'Non-Veg' || item.category === 'Main Course') { catBadgeClass = 'color:#E23744; background:rgba(226,55,68,0.1)'; icon='🔴';}
@@ -731,9 +829,8 @@
             if(document.getElementById('themeToggle').checked) document.body.setAttribute('data-theme', 'dark');
             else document.body.removeAttribute('data-theme');
             
-            // Re-render chart text colors if theme changes
-            if(window.updateRevenueChart && allMenuData.length > 0) {
-               // We would need the full orders list to re-render, but it'll update on next order anyway
+            if(window.updateRevenueChart && window.allCompletedOrdersForChart.length > 0) {
+               window.updateRevenueChart(window.allCompletedOrdersForChart);
             }
         };
     </script>
