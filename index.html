@@ -28,14 +28,12 @@
         .header { flex-shrink: 0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); border-bottom: 1px solid var(--border-light); z-index: 20; }
         .brand-name { font-size: 24px; font-weight: 800; color: var(--zomato-red); margin: 0; }
         
-        /* NEW: TRACK ORDER ICON (Language ke bagal me) */
         .track-icon { position: relative; font-size: 20px; cursor: pointer; padding: 6px 10px; background: #FFF0E5; border-radius: 50px; color: #FF9500; transition: 0.2s; margin-right: 10px; display: none; align-items: center; gap: 5px; border: 1px solid rgba(255,149,0,0.3); }
         .track-icon.show { display: flex; }
         .track-icon:active { transform: scale(0.9); }
         .track-pulse { position: absolute; top: -2px; right: -2px; background: #FF9500; width: 10px; height: 10px; border-radius: 50%; animation: pulse-orange 1.5s infinite; }
         @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } }
 
-        /* HINDI/ENGLISH TOGGLE */
         .lang-switch { display: flex; background: #F1F1F6; padding: 3px; border-radius: 50px; margin-right: 15px; }
         .lang-btn { border: none; background: transparent; padding: 5px 12px; font-size: 11px; font-weight: 800; border-radius: 50px; cursor: pointer; color: var(--text-sub); transition: 0.2s; }
         .lang-btn.active { background: var(--zomato-red); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -63,8 +61,8 @@
         .side-emoji { font-size: 28px; margin-bottom: 5px; }
         .side-name { font-size: 10px; font-weight: 700; color: var(--text-main); line-height: 1.2; word-wrap: break-word;}
         
-        /* TRENDING BADGE */
-        .best-seller-tag { display: inline-block; background: #FFF0E5; color: #FF9500; font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-top: 5px; border: 1px solid rgba(255,149,0,0.2); }
+        /* 🔥 FIX: BEST SELLER BADGE CHHOTA KIYA 🔥 */
+        .best-seller-tag { display: inline-block; background: #FFF0E5; color: #FF9500; font-size: 8px; padding: 2px 5px; border-radius: 4px; margin-top: 4px; border: 1px solid rgba(255,149,0,0.2); font-weight: 800; letter-spacing: 0.2px;}
 
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
         
@@ -162,6 +160,11 @@
         
         .input-field { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: border-color 0.2s; background: #F8F9FA;}
         .input-field:focus { border-color: var(--zomato-red); }
+
+        /* 🔥 NEW: Dine-in / Takeaway Toggle Buttons 🔥 */
+        .order-type-selector { display: flex; background: #F1F1F6; border-radius: 12px; padding: 4px; margin-bottom: 15px; }
+        .type-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        .type-btn.active { background: var(--white); color: var(--zomato-red); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -203,12 +206,10 @@
     <div class="header">
         <h1 class="brand-name">Crave AR</h1>
         <div style="display:flex; align-items:center;">
-            
             <div class="track-icon" id="btn-track-order" onclick="toggleTracker()">
                 <span style="font-size: 14px; font-weight:800; color:inherit;" id="track-btn-text">Track</span> 📦
                 <div class="track-pulse" id="track-badge-pulse"></div>
             </div>
-
             <div class="lang-switch">
                 <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</button>
                 <button class="lang-btn" id="btn-hi" onclick="setLanguage('hi')">हिंदी</button>
@@ -297,6 +298,11 @@
             </div>
             
             <div style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <div class="order-type-selector">
+                    <button id="btn-dinein" class="type-btn active" onclick="setOrderType('Dine-in')">🍽️ Dine-in</button>
+                    <button id="btn-takeaway" class="type-btn" onclick="setOrderType('Takeaway')">🎒 Takeaway</button>
+                </div>
+
                 <input type="number" id="tableNumber" class="input-field" placeholder="Table Number (e.g. 5) *" required style="border-color: #ddd;">
                 <input type="text" id="customerName" class="input-field" placeholder="Your Name (Optional)">
                 <input type="tel" id="customerPhone" class="input-field" placeholder="Phone Number (Optional)">
@@ -331,6 +337,7 @@
         let cart = {}; 
         let activeCategory = 'All'; 
         let trendingIds = []; 
+        let currentOrderType = 'Dine-in'; // Default
         
         const viewer = document.querySelector('#ar-viewer');
         const updateBar = document.querySelector('#update-bar');
@@ -341,8 +348,8 @@
         });
 
         const i18n = {
-            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "🔍 Search", trackTitle: "Order Status", trackBtn: "Track" },
-            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "🔍 खोजें", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक" }
+            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "🔍 Search", trackTitle: "Order Status", trackBtn: "Track", dineIn: "🍽️ Dine-in", takeaway: "🎒 Takeaway" },
+            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "🔍 खोजें", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "🍽️ यहीं खाएंगे", takeaway: "🎒 पैक करें" }
         };
         let currentLang = 'en';
 
@@ -361,13 +368,38 @@
             document.getElementById('searchInput').placeholder = i18n[l].search;
             document.getElementById('tracker-title-text').innerText = i18n[l].trackTitle;
             document.getElementById('track-btn-text').innerText = i18n[l].trackBtn;
+            document.getElementById('btn-dinein').innerText = i18n[l].dineIn;
+            document.getElementById('btn-takeaway').innerText = i18n[l].takeaway;
+            
+            // Re-run order type to refresh placeholders
+            setOrderType(currentOrderType);
             updateGlobalCartUI();
         };
 
-        // TRACKER MODAL TOGGLE
+        // 🔥 Order Type Toggle Logic 🔥
+        window.setOrderType = (type) => {
+            currentOrderType = type;
+            document.getElementById('btn-dinein').classList.toggle('active', type === 'Dine-in');
+            document.getElementById('btn-takeaway').classList.toggle('active', type === 'Takeaway');
+            
+            const tableInput = document.getElementById('tableNumber');
+            const nameInput = document.getElementById('customerName');
+            
+            if(type === 'Takeaway') {
+                tableInput.style.display = 'none';
+                tableInput.required = false;
+                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (पैक करने के लिए ज़रूरी) *" : "Your Name (Required for Takeaway) *";
+                nameInput.required = true;
+            } else {
+                tableInput.style.display = 'block';
+                tableInput.required = true;
+                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (वैकल्पिक)" : "Your Name (Optional)";
+                nameInput.required = false;
+            }
+        };
+
         window.toggleTracker = () => { document.getElementById('tracker-modal').classList.toggle('show'); };
 
-        // ------------------ FULLSCREEN SLIDE & ZOOM LOGIC ------------------
         let pzInstance = null;
         let fsImages = [];
         let fsCurrentIndex = 0;
@@ -467,7 +499,6 @@
         }
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
-        // LIVE ORDER TRACKER LOGIC (MODAL VERSION)
         function listenToLiveOrder(orderId) {
             onSnapshot(doc(db, "orders", orderId), (d) => {
                 if(!d.exists()) return;
@@ -479,7 +510,7 @@
                 const descTxt = document.getElementById('track-modal-desc');
                 const iconTxt = document.getElementById('track-modal-icon');
                 
-                trackBtn.classList.add('show'); // Button dikhao language ke bagal me
+                trackBtn.classList.add('show'); 
                 
                 if(data.status === 'New') {
                     statusTxt.innerText = currentLang === 'hi' ? 'ऑर्डर मिल गया' : 'Order Received';
@@ -492,7 +523,7 @@
                     statusTxt.style.color = '#FF9500'; iconTxt.innerText = '👨‍🍳';
                     pulse.style.display = 'block'; pulse.style.background = '#FF9500';
                 } else if(data.status === 'Completed') {
-                    statusTxt.innerText = currentLang === 'hi' ? 'परोसा गया ✅' : 'Served ✅';
+                    statusTxt.innerText = currentLang === 'hi' ? 'तैयार है ✅' : 'Ready / Served ✅';
                     descTxt.innerText = currentLang === 'hi' ? 'अपने भोजन का आनंद लें!' : 'Enjoy your meal!';
                     statusTxt.style.color = 'var(--green)'; iconTxt.innerText = '🍽️';
                     pulse.style.display = 'none';
@@ -509,7 +540,6 @@
         const savedOrderId = localStorage.getItem('craveCurrentOrderId');
         if(savedOrderId) listenToLiveOrder(savedOrderId);
 
-        // TRENDING ITEMS ALGORITHM
         async function fetchTrendingDishes() {
             try {
                 const q = query(collection(db, "orders"), orderBy("timestamp", "desc"), limit(20));
@@ -520,7 +550,6 @@
             } catch(e) { console.log(e); }
         }
 
-        // INITIAL LOAD
         fetchTrendingDishes().then(() => {
             onSnapshot(collection(db, "menu_items"), (snapshot) => {
                 allDishes = [];
@@ -737,6 +766,7 @@
 
         const restaurantWhatsApp = "917870276466"; 
 
+        // 🔥 Updated Place Order Logic with Takeaway check 🔥
         window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { customAlert("Please add items to your cart first!", "🛒"); return; }
             
@@ -744,7 +774,12 @@
             const custName = document.getElementById('customerName').value;
             const custPhone = document.getElementById('customerPhone').value;
 
-            if(!tableNo) { customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; }
+            if(currentOrderType === 'Dine-in' && !tableNo) { 
+                customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; 
+            }
+            if(currentOrderType === 'Takeaway' && !custName) { 
+                customAlert(currentLang === 'hi' ? "कृपया पैक करने के लिए अपना नाम लिखें!" : "Please enter your name for takeaway!", "🎒"); return; 
+            }
 
             const btn = document.getElementById('checkoutBtn');
             btn.innerText = "Processing..."; btn.style.background = "#FFB75E"; btn.disabled = true;
@@ -754,7 +789,9 @@
 
             let orderItems = []; let grandTotal = 0;
             
-            let waText = `*New Order - Crave AR*%0A*Table No:* ${tableNo}%0A`;
+            let waText = `*New Order - Crave AR*%0A`;
+            waText += `*Type:* ${currentOrderType}%0A`;
+            if(currentOrderType === 'Dine-in') waText += `*Table No:* ${tableNo}%0A`;
             if(custName) waText += `*Name:* ${custName}%0A`;
             if(custPhone) waText += `*Phone:* ${custPhone}%0A`;
             waText += `-------------------%0A`;
@@ -768,7 +805,8 @@
 
             try {
                 const docRef = await addDoc(collection(db, "orders"), { 
-                    tableNumber: tableNo, 
+                    orderType: currentOrderType, // Store Dine-in or Takeaway
+                    tableNumber: tableNo || "N/A", 
                     customerName: custName || "N/A",
                     customerPhone: custPhone || "N/A",
                     items: orderItems, 
