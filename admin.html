@@ -6,10 +6,8 @@
     <title>Crave AR - Merchant Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
@@ -24,7 +22,6 @@
     </script>
     
     <style>
-        /* CSS VARIABLES */
         :root { 
             --primary: #E23744; --success: #28A745; --warning: #FFB75E; --danger: #FF3B30;
             --edit-bg: #E5F1FF; --edit-text: #007AFF; --del-bg: #FFE5E5; --del-text: #FF3B30;
@@ -142,8 +139,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
         .date-filter-box { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; background: var(--bg-card); color: var(--text-main); outline: none; }
-        
-        /* 🔥 Custom Chart Filter Styles 🔥 */
         .chart-filter-select { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 12px; font-weight: 700; outline: none; cursor: pointer;}
         .btn-view-all { background: var(--input-bg); color: var(--primary); border: 1px solid var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; }
         .btn-view-all:active { background: var(--primary); color: white; }
@@ -373,19 +368,16 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // 🔥 NEW: Register DataLabels Plugin for Chart.js 🔥
         Chart.register(ChartDataLabels);
 
         let revenueChartInstance = null;
-        window.allCompletedOrdersForChart = []; // Global array to store all completed orders
+        window.allCompletedOrdersForChart = []; 
 
-        // 🔥 BAR GRAPH RENDER FUNCTION (Weekly, Monthly, Yearly) 🔥
         window.updateRevenueChart = (completedOrders) => {
             const filterType = document.getElementById('chartFilter').value;
             let labels = [];
             let revenueData = [];
             
-            // Current Date References
             const now = new Date();
             const currentYear = now.getFullYear();
 
@@ -395,8 +387,7 @@
                 completedOrders.forEach(o => {
                     if(o.timestamp) {
                         const d = o.timestamp.toDate();
-                        // Assuming current week data roughly (simple logic by day of week)
-                        let dayIdx = d.getDay() - 1; // Mon = 0, Sun = 6
+                        let dayIdx = d.getDay() - 1; 
                         if(dayIdx === -1) dayIdx = 6;
                         revenueData[dayIdx] += o.totalAmount;
                     }
@@ -426,7 +417,6 @@
                 });
             }
 
-            // Find Best Performance Data
             let maxRev = 0; let bestLabel = "";
             revenueData.forEach((rev, idx) => {
                 if(rev > maxRev) { maxRev = rev; bestLabel = labels[idx]; }
@@ -468,7 +458,6 @@
                     },
                     plugins: {
                         legend: { display: false },
-                        // Show Revenue on Top of Bars
                         datalabels: {
                             anchor: 'end',
                             align: 'top',
@@ -477,12 +466,11 @@
                             formatter: (value) => value > 0 ? `₹${value}` : ''
                         }
                     },
-                    layout: { padding: { top: 20 } } // Space for top labels
+                    layout: { padding: { top: 20 } } 
                 }
             });
         };
 
-        // 🔥 View All Past Orders Logic 🔥
         window.loadAllPastOrders = () => {
             const historyList = document.getElementById('history-body');
             historyList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-sub);">Loading all history...</div>';
@@ -493,10 +481,13 @@
                 const timeFormat = date.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true});
                 const displayTimeStr = `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}, ${timeFormat}`;
                 
+                // 🔥 NEW: Check for Takeaway in Order History 🔥
+                const tableDisplay = data.orderType === 'Takeaway' ? '<span style="color:#FF9500;">🎒 Takeaway</span>' : `Table ${data.tableNumber}`;
+
                 html += `
                     <div class="history-item">
                         <div class="history-item-left">
-                            <span class="history-item-table">Table ${data.tableNumber} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "Cash"})</span></span>
+                            <span class="history-item-table">${tableDisplay} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "Cash"})</span></span>
                             <span class="history-item-time">${displayTimeStr} • ${data.items.length} items</span>
                         </div>
                         <span class="history-item-amount">+₹${data.totalAmount}</span>
@@ -508,7 +499,6 @@
             else historyList.innerHTML = html;
         };
 
-        // Sound Interaction Logic
         let soundActivated = false;
         window.addEventListener('click', () => {
             if(!soundActivated) {
@@ -566,7 +556,7 @@
                 ordersList.innerHTML = ''; historyList.innerHTML = '';
                 
                 let activeCount = 0; let totalRev = 0;
-                window.allCompletedOrdersForChart = []; // Reset global array for chart
+                window.allCompletedOrdersForChart = []; 
 
                 snap.docChanges().forEach((change) => {
                     if (change.type === "added" && !isInitialLoad && change.doc.data().status === 'New') {
@@ -591,7 +581,7 @@
                     const orderDateStr = date.toISOString().split('T')[0];
 
                     if(data.status === 'Completed') {
-                        window.allCompletedOrdersForChart.push(data); // Fill array for chart & history
+                        window.allCompletedOrdersForChart.push(data); 
                     }
 
                     if(data.status === 'New' || data.status === 'Preparing') {
@@ -605,11 +595,14 @@
                                 </div>`;
                             });
 
+                            // 🔥 NEW: Check for Takeaway in Live Orders 🔥
+                            const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span class="table-badge" style="background:#FF9500;">🎒 Takeaway</span>' : `<span class="table-badge">T-${data.tableNumber}</span>`;
+
                             ordersList.innerHTML += `
                                 <div class="order-card" style="background:var(--edit-bg); border-radius:12px; border:1px solid rgba(0,122,255,0.2); margin-bottom:15px;">
                                     <div class="order-header">
                                         <div style="display:flex; align-items:center; gap:10px;">
-                                            <span class="table-badge">T-${data.tableNumber}</span>
+                                            ${tableDisplayBadge}
                                             <span class="order-time">${displayTimeStr} (${data.status})</span>
                                         </div>
                                         <span style="font-size:11px; font-weight:800; background:rgba(226,55,68,0.1); color:var(--primary); padding:4px 8px; border-radius:6px;">${data.paymentMethod || "Cash"}</span>
@@ -634,10 +627,14 @@
                     } else if (data.status === 'Completed') {
                         if(orderDateStr === selectedDate) {
                             totalRev += data.totalAmount;
+                            
+                            // 🔥 NEW: Check for Takeaway in Selected Date History 🔥
+                            const tableHistDisplay = data.orderType === 'Takeaway' ? '<span style="color:#FF9500;">🎒 Takeaway</span>' : `Table ${data.tableNumber}`;
+
                             historyList.innerHTML += `
                                 <div class="history-item">
                                     <div class="history-item-left">
-                                        <span class="history-item-table">Table ${data.tableNumber} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "Cash"})</span></span>
+                                        <span class="history-item-table">${tableHistDisplay} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "Cash"})</span></span>
                                         <span class="history-item-time">${displayTimeStr} • ${data.items.length} items</span>
                                     </div>
                                     <span class="history-item-amount">+₹${data.totalAmount}</span>
@@ -650,7 +647,6 @@
                 document.getElementById('total-orders').innerText = activeCount;
                 document.getElementById('total-revenue').innerText = '₹' + totalRev;
                 
-                // Call Bar Chart Update
                 if(window.updateRevenueChart) window.updateRevenueChart(window.allCompletedOrdersForChart);
                 
                 if(activeCount === 0) ordersList.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No active orders. Kitchen is clear! 🎉</div>';
@@ -662,7 +658,6 @@
             const list = document.getElementById('menu-body');
             list.innerHTML = '';
             data.forEach(item => {
-                
                 let catBadgeClass = ''; let icon = '';
                 if(item.category === 'Veg' || item.category === 'Starters') { catBadgeClass = 'color:#28A745; background:rgba(40,167,69,0.1)'; icon='🟢';}
                 else if(item.category === 'Non-Veg' || item.category === 'Main Course') { catBadgeClass = 'color:#E23744; background:rgba(226,55,68,0.1)'; icon='🔴';}
@@ -721,12 +716,10 @@
             document.getElementById('dishPriceHalf').value = "";
             document.getElementById('dishPricePiece').value = "";
             document.getElementById('dishModel').value = "";
-            
             document.getElementById('dishPhoto1').value = "";
             document.getElementById('dishPhoto2').value = "";
             document.getElementById('dishPhoto3').value = "";
             document.getElementById('dishPhoto4').value = "";
-
             document.getElementById('addModal').classList.add('show');
         };
 
@@ -744,12 +737,10 @@
                 document.getElementById('dishPriceHalf').value = dish.priceHalf || "";
                 document.getElementById('dishPricePiece').value = dish.pricePiece || "";
                 document.getElementById('dishModel').value = dish.modelUrl || "";
-
                 document.getElementById('dishPhoto1').value = (dish.images && dish.images[0]) ? dish.images[0] : "";
                 document.getElementById('dishPhoto2').value = (dish.images && dish.images[1]) ? dish.images[1] : "";
                 document.getElementById('dishPhoto3').value = (dish.images && dish.images[2]) ? dish.images[2] : "";
                 document.getElementById('dishPhoto4').value = (dish.images && dish.images[3]) ? dish.images[3] : "";
-
                 document.getElementById('addModal').classList.add('show');
             }
         };
@@ -758,7 +749,6 @@
             const btn = document.getElementById('saveBtn');
             btn.innerText = "Saving..."; btn.disabled = true;
             const id = document.getElementById('dishId').value;
-            
             const img1 = document.getElementById('dishPhoto1').value;
             const img2 = document.getElementById('dishPhoto2').value;
             const img3 = document.getElementById('dishPhoto3').value;
