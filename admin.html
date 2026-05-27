@@ -481,7 +481,6 @@
                 const timeFormat = date.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true});
                 const displayTimeStr = `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}, ${timeFormat}`;
                 
-                // 🔥 NEW: Check for Takeaway in Order History 🔥
                 const tableDisplay = data.orderType === 'Takeaway' ? '<span style="color:#FF9500;">🎒 Takeaway</span>' : `Table ${data.tableNumber}`;
 
                 html += `
@@ -509,6 +508,58 @@
             }
         }, { once: true });
 
+        // 🔥 NEW: Smart Poster Generator for QR Download 🔥
+        window.downloadQR = () => {
+            const qrCanvas = document.querySelector("#qrcode-box canvas");
+            if(!qrCanvas) { alert("QR Code not generated yet!"); return; }
+
+            const printCanvas = document.createElement('canvas');
+            const ctx = printCanvas.getContext('2d');
+            printCanvas.width = 800;
+            printCanvas.height = 1100;
+
+            // Background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
+
+            // Header Background
+            ctx.fillStyle = '#E23744';
+            ctx.fillRect(0, 0, printCanvas.width, 250);
+
+            // Header Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 80px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Crave AR', 400, 110);
+            ctx.font = 'bold 45px Arial';
+            ctx.fillText('Scan to View Menu & Order', 400, 190);
+
+            // Draw QR Code
+            ctx.drawImage(qrCanvas, 200, 300, 400, 400);
+
+            // Instructions Header
+            ctx.fillStyle = '#282C3F';
+            ctx.font = 'bold 40px Arial';
+            ctx.fillText('How to scan? (स्कैन कैसे करें?)', 400, 800);
+
+            // Instructions Details
+            ctx.fillStyle = '#686B78';
+            ctx.font = '32px Arial';
+            ctx.fillText('📷 1. Open Phone Camera / Google Lens', 400, 880);
+            ctx.fillText('👉 2. Point at the QR Code', 400, 940);
+            ctx.fillText('💳 3. You can also use Paytm / PhonePe', 400, 1000);
+
+            // Download Logic
+            const url = printCanvas.toDataURL("image/png");
+            const a = document.createElement('a');
+            a.href = url; 
+            a.download = "Table_QR_Standee.png";
+            document.body.appendChild(a); 
+            a.click(); 
+            document.body.removeChild(a);
+        };
+
+        // Create QR on load (Hidden behind the new feature)
         new QRCode(document.getElementById("qrcode-box"), { text: document.getElementById("menu-link").value, width: 220, height: 220, colorDark: "#282C3F", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
 
         onAuthStateChanged(auth, (user) => {
@@ -595,7 +646,6 @@
                                 </div>`;
                             });
 
-                            // 🔥 NEW: Check for Takeaway in Live Orders 🔥
                             const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span class="table-badge" style="background:#FF9500;">🎒 Takeaway</span>' : `<span class="table-badge">T-${data.tableNumber}</span>`;
 
                             ordersList.innerHTML += `
@@ -628,7 +678,6 @@
                         if(orderDateStr === selectedDate) {
                             totalRev += data.totalAmount;
                             
-                            // 🔥 NEW: Check for Takeaway in Selected Date History 🔥
                             const tableHistDisplay = data.orderType === 'Takeaway' ? '<span style="color:#FF9500;">🎒 Takeaway</span>' : `Table ${data.tableNumber}`;
 
                             historyList.innerHTML += `
@@ -803,16 +852,6 @@
                 document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
                 element.classList.add('active');
             }
-        };
-
-        window.downloadQR = () => {
-            const canvas = document.querySelector("#qrcode-box canvas");
-            if(canvas) {
-                const url = canvas.toDataURL("image/png");
-                const a = document.createElement('a');
-                a.href = url; a.download = "CraveAR_Table_QR.png";
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            } else { alert("QR Code not generated yet!"); }
         };
 
         window.toggleTheme = () => {
