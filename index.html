@@ -214,11 +214,21 @@
     </style>
 </head>
 <body>
-<div id="premium-loader">
-  <div class="loader-circle"></div>
-  <p>Crave AR</p>
-  <span>Crafting your menu...</span>
-</div>
+<!-- Premium Loader Hide Script -->
+<script>
+  window.addEventListener('load', function() {
+      setTimeout(function() {
+          let loader = document.getElementById("premium-loader");
+          if (loader) {
+              loader.style.opacity = "0";
+              setTimeout(function() {
+                  loader.style.display = "none";
+              }, 500);
+          }
+      }, 1000); 
+  });
+</script>
+
     
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center;">
