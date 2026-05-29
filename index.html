@@ -893,6 +893,20 @@
             btn.style.background = "var(--green)"; 
             btn.disabled = false;
         };
+  // Premium Loader ko smooth tarike se hide karne ka code
+window.addEventListener('load', function() {
+    // 1 second ka time de rahe hain taaki premium animation dikhe
+    setTimeout(function() {
+        let loader = document.getElementById("premium-loader");
+        if (loader) {
+            loader.style.opacity = "0"; // Pehle fade out hoga
+            setTimeout(function() {
+                loader.style.display = "none"; // Phir screen se hamesha ke liye hat jayega
+            }, 500); // 0.5 second fade hone ka time
+        }
+    }, 1000); 
+});
+        
     </script>
 </body>
 </html>
