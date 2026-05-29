@@ -165,10 +165,61 @@
         .order-type-selector { display: flex; background: #F1F1F6; border-radius: 12px; padding: 4px; margin-bottom: 15px; }
         .type-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .type-btn.active { background: var(--white); color: var(--zomato-red); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  /* --- PREMIUM LOADER DESIGN --- */
+#premium-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Isko sabse upar rakhne ke liye */
+  transition: opacity 0.5s ease; /* Gayab hote time smooth effect */
+}
+
+.loader-circle {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ff4757; /* Swiggy jaisa red/orange color */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+#premium-loader p {
+  font-size: 22px;
+  font-weight: 800;
+  color: #2f3542;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+#premium-loader span {
+  font-size: 14px;
+  color: #747d8c;
+  margin-top: 5px;
+}
+
+/* Loader ko ghumane ka animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+        
     </style>
 </head>
 <body>
-
+<div id="premium-loader">
+  <div class="loader-circle"></div>
+  <p>Crave AR</p>
+  <span>Crafting your menu...</span>
+</div>
+    
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center;">
             <div class="cart-header">
