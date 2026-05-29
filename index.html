@@ -855,6 +855,7 @@
         const restaurantWhatsApp = "917870276466"; 
 
         // 🔥 Updated Place Order Logic with Takeaway check 🔥
+                // 🔥 Minimalist Premium Place Order Logic 🔥
         window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { customAlert("Please add items to your cart first!", "🛒"); return; }
             
@@ -877,23 +878,46 @@
 
             let orderItems = []; let grandTotal = 0;
             
-            let waText = `*New Order - Crave AR*%0A`;
-            waText += `*Type:* ${currentOrderType}%0A`;
-            if(currentOrderType === 'Dine-in') waText += `*Table No:* ${tableNo}%0A`;
-            if(custName) waText += `*Name:* ${custName}%0A`;
-            if(custPhone) waText += `*Phone:* ${custPhone}%0A`;
-            waText += `-------------------%0A`;
+            // 🌟 MINIMALIST WHATSAPP FORMAT START 🌟
+            let orderId = Math.floor(1000 + Math.random() * 9000);
+            
+            let waText = `*[ NEW ORDER ]*\n`;
+            
+            if(currentOrderType === 'Dine-in') {
+                waText += `*Type:* Dine-in | *Table:* ${tableNo}\n`;
+            } else {
+                waText += `*Type:* Takeaway\n`;
+            }
+            waText += `*ID:* #ORD-${orderId}\n\n`;
+
+            if(custName || custPhone) {
+                waText += `*Customer Details:*\n`;
+                if(custName) waText += `Name: ${custName}\n`;
+                if(custPhone) waText += `Phone: ${custPhone}\n`;
+                waText += `\n`; 
+            }
+            
+            waText += `*Order Details:*\n`;
 
             for(let k in cart) { 
                 orderItems.push(cart[k]); 
                 grandTotal += (cart[k].price * cart[k].qty); 
-                waText += `${cart[k].qty}x ${cart[k].name} ${cart[k].variant} - ₹${cart[k].price * cart[k].qty}%0A`;
+                
+                let variantText = cart[k].variant ? ` ${cart[k].variant}` : '';
+                waText += `${cart[k].qty} x ${cart[k].name}${variantText} = ₹${cart[k].price * cart[k].qty}\n`;
             }
-            waText += `-------------------%0A*Total to Pay:* ₹${grandTotal}`;
+            
+            waText += `=====================\n`;
+            waText += `*Total Amount: ₹${grandTotal}*\n`;
+            waText += `=====================\n`;
+            waText += `_Powered by Crave AR_`;
+
+            let finalWaText = encodeURIComponent(waText); 
+            // 🌟 FORMAT END 🌟
 
             try {
                 const docRef = await addDoc(collection(db, "orders"), { 
-                    orderType: currentOrderType, // Store Dine-in or Takeaway
+                    orderType: currentOrderType, 
                     tableNumber: tableNo || "N/A", 
                     customerName: custName || "N/A",
                     customerPhone: custPhone || "N/A",
@@ -917,7 +941,7 @@
 
                 showToast("🎉 Order Placed!");
                 setTimeout(() => {
-                    window.open(`https://wa.me/${restaurantWhatsApp}?text=${waText}`, '_blank');
+                    window.open(`https://wa.me/${restaurantWhatsApp}?text=${finalWaText}`, '_blank');
                 }, 500);
 
             } catch (e) { 
@@ -930,6 +954,7 @@
             btn.style.background = "var(--green)"; 
             btn.disabled = false;
         };
+
   // Premium Loader ko smooth tarike se hide karne ka code
 window.addEventListener('load', function() {
     // 1 second ka time de rahe hain taaki premium animation dikhe
