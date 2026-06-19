@@ -508,7 +508,6 @@
             }
         }, { once: true });
 
-        // 🔥 NEW: Smart Poster Generator for QR Download 🔥
         window.downloadQR = () => {
             const qrCanvas = document.querySelector("#qrcode-box canvas");
             if(!qrCanvas) { alert("QR Code not generated yet!"); return; }
@@ -559,7 +558,7 @@
             document.body.removeChild(a);
         };
 
-        // Create QR on load (Hidden behind the new feature)
+        // Create QR on load
         new QRCode(document.getElementById("qrcode-box"), { text: document.getElementById("menu-link").value, width: 220, height: 220, colorDark: "#282C3F", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
 
         onAuthStateChanged(auth, (user) => {
