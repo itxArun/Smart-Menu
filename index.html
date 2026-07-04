@@ -61,7 +61,6 @@
         .side-emoji { font-size: 28px; margin-bottom: 5px; }
         .side-name { font-size: 10px; font-weight: 700; color: var(--text-main); line-height: 1.2; word-wrap: break-word;}
         
-        /* 🔥 FIX: BEST SELLER BADGE CHHOTA KIYA 🔥 */
         .best-seller-tag { display: inline-block; background: #FFF0E5; color: #FF9500; font-size: 8px; padding: 2px 5px; border-radius: 4px; margin-top: 4px; border: 1px solid rgba(255,149,0,0.2); font-weight: 800; letter-spacing: 0.2px;}
 
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
@@ -101,37 +100,42 @@
         .fs-dot.active { background: white; transform: scale(1.3); }
 
         /* --- PREMIUM DISH DETAILS (Bottom Card) --- */
-.bottom-ui {
-  flex-shrink: 0;
-  background: #ffffff;
-  padding: 25px 20px; /* Thoda zyada space premium feel ke liye */
-  border-top-left-radius: 30px; /* Upar ke corners ekdum smooth gol */
-  border-top-right-radius: 30px;
-  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.08); /* Upar ki taraf halka aur soft shadow */
-  position: relative;
-  z-index: 10;
-}
+        .bottom-ui {
+          flex-shrink: 0;
+          background: #ffffff;
+          padding: 25px 20px; 
+          border-top-left-radius: 30px; 
+          border-top-right-radius: 30px;
+          box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.08); 
+          position: relative;
+          z-index: 10;
+          transition: padding-bottom 0.3s ease; /* Smooth transition added */
+        }
+        
+        /* 🔥 YEH RAHA FIX: Jab cart add hoga toh bottom UI upar khisak jayega 🔥 */
+        .bottom-ui.with-cart {
+          padding-bottom: 95px; 
+        }
 
-.dish-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
+        .dish-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        }
 
-.dish-title {
-  font-size: 22px;
-  font-weight: 800;
-  color: #2f3542;
-  margin: 0;
-}
+        .dish-title {
+          font-size: 22px;
+          font-weight: 800;
+          color: #2f3542;
+          margin: 0;
+        }
 
-.price {
-  font-size: 20px;
-  font-weight: 700;
-  color: #ff4757; /* Premium Red/Orange color */
-}
-
+        .price {
+          font-size: 20px;
+          font-weight: 700;
+          color: #ff4757; 
+        }
         
         .main-cat-badge { font-size: 11px; padding: 4px 8px; border-radius: 8px; font-weight: 700; white-space: nowrap; }
         .cat-Veg { background:#E5F8ED; color:#28A745; border: 1px solid rgba(40,167,69,0.2);}
@@ -188,60 +192,24 @@
         .input-field { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: border-color 0.2s; background: #F8F9FA;}
         .input-field:focus { border-color: var(--zomato-red); }
 
-        /* 🔥 NEW: Dine-in / Takeaway Toggle Buttons 🔥 */
         .order-type-selector { display: flex; background: #F1F1F6; border-radius: 12px; padding: 4px; margin-bottom: 15px; }
         .type-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .type-btn.active { background: var(--white); color: var(--zomato-red); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-  /* --- PREMIUM LOADER DESIGN --- */
-#premium-loader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; /* Isko sabse upar rakhne ke liye */
-  transition: opacity 0.5s ease; /* Gayab hote time smooth effect */
-}
 
-.loader-circle {
-  width: 50px;
-  height: 50px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #ff4757; /* Swiggy jaisa red/orange color */
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 15px;
-}
-
-#premium-loader p {
-  font-size: 22px;
-  font-weight: 800;
-  color: #2f3542;
-  margin: 0;
-  letter-spacing: 1px;
-}
-
-#premium-loader span {
-  font-size: 14px;
-  color: #747d8c;
-  margin-top: 5px;
-}
-
-/* Loader ko ghumane ka animation */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-        
+        #premium-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
+        .loader-circle { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #ff4757; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        #premium-loader p { font-size: 22px; font-weight: 800; color: #2f3542; margin: 0; letter-spacing: 1px; }
+        #premium-loader span { font-size: 14px; color: #747d8c; margin-top: 5px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-<!-- Premium Loader Hide Script -->
+<div id="premium-loader">
+    <div class="loader-circle"></div>
+    <p>NextPlate</p>
+    <span>Loading...</span>
+</div>
+
 <script>
   window.addEventListener('load', function() {
       setTimeout(function() {
@@ -256,7 +224,6 @@
   });
 </script>
 
-    
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center;">
             <div class="cart-header">
@@ -425,7 +392,7 @@
         let cart = {}; 
         let activeCategory = 'All'; 
         let trendingIds = []; 
-        let currentOrderType = 'Dine-in'; // Default
+        let currentOrderType = 'Dine-in'; 
         
         const viewer = document.querySelector('#ar-viewer');
         const updateBar = document.querySelector('#update-bar');
@@ -459,12 +426,10 @@
             document.getElementById('btn-dinein').innerText = i18n[l].dineIn;
             document.getElementById('btn-takeaway').innerText = i18n[l].takeaway;
             
-            // Re-run order type to refresh placeholders
             setOrderType(currentOrderType);
             updateGlobalCartUI();
         };
 
-        // 🔥 Order Type Toggle Logic 🔥
         window.setOrderType = (type) => {
             currentOrderType = type;
             document.getElementById('btn-dinein').classList.toggle('active', type === 'Dine-in');
@@ -854,8 +819,6 @@
 
         const restaurantWhatsApp = "917870276466"; 
 
-        // 🔥 Updated Place Order Logic with Takeaway check 🔥
-                // 🔥 Minimalist Premium Place Order Logic 🔥
         window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { customAlert("Please add items to your cart first!", "🛒"); return; }
             
@@ -878,7 +841,6 @@
 
             let orderItems = []; let grandTotal = 0;
             
-            // 🌟 MINIMALIST WHATSAPP FORMAT START 🌟
             let orderId = Math.floor(1000 + Math.random() * 9000);
             
             let waText = `*[ NEW ORDER ]*\n`;
@@ -910,10 +872,9 @@
             waText += `=====================\n`;
             waText += `*Total Amount: ₹${grandTotal}*\n`;
             waText += `=====================\n`;
-            waText += `_Powered by Crave AR_`;
+            waText += `_Powered by NextPlate_`;
 
             let finalWaText = encodeURIComponent(waText); 
-            // 🌟 FORMAT END 🌟
 
             try {
                 const docRef = await addDoc(collection(db, "orders"), { 
@@ -955,20 +916,6 @@
             btn.disabled = false;
         };
 
-  // Premium Loader ko smooth tarike se hide karne ka code
-window.addEventListener('load', function() {
-    // 1 second ka time de rahe hain taaki premium animation dikhe
-    setTimeout(function() {
-        let loader = document.getElementById("premium-loader");
-        if (loader) {
-            loader.style.opacity = "0"; // Pehle fade out hoga
-            setTimeout(function() {
-                loader.style.display = "none"; // Phir screen se hamesha ke liye hat jayega
-            }, 500); // 0.5 second fade hone ka time
-        }
-    }, 1000); 
-});
-        
     </script>
 </body>
 </html>
