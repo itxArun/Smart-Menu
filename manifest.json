@@ -1,7 +1,7 @@
 
 {
-  "name": "Crave AR - Smart Menu",
-  "short_name": "Crave AR",
+  "name": "NextPlate - Smart Menu",
+  "short_name": "NextPlate",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#F8F9FA",
