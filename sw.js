@@ -1,5 +1,5 @@
 self.addEventListener('install', (e) => {
-    console.log('[Crave AR] Service Worker Installed');
+    console.log('[NextPlate] Service Worker Installed');
 });
 
 self.addEventListener('fetch', (e) => {
