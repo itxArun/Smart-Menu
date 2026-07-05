@@ -1,3 +1,4 @@
+//V1
 self.addEventListener('install', (e) => {
     console.log('[NextPlate] Service Worker Installed');
 });
