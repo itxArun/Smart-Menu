@@ -11,22 +11,13 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then((reg) => {
-                    console.log('App ready for install!', reg);
-                });
-            });
-        }
-    </script>
     
     <style>
         :root { 
             --primary: #E23744; --success: #28A745; --warning: #FFB75E; --danger: #FF3B30;
             --edit-bg: #E5F1FF; --edit-text: #007AFF; --del-bg: #FFE5E5; --del-text: #FF3B30;
-            --bg-main: #F4F6F8; --bg-card: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78; 
-            --border: #E8E8E8; --input-bg: #F8F9FA;
+            --bg-main: #F8F9FA; --bg-card: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78; 
+            --border: #E8E8E8; --input-bg: #F1F1F6;
         }
 
         [data-theme="dark"] {
@@ -47,39 +38,64 @@
         .btn-login:active { transform: scale(0.96); }
 
         .top-nav { flex-shrink: 0; background: var(--bg-card); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 100; transition: 0.3s; }
-        .brand-logo { font-family: 'Okra', sans-serif; font-size: 22px; color: var(--primary); font-weight: 800; margin: 0; }
-        .admin-profile { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 13px; }
+        .brand-logo { font-family: 'Okra', sans-serif; font-size: 22px; color: var(--primary); font-weight: 800; margin: 0; line-height: 1.1;}
+        .greet-text { font-size: 11px; color: var(--text-sub); font-weight: 600; display: block; }
+        
+        .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 13px; }
         .avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; }
         .btn-logout { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;}
         
         .app-container { display: flex; flex: 1; overflow: hidden; }
-        .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 110px; } /* Increased bottom padding for floating nav */
         
+        /* 🔥 NEW: Premium Stats Grid with Icons 🔥 */
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.3s; cursor: pointer;}
+        .stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.03); transition: 0.3s; cursor: pointer; display: flex; justify-content: space-between; align-items: center;}
         .stat-card:active { transform: scale(0.96); }
-        .stat-title { font-size: 11px; color: var(--text-sub); font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .stat-info { display: flex; flex-direction: column; }
+        .stat-title { font-size: 11px; color: var(--text-sub); font-weight: 700; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px;}
         .stat-value { font-size: 22px; font-weight: 800; margin: 0; color: var(--text-main); }
         .stat-value.green { color: var(--success); }
+        .stat-icon { font-size: 22px; width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; border-radius: 12px; }
+        
+        /* 🔥 NEW: Pulse Effect for Live Orders 🔥 */
+        .pulse-live { animation: pulseLive 2s infinite; border-color: var(--warning); box-shadow: 0 0 15px rgba(255, 183, 94, 0.4); }
+        @keyframes pulseLive { 
+            0% { box-shadow: 0 0 0 0 rgba(255, 183, 94, 0.4); } 
+            70% { box-shadow: 0 0 0 10px rgba(255, 183, 94, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(255, 183, 94, 0); } 
+        }
 
-        .section-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: 0.3s; margin-bottom: 20px; }
+        .section-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.04); transition: 0.3s; margin-bottom: 20px; }
         .section-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: transparent; }
         .section-header h3 { margin: 0; font-size: 17px; font-weight: 800; color: var(--text-main); }
-        .btn-add { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 8px rgba(226,55,68,0.2);}
+        .btn-add { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(226,55,68,0.2);}
         
         .search-container { padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
         .search-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; background: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none; transition: 0.2s; }
 
+        /* 🔥 NEW: Category Filter Scroll 🔥 */
+        .admin-cat-scroll { display: flex; overflow-x: auto; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
+        .admin-cat-scroll::-webkit-scrollbar { display: none; }
+        .admin-cat-pill { padding: 8px 16px; border-radius: 20px; background: var(--input-bg); color: var(--text-sub); font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+        .admin-cat-pill.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(226,55,68,0.2); }
+
         .menu-list { display: flex; flex-direction: column; }
-        .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); transition: 0.2s; background: var(--bg-card); cursor: pointer; }
+        .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); transition: opacity 0.3s, transform 0.2s; background: var(--bg-card); cursor: pointer; }
         .menu-item-row:last-child { border-bottom: none; }
-        .menu-item-info { display: flex; align-items: center; gap: 15px; flex: 1; }
-        .dish-icon { font-size: 28px; background: var(--input-bg); padding: 10px; border-radius: 14px; }
-        .dish-details { display: flex; flex-direction: column; gap: 4px; padding-right: 10px;}
-        .dish-name { font-size: 15px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 5px;}
+        .menu-item-info { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .dish-icon { font-size: 26px; background: var(--input-bg); padding: 10px; border-radius: 14px; }
+        .dish-details { display: flex; flex-direction: column; gap: 4px; padding-right: 5px;}
+        .dish-name { font-size: 14px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 5px; line-height: 1.2;}
         .dish-price { font-size: 13px; font-weight: 600; color: var(--text-sub); }
         .cat-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700; white-space: nowrap;}
-        .btn-delete-modern { background: var(--del-bg); color: var(--del-text); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: 0.2s; z-index: 2;}
+        
+        /* 🔥 NEW: Actions Area (Edit, Delete, Stock Toggle) 🔥 */
+        .menu-item-actions { display: flex; gap: 8px; align-items: center; }
+        .btn-action-modern { border: none; width: 34px; height: 34px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; transition: 0.2s; z-index: 2;}
+        .btn-action-modern:active { transform: scale(0.9); }
+        .btn-edit { background: var(--edit-bg); color: var(--edit-text); }
+        .btn-del { background: var(--del-bg); color: var(--del-text); }
 
         .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); }
         .order-actions-row { display: flex; gap: 8px; }
@@ -95,23 +111,39 @@
         .qr-container { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
         #qrcode-box { padding: 20px; background: white; border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.08); display: inline-block; }
         .link-input { width: 90%; max-width: 350px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; text-align: center; color: var(--text-sub); background: var(--input-bg); outline: none; }
-        .btn-download { background: var(--primary); color: white; border: none; padding: 16px 35px; border-radius: 50px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-download { background: var(--primary); color: white; border: none; padding: 16px 35px; border-radius: 50px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(226,55,68,0.3);}
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; transition: 0.3s; }
-        .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-sub); cursor: pointer; transition: 0.2s; text-decoration: none; }
-        .nav-tab.active { color: var(--primary); }
-        .nav-tab span { font-size: 22px; }
+        /* 🔥 NEW: Floating Premium Bottom Nav 🔥 */
+        .bottom-nav { 
+            position: fixed; bottom: 15px; left: 4%; width: 92%; height: 70px; 
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); 
+            border-radius: 24px; border: 1px solid rgba(255,255,255,0.4);
+            display: flex; justify-content: space-around; align-items: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); z-index: 1000; transition: 0.3s; 
+        }
+        [data-theme="dark"] .bottom-nav { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); cursor: pointer; transition: 0.2s; text-decoration: none; width: 60px;}
+        .nav-tab.active { color: var(--primary); transform: translateY(-3px); }
+        .nav-tab span { font-size: 20px; }
         .nav-tab label { font-size: 10px; font-weight: 800; }
 
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); }
         .setting-label { font-size: 15px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px;}
         .setting-desc { font-size: 12px; color: var(--text-sub); font-weight: 400; margin-top: 4px; display: block; }
+        
+        /* Toggle Switch UI */
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
         input:checked + .slider { background-color: var(--success); }
         input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Small switch for Stock Toggle */
+        .switch-sm { width: 36px; height: 20px; }
+        .switch-sm .slider:before { height: 14px; width: 14px; left: 3px; bottom: 3px; }
+        input:checked + .slider.sm:before { transform: translateX(16px); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
@@ -136,9 +168,9 @@
         
         .view-section { display: none; animation: fadeIn 0.3s; }
         .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .date-filter-box { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; background: var(--bg-card); color: var(--text-main); outline: none; }
+        .date-filter-box { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; background: var(--bg-card); color: var(--text-main); outline: none; }
         .chart-filter-select { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 12px; font-weight: 700; outline: none; cursor: pointer;}
         .btn-view-all { background: var(--input-bg); color: var(--primary); border: 1px solid var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; }
         .btn-view-all:active { background: var(--primary); color: white; }
@@ -162,7 +194,7 @@
 
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
-            <h2>Crave AR</h2>
+            <h2>NextPlate</h2>
             <p>Merchant Panel Login</p>
             <input type="email" id="adminEmail" class="login-input" placeholder="Email Address" required>
             <input type="password" id="adminPass" class="login-input" placeholder="Password" required>
@@ -171,11 +203,13 @@
     </div>
 
     <div class="top-nav">
-        <h1 class="brand-logo">Crave AR</h1>
-        <div class="admin-profile" style="gap: 10px;">
+        <div style="display: flex; flex-direction: column;">
+            <h1 class="brand-logo">NextPlate</h1>
+            <span class="greet-text">Welcome back, Arun 👋</span>
+        </div>
+        <div class="admin-profile">
             <input type="date" id="reportDate" class="date-filter-box" onchange="initAdminData()">
             <button class="btn-logout" onclick="logoutAdmin()">Logout</button>
-            <div class="avatar">A</div>
         </div>
     </div>
 
@@ -183,10 +217,34 @@
         <div class="main-content">
             
             <div class="stats-grid">
-                <div class="stat-card" onclick="switchTab('menu')"><div class="stat-title">Menu Items</div><div class="stat-value" id="total-dishes">0</div></div>
-                <div class="stat-card" onclick="switchTab('orders')"><div class="stat-title">Live Orders</div><div class="stat-value" id="total-orders" style="color:var(--warning);">0</div></div>
-                <div class="stat-card" onclick="switchTab('stats')"><div class="stat-title">Revenue (Selected Date)</div><div class="stat-value green" id="total-revenue">₹0</div></div>
-                <div class="stat-card" onclick="switchTab('stats')"><div class="stat-title">AR Views</div><div class="stat-value" id="total-ar-views">0</div></div>
+                <div class="stat-card" onclick="switchTab('menu')">
+                    <div class="stat-info">
+                        <div class="stat-title">Menu Items</div>
+                        <div class="stat-value" id="total-dishes">0</div>
+                    </div>
+                    <div class="stat-icon" style="background:var(--edit-bg); color:var(--edit-text);">🍽️</div>
+                </div>
+                <div class="stat-card" id="live-order-card" onclick="switchTab('orders')">
+                    <div class="stat-info">
+                        <div class="stat-title">Live Orders</div>
+                        <div class="stat-value" id="total-orders" style="color:var(--warning);">0</div>
+                    </div>
+                    <div class="stat-icon" style="background:#FFF0E5; color:#FF9500;">🔔</div>
+                </div>
+                <div class="stat-card" onclick="switchTab('stats')">
+                    <div class="stat-info">
+                        <div class="stat-title">Revenue</div>
+                        <div class="stat-value green" id="total-revenue">₹0</div>
+                    </div>
+                    <div class="stat-icon" style="background:#E5F8ED; color:var(--success);">💰</div>
+                </div>
+                <div class="stat-card" onclick="switchTab('stats')">
+                    <div class="stat-info">
+                        <div class="stat-title">AR Views</div>
+                        <div class="stat-value" id="total-ar-views">0</div>
+                    </div>
+                    <div class="stat-icon" style="background:#F3E5F5; color:#9C27B0;">📸</div>
+                </div>
             </div>
 
             <div class="section-card view-section active" id="section-menu">
@@ -194,9 +252,22 @@
                     <h3>Menu Management</h3>
                     <button class="btn-add" onclick="openModal()">+ Add Dish</button>
                 </div>
+                
                 <div class="search-container">
                     <input type="text" class="search-input" id="adminSearchInput" placeholder="🔍 Search dishes..." onkeyup="filterAdminMenu()">
                 </div>
+                
+                <!-- 🔥 Category Filter Tabs 🔥 -->
+                <div class="admin-cat-scroll" id="admin-category-filter">
+                    <div class="admin-cat-pill active" onclick="filterAdminCat('All', this)">All</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Starters', this)">🔥 Starters</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Main Course', this)">🍛 Main Course</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Breads', this)">🥖 Breads</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Rice', this)">🍚 Rice</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Drinks', this)">🥤 Drinks</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Desserts', this)">🍰 Desserts</div>
+                </div>
+
                 <div class="menu-list" id="menu-body"><div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Loading...</div></div>
             </div>
 
@@ -508,7 +579,6 @@
             }
         }, { once: true });
 
-        // 🔥 NEW: Smart Poster Generator for QR Download 🔥
         window.downloadQR = () => {
             const qrCanvas = document.querySelector("#qrcode-box canvas");
             if(!qrCanvas) { alert("QR Code not generated yet!"); return; }
@@ -518,48 +588,40 @@
             printCanvas.width = 800;
             printCanvas.height = 1100;
 
-            // Background
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
 
-            // Header Background
             ctx.fillStyle = '#E23744';
             ctx.fillRect(0, 0, printCanvas.width, 250);
 
-            // Header Text
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 80px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('Crave AR', 400, 110);
+            ctx.fillText('NextPlate', 400, 110);
             ctx.font = 'bold 45px Arial';
             ctx.fillText('Scan to View Menu & Order', 400, 190);
 
-            // Draw QR Code
             ctx.drawImage(qrCanvas, 200, 300, 400, 400);
 
-            // Instructions Header
             ctx.fillStyle = '#282C3F';
             ctx.font = 'bold 40px Arial';
             ctx.fillText('How to scan? (स्कैन कैसे करें?)', 400, 800);
 
-            // Instructions Details
             ctx.fillStyle = '#686B78';
             ctx.font = '32px Arial';
             ctx.fillText('📷 1. Open Phone Camera / Google Lens', 400, 880);
             ctx.fillText('👉 2. Point at the QR Code', 400, 940);
             ctx.fillText('💳 3. You can also use Paytm / PhonePe', 400, 1000);
 
-            // Download Logic
             const url = printCanvas.toDataURL("image/png");
             const a = document.createElement('a');
             a.href = url; 
-            a.download = "Table_QR_Standee.png";
+            a.download = "NextPlate_Table_QR.png";
             document.body.appendChild(a); 
             a.click(); 
             document.body.removeChild(a);
         };
 
-        // Create QR on load (Hidden behind the new feature)
         new QRCode(document.getElementById("qrcode-box"), { text: document.getElementById("menu-link").value, width: 220, height: 220, colorDark: "#282C3F", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
 
         onAuthStateChanged(auth, (user) => {
@@ -584,6 +646,9 @@
         document.getElementById('reportDate').valueAsDate = new Date();
         let allMenuData = [];
         let isInitialLoad = true;
+        
+        // Filter States
+        window.adminActiveCat = 'All';
 
         function initAdminData() {
             const selectedDate = document.getElementById('reportDate').value;
@@ -592,7 +657,7 @@
                 document.getElementById('total-dishes').innerText = snap.size;
                 allMenuData = [];
                 snap.forEach(doc => { let d = doc.data(); d.id = doc.id; allMenuData.push(d); });
-                renderAdminMenu(allMenuData);
+                window.filterAdminMenu(); // Trigger filter on load
             });
 
             onSnapshot(collection(db, "ar_views"), (snap) => {
@@ -696,12 +761,36 @@
                 document.getElementById('total-orders').innerText = activeCount;
                 document.getElementById('total-revenue').innerText = '₹' + totalRev;
                 
+                // Live Order Pulse Effect Update
+                if(activeCount > 0) document.getElementById('live-order-card').classList.add('pulse-live');
+                else document.getElementById('live-order-card').classList.remove('pulse-live');
+
                 if(window.updateRevenueChart) window.updateRevenueChart(window.allCompletedOrdersForChart);
                 
                 if(activeCount === 0) ordersList.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No active orders. Kitchen is clear! 🎉</div>';
                 if(totalRev === 0) historyList.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div>';
             });
         }
+
+        window.filterAdminCat = (cat, element) => {
+            document.querySelectorAll('.admin-cat-pill').forEach(p => p.classList.remove('active'));
+            element.classList.add('active');
+            window.adminActiveCat = cat;
+            window.filterAdminMenu();
+        };
+
+        window.filterAdminMenu = () => {
+            const q = document.getElementById('adminSearchInput').value.toLowerCase();
+            let filtered = allMenuData;
+            
+            if (window.adminActiveCat !== 'All') {
+                filtered = filtered.filter(d => d.category === window.adminActiveCat);
+            }
+            if (q) {
+                filtered = filtered.filter(d => d.name.toLowerCase().includes(q));
+            }
+            renderAdminMenu(filtered);
+        };
 
         window.renderAdminMenu = (data) => {
             const list = document.getElementById('menu-body');
@@ -713,8 +802,11 @@
                 else if(item.category === 'Breads' || item.category === 'Rice') { catBadgeClass = 'color:#FF9500; background:rgba(255,149,0,0.1)'; icon='🌾';}
                 else { catBadgeClass = 'color:#007AFF; background:rgba(0,122,255,0.1)'; icon='🥤';}
                 
+                const inStock = item.inStock !== false; // Default is true
+                const opacity = inStock ? '1' : '0.5';
+
                 list.innerHTML += `
-                    <div class="menu-item-row" onclick="editDish('${item.id}')">
+                    <div class="menu-item-row" style="opacity: ${opacity}">
                         <div class="menu-item-info">
                             <div class="dish-icon">${item.emoji || "🍲"}</div>
                             <div class="dish-details">
@@ -722,15 +814,23 @@
                                 <span class="dish-price">₹${item.price} <span class="cat-badge" style="${catBadgeClass}">${icon} ${item.category}</span></span>
                             </div>
                         </div>
-                        <button class="btn-delete-modern" onclick="event.stopPropagation(); triggerDeleteModal('${item.id}')">🗑️</button>
+                        <div class="menu-item-actions">
+                            <label class="switch switch-sm" title="Toggle Stock" onclick="event.stopPropagation()">
+                                <input type="checkbox" ${inStock ? 'checked' : ''} onchange="toggleStock('${item.id}', ${inStock})">
+                                <span class="slider sm"></span>
+                            </label>
+                            <button class="btn-action-modern btn-edit" onclick="event.stopPropagation(); editDish('${item.id}')">✏️</button>
+                            <button class="btn-action-modern btn-del" onclick="event.stopPropagation(); triggerDeleteModal('${item.id}')">🗑️</button>
+                        </div>
                     </div>
                 `;
             });
+            if(data.length === 0) list.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No items found.</div>';
         };
 
-        window.filterAdminMenu = () => {
-            const q = document.getElementById('adminSearchInput').value.toLowerCase();
-            renderAdminMenu(allMenuData.filter(d => d.name.toLowerCase().includes(q)));
+        window.toggleStock = async (id, currentState) => {
+            try { await updateDoc(doc(db, "menu_items", id), { inStock: !currentState }); } 
+            catch(e) { alert("Failed to update stock status: " + e.message); }
         };
 
         function renderARViews(snap) {
@@ -814,6 +914,9 @@
                 modelUrl: document.getElementById('dishModel').value,
                 images: imagesArray
             };
+
+            // Maintain stock status if editing, or set true if new
+            if(!id) data.inStock = true;
 
             try {
                 if(id) await updateDoc(doc(db, "menu_items", id), data);
