@@ -42,13 +42,11 @@
         .greet-text { font-size: 11px; color: var(--text-sub); font-weight: 600; display: block; }
         
         .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 13px; }
-        .avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; }
         .btn-logout { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;}
         
         .app-container { display: flex; flex: 1; overflow: hidden; }
-        .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 110px; } /* Increased bottom padding for floating nav */
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 110px; } 
         
-        /* 🔥 NEW: Premium Stats Grid with Icons 🔥 */
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
         .stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.03); transition: 0.3s; cursor: pointer; display: flex; justify-content: space-between; align-items: center;}
         .stat-card:active { transform: scale(0.96); }
@@ -58,7 +56,6 @@
         .stat-value.green { color: var(--success); }
         .stat-icon { font-size: 22px; width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; border-radius: 12px; }
         
-        /* 🔥 NEW: Pulse Effect for Live Orders 🔥 */
         .pulse-live { animation: pulseLive 2s infinite; border-color: var(--warning); box-shadow: 0 0 15px rgba(255, 183, 94, 0.4); }
         @keyframes pulseLive { 
             0% { box-shadow: 0 0 0 0 rgba(255, 183, 94, 0.4); } 
@@ -74,28 +71,34 @@
         .search-container { padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
         .search-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; background: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none; transition: 0.2s; }
 
-        /* 🔥 NEW: Category Filter Scroll 🔥 */
         .admin-cat-scroll { display: flex; overflow-x: auto; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
         .admin-cat-scroll::-webkit-scrollbar { display: none; }
         .admin-cat-pill { padding: 8px 16px; border-radius: 20px; background: var(--input-bg); color: var(--text-sub); font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
         .admin-cat-pill.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(226,55,68,0.2); }
 
         .menu-list { display: flex; flex-direction: column; }
-        .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); transition: opacity 0.3s, transform 0.2s; background: var(--bg-card); cursor: pointer; }
+        .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); transition: opacity 0.3s, transform 0.2s; background: var(--bg-card); }
         .menu-item-row:last-child { border-bottom: none; }
-        .menu-item-info { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .menu-item-info { display: flex; align-items: center; gap: 12px; flex: 1; cursor: pointer; }
         .dish-icon { font-size: 26px; background: var(--input-bg); padding: 10px; border-radius: 14px; }
         .dish-details { display: flex; flex-direction: column; gap: 4px; padding-right: 5px;}
         .dish-name { font-size: 14px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 5px; line-height: 1.2;}
         .dish-price { font-size: 13px; font-weight: 600; color: var(--text-sub); }
         .cat-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700; white-space: nowrap;}
         
-        /* 🔥 NEW: Actions Area (Edit, Delete, Stock Toggle) 🔥 */
-        .menu-item-actions { display: flex; gap: 8px; align-items: center; }
-        .btn-action-modern { border: none; width: 34px; height: 34px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; transition: 0.2s; z-index: 2;}
-        .btn-action-modern:active { transform: scale(0.9); }
-        .btn-edit { background: var(--edit-bg); color: var(--edit-text); }
-        .btn-del { background: var(--del-bg); color: var(--del-text); }
+        /* 🔥 NEW: 3 Dots Menu Styling 🔥 */
+        .dropdown-container { position: relative; }
+        .btn-dots { background: transparent; border: none; font-size: 22px; font-weight: bold; color: var(--text-sub); cursor: pointer; padding: 5px 12px; border-radius: 8px; transition: 0.2s; }
+        .btn-dots:active { background: var(--input-bg); }
+        
+        .dropdown-menu { position: absolute; right: 0; top: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 8px 25px rgba(0,0,0,0.12); width: 180px; z-index: 100; display: none; flex-direction: column; overflow: hidden; }
+        .dropdown-menu.show { display: flex; animation: dropIn 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes dropIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .dropdown-item { padding: 14px 15px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; transition: 0.2s; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;}
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:active { background: var(--input-bg); }
+        .dropdown-item.del-opt { color: var(--danger); }
 
         .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); }
         .order-actions-row { display: flex; gap: 8px; }
@@ -113,7 +116,6 @@
         .link-input { width: 90%; max-width: 350px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 13px; text-align: center; color: var(--text-sub); background: var(--input-bg); outline: none; }
         .btn-download { background: var(--primary); color: white; border: none; padding: 16px 35px; border-radius: 50px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(226,55,68,0.3);}
 
-        /* 🔥 NEW: Floating Premium Bottom Nav 🔥 */
         .bottom-nav { 
             position: fixed; bottom: 15px; left: 4%; width: 92%; height: 70px; 
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); 
@@ -132,18 +134,12 @@
         .setting-label { font-size: 15px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px;}
         .setting-desc { font-size: 12px; color: var(--text-sub); font-weight: 400; margin-top: 4px; display: block; }
         
-        /* Toggle Switch UI */
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
         input:checked + .slider { background-color: var(--success); }
         input:checked + .slider:before { transform: translateX(22px); }
-
-        /* Small switch for Stock Toggle */
-        .switch-sm { width: 36px; height: 20px; }
-        .switch-sm .slider:before { height: 14px; width: 14px; left: 3px; bottom: 3px; }
-        input:checked + .slider.sm:before { transform: translateX(16px); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
@@ -257,7 +253,6 @@
                     <input type="text" class="search-input" id="adminSearchInput" placeholder="🔍 Search dishes..." onkeyup="filterAdminMenu()">
                 </div>
                 
-                <!-- 🔥 Category Filter Tabs 🔥 -->
                 <div class="admin-cat-scroll" id="admin-category-filter">
                     <div class="admin-cat-pill active" onclick="filterAdminCat('All', this)">All</div>
                     <div class="admin-cat-pill" onclick="filterAdminCat('Starters', this)">🔥 Starters</div>
@@ -647,7 +642,6 @@
         let allMenuData = [];
         let isInitialLoad = true;
         
-        // Filter States
         window.adminActiveCat = 'All';
 
         function initAdminData() {
@@ -657,7 +651,7 @@
                 document.getElementById('total-dishes').innerText = snap.size;
                 allMenuData = [];
                 snap.forEach(doc => { let d = doc.data(); d.id = doc.id; allMenuData.push(d); });
-                window.filterAdminMenu(); // Trigger filter on load
+                window.filterAdminMenu(); 
             });
 
             onSnapshot(collection(db, "ar_views"), (snap) => {
@@ -761,7 +755,6 @@
                 document.getElementById('total-orders').innerText = activeCount;
                 document.getElementById('total-revenue').innerText = '₹' + totalRev;
                 
-                // Live Order Pulse Effect Update
                 if(activeCount > 0) document.getElementById('live-order-card').classList.add('pulse-live');
                 else document.getElementById('live-order-card').classList.remove('pulse-live');
 
@@ -792,6 +785,7 @@
             renderAdminMenu(filtered);
         };
 
+        /* 🔥 NEW: Clean Render Menu with 3 Dots Dropdown 🔥 */
         window.renderAdminMenu = (data) => {
             const list = document.getElementById('menu-body');
             list.innerHTML = '';
@@ -804,29 +798,51 @@
                 
                 const inStock = item.inStock !== false; // Default is true
                 const opacity = inStock ? '1' : '0.5';
+                const stockIcon = inStock ? '🚫' : '✅';
+                const stockText = inStock ? 'Mark Out of Stock' : 'Mark In Stock';
+                const stockBadge = !inStock ? '<span style="color:#FF3B30; font-size:10px; background:#FFE5E5; padding:2px 6px; border-radius:4px; margin-left:5px;">Out of Stock</span>' : '';
 
                 list.innerHTML += `
                     <div class="menu-item-row" style="opacity: ${opacity}">
-                        <div class="menu-item-info">
+                        <div class="menu-item-info" onclick="editDish('${item.id}')">
                             <div class="dish-icon">${item.emoji || "🍲"}</div>
                             <div class="dish-details">
-                                <span class="dish-name">${item.name}</span>
+                                <span class="dish-name">${item.name} ${stockBadge}</span>
                                 <span class="dish-price">₹${item.price} <span class="cat-badge" style="${catBadgeClass}">${icon} ${item.category}</span></span>
                             </div>
                         </div>
-                        <div class="menu-item-actions">
-                            <label class="switch switch-sm" title="Toggle Stock" onclick="event.stopPropagation()">
-                                <input type="checkbox" ${inStock ? 'checked' : ''} onchange="toggleStock('${item.id}', ${inStock})">
-                                <span class="slider sm"></span>
-                            </label>
-                            <button class="btn-action-modern btn-edit" onclick="event.stopPropagation(); editDish('${item.id}')">✏️</button>
-                            <button class="btn-action-modern btn-del" onclick="event.stopPropagation(); triggerDeleteModal('${item.id}')">🗑️</button>
+                        <div class="dropdown-container">
+                            <button class="btn-dots" onclick="event.stopPropagation(); toggleItemMenu('${item.id}')">⋮</button>
+                            <div class="dropdown-menu" id="drop-${item.id}">
+                                <div class="dropdown-item" onclick="event.stopPropagation(); toggleStock('${item.id}', ${inStock}); toggleItemMenu('${item.id}')">
+                                    ${stockIcon} ${stockText}
+                                </div>
+                                <div class="dropdown-item del-opt" onclick="event.stopPropagation(); triggerDeleteModal('${item.id}'); toggleItemMenu('${item.id}')">
+                                    🗑️ Delete Dish
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
             });
             if(data.length === 0) list.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No items found.</div>';
         };
+
+        // 🔥 NEW: Logic to open/close 3 dots menu 🔥
+        window.toggleItemMenu = (id) => {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if(menu.id !== `drop-${id}`) menu.classList.remove('show');
+            });
+            const drop = document.getElementById(`drop-${id}`);
+            if(drop) drop.classList.toggle('show');
+        };
+
+        // Click outside to close dropdowns
+        window.addEventListener('click', (e) => {
+            if(!e.target.matches('.btn-dots')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+            }
+        });
 
         window.toggleStock = async (id, currentState) => {
             try { await updateDoc(doc(db, "menu_items", id), { inStock: !currentState }); } 
@@ -915,7 +931,6 @@
                 images: imagesArray
             };
 
-            // Maintain stock status if editing, or set true if new
             if(!id) data.inStock = true;
 
             try {
