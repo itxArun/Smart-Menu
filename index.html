@@ -99,43 +99,12 @@
         .fs-dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; transition: 0.3s; }
         .fs-dot.active { background: white; transform: scale(1.3); }
 
-        /* --- PREMIUM DISH DETAILS (Bottom Card) --- */
-        .bottom-ui {
-          flex-shrink: 0;
-          background: #ffffff;
-          padding: 25px 20px; 
-          border-top-left-radius: 30px; 
-          border-top-right-radius: 30px;
-          box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.08); 
-          position: relative;
-          z-index: 10;
-          transition: padding-bottom 0.3s ease; /* Smooth transition added */
-        }
-        
-        /* 🔥 YEH RAHA FIX: Jab cart add hoga toh bottom UI upar khisak jayega 🔥 */
-        .bottom-ui.with-cart {
-          padding-bottom: 95px; 
-        }
+        .bottom-ui { flex-shrink: 0; background: #ffffff; padding: 25px 20px; border-top-left-radius: 30px; border-top-right-radius: 30px; box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.08); position: relative; z-index: 10; transition: padding-bottom 0.3s ease; }
+        .bottom-ui.with-cart { padding-bottom: 95px; }
 
-        .dish-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 10px;
-        }
-
-        .dish-title {
-          font-size: 22px;
-          font-weight: 800;
-          color: #2f3542;
-          margin: 0;
-        }
-
-        .price {
-          font-size: 20px;
-          font-weight: 700;
-          color: #ff4757; 
-        }
+        .dish-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .dish-title { font-size: 22px; font-weight: 800; color: #2f3542; margin: 0; }
+        .price { font-size: 20px; font-weight: 700; color: #ff4757; }
         
         .main-cat-badge { font-size: 11px; padding: 4px 8px; border-radius: 8px; font-weight: 700; white-space: nowrap; }
         .cat-Veg { background:#E5F8ED; color:#28A745; border: 1px solid rgba(40,167,69,0.2);}
@@ -195,7 +164,7 @@
         .order-type-selector { display: flex; background: #F1F1F6; border-radius: 12px; padding: 4px; margin-bottom: 15px; }
         .type-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .type-btn.active { background: var(--white); color: var(--zomato-red); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-
+        
         #premium-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
         .loader-circle { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #ff4757; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         #premium-loader p { font-size: 22px; font-weight: 800; color: #2f3542; margin: 0; letter-spacing: 1px; }
@@ -204,12 +173,6 @@
     </style>
 </head>
 <body>
-<div id="premium-loader">
-    <div class="loader-circle"></div>
-    <p>NextPlate</p>
-    <span>Loading...</span>
-</div>
-
 <script>
   window.addEventListener('load', function() {
       setTimeout(function() {
@@ -224,17 +187,20 @@
   });
 </script>
 
+    <div id="premium-loader">
+        <div class="loader-circle"></div>
+        <p>NextPlate</p>
+        <span>Loading...</span>
+    </div>
+
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center;">
             <div class="cart-header">
                 <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;">Order Status</h2>
                 <button style="border:none; background:#eee; width:30px; height:30px; border-radius:50%; font-weight: bold; cursor:pointer;" onclick="toggleTracker()">✕</button>
             </div>
-            <div style="padding: 20px 0 10px 0;">
-                <div id="track-modal-icon" style="font-size: 50px; margin-bottom: 15px;">🕒</div>
-                <h3 id="track-modal-status" style="margin: 0 0 8px 0; font-size: 22px; font-weight: 800; color: var(--zomato-red);">Order Received</h3>
-                <p id="track-modal-desc" style="margin: 0; font-size: 14px; color: var(--text-sub); font-weight: 500;">Kitchen has received your order.</p>
-            </div>
+            <div id="multi-tracker-body" style="padding: 10px 0; max-height: 60vh; overflow-y: auto;">
+                </div>
         </div>
     </div>
 
@@ -392,7 +358,7 @@
         let cart = {}; 
         let activeCategory = 'All'; 
         let trendingIds = []; 
-        let currentOrderType = 'Dine-in'; 
+        let currentOrderType = 'Dine-in';
         
         const viewer = document.querySelector('#ar-viewer');
         const updateBar = document.querySelector('#update-bar');
@@ -552,46 +518,113 @@
         }
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
+        // 🔥 FIX: MULTI-ORDER TRACKING LOGIC 🔥
+        let activeOrderListeners = {};
+        let activeOrderData = {};
+
         function listenToLiveOrder(orderId) {
-            onSnapshot(doc(db, "orders", orderId), (d) => {
+            if (activeOrderListeners[orderId]) return; // Pehle se track ho raha hai toh ignore
+            
+            activeOrderListeners[orderId] = onSnapshot(doc(db, "orders", orderId), (d) => {
                 if(!d.exists()) return;
-                const data = d.data();
-                
-                const trackBtn = document.getElementById('btn-track-order');
-                const pulse = document.getElementById('track-badge-pulse');
-                const statusTxt = document.getElementById('track-modal-status');
-                const descTxt = document.getElementById('track-modal-desc');
-                const iconTxt = document.getElementById('track-modal-icon');
-                
-                trackBtn.classList.add('show'); 
-                
-                if(data.status === 'New') {
-                    statusTxt.innerText = currentLang === 'hi' ? 'ऑर्डर मिल गया' : 'Order Received';
-                    descTxt.innerText = currentLang === 'hi' ? 'किचन को आपका ऑर्डर मिल गया है।' : 'Kitchen has received your order.';
-                    statusTxt.style.color = 'var(--zomato-red)'; iconTxt.innerText = '🧾';
-                    pulse.style.display = 'block'; pulse.style.background = 'var(--zomato-red)';
-                } else if(data.status === 'Preparing') {
-                    statusTxt.innerText = currentLang === 'hi' ? 'तैयार हो रहा है...' : 'Preparing...';
-                    descTxt.innerText = currentLang === 'hi' ? 'आपका खाना पकाया जा रहा है!' : 'Your food is being cooked!';
-                    statusTxt.style.color = '#FF9500'; iconTxt.innerText = '👨‍🍳';
-                    pulse.style.display = 'block'; pulse.style.background = '#FF9500';
-                } else if(data.status === 'Completed') {
-                    statusTxt.innerText = currentLang === 'hi' ? 'तैयार है ✅' : 'Ready / Served ✅';
-                    descTxt.innerText = currentLang === 'hi' ? 'अपने भोजन का आनंद लें!' : 'Enjoy your meal!';
-                    statusTxt.style.color = 'var(--green)'; iconTxt.innerText = '🍽️';
-                    pulse.style.display = 'none';
-                    setTimeout(() => { trackBtn.classList.remove('show'); localStorage.removeItem('craveCurrentOrderId'); }, 10000);
-                } else if(data.status === 'Cancelled') {
-                    statusTxt.innerText = currentLang === 'hi' ? 'रद्द हो गया ❌' : 'Cancelled ❌';
-                    descTxt.innerText = currentLang === 'hi' ? 'आपका ऑर्डर रद्द कर दिया गया है।' : 'Your order was cancelled.';
-                    statusTxt.style.color = 'var(--text-sub)'; iconTxt.innerText = '😔';
-                    pulse.style.display = 'none';
-                    setTimeout(() => { trackBtn.classList.remove('show'); localStorage.removeItem('craveCurrentOrderId'); }, 10000);
-                }
+                activeOrderData[orderId] = d.data();
+                renderMultiTracker(); // Koi bhi ek update hoga toh poori list refresh hogi
             });
         }
-        const savedOrderId = localStorage.getItem('craveCurrentOrderId');
-        if(savedOrderId) listenToLiveOrder(savedOrderId);
+
+        function renderMultiTracker() {
+            const container = document.getElementById('multi-tracker-body');
+            const trackBtn = document.getElementById('btn-track-order');
+            const pulse = document.getElementById('track-badge-pulse');
+            
+            container.innerHTML = '';
+            let showTrackBtn = false;
+            let showPulse = false;
+            let activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
+            let newActiveList = [];
+
+            activeOrdersList.forEach(id => {
+                const data = activeOrderData[id];
+                if(!data) {
+                    newActiveList.push(id); // Data abhi load nahi hua
+                    return;
+                }
+
+                let statusTxt = ''; let descTxt = ''; let iconTxt = ''; let color = '';
+                
+                if(data.status === 'New') {
+                    statusTxt = currentLang === 'hi' ? 'ऑर्डर मिल गया' : 'Order Received';
+                    descTxt = currentLang === 'hi' ? 'किचन को आपका ऑर्डर मिल गया है।' : 'Kitchen has received your order.';
+                    color = 'var(--zomato-red)'; iconTxt = '🧾'; showPulse = true; showTrackBtn = true;
+                    newActiveList.push(id);
+                } else if(data.status === 'Preparing') {
+                    statusTxt = currentLang === 'hi' ? 'तैयार हो रहा है...' : 'Preparing...';
+                    descTxt = currentLang === 'hi' ? 'आपका खाना पकाया जा रहा है!' : 'Your food is being cooked!';
+                    color = '#FF9500'; iconTxt = '👨‍🍳'; showPulse = true; showTrackBtn = true;
+                    newActiveList.push(id);
+                } else if(data.status === 'Completed') {
+                    statusTxt = currentLang === 'hi' ? 'तैयार है ✅' : 'Ready / Served ✅';
+                    descTxt = currentLang === 'hi' ? 'अपने भोजन का आनंद लें!' : 'Enjoy your meal!';
+                    color = 'var(--green)'; iconTxt = '🍽️'; showTrackBtn = true;
+                    // Note: 'Completed' order ko 'newActiveList' mein push nahi kiya. 
+                    // Isse agle page reload par ye automatically tracker se hat jayega!
+                } else if(data.status === 'Cancelled') {
+                    statusTxt = currentLang === 'hi' ? 'रद्द हो गया ❌' : 'Cancelled ❌';
+                    descTxt = currentLang === 'hi' ? 'आपका ऑर्डर रद्द कर दिया गया है।' : 'Your order was cancelled.';
+                    color = 'var(--text-sub)'; iconTxt = '😔'; showTrackBtn = true;
+                }
+
+                let itemsList = data.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+
+                container.innerHTML += `
+                    <div style="background: #fff; border: 1px solid var(--border-light); border-radius: 16px; padding: 15px; margin-bottom: 15px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px dashed var(--border-light); padding-bottom:10px;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <div style="font-size: 24px;">${iconTxt}</div>
+                                <div style="font-weight:800; color:${color}; font-size:16px;">${statusTxt}</div>
+                            </div>
+                            <div style="font-size:12px; font-weight:800; color:var(--text-sub);">₹${data.totalAmount}</div>
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-main); font-weight: 600;">
+                            ${itemsList}
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; font-weight: 500;">
+                            ${descTxt}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Update local storage to drop old completed/cancelled orders automatically
+            localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
+
+            if(showTrackBtn && activeOrdersList.length > 0) {
+                trackBtn.classList.add('show');
+                pulse.style.display = showPulse ? 'block' : 'none';
+            } else {
+                trackBtn.classList.remove('show');
+            }
+            
+            if(container.innerHTML === '') {
+                container.innerHTML = `<p style="color:var(--text-sub); font-size:13px; font-weight:600;">${currentLang === 'hi' ? "कोई एक्टिव ऑर्डर नहीं है।" : "No active orders."}</p>`;
+            }
+        }
+
+        // Initialize tracking on page load
+        const savedOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
+        savedOrdersList.forEach(id => listenToLiveOrder(id));
+
+        // OLD CODE cleanup: Agar purane style ka `craveCurrentOrderId` pada hai, toh usko naye system me daal do
+        const oldSavedOrderId = localStorage.getItem('craveCurrentOrderId');
+        if(oldSavedOrderId) {
+            let activeOrders = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
+            if(!activeOrders.includes(oldSavedOrderId)) {
+                activeOrders.push(oldSavedOrderId);
+                localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
+                listenToLiveOrder(oldSavedOrderId);
+            }
+            localStorage.removeItem('craveCurrentOrderId');
+        }
 
         async function fetchTrendingDishes() {
             try {
@@ -842,7 +875,6 @@
             let orderItems = []; let grandTotal = 0;
             
             let orderId = Math.floor(1000 + Math.random() * 9000);
-            
             let waText = `*[ NEW ORDER ]*\n`;
             
             if(currentOrderType === 'Dine-in') {
@@ -889,8 +921,12 @@
                     timestamp: new Date() 
                 });
                 
-                localStorage.setItem('craveCurrentOrderId', docRef.id);
-                listenToLiveOrder(docRef.id);
+                // 🔥 NAYA CODE: ARRAY MEIN STORE KARNA 🔥
+                let activeOrders = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
+                activeOrders.push(docRef.id);
+                localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
+                
+                listenToLiveOrder(docRef.id); // Turant is naye order ko bhi track karna shuru karo
 
                 cart = {}; 
                 document.getElementById('tableNumber').value = '';
@@ -915,7 +951,6 @@
             btn.style.background = "var(--green)"; 
             btn.disabled = false;
         };
-
     </script>
 </body>
 </html>
