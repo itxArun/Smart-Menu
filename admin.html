@@ -86,7 +86,6 @@
         .dish-price { font-size: 13px; font-weight: 600; color: var(--text-sub); }
         .cat-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700; white-space: nowrap;}
         
-        /* 🔥 NEW: 3 Dots Menu Styling 🔥 */
         .dropdown-container { position: relative; }
         .btn-dots { background: transparent; border: none; font-size: 22px; font-weight: bold; color: var(--text-sub); cursor: pointer; padding: 5px 12px; border-radius: 8px; transition: 0.2s; }
         .btn-dots:active { background: var(--input-bg); }
@@ -101,6 +100,12 @@
         .dropdown-item.del-opt { color: var(--danger); }
 
         .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); }
+        
+        /* 🔥 NEW: Status Badge Styling 🔥 */
+        .status-badge { font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; letter-spacing: 0.5px; }
+        .status-new { background: #E5F1FF; color: #007AFF; border: 1px solid rgba(0,122,255,0.2); }
+        .status-prep { background: #FFF0E5; color: #FF9500; border: 1px solid rgba(255,149,0,0.2); }
+
         .order-actions-row { display: flex; gap: 8px; }
         .btn-action-new { border: none; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; color: white; flex: 1; }
 
@@ -140,6 +145,10 @@
         .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
         input:checked + .slider { background-color: var(--success); }
         input:checked + .slider:before { transform: translateX(22px); }
+
+        .switch-sm { width: 36px; height: 20px; }
+        .switch-sm .slider:before { height: 14px; width: 14px; left: 3px; bottom: 3px; }
+        input:checked + .slider.sm:before { transform: translateX(16px); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal-overlay.show { visibility: visible; opacity: 1; }
@@ -435,9 +444,25 @@
         const auth = getAuth(app);
 
         Chart.register(ChartDataLabels);
-
         let revenueChartInstance = null;
         window.allCompletedOrdersForChart = []; 
+
+        // 🔥 NEW: Timer Update Logic 🔥
+        setInterval(() => {
+            document.querySelectorAll('.time-ago-tracker').forEach(el => {
+                const orderTime = parseInt(el.getAttribute('data-time'));
+                const diffMins = Math.floor((Date.now() - orderTime) / 60000);
+                
+                let text = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
+                let color = 'var(--success)';
+                
+                if(diffMins >= 15 && diffMins < 30) color = 'var(--warning)';
+                else if(diffMins >= 30) color = 'var(--danger)';
+                
+                el.innerText = `(${text})`;
+                el.style.color = color;
+            });
+        }, 60000); // Har 1 minute mein time check karega
 
         window.updateRevenueChart = (completedOrders) => {
             const filterType = document.getElementById('chartFilter').value;
@@ -658,8 +683,9 @@
                 document.getElementById('total-ar-views').innerText = snap.size;
                 renderARViews(snap);
             });
-
-            const qLive = query(collection(db, "orders"), orderBy("timestamp", "desc"));
+            
+            // 🔥 UPDATE: Sorting ASC so oldest orders come FIRST on top 🔥
+            const qLive = query(collection(db, "orders"), orderBy("timestamp", "asc"));
             onSnapshot(qLive, (snap) => {
                 const ordersList = document.getElementById('orders-body');
                 const historyList = document.getElementById('history-body');
@@ -691,7 +717,8 @@
                     const orderDateStr = date.toISOString().split('T')[0];
 
                     if(data.status === 'Completed') {
-                        window.allCompletedOrdersForChart.push(data); 
+                        // Keep track for charting (Add to start so newest history is on top)
+                        window.allCompletedOrdersForChart.unshift(data); 
                     }
 
                     if(data.status === 'New' || data.status === 'Preparing') {
@@ -705,29 +732,47 @@
                                 </div>`;
                             });
 
-                            const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span class="table-badge" style="background:#FF9500;">🎒 Takeaway</span>' : `<span class="table-badge">T-${data.tableNumber}</span>`;
+                            const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span class="table-badge" style="background:#FF9500; font-weight:800; padding:4px 8px; border-radius:8px; color:white;">🎒 Takeaway</span>' : `<span class="table-badge" style="background:var(--edit-bg); color:var(--edit-text); font-weight:800; padding:4px 8px; border-radius:8px;">Table ${data.tableNumber}</span>`;
+                            
+                            // Status Badges
+                            const statusBadge = data.status === 'New' ? `<span class="status-badge status-new">New</span>` : `<span class="status-badge status-prep">Preparing</span>`;
+
+                            // Wait Time Logic
+                            const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
+                            let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
+                            let waitColor = 'var(--success)';
+                            if(diffMins >= 15 && diffMins < 30) waitColor = 'var(--warning)';
+                            else if(diffMins >= 30) waitColor = 'var(--danger)';
+                            
+                            // Clickable Phone Link
+                            const phoneLink = data.customerPhone && data.customerPhone !== "N/A" 
+                                ? `<a href="tel:${data.customerPhone}" style="color:var(--edit-text); font-weight:bold; text-decoration:none;">📞 ${data.customerPhone}</a>` 
+                                : "N/A";
 
                             ordersList.innerHTML += `
-                                <div class="order-card" style="background:var(--edit-bg); border-radius:12px; border:1px solid rgba(0,122,255,0.2); margin-bottom:15px;">
-                                    <div class="order-header">
+                                <div class="order-card" style="background:var(--bg-card); border-radius:16px; border:1px solid var(--border); margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+                                    <div class="order-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--border); padding-bottom:10px;">
                                         <div style="display:flex; align-items:center; gap:10px;">
                                             ${tableDisplayBadge}
-                                            <span class="order-time">${displayTimeStr} (${data.status})</span>
+                                            ${statusBadge}
                                         </div>
-                                        <span style="font-size:11px; font-weight:800; background:rgba(226,55,68,0.1); color:var(--primary); padding:4px 8px; border-radius:6px;">${data.paymentMethod || "Cash"}</span>
+                                        <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                                            <span class="order-time" style="font-size:12px; font-weight:700;">${displayTimeStr}</span>
+                                            <span class="time-ago-tracker" data-time="${date.getTime()}" style="font-size:11px; font-weight:800; color:${waitColor};">(${waitText})</span>
+                                        </div>
                                     </div>
-                                    <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:5px;">
-                                        Cust: ${data.customerName || "N/A"} | Ph: ${data.customerPhone || "N/A"}
+                                    <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:10px; background:var(--input-bg); padding:8px; border-radius:8px;">
+                                        👤 Cust: ${data.customerName || "N/A"} &nbsp;|&nbsp; ${phoneLink}
                                     </div>
-                                    <div class="order-items" style="background:rgba(255,255,255,0.5); border-color:rgba(0,122,255,0.1); margin-top:8px;">
+                                    <div class="order-items" style="margin-top:10px; font-size:13px; font-weight:600;">
                                         ${itemsHTML}
                                     </div>
-                                    <div class="order-footer">
-                                        <span class="order-total">₹${data.totalAmount}</span>
+                                    <div class="order-footer" style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:10px; border-top:1px dashed var(--border);">
+                                        <span class="order-total" style="font-size:16px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</span>
                                         <div class="order-actions-row">
-                                            ${data.status === 'New' ? `<button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${doc.id}', 'Preparing')">Prepare ➔</button>` : ''}
-                                            ${data.status === 'Preparing' ? `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${doc.id}', 'Completed')">Serve & Clear ➔</button>` : ''}
-                                            <button class="btn-action-new" style="background:var(--danger);" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel ✕</button>
+                                            ${data.status === 'New' ? `<button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${doc.id}', 'Preparing')">Cook 👨‍🍳</button>` : ''}
+                                            ${data.status === 'Preparing' ? `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${doc.id}', 'Completed')">Serve ✅</button>` : ''}
+                                            <button class="btn-action-new" style="background:var(--del-bg); color:var(--danger);" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">✕</button>
                                         </div>
                                     </div>
                                 </div>
@@ -739,7 +784,8 @@
                             
                             const tableHistDisplay = data.orderType === 'Takeaway' ? '<span style="color:#FF9500;">🎒 Takeaway</span>' : `Table ${data.tableNumber}`;
 
-                            historyList.innerHTML += `
+                            // Prepend to history so newest history is on top
+                            const histHTML = `
                                 <div class="history-item">
                                     <div class="history-item-left">
                                         <span class="history-item-table">${tableHistDisplay} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "Cash"})</span></span>
@@ -748,6 +794,7 @@
                                     <span class="history-item-amount">+₹${data.totalAmount}</span>
                                 </div>
                             `;
+                            historyList.insertAdjacentHTML('afterbegin', histHTML);
                         }
                     }
                 });
@@ -785,7 +832,6 @@
             renderAdminMenu(filtered);
         };
 
-        /* 🔥 NEW: Clean Render Menu with 3 Dots Dropdown 🔥 */
         window.renderAdminMenu = (data) => {
             const list = document.getElementById('menu-body');
             list.innerHTML = '';
@@ -796,7 +842,7 @@
                 else if(item.category === 'Breads' || item.category === 'Rice') { catBadgeClass = 'color:#FF9500; background:rgba(255,149,0,0.1)'; icon='🌾';}
                 else { catBadgeClass = 'color:#007AFF; background:rgba(0,122,255,0.1)'; icon='🥤';}
                 
-                const inStock = item.inStock !== false; // Default is true
+                const inStock = item.inStock !== false;
                 const opacity = inStock ? '1' : '0.5';
                 const stockIcon = inStock ? '🚫' : '✅';
                 const stockText = inStock ? 'Mark Out of Stock' : 'Mark In Stock';
@@ -828,7 +874,6 @@
             if(data.length === 0) list.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No items found.</div>';
         };
 
-        // 🔥 NEW: Logic to open/close 3 dots menu 🔥
         window.toggleItemMenu = (id) => {
             document.querySelectorAll('.dropdown-menu').forEach(menu => {
                 if(menu.id !== `drop-${id}`) menu.classList.remove('show');
@@ -837,7 +882,6 @@
             if(drop) drop.classList.toggle('show');
         };
 
-        // Click outside to close dropdowns
         window.addEventListener('click', (e) => {
             if(!e.target.matches('.btn-dots')) {
                 document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
