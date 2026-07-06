@@ -101,7 +101,6 @@
 
         .order-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); }
         
-        /* 🔥 NEW: Status Badge Styling 🔥 */
         .status-badge { font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; letter-spacing: 0.5px; }
         .status-new { background: #E5F1FF; color: #007AFF; border: 1px solid rgba(0,122,255,0.2); }
         .status-prep { background: #FFF0E5; color: #FF9500; border: 1px solid rgba(255,149,0,0.2); }
@@ -238,17 +237,17 @@
                 </div>
                 <div class="stat-card" onclick="switchTab('stats')">
                     <div class="stat-info">
+                        <div class="stat-title">Top Selling Today</div>
+                        <div class="stat-value" id="top-seller-name" style="font-size:16px;">--</div>
+                    </div>
+                    <div class="stat-icon" style="background:#FFF9C4; color:#FBC02D;">🏆</div>
+                </div>
+                <div class="stat-card" onclick="switchTab('stats')">
+                    <div class="stat-info">
                         <div class="stat-title">Revenue</div>
                         <div class="stat-value green" id="total-revenue">₹0</div>
                     </div>
                     <div class="stat-icon" style="background:#E5F8ED; color:var(--success);">💰</div>
-                </div>
-                <div class="stat-card" onclick="switchTab('stats')">
-                    <div class="stat-info">
-                        <div class="stat-title">AR Views</div>
-                        <div class="stat-value" id="total-ar-views">0</div>
-                    </div>
-                    <div class="stat-icon" style="background:#F3E5F5; color:#9C27B0;">📸</div>
                 </div>
             </div>
 
@@ -444,10 +443,11 @@
         const auth = getAuth(app);
 
         Chart.register(ChartDataLabels);
+
         let revenueChartInstance = null;
         window.allCompletedOrdersForChart = []; 
 
-        // 🔥 NEW: Timer Update Logic 🔥
+        // 🔥 NEW: Timer Logic 🔥
         setInterval(() => {
             document.querySelectorAll('.time-ago-tracker').forEach(el => {
                 const orderTime = parseInt(el.getAttribute('data-time'));
@@ -455,14 +455,28 @@
                 
                 let text = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
                 let color = 'var(--success)';
-                
                 if(diffMins >= 15 && diffMins < 30) color = 'var(--warning)';
                 else if(diffMins >= 30) color = 'var(--danger)';
                 
                 el.innerText = `(${text})`;
                 el.style.color = color;
             });
-        }, 60000); // Har 1 minute mein time check karega
+        }, 60000);
+
+        // 🔥 NEW: Top Seller Function 🔥
+        function calculateTopSeller(orders) {
+            let itemCounts = {};
+            orders.forEach(o => {
+                o.items.forEach(i => {
+                    itemCounts[i.name] = (itemCounts[i.name] || 0) + i.qty;
+                });
+            });
+            let topDish = null; let max = 0;
+            for(let name in itemCounts) {
+                if(itemCounts[name] > max) { max = itemCounts[name]; topDish = name; }
+            }
+            return topDish ? { name: topDish, count: max } : null;
+        }
 
         window.updateRevenueChart = (completedOrders) => {
             const filterType = document.getElementById('chartFilter').value;
@@ -680,11 +694,13 @@
             });
 
             onSnapshot(collection(db, "ar_views"), (snap) => {
-                document.getElementById('total-ar-views').innerText = snap.size;
-                renderARViews(snap);
+                // Ignore empty snapshot if ar_views isn't present
+                if(snap && snap.size !== undefined) {
+                    document.getElementById('total-ar-views').innerText = snap.size;
+                    renderARViews(snap);
+                }
             });
-            
-            // 🔥 UPDATE: Sorting ASC so oldest orders come FIRST on top 🔥
+
             const qLive = query(collection(db, "orders"), orderBy("timestamp", "asc"));
             onSnapshot(qLive, (snap) => {
                 const ordersList = document.getElementById('orders-body');
@@ -693,6 +709,7 @@
                 
                 let activeCount = 0; let totalRev = 0;
                 window.allCompletedOrdersForChart = []; 
+                let todaysCompletedOrdersForTopSeller = [];
 
                 snap.docChanges().forEach((change) => {
                     if (change.type === "added" && !isInitialLoad && change.doc.data().status === 'New') {
@@ -717,8 +734,10 @@
                     const orderDateStr = date.toISOString().split('T')[0];
 
                     if(data.status === 'Completed') {
-                        // Keep track for charting (Add to start so newest history is on top)
                         window.allCompletedOrdersForChart.unshift(data); 
+                        if(orderDateStr === selectedDate) {
+                            todaysCompletedOrdersForTopSeller.push(data);
+                        }
                     }
 
                     if(data.status === 'New' || data.status === 'Preparing') {
@@ -734,17 +753,14 @@
 
                             const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span class="table-badge" style="background:#FF9500; font-weight:800; padding:4px 8px; border-radius:8px; color:white;">🎒 Takeaway</span>' : `<span class="table-badge" style="background:var(--edit-bg); color:var(--edit-text); font-weight:800; padding:4px 8px; border-radius:8px;">Table ${data.tableNumber}</span>`;
                             
-                            // Status Badges
                             const statusBadge = data.status === 'New' ? `<span class="status-badge status-new">New</span>` : `<span class="status-badge status-prep">Preparing</span>`;
 
-                            // Wait Time Logic
                             const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
                             let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
                             let waitColor = 'var(--success)';
                             if(diffMins >= 15 && diffMins < 30) waitColor = 'var(--warning)';
                             else if(diffMins >= 30) waitColor = 'var(--danger)';
                             
-                            // Clickable Phone Link
                             const phoneLink = data.customerPhone && data.customerPhone !== "N/A" 
                                 ? `<a href="tel:${data.customerPhone}" style="color:var(--edit-text); font-weight:bold; text-decoration:none;">📞 ${data.customerPhone}</a>` 
                                 : "N/A";
@@ -784,7 +800,6 @@
                             
                             const tableHistDisplay = data.orderType === 'Takeaway' ? '<span style="color:#FF9500;">🎒 Takeaway</span>' : `Table ${data.tableNumber}`;
 
-                            // Prepend to history so newest history is on top
                             const histHTML = `
                                 <div class="history-item">
                                     <div class="history-item-left">
@@ -804,6 +819,10 @@
                 
                 if(activeCount > 0) document.getElementById('live-order-card').classList.add('pulse-live');
                 else document.getElementById('live-order-card').classList.remove('pulse-live');
+
+                // 🔥 NEW: Top Seller Update logic here 🔥
+                const topItem = calculateTopSeller(todaysCompletedOrdersForTopSeller);
+                document.getElementById('top-seller-name').innerText = topItem ? `${topItem.name}` : "--";
 
                 if(window.updateRevenueChart) window.updateRevenueChart(window.allCompletedOrdersForChart);
                 
