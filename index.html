@@ -52,9 +52,15 @@
         
         .sidebar { width: 95px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; position: relative; }
         .sidebar::-webkit-scrollbar { display: none; }
-        .search-box { position: sticky; top: 0; background: var(--white); padding: 10px 5px; border-bottom: 1px solid var(--border-light); z-index: 5;}
-        .search-box input { width: 100%; padding: 8px 5px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 11px; box-sizing: border-box; text-align: center; background: #F1F1F6; outline: none; font-family: inherit;}
         
+        /* 🔥 NEW: Search Box Setup with Mic 🔥 */
+        .search-box { position: sticky; top: 0; background: var(--white); padding: 10px 5px; border-bottom: 1px solid var(--border-light); z-index: 5; display:flex; gap:4px; align-items:center;}
+        .search-box input { width: 100%; padding: 8px 5px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 11px; box-sizing: border-box; text-align: center; background: #F1F1F6; outline: none; font-family: inherit; flex:1;}
+        .mic-btn { background: #FDEEEE; color: var(--zomato-red); border: 1px solid rgba(226,55,68,0.2); border-radius: 8px; width: 28px; height: 32px; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .mic-btn:active { transform: scale(0.9); }
+        .mic-btn.listening { background: var(--zomato-red); color: white; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
         .side-item { padding: 15px 5px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: all 0.2s; border-bottom: 1px solid #f0f0f0; position: relative;}
         .side-item:active { transform: scale(0.9); }
         .side-item.active { border-left-color: var(--zomato-red); background: #FDEEEE; }
@@ -129,7 +135,12 @@
         .checkout-info { display: flex; flex-direction: column; text-align: left; }
         .checkout-items { font-size: 12px; font-weight: 600; opacity: 0.9; }
         .checkout-total { font-size: 16px; font-weight: 800; }
-        
+
+        /* 🔥 NEW: Floating Waiter Button 🔥 */
+        .floating-waiter { position: fixed; bottom: 20px; right: 15px; background: var(--white); color: var(--text-main); padding: 12px 18px; border-radius: 50px; font-size: 13px; font-weight: 800; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 900; cursor: pointer; border: 1px solid var(--border-light); display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .floating-waiter:active { transform: scale(0.95); }
+        .floating-waiter.lift { bottom: 85px; } 
+
         .cart-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .cart-modal.show { visibility: visible; opacity: 1; }
         .cart-content { background: var(--white); width: 100%; max-height: 85vh; border-radius: 30px 30px 0 0; padding: 25px 20px; display: flex; flex-direction: column; transition: transform 0.3s; transform: translateY(100%); }
@@ -146,10 +157,10 @@
         .btn-checkout { background: var(--green); color: white; border: none; padding: 16px; border-radius: 50px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); transition: 0.2s;}
         .btn-checkout:active { transform: scale(0.96); }
         
-        .toast { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s; z-index: 1000; opacity: 0; visibility: hidden; }
+        .toast { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s; z-index: 3000; opacity: 0; visibility: hidden; }
         .toast.show { opacity: 1; visibility: visible; top: 135px; }
 
-        .custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 3000; visibility: hidden; opacity: 0; transition: 0.3s; }
+        .custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .custom-alert.show { visibility: visible; opacity: 1; }
         .alert-box { background: white; padding: 30px 20px; border-radius: 24px; text-align: center; max-width: 320px; width: 85%; transform: scale(0.9); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
         .custom-alert.show .alert-box { transform: scale(1); }
@@ -164,6 +175,9 @@
         .order-type-selector { display: flex; background: #F1F1F6; border-radius: 12px; padding: 4px; margin-bottom: 15px; }
         .type-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .type-btn.active { background: var(--white); color: var(--zomato-red); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+        /* 🔥 NEW: Upsell Card Styling 🔥 */
+        .upsell-card { min-width: 110px; background: var(--white); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid var(--border-light); flex-shrink: 0; display:flex; flex-direction:column; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         
         #premium-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
         .loader-circle { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #ff4757; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
@@ -179,9 +193,7 @@
           let loader = document.getElementById("premium-loader");
           if (loader) {
               loader.style.opacity = "0";
-              setTimeout(function() {
-                  loader.style.display = "none";
-              }, 500);
+              setTimeout(function() { loader.style.display = "none"; }, 500);
           }
       }, 1000); 
   });
@@ -193,14 +205,14 @@
         <span>Loading...</span>
     </div>
 
+    <!-- Tracker Modal -->
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center;">
             <div class="cart-header">
                 <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;">Order Status</h2>
                 <button style="border:none; background:#eee; width:30px; height:30px; border-radius:50%; font-weight: bold; cursor:pointer;" onclick="toggleTracker()">✕</button>
             </div>
-            <div id="multi-tracker-body" style="padding: 10px 0; max-height: 60vh; overflow-y: auto;">
-                </div>
+            <div id="multi-tracker-body" style="padding: 10px 0; max-height: 60vh; overflow-y: auto;"></div>
         </div>
     </div>
 
@@ -208,11 +220,7 @@
         <div class="fs-bg" onclick="closeFullscreen(event)"></div> <button class="fs-close" onclick="closeFullscreen(event)">✕</button>
         <button class="fs-nav fs-prev" onclick="navigateFs(-1)">&#10094;</button>
         <button class="fs-nav fs-next" onclick="navigateFs(1)">&#10095;</button>
-        
-        <div class="fs-img-container">
-            <img id="fs-img" src="" alt="Full Screen">
-        </div>
-        
+        <div class="fs-img-container"><img id="fs-img" src="" alt="Full Screen"></div>
         <div class="fs-dots" id="fs-dots"></div>
     </div>
 
@@ -256,6 +264,8 @@
         <div class="sidebar">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="🔍 Search" onkeyup="applyFilters()">
+                <!-- 🔥 Voice Search Button 🔥 -->
+                <button id="micBtn" onclick="startVoiceSearch()" class="mic-btn">🎤</button>
             </div>
             <div id="sidebar-menu">
                 <div style="padding:20px; font-size:10px; color:#999; text-align:center;">Loading...</div>
@@ -297,6 +307,11 @@
         </div>
     </div>
 
+    <!-- 🔥 Floating Waiter Button 🔥 -->
+    <div id="floating-waiter" class="floating-waiter" onclick="openWaiterPrompt()">
+        🛎️ <span id="waiter-btn-text">Call Waiter</span>
+    </div>
+
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
             <span class="checkout-items" id="float-items">1 Item</span>
@@ -323,6 +338,15 @@
                     <button id="btn-dinein" class="type-btn active" onclick="setOrderType('Dine-in')">🍽️ Dine-in</button>
                     <button id="btn-takeaway" class="type-btn" onclick="setOrderType('Takeaway')">🎒 Takeaway</button>
                 </div>
+
+                <!-- 🔥 NEW: Smart Upsell Container 🔥 -->
+                <div id="upsell-container" style="display:none; margin: 5px 0; background: #F8F9FA; padding: 10px; border-radius: 12px; border: 1px dashed var(--border-light);">
+                     <div style="font-size:12px; font-weight:800; color:var(--zomato-red); margin-bottom:8px;" id="upsell-text">💡 Frequently Bought Together</div>
+                     <div id="upsell-items" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:5px;"></div>
+                </div>
+
+                <!-- 🔥 NEW: Chef Notes 🔥 -->
+                <textarea id="cookingNotes" class="input-field" placeholder="Chef Notes (e.g. Make it extra spicy)" style="resize:none; height:50px; border-color:#ddd;"></textarea>
 
                 <input type="number" id="tableNumber" class="input-field" placeholder="Table Number (e.g. 5) *" required style="border-color: #ddd;">
                 <input type="text" id="customerName" class="input-field" placeholder="Your Name (Optional)">
@@ -368,9 +392,10 @@
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
+        // 🔥 i18n Translation Update 🔥
         const i18n = {
-            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "🔍 Search", trackTitle: "Order Status", trackBtn: "Track", dineIn: "🍽️ Dine-in", takeaway: "🎒 Takeaway" },
-            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "🔍 खोजें", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "🍽️ यहीं खाएंगे", takeaway: "🎒 पैक करें" }
+            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "🔍 Search", trackTitle: "Order Status", trackBtn: "Track", dineIn: "🍽️ Dine-in", takeaway: "🎒 Takeaway", waiter: "Call Waiter", notes: "Chef Notes (e.g. Make it spicy)", upsell: "💡 Frequently Bought Together" },
+            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "🔍 खोजें", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "🍽️ यहीं खाएंगे", takeaway: "🎒 पैक करें", waiter: "वेटर बुलाएं", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", upsell: "💡 अक्सर साथ खरीदे जाने वाले" }
         };
         let currentLang = 'en';
 
@@ -391,9 +416,53 @@
             document.getElementById('track-btn-text').innerText = i18n[l].trackBtn;
             document.getElementById('btn-dinein').innerText = i18n[l].dineIn;
             document.getElementById('btn-takeaway').innerText = i18n[l].takeaway;
+            document.getElementById('waiter-btn-text').innerText = i18n[l].waiter;
+            document.getElementById('cookingNotes').placeholder = i18n[l].notes;
+            document.getElementById('upsell-text').innerText = i18n[l].upsell;
             
             setOrderType(currentOrderType);
             updateGlobalCartUI();
+        };
+
+        // 🔥 VOICE SEARCH FUNCTION 🔥
+        window.startVoiceSearch = () => {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) { alert("Voice search not supported in this browser."); return; }
+            
+            const recognition = new SpeechRecognition();
+            recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
+            const micBtn = document.getElementById('micBtn');
+            
+            micBtn.classList.add('listening');
+            micBtn.innerText = '🔴';
+            
+            recognition.start();
+            recognition.onresult = (e) => {
+                document.getElementById('searchInput').value = e.results[0][0].transcript;
+                applyFilters();
+            };
+            recognition.onspeechend = () => { 
+                micBtn.classList.remove('listening'); 
+                micBtn.innerText = '🎤'; 
+            };
+            recognition.onerror = () => { 
+                micBtn.classList.remove('listening'); 
+                micBtn.innerText = '🎤'; 
+            };
+        };
+
+        // 🔥 CALL WAITER FUNCTION 🔥
+        window.openWaiterPrompt = () => {
+            const tableNo = prompt(currentLang === 'hi' ? "टेबल नंबर दर्ज करें:" : "Enter your Table Number:");
+            if(tableNo) {
+                addDoc(collection(db, "waiter_calls"), { 
+                    tableNumber: tableNo, 
+                    status: "New", 
+                    timestamp: new Date() 
+                })
+                .then(() => showToast(currentLang === 'hi' ? "🛎️ वेटर आ रहा है!" : "🛎️ Waiter is on the way!"))
+                .catch(e => console.log(e));
+            }
         };
 
         window.setOrderType = (type) => {
@@ -518,17 +587,16 @@
         }
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
-        // 🔥 FIX: MULTI-ORDER TRACKING LOGIC 🔥
         let activeOrderListeners = {};
         let activeOrderData = {};
 
         function listenToLiveOrder(orderId) {
-            if (activeOrderListeners[orderId]) return; // Pehle se track ho raha hai toh ignore
+            if (activeOrderListeners[orderId]) return; 
             
             activeOrderListeners[orderId] = onSnapshot(doc(db, "orders", orderId), (d) => {
                 if(!d.exists()) return;
                 activeOrderData[orderId] = d.data();
-                renderMultiTracker(); // Koi bhi ek update hoga toh poori list refresh hogi
+                renderMultiTracker(); 
             });
         }
 
@@ -546,7 +614,7 @@
             activeOrdersList.forEach(id => {
                 const data = activeOrderData[id];
                 if(!data) {
-                    newActiveList.push(id); // Data abhi load nahi hua
+                    newActiveList.push(id); 
                     return;
                 }
 
@@ -566,8 +634,6 @@
                     statusTxt = currentLang === 'hi' ? 'तैयार है ✅' : 'Ready / Served ✅';
                     descTxt = currentLang === 'hi' ? 'अपने भोजन का आनंद लें!' : 'Enjoy your meal!';
                     color = 'var(--green)'; iconTxt = '🍽️'; showTrackBtn = true;
-                    // Note: 'Completed' order ko 'newActiveList' mein push nahi kiya. 
-                    // Isse agle page reload par ye automatically tracker se hat jayega!
                 } else if(data.status === 'Cancelled') {
                     statusTxt = currentLang === 'hi' ? 'रद्द हो गया ❌' : 'Cancelled ❌';
                     descTxt = currentLang === 'hi' ? 'आपका ऑर्डर रद्द कर दिया गया है।' : 'Your order was cancelled.';
@@ -595,7 +661,6 @@
                 `;
             });
 
-            // Update local storage to drop old completed/cancelled orders automatically
             localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
 
             if(showTrackBtn && activeOrdersList.length > 0) {
@@ -610,11 +675,9 @@
             }
         }
 
-        // Initialize tracking on page load
         const savedOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
         savedOrdersList.forEach(id => listenToLiveOrder(id));
 
-        // OLD CODE cleanup: Agar purane style ka `craveCurrentOrderId` pada hai, toh usko naye system me daal do
         const oldSavedOrderId = localStorage.getItem('craveCurrentOrderId');
         if(oldSavedOrderId) {
             let activeOrders = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
@@ -641,11 +704,14 @@
                 allDishes = [];
                 snapshot.forEach((doc) => { 
                     let d = doc.data();
-                    allDishes.push({ 
-                        id: doc.id, name: d.name || "Special Dish", emoji: d.emoji || "🍲", category: d.category || "Veg",
-                        price: d.price || 0, priceHalf: d.priceHalf || null, pricePiece: d.pricePiece || null,
-                        modelUrl: d.modelUrl || "", images: d.images || []
-                    }); 
+                    // Sirf wahi item dikhao jo stock mein hain
+                    if(d.inStock !== false) {
+                        allDishes.push({ 
+                            id: doc.id, name: d.name || "Special Dish", emoji: d.emoji || "🍲", category: d.category || "Veg",
+                            price: d.price || 0, priceHalf: d.priceHalf || null, pricePiece: d.pricePiece || null,
+                            modelUrl: d.modelUrl || "", images: d.images || []
+                        }); 
+                    }
                 });
                 applyFilters(); 
                 if(allDishes.length > 0 && !currentDish) loadDish(allDishes[0]);
@@ -786,6 +852,19 @@
             cart[key] = { id: currentDish.id, name: currentDish.name, price: price, variant: variantText, qty: 1 };
             showToast(currentLang === 'hi' ? "✅ कार्ट में जुड़ गया!" : "✅ Added to Cart!");
             updateGlobalCartUI(); checkCartForCurrentDish();
+        }
+
+        // 🔥 SMART UPSELL QUICK ADD 🔥
+        window.quickAddUpsell = (id) => {
+            const dish = allDishes.find(d => d.id === id);
+            if(dish) {
+                const key = `${dish.id}_full`;
+                if(cart[key]) cart[key].qty++;
+                else cart[key] = { id: dish.id, name: dish.name, price: dish.price, variant: '', qty: 1 };
+                showToast("✅ Added!");
+                updateGlobalCartUI();
+                renderCartModal();
+            }
         };
 
         window.changeCurrentQty = (delta) => { const key = getCartKey(); changeCartQty(key, delta); };
@@ -801,6 +880,7 @@
         function updateGlobalCartUI() {
             const floatingBar = document.getElementById('floating-checkout');
             const bottomUiCard = document.getElementById('bottom-ui-card');
+            const waiterBtn = document.getElementById('floating-waiter');
             
             let totalItems = 0; let totalPrice = 0;
             for (let key in cart) { totalItems += cart[key].qty; totalPrice += (cart[key].price * cart[key].qty); }
@@ -811,15 +891,53 @@
                 let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
                 document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
                 document.getElementById('float-total').innerText = '₹' + totalPrice;
-                floatingBar.classList.add('show'); bottomUiCard.classList.add('with-cart');
+                floatingBar.classList.add('show'); 
+                bottomUiCard.classList.add('with-cart');
+                waiterBtn.classList.add('lift');
             } else {
-                floatingBar.classList.remove('show'); bottomUiCard.classList.remove('with-cart');
+                floatingBar.classList.remove('show'); 
+                bottomUiCard.classList.remove('with-cart');
+                waiterBtn.classList.remove('lift');
+            }
+        }
+
+        // 🔥 SMART UPSELL RENDER LOGIC 🔥
+        function renderUpsell() {
+            const upsellContainer = document.getElementById('upsell-container');
+            const upsellDiv = document.getElementById('upsell-items');
+            
+            if(Object.keys(cart).length === 0) { 
+                upsellContainer.style.display = 'none'; 
+                return; 
+            }
+
+            let suggestions = allDishes.filter(d => (d.category === 'Drinks' || d.category === 'Breads' || d.category === 'Desserts') && !Object.values(cart).find(c => c.id === d.id));
+            
+            if(suggestions.length > 0) {
+                suggestions = suggestions.sort(() => 0.5 - Math.random()).slice(0, 4);
+                upsellDiv.innerHTML = '';
+                suggestions.forEach(s => {
+                    upsellDiv.innerHTML += `
+                        <div class="upsell-card">
+                            <div style="font-size:24px;">${s.emoji || '🍽️'}</div>
+                            <div style="font-size:11px; font-weight:700; color:var(--text-main); margin:4px 0; max-width: 90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div>
+                            <div style="font-size:11px; color:var(--zomato-red); font-weight:800; margin-bottom:5px;">+₹${s.price}</div>
+                            <button onclick="quickAddUpsell('${s.id}')" style="background:white; border:1px solid var(--border-light); border-radius:6px; color:var(--zomato-red); font-size:10px; font-weight:800; padding:4px 12px; cursor:pointer;">ADD</button>
+                        </div>
+                    `;
+                });
+                upsellContainer.style.display = 'block';
+            } else {
+                upsellContainer.style.display = 'none';
             }
         }
 
         window.toggleCart = () => {
             const modal = document.getElementById('cart-modal');
-            if(!modal.classList.contains('show')) renderCartModal();
+            if(!modal.classList.contains('show')) {
+                renderCartModal();
+                renderUpsell(); // Refresh upsell when opening cart
+            }
             modal.classList.toggle('show');
         };
 
@@ -858,6 +976,7 @@
             const tableNo = document.getElementById('tableNumber').value;
             const custName = document.getElementById('customerName').value;
             const custPhone = document.getElementById('customerPhone').value;
+            const notes = document.getElementById('cookingNotes').value; // 🔥 CHEF NOTES 🔥
 
             if(currentOrderType === 'Dine-in' && !tableNo) { 
                 customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; 
@@ -891,6 +1010,11 @@
                 waText += `\n`; 
             }
             
+            // 🔥 Add Notes to WhatsApp Message 🔥
+            if(notes) {
+                waText += `*Chef Notes:* _${notes}_\n\n`;
+            }
+
             waText += `*Order Details:*\n`;
 
             for(let k in cart) { 
@@ -914,6 +1038,7 @@
                     tableNumber: tableNo || "N/A", 
                     customerName: custName || "N/A",
                     customerPhone: custPhone || "N/A",
+                    chefNotes: notes || "None", // Add Notes to Firestore
                     items: orderItems, 
                     totalAmount: grandTotal, 
                     status: 'New', 
@@ -921,17 +1046,17 @@
                     timestamp: new Date() 
                 });
                 
-                // 🔥 NAYA CODE: ARRAY MEIN STORE KARNA 🔥
                 let activeOrders = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
                 activeOrders.push(docRef.id);
                 localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
                 
-                listenToLiveOrder(docRef.id); // Turant is naye order ko bhi track karna shuru karo
+                listenToLiveOrder(docRef.id); 
 
                 cart = {}; 
                 document.getElementById('tableNumber').value = '';
                 document.getElementById('customerName').value = '';
                 document.getElementById('customerPhone').value = '';
+                document.getElementById('cookingNotes').value = '';
                 
                 updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
                 modalContent.style.opacity = "1";
