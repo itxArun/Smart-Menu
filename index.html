@@ -53,13 +53,15 @@
         .sidebar { width: 95px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; position: relative; }
         .sidebar::-webkit-scrollbar { display: none; }
         
-        /* 🔥 NEW: Search Box Setup with Mic 🔥 */
-        .search-box { position: sticky; top: 0; background: var(--white); padding: 10px 5px; border-bottom: 1px solid var(--border-light); z-index: 5; display:flex; gap:4px; align-items:center;}
-        .search-box input { width: 100%; padding: 8px 5px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 11px; box-sizing: border-box; text-align: center; background: #F1F1F6; outline: none; font-family: inherit; flex:1;}
-        .mic-btn { background: #FDEEEE; color: var(--zomato-red); border: 1px solid rgba(226,55,68,0.2); border-radius: 8px; width: 28px; height: 32px; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; transition: 0.2s; }
-        .mic-btn:active { transform: scale(0.9); }
-        .mic-btn.listening { background: var(--zomato-red); color: white; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        /* 🔥 FIX: Modern Embedded Voice Search Setup 🔥 */
+        .search-box { position: sticky; top: 0; background: var(--white); padding: 10px 5px; border-bottom: 1px solid var(--border-light); z-index: 5; }
+        .search-input-wrapper { position: relative; width: 100%; }
+        .search-input-wrapper input { width: 100%; padding: 8px 26px 8px 8px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 11px; box-sizing: border-box; text-align: left; background: #F1F1F6; outline: none; font-family: inherit; }
+        .search-input-wrapper input:focus { border-color: var(--zomato-red); }
+        .mic-btn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-sub); display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 4px; transition: 0.2s; }
+        .mic-btn:active { transform: translateY(-50%) scale(0.9); color: var(--zomato-red); }
+        .mic-btn.listening { color: var(--zomato-red); animation: pulseMic 1.5s infinite; }
+        @keyframes pulseMic { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.2); } 100% { transform: translateY(-50%) scale(1); } }
 
         .side-item { padding: 15px 5px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: all 0.2s; border-bottom: 1px solid #f0f0f0; position: relative;}
         .side-item:active { transform: scale(0.9); }
@@ -85,6 +87,10 @@
         .media-toggle { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: var(--text-main); border: 1px solid var(--border-light); padding: 8px 14px; border-radius: 50px; font-size: 12px; font-weight: 800; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s;}
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
+
+        /* 🔥 FIX: Clean Top-Left Waiter Button Inside Food Container 🔥 */
+        .waiter-btn { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); color: var(--text-main); border: 1px solid var(--border-light); padding: 8px 14px; border-radius: 50px; font-size: 12px; font-weight: 800; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s; display: flex; align-items: center; gap: 5px; }
+        .waiter-btn:active { transform: scale(0.95); }
 
         .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; visibility: hidden; opacity: 0; transition: 0.3s; }
         .fullscreen-viewer.show { visibility: visible; opacity: 1; }
@@ -136,11 +142,6 @@
         .checkout-items { font-size: 12px; font-weight: 600; opacity: 0.9; }
         .checkout-total { font-size: 16px; font-weight: 800; }
 
-        /* 🔥 NEW: Floating Waiter Button 🔥 */
-        .floating-waiter { position: fixed; bottom: 20px; right: 15px; background: var(--white); color: var(--text-main); padding: 12px 18px; border-radius: 50px; font-size: 13px; font-weight: 800; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 900; cursor: pointer; border: 1px solid var(--border-light); display: flex; align-items: center; gap: 5px; transition: 0.3s; }
-        .floating-waiter:active { transform: scale(0.95); }
-        .floating-waiter.lift { bottom: 85px; } 
-
         .cart-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .cart-modal.show { visibility: visible; opacity: 1; }
         .cart-content { background: var(--white); width: 100%; max-height: 85vh; border-radius: 30px 30px 0 0; padding: 25px 20px; display: flex; flex-direction: column; transition: transform 0.3s; transform: translateY(100%); }
@@ -176,7 +177,6 @@
         .type-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .type-btn.active { background: var(--white); color: var(--zomato-red); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
-        /* 🔥 NEW: Upsell Card Styling 🔥 */
         .upsell-card { min-width: 110px; background: var(--white); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid var(--border-light); flex-shrink: 0; display:flex; flex-direction:column; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         
         #premium-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
@@ -263,9 +263,17 @@
     <div class="app-layout">
         <div class="sidebar">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 Search" onkeyup="applyFilters()">
-                <!-- 🔥 Voice Search Button 🔥 -->
-                <button id="micBtn" onclick="startVoiceSearch()" class="mic-btn">🎤</button>
+                <div class="search-input-wrapper">
+                    <input type="text" id="searchInput" placeholder="Search..." onkeyup="applyFilters()">
+                    <!-- 🔥 Modern SVG Mic Icon 🔥 -->
+                    <button id="micBtn" onclick="startVoiceSearch()" class="mic-btn" aria-label="Voice Search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="22"></line>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div id="sidebar-menu">
                 <div style="padding:20px; font-size:10px; color:#999; text-align:center;">Loading...</div>
@@ -274,6 +282,11 @@
 
         <div class="main-content">
             <div class="viewer-container">
+                <!-- 🔥 FIX: Call Waiter Button Positioned Top-Left Over Image 🔥 -->
+                <div id="floating-waiter" class="waiter-btn" onclick="openWaiterPrompt()">
+                    🛎️ <span id="waiter-btn-text">Waiter</span>
+                </div>
+
                 <div id="photo-slider" class="photo-slider hide"></div>
                 <div class="media-toggle hide" id="media-toggle" onclick="toggleMedia()">🧊 View 3D</div>
 
@@ -307,11 +320,6 @@
         </div>
     </div>
 
-    <!-- 🔥 Floating Waiter Button 🔥 -->
-    <div id="floating-waiter" class="floating-waiter" onclick="openWaiterPrompt()">
-        🛎️ <span id="waiter-btn-text">Call Waiter</span>
-    </div>
-
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
             <span class="checkout-items" id="float-items">1 Item</span>
@@ -339,13 +347,11 @@
                     <button id="btn-takeaway" class="type-btn" onclick="setOrderType('Takeaway')">🎒 Takeaway</button>
                 </div>
 
-                <!-- 🔥 NEW: Smart Upsell Container 🔥 -->
                 <div id="upsell-container" style="display:none; margin: 5px 0; background: #F8F9FA; padding: 10px; border-radius: 12px; border: 1px dashed var(--border-light);">
                      <div style="font-size:12px; font-weight:800; color:var(--zomato-red); margin-bottom:8px;" id="upsell-text">💡 Frequently Bought Together</div>
                      <div id="upsell-items" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:5px;"></div>
                 </div>
 
-                <!-- 🔥 NEW: Chef Notes 🔥 -->
                 <textarea id="cookingNotes" class="input-field" placeholder="Chef Notes (e.g. Make it extra spicy)" style="resize:none; height:50px; border-color:#ddd;"></textarea>
 
                 <input type="number" id="tableNumber" class="input-field" placeholder="Table Number (e.g. 5) *" required style="border-color: #ddd;">
@@ -392,10 +398,9 @@
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
-        // 🔥 i18n Translation Update 🔥
         const i18n = {
-            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "🔍 Search", trackTitle: "Order Status", trackBtn: "Track", dineIn: "🍽️ Dine-in", takeaway: "🎒 Takeaway", waiter: "Call Waiter", notes: "Chef Notes (e.g. Make it spicy)", upsell: "💡 Frequently Bought Together" },
-            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "🔍 खोजें", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "🍽️ यहीं खाएंगे", takeaway: "🎒 पैक करें", waiter: "वेटर बुलाएं", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", upsell: "💡 अक्सर साथ खरीदे जाने वाले" }
+            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "Search...", trackTitle: "Order Status", trackBtn: "Track", dineIn: "🍽️ Dine-in", takeaway: "🎒 Takeaway", waiter: "Waiter", notes: "Chef Notes (e.g. Make it spicy)", upsell: "💡 Frequently Bought Together" },
+            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "खोजें...", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "🍽️ यहीं खाएंगे", takeaway: "🎒 पैक करें", waiter: "वेटर", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", upsell: "💡 अक्सर साथ खरीदे जाने वाले" }
         };
         let currentLang = 'en';
 
@@ -424,7 +429,6 @@
             updateGlobalCartUI();
         };
 
-        // 🔥 VOICE SEARCH FUNCTION 🔥
         window.startVoiceSearch = () => {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) { alert("Voice search not supported in this browser."); return; }
@@ -434,24 +438,16 @@
             const micBtn = document.getElementById('micBtn');
             
             micBtn.classList.add('listening');
-            micBtn.innerText = '🔴';
             
             recognition.start();
             recognition.onresult = (e) => {
                 document.getElementById('searchInput').value = e.results[0][0].transcript;
                 applyFilters();
             };
-            recognition.onspeechend = () => { 
-                micBtn.classList.remove('listening'); 
-                micBtn.innerText = '🎤'; 
-            };
-            recognition.onerror = () => { 
-                micBtn.classList.remove('listening'); 
-                micBtn.innerText = '🎤'; 
-            };
+            recognition.onspeechend = () => { micBtn.classList.remove('listening'); };
+            recognition.onerror = () => { micBtn.classList.remove('listening'); };
         };
 
-        // 🔥 CALL WAITER FUNCTION 🔥
         window.openWaiterPrompt = () => {
             const tableNo = prompt(currentLang === 'hi' ? "टेबल नंबर दर्ज करें:" : "Enter your Table Number:");
             if(tableNo) {
@@ -704,7 +700,6 @@
                 allDishes = [];
                 snapshot.forEach((doc) => { 
                     let d = doc.data();
-                    // Sirf wahi item dikhao jo stock mein hain
                     if(d.inStock !== false) {
                         allDishes.push({ 
                             id: doc.id, name: d.name || "Special Dish", emoji: d.emoji || "🍲", category: d.category || "Veg",
@@ -854,7 +849,6 @@
             updateGlobalCartUI(); checkCartForCurrentDish();
         }
 
-        // 🔥 SMART UPSELL QUICK ADD 🔥
         window.quickAddUpsell = (id) => {
             const dish = allDishes.find(d => d.id === id);
             if(dish) {
@@ -880,7 +874,6 @@
         function updateGlobalCartUI() {
             const floatingBar = document.getElementById('floating-checkout');
             const bottomUiCard = document.getElementById('bottom-ui-card');
-            const waiterBtn = document.getElementById('floating-waiter');
             
             let totalItems = 0; let totalPrice = 0;
             for (let key in cart) { totalItems += cart[key].qty; totalPrice += (cart[key].price * cart[key].qty); }
@@ -893,15 +886,12 @@
                 document.getElementById('float-total').innerText = '₹' + totalPrice;
                 floatingBar.classList.add('show'); 
                 bottomUiCard.classList.add('with-cart');
-                waiterBtn.classList.add('lift');
             } else {
                 floatingBar.classList.remove('show'); 
                 bottomUiCard.classList.remove('with-cart');
-                waiterBtn.classList.remove('lift');
             }
         }
 
-        // 🔥 SMART UPSELL RENDER LOGIC 🔥
         function renderUpsell() {
             const upsellContainer = document.getElementById('upsell-container');
             const upsellDiv = document.getElementById('upsell-items');
@@ -936,7 +926,7 @@
             const modal = document.getElementById('cart-modal');
             if(!modal.classList.contains('show')) {
                 renderCartModal();
-                renderUpsell(); // Refresh upsell when opening cart
+                renderUpsell(); 
             }
             modal.classList.toggle('show');
         };
@@ -976,7 +966,7 @@
             const tableNo = document.getElementById('tableNumber').value;
             const custName = document.getElementById('customerName').value;
             const custPhone = document.getElementById('customerPhone').value;
-            const notes = document.getElementById('cookingNotes').value; // 🔥 CHEF NOTES 🔥
+            const notes = document.getElementById('cookingNotes').value; 
 
             if(currentOrderType === 'Dine-in' && !tableNo) { 
                 customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; 
@@ -1010,7 +1000,6 @@
                 waText += `\n`; 
             }
             
-            // 🔥 Add Notes to WhatsApp Message 🔥
             if(notes) {
                 waText += `*Chef Notes:* _${notes}_\n\n`;
             }
@@ -1038,7 +1027,7 @@
                     tableNumber: tableNo || "N/A", 
                     customerName: custName || "N/A",
                     customerPhone: custPhone || "N/A",
-                    chefNotes: notes || "None", // Add Notes to Firestore
+                    chefNotes: notes || "None",
                     items: orderItems, 
                     totalAmount: grandTotal, 
                     status: 'New', 
