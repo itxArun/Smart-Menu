@@ -34,7 +34,6 @@
         .cart-icon:active { transform: scale(0.9); }
         .cart-badge { position: absolute; top: -2px; right: -2px; background: var(--zomato-red); color: white; font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
         
-        /* 🔥 NEW: Flying Cart Animation Dot 🔥 */
         .flying-dot { position: fixed; width: 20px; height: 20px; background: var(--zomato-red); border-radius: 50%; z-index: 9999; pointer-events: none; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0; box-shadow: 0 4px 10px rgba(226,55,68,0.5); }
 
         .category-scroll { flex-shrink: 0; display: flex; overflow-x: auto; white-space: nowrap; background: var(--white); padding: 12px 20px; border-bottom: 1px solid var(--border-light); gap: 10px; z-index: 15; }
@@ -64,7 +63,6 @@
         .side-name { font-size: 10px; font-weight: 700; color: var(--text-main); line-height: 1.2; word-wrap: break-word;}
         .best-seller-tag { display: inline-block; background: #FFF0E5; color: #FF9500; font-size: 8px; padding: 2px 5px; border-radius: 4px; margin-top: 4px; border: 1px solid rgba(255,149,0,0.2); font-weight: 800; letter-spacing: 0.2px;}
 
-        /* 🔥 NEW: Shimmer Skeleton Effect 🔥 */
         .skeleton { background: #e0e0e0; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
@@ -146,13 +144,12 @@
         .cart-scroll-body::-webkit-scrollbar { width: 0; display: none; }
         .cart-items-container { display: flex; flex-direction: column; margin-bottom: 15px; gap: 10px; }
 
-        /* 🔥 NEW: Swipe-to-Delete (Apple Style) 🔥 */
         .swipe-wrap { overflow-x: auto; scroll-snap-type: x mandatory; display: flex; width: 100%; scrollbar-width: none; border-radius: 12px; background: #FFF0F0; }
         .swipe-wrap::-webkit-scrollbar { display: none; }
         .swipe-content { width: 100%; flex-shrink: 0; scroll-snap-align: start; padding: 12px 15px; background: var(--white); border: 1px solid var(--border-light); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
         .swipe-action { width: 80px; flex-shrink: 0; scroll-snap-align: start; background: var(--danger); color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; cursor: pointer; border-radius: 0 12px 12px 0; }
         
-        .cart-item-info { flex: 1; }
+        .cart-item-info { flex: 1; text-align: left; }
         .cart-item-qty { display: flex; align-items: center; gap: 10px; background: #FDEEEE; color: var(--zomato-red); border-radius: 8px; padding: 4px 10px; font-weight: 700; }
         .cart-item-qty button { border: none; background: transparent; font-size: 16px; font-weight: 800; color: var(--zomato-red); cursor: pointer; padding: 0 5px; }
 
@@ -165,7 +162,6 @@
         .toast { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 3000; opacity: 0; visibility: hidden; }
         .toast.show { opacity: 1; visibility: visible; top: 135px; }
 
-        /* Alerts & Inputs */
         .custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .custom-alert.show { visibility: visible; opacity: 1; }
         .alert-box { background: white; padding: 30px 20px; border-radius: 24px; text-align: center; max-width: 320px; width: 85%; transform: scale(0.9); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
@@ -183,20 +179,17 @@
         .type-btn.active { background: var(--white); color: var(--zomato-red); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .upsell-card { min-width: 110px; background: var(--white); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid var(--border-light); flex-shrink: 0; display:flex; flex-direction:column; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         
-        /* 🔥 NEW: Visual Domino's Style Stepper Tracker 🔥 */
         .visual-tracker { display: flex; justify-content: space-between; align-items: center; position: relative; margin: 20px 10px; }
         .visual-tracker::before { content: ''; position: absolute; top: 14px; left: 10%; right: 10%; height: 3px; background: var(--border-light); z-index: 1; }
         .tracker-step { display: flex; flex-direction: column; align-items: center; z-index: 2; flex: 1; gap: 6px; }
         .step-icon { width: 30px; height: 30px; border-radius: 50%; background: var(--border-light); color: var(--white); display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; transition: 0.3s; }
         .step-text { font-size: 10px; font-weight: 700; color: var(--text-sub); }
-        /* States */
         .tracker-step.done .step-icon { background: var(--success); }
         .tracker-step.done .step-text { color: var(--success); }
         .tracker-step.active .step-icon { background: var(--warning); animation: pulseStep 1.5s infinite; }
         .tracker-step.active .step-text { color: var(--warning); }
         @keyframes pulseStep { 0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } }
 
-        /* 🔥 NEW: Confetti Animation Setup 🔥 */
         #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 
         #premium-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
@@ -208,9 +201,17 @@
 </head>
 <body>
 
-    <!-- Audio for Haptic/Pop Sound -->
-    <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3" preload="auto"></audio>
-    <canvas id="confetti-canvas"></canvas>
+    <script>
+        // Ye script page load hote hi immediately 1.2 seconds ka timer shuru kar degi.
+        // Ye kisi bhi heavy 3D file ya slow internet ka wait nahi karegi!
+        setTimeout(function() {
+            let loader = document.getElementById("premium-loader");
+            if (loader) {
+                loader.style.opacity = "0";
+                setTimeout(function() { loader.style.display = "none"; }, 500);
+            }
+        }, 1200); 
+    </script>
 
     <div id="premium-loader">
         <div class="loader-circle"></div>
@@ -218,7 +219,9 @@
         <span>Loading...</span>
     </div>
 
-    <!-- Tracker Modal -->
+    <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3" preload="auto"></audio>
+    <canvas id="confetti-canvas"></canvas>
+
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center;">
             <div class="cart-header">
@@ -237,7 +240,6 @@
         <div class="fs-dots" id="fs-dots"></div>
     </div>
 
-    <!-- General Custom Alert -->
     <div class="custom-alert" id="customAlert">
         <div class="alert-box">
             <div class="alert-icon" id="alertIcon">🔢</div>
@@ -246,15 +248,14 @@
         </div>
     </div>
 
-    <!-- Custom Waiter Prompt Modal -->
     <div class="custom-alert" id="waiterPromptModal">
         <div class="alert-box">
             <div class="alert-icon">🛎️</div>
             <h3 id="waiterTitleText">Call Waiter</h3>
             <input type="number" id="waiterTableInput" class="input-field" placeholder="Enter Table Number" style="margin-bottom: 20px; text-align: center;">
             <div style="display: flex; gap: 10px;">
-                <button style="background: #F1F1F6; color: var(--text-main);" onclick="closeWaiterPrompt()" id="waiterCancelBtn">Cancel</button>
-                <button onclick="confirmCallWaiter()" id="waiterCallBtn">Call Now</button>
+                <button style="background: #F1F1F6; color: var(--text-main); flex:1; padding: 12px; border-radius:12px; border:none; font-weight:bold; cursor:pointer;" onclick="closeWaiterPrompt()" id="waiterCancelBtn">Cancel</button>
+                <button style="background: var(--zomato-red); color: white; flex:1; padding: 12px; border-radius:12px; border:none; font-weight:bold; cursor:pointer;" onclick="confirmCallWaiter()" id="waiterCallBtn">Call Now</button>
             </div>
         </div>
     </div>
@@ -262,7 +263,6 @@
     <div class="header">
         <div class="brand-name">
             NextPlate
-            <!-- 🔥 NEW: Time-Based Greeting 🔥 -->
             <span class="greeting-text" id="greeting-display">Good Morning ☕</span>
         </div>
         <div style="display:flex; align-items:center;">
@@ -306,7 +306,6 @@
                 </div>
             </div>
             <div id="sidebar-menu">
-                <!-- 🔥 NEW: Shimmer Skeleton Placeholder 🔥 -->
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
@@ -432,7 +431,6 @@
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
-        // 🔥 Time-Based Greeting System 🔥
         function updateGreeting() {
             const hr = new Date().getHours();
             let greet = "Good Day ☕";
@@ -440,22 +438,16 @@
             else if(hr >= 12 && hr < 17) greet = "Good Afternoon ☀️";
             else greet = "Good Evening 🌙";
             document.getElementById('greeting-display').innerText = greet;
-            
-            // Smart Category sorting based on time
-            const scroll = document.getElementById('category-scroll');
-            if(hr >= 5 && hr < 12) { /* Bring Starters front */ } // Logic placeholder, default is ok for now
         }
         updateGreeting();
 
-        // 🔥 Haptic & Sound Setup 🔥
         window.triggerHapticPop = () => {
             if(navigator.vibrate) navigator.vibrate(40);
             const audio = document.getElementById('popSound');
             audio.currentTime = 0;
-            audio.play().catch(e => {}); // Ignore autoplay blocks
+            audio.play().catch(e => {}); 
         };
 
-        // 🔥 Flying Animation Logic 🔥
         window.createFlyingDot = (e) => {
             if(!e || !e.clientX) return;
             const target = document.getElementById('cart-icon-target');
@@ -510,6 +502,9 @@
             updateGlobalCartUI();
         };
 
+        // Call it initially
+        window.setLanguage(currentLang);
+
         window.startVoiceSearch = () => {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) { alert("Voice search not supported in this browser."); return; }
@@ -536,6 +531,7 @@
             if(!tableNo) { alert(currentLang === 'hi' ? "कृपया टेबल नंबर डालें!" : "Please enter a table number!"); return; }
             addDoc(collection(db, "waiter_calls"), { tableNumber: tableNo, status: "New", timestamp: new Date() })
             .then(() => { closeWaiterPrompt(); showToast(currentLang === 'hi' ? "🛎️ वेटर आ रहा है!" : "🛎️ Waiter is on the way!"); triggerHapticPop(); })
+            .catch(e => console.log(e));
         };
 
         window.setOrderType = (type) => {
@@ -589,7 +585,6 @@
             });
         }
 
-        // 🔥 UPDATE: VISUAL DOMINO'S TRACKER LOGIC 🔥
         function renderMultiTracker() {
             const container = document.getElementById('multi-tracker-body');
             const trackBtn = document.getElementById('btn-track-order');
@@ -607,7 +602,7 @@
                 let isDone = data.status === 'Completed';
                 
                 if(data.status !== 'Cancelled' && !isDone) { showPulse = true; showTrackBtn = true; newActiveList.push(id); }
-                else if (isDone) showTrackBtn = true; // Stay in UI until closed
+                else if (isDone) showTrackBtn = true; 
                 
                 if(data.status === 'Cancelled') {
                     container.innerHTML += `<div style="padding:15px; border:1px solid #eee; border-radius:12px; margin-bottom:10px; color:var(--text-sub);">Order Cancelled ❌</div>`;
@@ -624,7 +619,6 @@
                         </div>
                         <div style="font-size: 12px; color: var(--text-main); font-weight: 600; margin-bottom: 15px;">${itemsList}</div>
                         
-                        <!-- Visual Stepper -->
                         <div class="visual-tracker">
                             <div class="tracker-step ${data.status !== 'Cancelled' ? 'done' : ''}">
                                 <div class="step-icon">✓</div><div class="step-text">Placed</div>
@@ -752,7 +746,6 @@
             else { btnAdd.style.display = 'block'; btnStepper.style.display = 'none'; }
         }
 
-        // 🔥 FIX: Added Fly Animation Call Here 🔥
         window.addCurrentToCart = (e) => {
             const key = getCartKey();
             let price = currentDish.price; let variantText = '';
@@ -762,7 +755,7 @@
             cart[key] = { id: currentDish.id, name: currentDish.name, price: price, variant: variantText, qty: 1 };
             
             triggerHapticPop();
-            createFlyingDot(e); // Flying Animation
+            createFlyingDot(e); 
             showToast(currentLang === 'hi' ? "✅ कार्ट में जुड़ गया!" : "✅ Added to Cart!");
             
             updateGlobalCartUI(); checkCartForCurrentDish();
@@ -818,7 +811,6 @@
 
         window.toggleCart = () => { const modal = document.getElementById('cart-modal'); if(!modal.classList.contains('show')) { renderCartModal(); renderUpsell(); } modal.classList.toggle('show'); };
 
-        // 🔥 FIX: Swipe-to-Delete Implementation 🔥
         function renderCartModal() {
             const list = document.getElementById('cart-items-list');
             list.innerHTML = ''; let totalPrice = 0; let isEmpty = true;
@@ -847,7 +839,6 @@
 
         function showToast(msg) { const toast = document.getElementById('toast'); toast.innerText = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1500); }
 
-        // 🔥 NEW: Confetti Effect Logic 🔥
         function launchConfetti() {
             const canvas = document.getElementById('confetti-canvas');
             const ctx = canvas.getContext('2d');
@@ -866,7 +857,7 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 let active = false;
                 pieces.forEach(p => {
-                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; // Gravity
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; 
                     p.rot += p.rotSpeed;
                     if(p.y < canvas.height) {
                         active = true;
@@ -938,7 +929,7 @@
                 updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
                 modalContent.style.opacity = "1";
 
-                launchConfetti(); // 🎉 Success Confetti 🎉
+                launchConfetti(); 
                 setTimeout(() => { window.open(`https://wa.me/${restaurantWhatsApp}?text=${finalWaText}`, '_blank'); }, 1500);
 
             } catch (e) { 
