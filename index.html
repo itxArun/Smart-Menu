@@ -9,24 +9,16 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then((reg) => {
-                    console.log('App ready for install!', reg);
-                });
-            });
-        }
-    </script>
     
     <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
 
     <style>
-        :root { --bg-light: #F8F9FA; --white: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78; --zomato-red: #E23744; --border-light: #E8E8E8; --green: #28A745; }
+        :root { --bg-light: #F8F9FA; --white: #FFFFFF; --text-main: #282C3F; --text-sub: #686B78; --zomato-red: #E23744; --border-light: #E8E8E8; --green: #28A745; --warning: #FF9500; }
         body { margin: 0; padding: 0; background: var(--bg-light); color: var(--text-main); font-family: 'Okra', sans-serif; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
         
         .header { flex-shrink: 0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); border-bottom: 1px solid var(--border-light); z-index: 20; }
-        .brand-name { font-size: 24px; font-weight: 800; color: var(--zomato-red); margin: 0; }
+        .brand-name { font-size: 24px; font-weight: 800; color: var(--zomato-red); margin: 0; display: flex; flex-direction: column; line-height: 1; }
+        .greeting-text { font-size: 11px; font-weight: 600; color: var(--text-sub); margin-top: 2px; }
         
         .track-icon { position: relative; font-size: 20px; cursor: pointer; padding: 6px 10px; background: #FFF0E5; border-radius: 50px; color: #FF9500; transition: 0.2s; margin-right: 10px; display: none; align-items: center; gap: 5px; border: 1px solid rgba(255,149,0,0.3); }
         .track-icon.show { display: flex; }
@@ -42,6 +34,9 @@
         .cart-icon:active { transform: scale(0.9); }
         .cart-badge { position: absolute; top: -2px; right: -2px; background: var(--zomato-red); color: white; font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
         
+        /* 🔥 NEW: Flying Cart Animation Dot 🔥 */
+        .flying-dot { position: fixed; width: 20px; height: 20px; background: var(--zomato-red); border-radius: 50%; z-index: 9999; pointer-events: none; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0; box-shadow: 0 4px 10px rgba(226,55,68,0.5); }
+
         .category-scroll { flex-shrink: 0; display: flex; overflow-x: auto; white-space: nowrap; background: var(--white); padding: 12px 20px; border-bottom: 1px solid var(--border-light); gap: 10px; z-index: 15; }
         .category-scroll::-webkit-scrollbar { display: none; }
         .cat-pill { background: #F1F1F6; color: var(--text-sub); padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; border: 1px solid transparent; display: flex; align-items: center; gap: 5px; }
@@ -67,8 +62,11 @@
         .side-item.active { border-left-color: var(--zomato-red); background: #FDEEEE; }
         .side-emoji { font-size: 28px; margin-bottom: 5px; }
         .side-name { font-size: 10px; font-weight: 700; color: var(--text-main); line-height: 1.2; word-wrap: break-word;}
-        
         .best-seller-tag { display: inline-block; background: #FFF0E5; color: #FF9500; font-size: 8px; padding: 2px 5px; border-radius: 4px; margin-top: 4px; border: 1px solid rgba(255,149,0,0.2); font-weight: 800; letter-spacing: 0.2px;}
+
+        /* 🔥 NEW: Shimmer Skeleton Effect 🔥 */
+        .skeleton { background: #e0e0e0; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
         
@@ -98,13 +96,11 @@
         
         .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: 0.2s;}
         .fs-close:active { transform: scale(0.9); background: rgba(226,55,68,0.8); }
-        
         .fs-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.4); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
         .fs-nav:active { background: rgba(255,255,255,0.3); }
         .fs-nav.hide { display: none; }
         .fs-prev { left: 15px; }
         .fs-next { right: 15px; }
-        
         .fs-dots { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10; pointer-events: none; }
         .fs-dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; transition: 0.3s; }
         .fs-dot.active { background: white; transform: scale(1.3); }
@@ -134,7 +130,7 @@
         .stepper-control button { background: transparent; border: none; color: var(--zomato-red); font-size: 20px; font-weight: 800; cursor: pointer; padding: 10px; }
         .btn-premium { background: var(--zomato-red); color: var(--white); border: none; padding: 14px 0; border-radius: 50px; font-size: 14px; font-weight: 800; flex: 1.3; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(226, 55, 68, 0.2); }
         
-        .floating-checkout { position: fixed; bottom: -100px; left: 15px; right: 15px; background: var(--green); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.4s; box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4); border-radius: 50px; cursor: pointer; }
+        .floating-checkout { position: fixed; bottom: -100px; left: 15px; right: 15px; background: var(--green); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4); border-radius: 50px; cursor: pointer; }
         .floating-checkout.show { bottom: 15px; }
         .checkout-info { display: flex; flex-direction: column; text-align: left; }
         .checkout-items { font-size: 12px; font-weight: 600; opacity: 0.9; }
@@ -142,29 +138,34 @@
 
         .cart-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .cart-modal.show { visibility: visible; opacity: 1; }
-        .cart-content { background: var(--white); width: 100%; max-height: 85vh; border-radius: 30px 30px 0 0; padding: 25px 20px; display: flex; flex-direction: column; transition: transform 0.3s; transform: translateY(100%); }
+        .cart-content { background: var(--white); width: 100%; max-height: 85vh; border-radius: 30px 30px 0 0; padding: 25px 20px; display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
         .cart-modal.show .cart-content { transform: translateY(0); }
         .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; margin-bottom: 15px; flex-shrink: 0; }
         
-        /* 🔥 FIX: SCROLLABLE CART CONTAINER 🔥 */
-        .cart-scroll-body { overflow-y: auto; flex: 1; padding-bottom: 20px; padding-right: 5px; }
-        .cart-scroll-body::-webkit-scrollbar { width: 4px; }
-        .cart-scroll-body::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        .cart-scroll-body { overflow-y: auto; flex: 1; padding-bottom: 20px; overflow-x: hidden; }
+        .cart-scroll-body::-webkit-scrollbar { width: 0; display: none; }
+        .cart-items-container { display: flex; flex-direction: column; margin-bottom: 15px; gap: 10px; }
+
+        /* 🔥 NEW: Swipe-to-Delete (Apple Style) 🔥 */
+        .swipe-wrap { overflow-x: auto; scroll-snap-type: x mandatory; display: flex; width: 100%; scrollbar-width: none; border-radius: 12px; background: #FFF0F0; }
+        .swipe-wrap::-webkit-scrollbar { display: none; }
+        .swipe-content { width: 100%; flex-shrink: 0; scroll-snap-align: start; padding: 12px 15px; background: var(--white); border: 1px solid var(--border-light); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+        .swipe-action { width: 80px; flex-shrink: 0; scroll-snap-align: start; background: var(--danger); color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; cursor: pointer; border-radius: 0 12px 12px 0; }
         
-        .cart-items-container { display: flex; flex-direction: column; margin-bottom: 15px; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border-light); }
         .cart-item-info { flex: 1; }
-        .cart-item-qty { display: flex; align-items: center; gap: 10px; background: #FDEEEE; color: var(--zomato-red); border-radius: 8px; padding: 2px 8px; font-weight: 700; }
-        .cart-item-qty button { border: none; background: transparent; font-size: 16px; font-weight: 800; color: var(--zomato-red); cursor: pointer; }
+        .cart-item-qty { display: flex; align-items: center; gap: 10px; background: #FDEEEE; color: var(--zomato-red); border-radius: 8px; padding: 4px 10px; font-weight: 700; }
+        .cart-item-qty button { border: none; background: transparent; font-size: 16px; font-weight: 800; color: var(--zomato-red); cursor: pointer; padding: 0 5px; }
+
         .bill-details { background: #F8F9FA; padding: 15px; border-radius: 20px; margin-bottom: 15px; }
         .bill-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; color: var(--zomato-red); }
         
         .btn-checkout { background: var(--green); color: white; border: none; padding: 16px; border-radius: 50px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); transition: 0.2s; flex-shrink: 0; margin-top: 10px; }
         .btn-checkout:active { transform: scale(0.96); }
         
-        .toast { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s; z-index: 3000; opacity: 0; visibility: hidden; }
+        .toast { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); background: #282C3F; color: white; padding: 12px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 3000; opacity: 0; visibility: hidden; }
         .toast.show { opacity: 1; visibility: visible; top: 135px; }
 
+        /* Alerts & Inputs */
         .custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .custom-alert.show { visibility: visible; opacity: 1; }
         .alert-box { background: white; padding: 30px 20px; border-radius: 24px; text-align: center; max-width: 320px; width: 85%; transform: scale(0.9); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
@@ -180,9 +181,24 @@
         .order-type-selector { display: flex; background: #F1F1F6; border-radius: 12px; padding: 4px; margin-bottom: 15px; }
         .type-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .type-btn.active { background: var(--white); color: var(--zomato-red); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-
         .upsell-card { min-width: 110px; background: var(--white); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid var(--border-light); flex-shrink: 0; display:flex; flex-direction:column; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         
+        /* 🔥 NEW: Visual Domino's Style Stepper Tracker 🔥 */
+        .visual-tracker { display: flex; justify-content: space-between; align-items: center; position: relative; margin: 20px 10px; }
+        .visual-tracker::before { content: ''; position: absolute; top: 14px; left: 10%; right: 10%; height: 3px; background: var(--border-light); z-index: 1; }
+        .tracker-step { display: flex; flex-direction: column; align-items: center; z-index: 2; flex: 1; gap: 6px; }
+        .step-icon { width: 30px; height: 30px; border-radius: 50%; background: var(--border-light); color: var(--white); display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; transition: 0.3s; }
+        .step-text { font-size: 10px; font-weight: 700; color: var(--text-sub); }
+        /* States */
+        .tracker-step.done .step-icon { background: var(--success); }
+        .tracker-step.done .step-text { color: var(--success); }
+        .tracker-step.active .step-icon { background: var(--warning); animation: pulseStep 1.5s infinite; }
+        .tracker-step.active .step-text { color: var(--warning); }
+        @keyframes pulseStep { 0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } }
+
+        /* 🔥 NEW: Confetti Animation Setup 🔥 */
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+
         #premium-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
         .loader-circle { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #ff4757; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         #premium-loader p { font-size: 22px; font-weight: 800; color: #2f3542; margin: 0; letter-spacing: 1px; }
@@ -191,17 +207,10 @@
     </style>
 </head>
 <body>
-<script>
-  window.addEventListener('load', function() {
-      setTimeout(function() {
-          let loader = document.getElementById("premium-loader");
-          if (loader) {
-              loader.style.opacity = "0";
-              setTimeout(function() { loader.style.display = "none"; }, 500);
-          }
-      }, 1000); 
-  });
-</script>
+
+    <!-- Audio for Haptic/Pop Sound -->
+    <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3" preload="auto"></audio>
+    <canvas id="confetti-canvas"></canvas>
 
     <div id="premium-loader">
         <div class="loader-circle"></div>
@@ -237,7 +246,7 @@
         </div>
     </div>
 
-    <!-- 🔥 FIX: CUSTOM WAITER PROMPT MODAL 🔥 -->
+    <!-- Custom Waiter Prompt Modal -->
     <div class="custom-alert" id="waiterPromptModal">
         <div class="alert-box">
             <div class="alert-icon">🛎️</div>
@@ -251,7 +260,11 @@
     </div>
 
     <div class="header">
-        <h1 class="brand-name">NextPlate</h1>
+        <div class="brand-name">
+            NextPlate
+            <!-- 🔥 NEW: Time-Based Greeting 🔥 -->
+            <span class="greeting-text" id="greeting-display">Good Morning ☕</span>
+        </div>
         <div style="display:flex; align-items:center;">
             <div class="track-icon" id="btn-track-order" onclick="toggleTracker()">
                 <span style="font-size: 14px; font-weight:800; color:inherit;" id="track-btn-text">Track</span> 📦
@@ -261,7 +274,7 @@
                 <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</button>
                 <button class="lang-btn" id="btn-hi" onclick="setLanguage('hi')">हिंदी</button>
             </div>
-            <div class="cart-icon" onclick="toggleCart()">🛒 <div class="cart-badge" id="cart-count">0</div></div>
+            <div class="cart-icon" id="cart-icon-target" onclick="toggleCart()">🛒 <div class="cart-badge" id="cart-count">0</div></div>
         </div>
     </div>
 
@@ -283,7 +296,6 @@
             <div class="search-box">
                 <div class="search-input-wrapper">
                     <input type="text" id="searchInput" placeholder="Search..." onkeyup="applyFilters()">
-                    <!-- Modern SVG Mic Icon -->
                     <button id="micBtn" onclick="startVoiceSearch()" class="mic-btn" aria-label="Voice Search">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
@@ -294,13 +306,15 @@
                 </div>
             </div>
             <div id="sidebar-menu">
-                <div style="padding:20px; font-size:10px; color:#999; text-align:center;">Loading...</div>
+                <!-- 🔥 NEW: Shimmer Skeleton Placeholder 🔥 -->
+                <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
+                <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
+                <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
             </div>
         </div>
 
         <div class="main-content">
             <div class="viewer-container">
-                <!-- Waiter Button Positioned Top-Left -->
                 <div id="floating-waiter" class="waiter-btn" onclick="openWaiterPrompt()">
                     🛎️ <span id="waiter-btn-text">Waiter</span>
                 </div>
@@ -315,7 +329,7 @@
 
             <div class="bottom-ui" id="bottom-ui-card">
                 <div class="dish-header">
-                    <h2 class="dish-title" id="display-name">Select a Dish</h2>
+                    <h2 class="dish-title" id="display-name">Loading Menu...</h2>
                     <p class="price" id="display-price">₹0</p>
                 </div>
                 
@@ -326,11 +340,11 @@
                 </div>
                 
                 <div class="action-row">
-                    <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart()">ADD +</button>
+                    <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">ADD +</button>
                     <div class="stepper-control" id="btn-stepper">
                         <button onclick="changeCurrentQty(-1)">-</button>
                         <span id="current-qty-display">1</span>
-                        <button onclick="changeCurrentQty(1)">+</button>
+                        <button onclick="changeCurrentQty(1); triggerHapticPop();">+</button>
                     </div>
                     <button class="btn-premium" id="btn-ar-view" onclick="viewOnTable()">View on Table 📸</button>
                 </div>
@@ -353,7 +367,6 @@
                 <button style="border:none; background:#eee; width:30px; height:30px; border-radius:50%; font-weight: bold; cursor:pointer;" onclick="toggleCart()">✕</button>
             </div>
             
-            <!-- 🔥 FIX: Scrollable Middle Container 🔥 -->
             <div class="cart-scroll-body">
                 <div class="cart-items-container" id="cart-items-list"></div>
                 
@@ -380,7 +393,6 @@
                 </div>
             </div>
 
-            <!-- Place Order button stays fixed at bottom -->
             <button class="btn-checkout" id="checkoutBtn" onclick="placeOrder()">Place Order</button>
             
         </div>
@@ -420,6 +432,49 @@
             if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
         });
 
+        // 🔥 Time-Based Greeting System 🔥
+        function updateGreeting() {
+            const hr = new Date().getHours();
+            let greet = "Good Day ☕";
+            if(hr >= 5 && hr < 12) greet = "Good Morning ☕";
+            else if(hr >= 12 && hr < 17) greet = "Good Afternoon ☀️";
+            else greet = "Good Evening 🌙";
+            document.getElementById('greeting-display').innerText = greet;
+            
+            // Smart Category sorting based on time
+            const scroll = document.getElementById('category-scroll');
+            if(hr >= 5 && hr < 12) { /* Bring Starters front */ } // Logic placeholder, default is ok for now
+        }
+        updateGreeting();
+
+        // 🔥 Haptic & Sound Setup 🔥
+        window.triggerHapticPop = () => {
+            if(navigator.vibrate) navigator.vibrate(40);
+            const audio = document.getElementById('popSound');
+            audio.currentTime = 0;
+            audio.play().catch(e => {}); // Ignore autoplay blocks
+        };
+
+        // 🔥 Flying Animation Logic 🔥
+        window.createFlyingDot = (e) => {
+            if(!e || !e.clientX) return;
+            const target = document.getElementById('cart-icon-target');
+            const targetRect = target.getBoundingClientRect();
+            
+            const dot = document.createElement('div');
+            dot.className = 'flying-dot';
+            dot.style.left = `${e.clientX - 10}px`;
+            dot.style.top = `${e.clientY - 10}px`;
+            document.body.appendChild(dot);
+            
+            setTimeout(() => {
+                dot.style.opacity = '1';
+                dot.style.transform = `translate(${targetRect.left - e.clientX + 20}px, ${targetRect.top - e.clientY + 10}px) scale(0.5)`;
+            }, 10);
+            
+            setTimeout(() => { dot.remove(); target.style.transform = 'scale(1.2)'; setTimeout(()=>target.style.transform='scale(1)', 200); }, 600);
+        };
+
         const i18n = {
             en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "Search...", trackTitle: "Order Status", trackBtn: "Track", dineIn: "🍽️ Dine-in", takeaway: "🎒 Takeaway", waiter: "Waiter", notes: "Chef Notes (e.g. Make it spicy)", upsell: "💡 Frequently Bought Together", waiterTitle: "Call Waiter", waiterCancel: "Cancel", waiterCall: "Call Now", waiterInput: "Enter Table Number" },
             hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "खोजें...", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "🍽️ यहीं खाएंगे", takeaway: "🎒 पैक करें", waiter: "वेटर", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", upsell: "💡 अक्सर साथ खरीदे जाने वाले", waiterTitle: "वेटर बुलाएं", waiterCancel: "रद्द करें", waiterCall: "कॉल करें", waiterInput: "टेबल नंबर दर्ज करें" }
@@ -446,8 +501,6 @@
             document.getElementById('waiter-btn-text').innerText = i18n[l].waiter;
             document.getElementById('cookingNotes').placeholder = i18n[l].notes;
             document.getElementById('upsell-text').innerText = i18n[l].upsell;
-            
-            // Custom Waiter Prompt
             document.getElementById('waiterTitleText').innerText = i18n[l].waiterTitle;
             document.getElementById('waiterCancelBtn').innerText = i18n[l].waiterCancel;
             document.getElementById('waiterCallBtn').innerText = i18n[l].waiterCall;
@@ -460,259 +513,137 @@
         window.startVoiceSearch = () => {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) { alert("Voice search not supported in this browser."); return; }
-            
             const recognition = new SpeechRecognition();
             recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
             const micBtn = document.getElementById('micBtn');
-            
             micBtn.classList.add('listening');
-            
+            triggerHapticPop();
             recognition.start();
-            recognition.onresult = (e) => {
-                document.getElementById('searchInput').value = e.results[0][0].transcript;
-                applyFilters();
-            };
+            recognition.onresult = (e) => { document.getElementById('searchInput').value = e.results[0][0].transcript; applyFilters(); };
             recognition.onspeechend = () => { micBtn.classList.remove('listening'); };
             recognition.onerror = () => { micBtn.classList.remove('listening'); };
         };
 
-        // 🔥 FIX: Custom Logic for Waiter Prompt 🔥
         window.openWaiterPrompt = () => {
             document.getElementById('waiterTableInput').value = '';
             document.getElementById('waiterPromptModal').classList.add('show');
+            triggerHapticPop();
         };
-
-        window.closeWaiterPrompt = () => {
-            document.getElementById('waiterPromptModal').classList.remove('show');
-        };
+        window.closeWaiterPrompt = () => { document.getElementById('waiterPromptModal').classList.remove('show'); };
 
         window.confirmCallWaiter = () => {
             const tableNo = document.getElementById('waiterTableInput').value;
-            if(!tableNo) {
-                alert(currentLang === 'hi' ? "कृपया टेबल नंबर डालें!" : "Please enter a table number!");
-                return;
-            }
-            
-            addDoc(collection(db, "waiter_calls"), { 
-                tableNumber: tableNo, 
-                status: "New", 
-                timestamp: new Date() 
-            })
-            .then(() => {
-                closeWaiterPrompt();
-                showToast(currentLang === 'hi' ? "🛎️ वेटर आ रहा है!" : "🛎️ Waiter is on the way!");
-            })
-            .catch(e => console.log(e));
+            if(!tableNo) { alert(currentLang === 'hi' ? "कृपया टेबल नंबर डालें!" : "Please enter a table number!"); return; }
+            addDoc(collection(db, "waiter_calls"), { tableNumber: tableNo, status: "New", timestamp: new Date() })
+            .then(() => { closeWaiterPrompt(); showToast(currentLang === 'hi' ? "🛎️ वेटर आ रहा है!" : "🛎️ Waiter is on the way!"); triggerHapticPop(); })
         };
 
         window.setOrderType = (type) => {
             currentOrderType = type;
             document.getElementById('btn-dinein').classList.toggle('active', type === 'Dine-in');
             document.getElementById('btn-takeaway').classList.toggle('active', type === 'Takeaway');
-            
             const tableInput = document.getElementById('tableNumber');
             const nameInput = document.getElementById('customerName');
-            
             if(type === 'Takeaway') {
-                tableInput.style.display = 'none';
-                tableInput.required = false;
-                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (पैक करने के लिए ज़रूरी) *" : "Your Name (Required for Takeaway) *";
-                nameInput.required = true;
+                tableInput.style.display = 'none'; tableInput.required = false;
+                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (पैक करने के लिए ज़रूरी) *" : "Your Name (Required for Takeaway) *"; nameInput.required = true;
             } else {
-                tableInput.style.display = 'block';
-                tableInput.required = true;
-                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (वैकल्पिक)" : "Your Name (Optional)";
-                nameInput.required = false;
+                tableInput.style.display = 'block'; tableInput.required = true;
+                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (वैकल्पिक)" : "Your Name (Optional)"; nameInput.required = false;
             }
         };
 
         window.toggleTracker = () => { document.getElementById('tracker-modal').classList.toggle('show'); };
 
-        let pzInstance = null;
-        let fsImages = [];
-        let fsCurrentIndex = 0;
-
-        window.openFullscreen = (index) => {
-            if (!currentDish || !currentDish.images) return;
-            fsImages = currentDish.images;
-            fsCurrentIndex = index;
-            document.getElementById('fs-viewer').classList.add('show');
-            updateFsImage();
-            history.pushState({ fsOpen: true }, "", "#photo");
-        };
-
+        let pzInstance = null; let fsImages = []; let fsCurrentIndex = 0;
+        window.openFullscreen = (index) => { if (!currentDish || !currentDish.images) return; fsImages = currentDish.images; fsCurrentIndex = index; document.getElementById('fs-viewer').classList.add('show'); updateFsImage(); history.pushState({ fsOpen: true }, "", "#photo"); };
         window.updateFsImage = () => {
             const img = document.getElementById('fs-img');
             if(pzInstance) { pzInstance.dispose(); pzInstance = null; }
             img.style.transform = ''; 
             img.onload = () => { pzInstance = panzoom(img, { maxZoom: 5, minZoom: 1, bounds: true, boundsPadding: 0 }); };
             img.src = fsImages[fsCurrentIndex];
-            
-            const prevBtn = document.querySelector('.fs-prev');
-            const nextBtn = document.querySelector('.fs-next');
-            if(fsImages.length <= 1) { prevBtn.classList.add('hide'); nextBtn.classList.add('hide'); } 
-            else { prevBtn.classList.remove('hide'); nextBtn.classList.remove('hide'); }
-
-            const dotsContainer = document.getElementById('fs-dots');
-            dotsContainer.innerHTML = '';
-            if(fsImages.length > 1) {
-                fsImages.forEach((_, idx) => {
-                    const dot = document.createElement('div');
-                    dot.className = `fs-dot ${idx === fsCurrentIndex ? 'active' : ''}`;
-                    dotsContainer.appendChild(dot);
-                });
-            }
+            const prevBtn = document.querySelector('.fs-prev'); const nextBtn = document.querySelector('.fs-next');
+            if(fsImages.length <= 1) { prevBtn.classList.add('hide'); nextBtn.classList.add('hide'); } else { prevBtn.classList.remove('hide'); nextBtn.classList.remove('hide'); }
+            const dotsContainer = document.getElementById('fs-dots'); dotsContainer.innerHTML = '';
+            if(fsImages.length > 1) { fsImages.forEach((_, idx) => { const dot = document.createElement('div'); dot.className = `fs-dot ${idx === fsCurrentIndex ? 'active' : ''}`; dotsContainer.appendChild(dot); }); }
         };
-
-        window.navigateFs = (direction) => {
-            fsCurrentIndex += direction;
-            if (fsCurrentIndex < 0) fsCurrentIndex = fsImages.length - 1; 
-            if (fsCurrentIndex >= fsImages.length) fsCurrentIndex = 0;   
-            updateFsImage();
-        };
-
-        window.closeFullscreen = (e) => { 
-            if(e) e.stopPropagation(); 
-            document.getElementById('fs-viewer').classList.remove('show'); 
-            if(pzInstance) { pzInstance.dispose(); pzInstance = null; }
-            if(window.location.hash === "#photo") { history.back(); }
-        };
-
-        window.addEventListener('popstate', (e) => {
-            if (document.getElementById('fs-viewer').classList.contains('show')) {
-                document.getElementById('fs-viewer').classList.remove('show');
-                if(pzInstance) { pzInstance.dispose(); pzInstance = null; }
-            }
-        });
-
-        let touchStartX = 0; let touchEndX = 0;
-        const fsViewer = document.getElementById('fs-viewer');
-        fsViewer.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
-        fsViewer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleFsSwipe(); }, {passive: true});
-
-        function handleFsSwipe() {
-            if(fsImages.length <= 1) return; 
-            let currentScale = 1;
-            if(pzInstance) currentScale = pzInstance.getTransform().scale;
-            if(currentScale > 1.1) return; 
-            const threshold = 50; 
-            if (touchEndX < touchStartX - threshold) navigateFs(1);  
-            if (touchEndX > touchStartX + threshold) navigateFs(-1); 
-        }
-
+        window.navigateFs = (direction) => { fsCurrentIndex += direction; if (fsCurrentIndex < 0) fsCurrentIndex = fsImages.length - 1; if (fsCurrentIndex >= fsImages.length) fsCurrentIndex = 0; updateFsImage(); };
+        window.closeFullscreen = (e) => { if(e) e.stopPropagation(); document.getElementById('fs-viewer').classList.remove('show'); if(pzInstance) { pzInstance.dispose(); pzInstance = null; } if(window.location.hash === "#photo") { history.back(); } };
+        
         window.toggleMedia = () => {
-            const slider = document.getElementById('photo-slider');
-            const toggleBtn = document.getElementById('media-toggle');
-            if (slider.classList.contains('hide')) {
-                slider.classList.remove('hide');
-                toggleBtn.innerHTML = '🧊 View 3D';
-            } else {
-                slider.classList.add('hide');
-                toggleBtn.innerHTML = '📸 View Photos';
-            }
+            const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle');
+            if (slider.classList.contains('hide')) { slider.classList.remove('hide'); toggleBtn.innerHTML = '🧊 View 3D'; } else { slider.classList.add('hide'); toggleBtn.innerHTML = '📸 View Photos'; }
         };
 
-        window.viewOnTable = async () => {
-            document.querySelector('#ar-viewer').activateAR();
-            if(currentDish) {
-                try { await addDoc(collection(db, "ar_views"), { dishName: currentDish.name, timestamp: new Date() }); } 
-                catch(e) { console.error("Tracker error:", e); }
-            }
-        };
+        window.viewOnTable = async () => { document.querySelector('#ar-viewer').activateAR(); if(currentDish) { try { await addDoc(collection(db, "ar_views"), { dishName: currentDish.name, timestamp: new Date() }); } catch(e){} } };
 
-        window.customAlert = function(msg, icon) {
-            document.getElementById('alertMessage').innerText = msg;
-            document.getElementById('alertIcon').innerText = icon;
-            document.getElementById('customAlert').classList.add('show');
-        }
+        window.customAlert = function(msg, icon) { document.getElementById('alertMessage').innerText = msg; document.getElementById('alertIcon').innerText = icon; document.getElementById('customAlert').classList.add('show'); triggerHapticPop(); }
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
-        let activeOrderListeners = {};
-        let activeOrderData = {};
-
+        let activeOrderListeners = {}; let activeOrderData = {};
         function listenToLiveOrder(orderId) {
             if (activeOrderListeners[orderId]) return; 
-            
             activeOrderListeners[orderId] = onSnapshot(doc(db, "orders", orderId), (d) => {
-                if(!d.exists()) return;
-                activeOrderData[orderId] = d.data();
-                renderMultiTracker(); 
+                if(!d.exists()) return; activeOrderData[orderId] = d.data(); renderMultiTracker(); 
             });
         }
 
+        // 🔥 UPDATE: VISUAL DOMINO'S TRACKER LOGIC 🔥
         function renderMultiTracker() {
             const container = document.getElementById('multi-tracker-body');
             const trackBtn = document.getElementById('btn-track-order');
             const pulse = document.getElementById('track-badge-pulse');
             
-            container.innerHTML = '';
-            let showTrackBtn = false;
-            let showPulse = false;
+            container.innerHTML = ''; let showTrackBtn = false; let showPulse = false;
             let activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
             let newActiveList = [];
 
             activeOrdersList.forEach(id => {
                 const data = activeOrderData[id];
-                if(!data) {
-                    newActiveList.push(id); 
-                    return;
-                }
+                if(!data) { newActiveList.push(id); return; }
 
-                let statusTxt = ''; let descTxt = ''; let iconTxt = ''; let color = '';
+                let isPrep = data.status === 'Preparing';
+                let isDone = data.status === 'Completed';
                 
-                if(data.status === 'New') {
-                    statusTxt = currentLang === 'hi' ? 'ऑर्डर मिल गया' : 'Order Received';
-                    descTxt = currentLang === 'hi' ? 'किचन को आपका ऑर्डर मिल गया है।' : 'Kitchen has received your order.';
-                    color = 'var(--zomato-red)'; iconTxt = '🧾'; showPulse = true; showTrackBtn = true;
-                    newActiveList.push(id);
-                } else if(data.status === 'Preparing') {
-                    statusTxt = currentLang === 'hi' ? 'तैयार हो रहा है...' : 'Preparing...';
-                    descTxt = currentLang === 'hi' ? 'आपका खाना पकाया जा रहा है!' : 'Your food is being cooked!';
-                    color = '#FF9500'; iconTxt = '👨‍🍳'; showPulse = true; showTrackBtn = true;
-                    newActiveList.push(id);
-                } else if(data.status === 'Completed') {
-                    statusTxt = currentLang === 'hi' ? 'तैयार है ✅' : 'Ready / Served ✅';
-                    descTxt = currentLang === 'hi' ? 'अपने भोजन का आनंद लें!' : 'Enjoy your meal!';
-                    color = 'var(--green)'; iconTxt = '🍽️'; showTrackBtn = true;
-                } else if(data.status === 'Cancelled') {
-                    statusTxt = currentLang === 'hi' ? 'रद्द हो गया ❌' : 'Cancelled ❌';
-                    descTxt = currentLang === 'hi' ? 'आपका ऑर्डर रद्द कर दिया गया है।' : 'Your order was cancelled.';
-                    color = 'var(--text-sub)'; iconTxt = '😔'; showTrackBtn = true;
+                if(data.status !== 'Cancelled' && !isDone) { showPulse = true; showTrackBtn = true; newActiveList.push(id); }
+                else if (isDone) showTrackBtn = true; // Stay in UI until closed
+                
+                if(data.status === 'Cancelled') {
+                    container.innerHTML += `<div style="padding:15px; border:1px solid #eee; border-radius:12px; margin-bottom:10px; color:var(--text-sub);">Order Cancelled ❌</div>`;
+                    return;
                 }
 
                 let itemsList = data.items.map(i => `${i.qty}x ${i.name}`).join(', ');
 
                 container.innerHTML += `
                     <div style="background: #fff; border: 1px solid var(--border-light); border-radius: 16px; padding: 15px; margin-bottom: 15px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px dashed var(--border-light); padding-bottom:10px;">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <div style="font-size: 24px;">${iconTxt}</div>
-                                <div style="font-weight:800; color:${color}; font-size:16px;">${statusTxt}</div>
-                            </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                            <div style="font-weight:800; color:var(--text-main); font-size:14px;">Order #${id.slice(-4)}</div>
                             <div style="font-size:12px; font-weight:800; color:var(--text-sub);">₹${data.totalAmount}</div>
                         </div>
-                        <div style="font-size: 13px; color: var(--text-main); font-weight: 600;">
-                            ${itemsList}
-                        </div>
-                        <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; font-weight: 500;">
-                            ${descTxt}
+                        <div style="font-size: 12px; color: var(--text-main); font-weight: 600; margin-bottom: 15px;">${itemsList}</div>
+                        
+                        <!-- Visual Stepper -->
+                        <div class="visual-tracker">
+                            <div class="tracker-step ${data.status !== 'Cancelled' ? 'done' : ''}">
+                                <div class="step-icon">✓</div><div class="step-text">Placed</div>
+                            </div>
+                            <div class="tracker-step ${isPrep || isDone ? 'done' : (data.status === 'New' ? '' : 'active')}">
+                                <div class="step-icon">👨‍🍳</div><div class="step-text">Preparing</div>
+                            </div>
+                            <div class="tracker-step ${isDone ? 'done' : (isPrep ? 'active' : '')}">
+                                <div class="step-icon">🍽️</div><div class="step-text">Ready</div>
+                            </div>
                         </div>
                     </div>
                 `;
             });
 
             localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
-
-            if(showTrackBtn && activeOrdersList.length > 0) {
-                trackBtn.classList.add('show');
-                pulse.style.display = showPulse ? 'block' : 'none';
-            } else {
-                trackBtn.classList.remove('show');
-            }
-            
-            if(container.innerHTML === '') {
-                container.innerHTML = `<p style="color:var(--text-sub); font-size:13px; font-weight:600;">${currentLang === 'hi' ? "कोई एक्टिव ऑर्डर नहीं है।" : "No active orders."}</p>`;
-            }
+            if(showTrackBtn && activeOrdersList.length > 0) { trackBtn.classList.add('show'); pulse.style.display = showPulse ? 'block' : 'none'; } 
+            else { trackBtn.classList.remove('show'); }
+            if(container.innerHTML === '') container.innerHTML = `<p style="color:var(--text-sub); font-size:13px; font-weight:600;">No active orders.</p>`;
         }
 
         const savedOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
@@ -725,7 +656,7 @@
                 let counts = {};
                 snap.forEach(d => { d.data().items.forEach(i => { counts[i.id] = (counts[i.id] || 0) + i.qty; }); });
                 trendingIds = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 5);
-            } catch(e) { console.log(e); }
+            } catch(e) {}
         }
 
         fetchTrendingDishes().then(() => {
@@ -746,55 +677,33 @@
             });
         });
 
-        window.filterCategory = function(cat, element) {
-            activeCategory = cat;
-            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-            element.classList.add('active');
-            applyFilters();
-        };
+        window.filterCategory = function(cat, element) { activeCategory = cat; document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); element.classList.add('active'); applyFilters(); };
 
         window.applyFilters = function() {
             const queryText = document.getElementById('searchInput').value.toLowerCase();
             let filtered = allDishes;
-            
             if (activeCategory === 'Veg Only') filtered = filtered.filter(d => (d.emoji && d.emoji.includes('🟢')) || d.category === 'Veg' || d.category === 'Desserts' || d.category === 'Drinks');
             else if (activeCategory === 'Non-Veg Only') filtered = filtered.filter(d => (d.emoji && d.emoji.includes('🔴')) || d.category === 'Non-Veg');
             else if (activeCategory === 'Trending') filtered = filtered.filter(d => trendingIds.includes(d.id));
             else if (activeCategory !== 'All') filtered = filtered.filter(dish => dish.category === activeCategory);
-            
             if (queryText) filtered = filtered.filter(dish => dish.name.toLowerCase().includes(queryText));
             renderSidebar(filtered);
         };
 
         window.renderSidebar = function(dishesToRender) {
-            const sidebar = document.getElementById('sidebar-menu');
-            sidebar.innerHTML = '';
+            const sidebar = document.getElementById('sidebar-menu'); sidebar.innerHTML = '';
             if(dishesToRender.length === 0) { sidebar.innerHTML = '<div style="padding:20px; font-size:10px; color:#999; text-align:center;">No match</div>'; return; }
             
             const groupedDishes = {};
-            dishesToRender.forEach(dish => {
-                const cat = activeCategory === 'Trending' ? 'TRENDING' : (dish.category || "Uncategorized");
-                if (!groupedDishes[cat]) groupedDishes[cat] = [];
-                groupedDishes[cat].push(dish);
-            });
+            dishesToRender.forEach(dish => { const cat = activeCategory === 'Trending' ? 'TRENDING' : (dish.category || "Uncategorized"); if (!groupedDishes[cat]) groupedDishes[cat] = []; groupedDishes[cat].push(dish); });
 
             for (let cat in groupedDishes) {
-                const header = document.createElement('div');
-                header.style.padding = "15px 5px 5px 5px"; header.style.fontSize = "10px"; header.style.fontWeight = "800";
-                header.style.color = "var(--text-sub)"; header.style.textAlign = "center"; header.style.borderBottom = "1px solid #f0f0f0";
-                header.innerText = cat.toUpperCase();
-                sidebar.appendChild(header);
-
+                const header = document.createElement('div'); header.style.padding = "15px 5px 5px 5px"; header.style.fontSize = "10px"; header.style.fontWeight = "800"; header.style.color = "var(--text-sub)"; header.style.textAlign = "center"; header.style.borderBottom = "1px solid #f0f0f0"; header.innerText = cat.toUpperCase(); sidebar.appendChild(header);
                 groupedDishes[cat].forEach((data) => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = `side-item ${currentDish && currentDish.id === data.id ? 'active' : ''}`;
+                    const itemDiv = document.createElement('div'); itemDiv.className = `side-item ${currentDish && currentDish.id === data.id ? 'active' : ''}`;
                     let trendTag = trendingIds.includes(data.id) ? '<div class="best-seller-tag">⭐ Best Seller</div>' : '';
-                    
                     itemDiv.innerHTML = `<div class="side-emoji">${data.emoji || "🍲"}</div><div class="side-name">${data.name}<br>${trendTag}</div>`;
-                    itemDiv.onclick = () => {
-                        document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active'));
-                        itemDiv.classList.add('active'); loadDish(data);
-                    };
+                    itemDiv.onclick = () => { document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active')); itemDiv.classList.add('active'); loadDish(data); };
                     sidebar.appendChild(itemDiv);
                 });
             }
@@ -802,7 +711,6 @@
 
         function loadDish(data) {
             currentDish = data; currentVariant = 'full'; 
-            
             let catBadgeHtml = '';
             if(data.category) {
                 let badgeClass = `cat-${data.category.replace(' ', '-')}`; let icon = '';
@@ -810,75 +718,53 @@
                 else if(data.category === 'Drinks') icon = '🥤 Drinks'; else if(data.category === 'Desserts') icon = '🍰 Desserts';
                 catBadgeHtml = `<span class="main-cat-badge ${badgeClass}">${icon}</span>`;
             }
-
             document.getElementById('display-name').innerHTML = `${data.name} ${catBadgeHtml}`;
             document.getElementById('display-price').innerText = '₹' + data.price;
             
             const variantBox = document.getElementById('variant-box');
-            const btnHalf = document.getElementById('btn-half');
-            const btnFull = document.getElementById('btn-full');
-            const btnPiece = document.getElementById('btn-piece');
-            
-            btnHalf.style.display = data.priceHalf ? 'block' : 'none';
-            btnPiece.style.display = data.pricePiece ? 'block' : 'none';
+            const btnHalf = document.getElementById('btn-half'); const btnFull = document.getElementById('btn-full'); const btnPiece = document.getElementById('btn-piece');
+            btnHalf.style.display = data.priceHalf ? 'block' : 'none'; btnPiece.style.display = data.pricePiece ? 'block' : 'none';
+            if(data.priceHalf || data.pricePiece) { variantBox.classList.remove('hide'); btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active'); } else { variantBox.classList.add('hide'); }
 
-            if(data.priceHalf || data.pricePiece) {
-                variantBox.classList.remove('hide');
-                btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active');
-            } else { variantBox.classList.add('hide'); }
+            document.querySelector('.progress-bar').classList.remove('hide'); updateBar.style.width = '0%'; viewer.src = data.modelUrl;
 
-            document.querySelector('.progress-bar').classList.remove('hide');
-            updateBar.style.width = '0%';
-            viewer.src = data.modelUrl;
-
-            const slider = document.getElementById('photo-slider');
-            const toggleBtn = document.getElementById('media-toggle');
-            slider.innerHTML = '';
-            
+            const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle'); slider.innerHTML = '';
             if (data.images && data.images.length > 0) {
-                data.images.forEach((imgUrl, idx) => {
-                    const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img';
-                    img.onclick = () => openFullscreen(idx); slider.appendChild(img);
-                });
+                data.images.forEach((imgUrl, idx) => { const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.onclick = () => openFullscreen(idx); slider.appendChild(img); });
                 slider.classList.remove('hide'); toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '🧊 View 3D';
             } else { slider.classList.add('hide'); toggleBtn.classList.add('hide'); }
-
             checkCartForCurrentDish();
         }
 
         window.selectVariant = (type) => {
-            currentVariant = type;
-            document.querySelectorAll('.var-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + type).classList.add('active');
-            
+            currentVariant = type; document.querySelectorAll('.var-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active');
             if(type === 'half') document.getElementById('display-price').innerText = '₹' + currentDish.priceHalf;
             else if(type === 'piece') document.getElementById('display-price').innerText = '₹' + currentDish.pricePiece;
             else document.getElementById('display-price').innerText = '₹' + currentDish.price;
-            
             checkCartForCurrentDish(); 
         };
 
         function getCartKey() { return `${currentDish.id}_${currentVariant}`; }
 
         function checkCartForCurrentDish() {
-            const key = getCartKey();
-            const btnAdd = document.getElementById('btn-add-new');
-            const btnStepper = document.getElementById('btn-stepper');
-            
-            if(cart[key] && cart[key].qty > 0) {
-                btnAdd.style.display = 'none'; btnStepper.style.display = 'flex';
-                document.getElementById('current-qty-display').innerText = cart[key].qty;
-            } else { btnAdd.style.display = 'block'; btnStepper.style.display = 'none'; }
+            const key = getCartKey(); const btnAdd = document.getElementById('btn-add-new'); const btnStepper = document.getElementById('btn-stepper');
+            if(cart[key] && cart[key].qty > 0) { btnAdd.style.display = 'none'; btnStepper.style.display = 'flex'; document.getElementById('current-qty-display').innerText = cart[key].qty; } 
+            else { btnAdd.style.display = 'block'; btnStepper.style.display = 'none'; }
         }
 
-        window.addCurrentToCart = () => {
+        // 🔥 FIX: Added Fly Animation Call Here 🔥
+        window.addCurrentToCart = (e) => {
             const key = getCartKey();
             let price = currentDish.price; let variantText = '';
             if(currentVariant === 'half') { price = currentDish.priceHalf; variantText = '(Half)'; }
             if(currentVariant === 'piece') { price = currentDish.pricePiece; variantText = '(Per Piece)'; }
 
             cart[key] = { id: currentDish.id, name: currentDish.name, price: price, variant: variantText, qty: 1 };
+            
+            triggerHapticPop();
+            createFlyingDot(e); // Flying Animation
             showToast(currentLang === 'hi' ? "✅ कार्ट में जुड़ गया!" : "✅ Added to Cart!");
+            
             updateGlobalCartUI(); checkCartForCurrentDish();
         }
 
@@ -886,59 +772,36 @@
             const dish = allDishes.find(d => d.id === id);
             if(dish) {
                 const key = `${dish.id}_full`;
-                if(cart[key]) cart[key].qty++;
-                else cart[key] = { id: dish.id, name: dish.name, price: dish.price, variant: '', qty: 1 };
-                showToast("✅ Added!");
-                updateGlobalCartUI();
-                renderCartModal();
+                if(cart[key]) cart[key].qty++; else cart[key] = { id: dish.id, name: dish.name, price: dish.price, variant: '', qty: 1 };
+                triggerHapticPop(); showToast("✅ Added!"); updateGlobalCartUI(); renderCartModal();
             }
         };
 
         window.changeCurrentQty = (delta) => { const key = getCartKey(); changeCartQty(key, delta); };
-
-        window.changeCartQty = (key, delta) => {
-            if(cart[key]) {
-                cart[key].qty += delta;
-                if(cart[key].qty <= 0) delete cart[key]; 
-            }
-            updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); 
-        };
+        window.changeCartQty = (key, delta) => { if(cart[key]) { cart[key].qty += delta; if(cart[key].qty <= 0) delete cart[key]; } triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
 
         function updateGlobalCartUI() {
-            const floatingBar = document.getElementById('floating-checkout');
-            const bottomUiCard = document.getElementById('bottom-ui-card');
-            
+            const floatingBar = document.getElementById('floating-checkout'); const bottomUiCard = document.getElementById('bottom-ui-card');
             let totalItems = 0; let totalPrice = 0;
             for (let key in cart) { totalItems += cart[key].qty; totalPrice += (cart[key].price * cart[key].qty); }
-
             document.getElementById('cart-count').innerText = totalItems;
             
             if(totalItems > 0) {
                 let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
                 document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
                 document.getElementById('float-total').innerText = '₹' + totalPrice;
-                floatingBar.classList.add('show'); 
-                bottomUiCard.classList.add('with-cart');
+                floatingBar.classList.add('show'); bottomUiCard.classList.add('with-cart');
             } else {
-                floatingBar.classList.remove('show'); 
-                bottomUiCard.classList.remove('with-cart');
+                floatingBar.classList.remove('show'); bottomUiCard.classList.remove('with-cart');
             }
         }
 
         function renderUpsell() {
-            const upsellContainer = document.getElementById('upsell-container');
-            const upsellDiv = document.getElementById('upsell-items');
-            
-            if(Object.keys(cart).length === 0) { 
-                upsellContainer.style.display = 'none'; 
-                return; 
-            }
-
+            const upsellContainer = document.getElementById('upsell-container'); const upsellDiv = document.getElementById('upsell-items');
+            if(Object.keys(cart).length === 0) { upsellContainer.style.display = 'none'; return; }
             let suggestions = allDishes.filter(d => (d.category === 'Drinks' || d.category === 'Breads' || d.category === 'Desserts') && !Object.values(cart).find(c => c.id === d.id));
-            
             if(suggestions.length > 0) {
-                suggestions = suggestions.sort(() => 0.5 - Math.random()).slice(0, 4);
-                upsellDiv.innerHTML = '';
+                suggestions = suggestions.sort(() => 0.5 - Math.random()).slice(0, 4); upsellDiv.innerHTML = '';
                 suggestions.forEach(s => {
                     upsellDiv.innerHTML += `
                         <div class="upsell-card">
@@ -950,20 +813,12 @@
                     `;
                 });
                 upsellContainer.style.display = 'block';
-            } else {
-                upsellContainer.style.display = 'none';
-            }
+            } else { upsellContainer.style.display = 'none'; }
         }
 
-        window.toggleCart = () => {
-            const modal = document.getElementById('cart-modal');
-            if(!modal.classList.contains('show')) {
-                renderCartModal();
-                renderUpsell(); 
-            }
-            modal.classList.toggle('show');
-        };
+        window.toggleCart = () => { const modal = document.getElementById('cart-modal'); if(!modal.classList.contains('show')) { renderCartModal(); renderUpsell(); } modal.classList.toggle('show'); };
 
+        // 🔥 FIX: Swipe-to-Delete Implementation 🔥
         function renderCartModal() {
             const list = document.getElementById('cart-items-list');
             list.innerHTML = ''; let totalPrice = 0; let isEmpty = true;
@@ -971,24 +826,59 @@
             for (let key in cart) {
                 isEmpty = false; const item = cart[key]; totalPrice += (item.price * item.qty);
                 list.innerHTML += `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <b style="color:var(--text-main); font-size:14px;">${item.name}</b> <span style="font-size:12px; color:var(--text-sub);">${item.variant}</span>
-                            <div style="font-weight:700; color:var(--text-sub); margin-top:3px;">₹${item.price} x ${item.qty} = ₹${item.price * item.qty}</div>
+                    <div class="swipe-wrap">
+                        <div class="swipe-content">
+                            <div class="cart-item-info">
+                                <b style="color:var(--text-main); font-size:14px;">${item.name}</b> <span style="font-size:12px; color:var(--text-sub);">${item.variant}</span>
+                                <div style="font-weight:700; color:var(--text-sub); margin-top:3px;">₹${item.price} x ${item.qty} = ₹${item.price * item.qty}</div>
+                            </div>
+                            <div class="cart-item-qty">
+                                <button onclick="changeCartQty('${key}', -1)">-</button><span>${item.qty}</span><button onclick="changeCartQty('${key}', 1)">+</button>
+                            </div>
                         </div>
-                        <div class="cart-item-qty">
-                            <button onclick="changeCartQty('${key}', -1)">-</button><span>${item.qty}</span><button onclick="changeCartQty('${key}', 1)">+</button>
-                        </div>
+                        <div class="swipe-action" onclick="deleteCartItem('${key}')">🗑️</div>
                     </div>`;
             }
-            if(isEmpty) list.innerHTML = '<p style="text-align:center; color:#888;">Your cart is empty!</p>';
+            if(isEmpty) list.innerHTML = '<p style="text-align:center; color:#888; font-weight:600; margin-top:20px;">Your cart is empty!</p>';
             document.getElementById('bill-final').innerText = '₹' + totalPrice;
         }
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg; toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 1500);
+        window.deleteCartItem = (key) => { delete cart[key]; triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
+
+        function showToast(msg) { const toast = document.getElementById('toast'); toast.innerText = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1500); }
+
+        // 🔥 NEW: Confetti Effect Logic 🔥
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            let pieces = [];
+            const colors = ['#E23744', '#28A745', '#FF9500', '#007AFF', '#FFD700'];
+            for(let i=0; i<100; i++) {
+                pieces.push({
+                    x: canvas.width/2, y: canvas.height/2 + 100,
+                    vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 1) * 20 - 5,
+                    size: Math.random() * 10 + 5, color: colors[Math.floor(Math.random() * colors.length)],
+                    rot: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+                pieces.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; // Gravity
+                    p.rot += p.rotSpeed;
+                    if(p.y < canvas.height) {
+                        active = true;
+                        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
+                        ctx.fillStyle = p.color; ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+                        ctx.restore();
+                    }
+                });
+                if(active) requestAnimationFrame(animate); else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            animate();
+            triggerHapticPop();
         }
 
         const restaurantWhatsApp = "917870276466"; 
@@ -1001,29 +891,17 @@
             const custPhone = document.getElementById('customerPhone').value;
             const notes = document.getElementById('cookingNotes').value; 
 
-            if(currentOrderType === 'Dine-in' && !tableNo) { 
-                customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; 
-            }
-            if(currentOrderType === 'Takeaway' && !custName) { 
-                customAlert(currentLang === 'hi' ? "कृपया पैक करने के लिए अपना नाम लिखें!" : "Please enter your name for takeaway!", "🎒"); return; 
-            }
+            if(currentOrderType === 'Dine-in' && !tableNo) { customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; }
+            if(currentOrderType === 'Takeaway' && !custName) { customAlert(currentLang === 'hi' ? "कृपया पैक करने के लिए अपना नाम लिखें!" : "Please enter your name for takeaway!", "🎒"); return; }
 
             const btn = document.getElementById('checkoutBtn');
             btn.innerText = "Processing..."; btn.style.background = "#FFB75E"; btn.disabled = true;
-            
-            const modalContent = document.querySelector('.cart-content');
-            modalContent.style.opacity = "0.5";
+            const modalContent = document.querySelector('.cart-content'); modalContent.style.opacity = "0.5";
 
             let orderItems = []; let grandTotal = 0;
-            
             let orderId = Math.floor(1000 + Math.random() * 9000);
             let waText = `*[ NEW ORDER ]*\n`;
-            
-            if(currentOrderType === 'Dine-in') {
-                waText += `*Type:* Dine-in | *Table:* ${tableNo}\n`;
-            } else {
-                waText += `*Type:* Takeaway\n`;
-            }
+            if(currentOrderType === 'Dine-in') waText += `*Type:* Dine-in | *Table:* ${tableNo}\n`; else waText += `*Type:* Takeaway\n`;
             waText += `*ID:* #ORD-${orderId}\n\n`;
 
             if(custName || custPhone) {
@@ -1032,71 +910,42 @@
                 if(custPhone) waText += `Phone: ${custPhone}\n`;
                 waText += `\n`; 
             }
-            
-            if(notes) {
-                waText += `*Chef Notes:* _${notes}_\n\n`;
-            }
-
+            if(notes) waText += `*Chef Notes:* _${notes}_\n\n`;
             waText += `*Order Details:*\n`;
 
             for(let k in cart) { 
-                orderItems.push(cart[k]); 
-                grandTotal += (cart[k].price * cart[k].qty); 
-                
+                orderItems.push(cart[k]); grandTotal += (cart[k].price * cart[k].qty); 
                 let variantText = cart[k].variant ? ` ${cart[k].variant}` : '';
                 waText += `${cart[k].qty} x ${cart[k].name}${variantText} = ₹${cart[k].price * cart[k].qty}\n`;
             }
             
-            waText += `=====================\n`;
-            waText += `*Total Amount: ₹${grandTotal}*\n`;
-            waText += `=====================\n`;
-            waText += `_Powered by NextPlate_`;
-
+            waText += `=====================\n*Total Amount: ₹${grandTotal}*\n=====================\n_Powered by NextPlate_`;
             let finalWaText = encodeURIComponent(waText); 
 
             try {
                 const docRef = await addDoc(collection(db, "orders"), { 
-                    orderType: currentOrderType, 
-                    tableNumber: tableNo || "N/A", 
-                    customerName: custName || "N/A",
-                    customerPhone: custPhone || "N/A",
-                    chefNotes: notes || "None",
-                    items: orderItems, 
-                    totalAmount: grandTotal, 
-                    status: 'New', 
-                    paymentMethod: 'Cash', 
-                    timestamp: new Date() 
+                    orderType: currentOrderType, tableNumber: tableNo || "N/A", customerName: custName || "N/A", customerPhone: custPhone || "N/A",
+                    chefNotes: notes || "None", items: orderItems, totalAmount: grandTotal, status: 'New', paymentMethod: 'Cash', timestamp: new Date() 
                 });
                 
                 let activeOrders = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]');
-                activeOrders.push(docRef.id);
-                localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
-                
+                activeOrders.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
                 listenToLiveOrder(docRef.id); 
 
-                cart = {}; 
-                document.getElementById('tableNumber').value = '';
-                document.getElementById('customerName').value = '';
-                document.getElementById('customerPhone').value = '';
-                document.getElementById('cookingNotes').value = '';
+                cart = {}; document.getElementById('tableNumber').value = ''; document.getElementById('customerName').value = '';
+                document.getElementById('customerPhone').value = ''; document.getElementById('cookingNotes').value = '';
                 
                 updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
                 modalContent.style.opacity = "1";
 
-                showToast("🎉 Order Placed!");
-                setTimeout(() => {
-                    window.open(`https://wa.me/${restaurantWhatsApp}?text=${finalWaText}`, '_blank');
-                }, 500);
+                launchConfetti(); // 🎉 Success Confetti 🎉
+                setTimeout(() => { window.open(`https://wa.me/${restaurantWhatsApp}?text=${finalWaText}`, '_blank'); }, 1500);
 
             } catch (e) { 
-                console.error(e); 
-                modalContent.style.opacity = "1";
-                customAlert("Order Failed. Please check your connection and try again.", "❌"); 
+                console.error(e); modalContent.style.opacity = "1"; customAlert("Order Failed. Please check your connection and try again.", "❌"); 
             }
 
-            btn.innerText = currentLang === 'hi' ? i18n.hi.place : i18n.en.place;
-            btn.style.background = "var(--green)"; 
-            btn.disabled = false;
+            btn.innerText = currentLang === 'hi' ? i18n.hi.place : i18n.en.place; btn.style.background = "var(--green)"; btn.disabled = false;
         };
     </script>
 </body>
