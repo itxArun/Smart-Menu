@@ -10,10 +10,12 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
-    
     <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
 
     <style>
+        /* =========================================
+           VARIABLES & RESET
+        ========================================= */
         :root { 
             --bg-light: #F8F9FA; 
             --white: #FFFFFF; 
@@ -37,6 +39,9 @@
             overflow: hidden; 
         }
         
+        /* =========================================
+           HEADER SECTION
+        ========================================= */
         .header { 
             flex-shrink: 0; 
             padding: 12px 20px; 
@@ -65,6 +70,7 @@
             margin-top: 2px; 
         }
         
+        /* Track Order Button */
         .track-icon { 
             position: relative; 
             font-size: 20px; 
@@ -81,8 +87,13 @@
             border: 1px solid rgba(255,149,0,0.3); 
         }
 
-        .track-icon.show { display: flex; }
-        .track-icon:active { transform: scale(0.9); }
+        .track-icon.show { 
+            display: flex; 
+        }
+
+        .track-icon:active { 
+            transform: scale(0.9); 
+        }
         
         .track-pulse { 
             position: absolute; 
@@ -101,6 +112,7 @@
             100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } 
         }
 
+        /* Language Switcher */
         .lang-switch { 
             display: flex; 
             background: #F1F1F6; 
@@ -127,6 +139,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
         }
         
+        /* Cart Icon */
         .cart-icon { 
             position: relative; 
             font-size: 22px; 
@@ -138,7 +151,9 @@
             transition: transform 0.2s; 
         }
 
-        .cart-icon:active { transform: scale(0.9); }
+        .cart-icon:active { 
+            transform: scale(0.9); 
+        }
         
         .cart-badge { 
             position: absolute; 
@@ -156,6 +171,7 @@
             align-items: center; 
         }
         
+        /* Flying Dot Animation */
         .flying-dot { 
             position: fixed; 
             width: 20px; 
@@ -169,6 +185,9 @@
             box-shadow: 0 4px 10px rgba(226,55,68,0.5); 
         }
 
+        /* =========================================
+           CATEGORIES & SIDEBAR
+        ========================================= */
         .category-scroll { 
             flex-shrink: 0; 
             display: flex; 
@@ -181,7 +200,9 @@
             z-index: 15; 
         }
 
-        .category-scroll::-webkit-scrollbar { display: none; }
+        .category-scroll::-webkit-scrollbar { 
+            display: none; 
+        }
         
         .cat-pill { 
             background: #F1F1F6; 
@@ -205,7 +226,9 @@
             box-shadow: 0 2px 8px rgba(226,55,68,0.15);
         }
 
-        .cat-pill:active { transform: scale(0.95); }
+        .cat-pill:active { 
+            transform: scale(0.95); 
+        }
 
         .app-layout { 
             display: flex; 
@@ -225,8 +248,11 @@
             position: relative; 
         }
 
-        .sidebar::-webkit-scrollbar { display: none; }
+        .sidebar::-webkit-scrollbar { 
+            display: none; 
+        }
         
+        /* Search Box with Embedded Mic */
         .search-box { 
             position: sticky; 
             top: 0; 
@@ -290,6 +316,7 @@
             100% { transform: translateY(-50%) scale(1); } 
         }
 
+        /* Sidebar Items */
         .side-item { 
             padding: 15px 5px; 
             text-align: center; 
@@ -300,7 +327,9 @@
             position: relative;
         }
 
-        .side-item:active { transform: scale(0.9); }
+        .side-item:active { 
+            transform: scale(0.9); 
+        }
         
         .side-item.active { 
             border-left-color: var(--zomato-red); 
@@ -333,6 +362,7 @@
             letter-spacing: 0.2px;
         }
 
+        /* Skeleton Loading Effect */
         .skeleton { 
             background: #e0e0e0; 
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); 
@@ -346,6 +376,9 @@
             100% { background-position: -200% 0; } 
         }
 
+        /* =========================================
+           MAIN CONTENT & VIEWER
+        ========================================= */
         .main-content { 
             flex: 1; 
             display: flex; 
@@ -381,7 +414,9 @@
             overflow: hidden; 
         }
 
-        .progress-bar.hide { visibility: hidden; }
+        .progress-bar.hide { 
+            visibility: hidden; 
+        }
 
         .update-bar { 
             background: var(--zomato-red); 
@@ -405,6 +440,7 @@
         }
 
         .photo-slider::-webkit-scrollbar { display: none; }
+        
         .photo-slider.hide { display: none; }
 
         .slide-img { 
@@ -436,6 +472,7 @@
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
 
+        /* Floating Action Buttons */
         .waiter-btn { 
             position: absolute; 
             top: 15px; 
@@ -458,6 +495,31 @@
 
         .waiter-btn:active { transform: scale(0.95); }
 
+        .jukebox-btn { 
+            position: absolute; 
+            bottom: 15px; 
+            right: 15px; 
+            background: #007AFF; 
+            color: white; 
+            border: none; 
+            padding: 10px 16px; 
+            border-radius: 50px; 
+            font-size: 13px; 
+            font-weight: 800; 
+            z-index: 10; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0,122,255,0.3); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: 0.2s;
+        }
+
+        .jukebox-btn:active { transform: scale(0.95); }
+
+        /* =========================================
+           FULLSCREEN IMAGE VIEWER
+        ========================================= */
         .fullscreen-viewer { 
             position: fixed; 
             top: 0; 
@@ -584,6 +646,9 @@
             transform: scale(1.3); 
         }
 
+        /* =========================================
+           BOTTOM UI (DISH DETAILS & ADD)
+        ========================================= */
         .bottom-ui { 
             flex-shrink: 0; 
             background: #ffffff; 
@@ -719,6 +784,7 @@
             box-shadow: 0 4px 10px rgba(226, 55, 68, 0.2); 
         }
         
+        /* Floating View Cart Bar */
         .floating-checkout { 
             position: fixed; 
             bottom: -100px; 
@@ -756,6 +822,9 @@
             font-weight: 800; 
         }
 
+        /* =========================================
+           CART & TRACKER MODALS
+        ========================================= */
         .cart-modal { 
             position: fixed; 
             top: 0; 
@@ -821,6 +890,7 @@
             gap: 10px; 
         }
 
+        /* Swipe to Delete Styling */
         .swipe-wrap { 
             overflow-x: auto; 
             scroll-snap-type: x mandatory; 
@@ -888,6 +958,21 @@
             padding: 0 5px; 
         }
 
+        /* Smart Upsell Box */
+        .upsell-card { 
+            min-width: 110px; 
+            background: var(--white); 
+            padding: 10px; 
+            border-radius: 12px; 
+            text-align: center; 
+            border: 1px solid var(--border-light); 
+            flex-shrink: 0; 
+            display:flex; 
+            flex-direction:column; 
+            align-items:center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
         .bill-details { 
             background: #F8F9FA; 
             padding: 15px; 
@@ -921,6 +1006,74 @@
 
         .btn-checkout:active { transform: scale(0.96); }
         
+        /* Order Tracker Steps */
+        .visual-tracker { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: relative; 
+            margin: 20px 10px; 
+        }
+
+        .visual-tracker::before { 
+            content: ''; 
+            position: absolute; 
+            top: 14px; 
+            left: 10%; 
+            right: 10%; 
+            height: 3px; 
+            background: var(--border-light); 
+            z-index: 1; 
+        }
+
+        .tracker-step { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            z-index: 2; 
+            flex: 1; 
+            gap: 6px; 
+        }
+
+        .step-icon { 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+            background: var(--border-light); 
+            color: var(--white); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 14px; 
+            font-weight: bold; 
+            transition: 0.3s; 
+        }
+
+        .step-text { 
+            font-size: 10px; 
+            font-weight: 700; 
+            color: var(--text-sub); 
+        }
+
+        .tracker-step.done .step-icon { background: var(--success); }
+        .tracker-step.done .step-text { color: var(--success); }
+        
+        .tracker-step.active .step-icon { 
+            background: var(--warning); 
+            animation: pulseStep 1.5s infinite; 
+        }
+
+        .tracker-step.active .step-text { color: var(--warning); }
+        
+        @keyframes pulseStep { 
+            0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); } 
+            70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } 
+        }
+
+        /* =========================================
+           ALERTS & INPUTS
+        ========================================= */
         .toast { 
             position: fixed; 
             top: 120px; 
@@ -1051,79 +1204,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
         }
 
-        .upsell-card { 
-            min-width: 110px; 
-            background: var(--white); 
-            padding: 10px; 
-            border-radius: 12px; 
-            text-align: center; 
-            border: 1px solid var(--border-light); 
-            flex-shrink: 0; 
-            display:flex; 
-            flex-direction:column; 
-            align-items:center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        
-        .visual-tracker { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: relative; 
-            margin: 20px 10px; 
-        }
-
-        .visual-tracker::before { 
-            content: ''; 
-            position: absolute; 
-            top: 14px; 
-            left: 10%; 
-            right: 10%; 
-            height: 3px; 
-            background: var(--border-light); 
-            z-index: 1; 
-        }
-
-        .tracker-step { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            z-index: 2; 
-            flex: 1; 
-            gap: 6px; 
-        }
-
-        .step-icon { 
-            width: 30px; 
-            height: 30px; 
-            border-radius: 50%; 
-            background: var(--border-light); 
-            color: var(--white); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-size: 14px; 
-            font-weight: bold; 
-            transition: 0.3s; 
-        }
-
-        .step-text { 
-            font-size: 10px; 
-            font-weight: 700; 
-            color: var(--text-sub); 
-        }
-
-        .tracker-step.done .step-icon { background: var(--success); }
-        .tracker-step.done .step-text { color: var(--success); }
-        .tracker-step.active .step-icon { background: var(--warning); animation: pulseStep 1.5s infinite; }
-        .tracker-step.active .step-text { color: var(--warning); }
-        
-        @keyframes pulseStep { 
-            0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); } 
-            70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); } 
-            100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } 
-        }
-
         #confetti-canvas { 
             position: fixed; 
             top: 0; 
@@ -1134,6 +1214,9 @@
             z-index: 9999; 
         }
 
+        /* =========================================
+           LOADING SCREEN
+        ========================================= */
         #premium-loader { 
             position: fixed; 
             top: 0; 
@@ -1192,7 +1275,6 @@
             }, 1200); 
         });
         
-        // Backup safety check just in case window load is delayed
         setTimeout(function() {
             let loader = document.getElementById("premium-loader");
             if (loader && loader.style.display !== "none") {
@@ -1222,7 +1304,8 @@
     </div>
 
     <div class="fullscreen-viewer" id="fs-viewer">
-        <div class="fs-bg" onclick="closeFullscreen(event)"></div> <button class="fs-close" onclick="closeFullscreen(event)">✕</button>
+        <div class="fs-bg" onclick="closeFullscreen(event)"></div> 
+        <button class="fs-close" onclick="closeFullscreen(event)">✕</button>
         <button class="fs-nav fs-prev" onclick="navigateFs(-1)">&#10094;</button>
         <button class="fs-nav fs-next" onclick="navigateFs(1)">&#10095;</button>
         <div class="fs-img-container"><img id="fs-img" src="" alt="Full Screen"></div>
@@ -1245,6 +1328,19 @@
             <div style="display: flex; gap: 10px;">
                 <button style="background: #F1F1F6; color: var(--text-main); flex:1; padding: 12px; border-radius:12px; border:none; font-weight:bold; cursor:pointer;" onclick="closeWaiterPrompt()" id="waiterCancelBtn">Cancel</button>
                 <button style="background: var(--zomato-red); color: white; flex:1; padding: 12px; border-radius:12px; border:none; font-weight:bold; cursor:pointer;" onclick="confirmCallWaiter()" id="waiterCallBtn">Call Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="custom-alert" id="jukeboxModal">
+        <div class="alert-box">
+            <div class="alert-icon">🎵</div>
+            <h3 id="jukeTitleText">Request a Song</h3>
+            <input type="text" id="jukeSongInput" class="input-field" placeholder="Song Name (e.g. Tum Hi Ho)" style="margin-bottom: 10px; text-align: center;">
+            <input type="number" id="jukeTableInput" class="input-field" placeholder="Your Table Number" style="margin-bottom: 20px; text-align: center;">
+            <div style="display: flex; gap: 10px;">
+                <button style="background: #F1F1F6; color: var(--text-main); flex:1; padding: 12px; border-radius:12px; border:none; font-weight:bold; cursor:pointer;" onclick="closeJukebox()" id="jukeCancelBtn">Cancel</button>
+                <button style="background: #007AFF; color: white; flex:1; padding: 12px; border-radius:12px; border:none; font-weight:bold; cursor:pointer;" onclick="confirmJukebox()" id="jukeCallBtn">Request</button>
             </div>
         </div>
     </div>
@@ -1294,6 +1390,7 @@
                     </button>
                 </div>
             </div>
+            
             <div id="sidebar-menu">
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
@@ -1303,9 +1400,14 @@
 
         <div class="main-content">
             <div class="viewer-container">
-                <div id="floating-waiter" class="waiter-btn" onclick="openWaiterPrompt()">
+                
+                <div class="waiter-btn" onclick="openWaiterPrompt()">
                     🛎️ <span id="waiter-btn-text">Waiter</span>
                 </div>
+
+                <button class="jukebox-btn" onclick="openJukebox()">
+                    🎵 <span id="juke-btn-text">Music</span>
+                </button>
 
                 <div id="photo-slider" class="photo-slider hide"></div>
                 <div class="media-toggle hide" id="media-toggle" onclick="toggleMedia()">🧊 View 3D</div>
@@ -1363,6 +1465,7 @@
                 </div>
                 
                 <div style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px;">
+                    
                     <div class="order-type-selector">
                         <button id="btn-dinein" class="type-btn active" onclick="setOrderType('Dine-in')">🍽️ Dine-in</button>
                         <button id="btn-takeaway" class="type-btn" onclick="setOrderType('Takeaway')">🎒 Takeaway</button>
@@ -1374,10 +1477,9 @@
                     </div>
 
                     <textarea id="cookingNotes" class="input-field" placeholder="Chef Notes (e.g. Make it extra spicy)" style="resize:none; height:50px; border-color:#ddd;"></textarea>
-
                     <input type="number" id="tableNumber" class="input-field" placeholder="Table Number (e.g. 5) *" required style="border-color: #ddd;">
                     <input type="text" id="customerName" class="input-field" placeholder="Your Name (Optional)">
-                    <input type="tel" id="customerPhone" class="input-field" placeholder="Phone Number (Optional)">
+                    <input type="tel" id="customerPhone" class="input-field" placeholder="Phone Number (For discounts)">
                 </div>
             </div>
 
@@ -1392,7 +1494,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // 🔥 IMPORTANT: Same Firebase Config you provided earlier 🔥
+        // ADD FIREBASE CONFIG HERE
         const firebaseConfig = {
             apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
             authDomain: "itx-arun-bdf24.firebaseapp.com",
@@ -1405,6 +1507,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // State Variables
         let allDishes = [];
         let currentDish = null;
         let currentVariant = 'full'; 
@@ -1416,11 +1519,15 @@
         const viewer = document.querySelector('#ar-viewer');
         const updateBar = document.querySelector('#update-bar');
 
+        // Update AR Progress Bar
         viewer.addEventListener('progress', (e) => {
             updateBar.style.width = `${e.detail.totalProgress * 100}%`;
-            if (e.detail.totalProgress === 1) document.querySelector('.progress-bar').classList.add('hide');
+            if (e.detail.totalProgress === 1) {
+                document.querySelector('.progress-bar').classList.add('hide');
+            }
         });
 
+        // Time-Based Greeting
         function updateGreeting() {
             const hr = new Date().getHours();
             let greet = "Good Day ☕";
@@ -1431,15 +1538,17 @@
         }
         updateGreeting();
 
+        // Safe Haptic Vibration & Sound
         window.triggerHapticPop = () => {
             try {
                 if(navigator.vibrate) navigator.vibrate(40);
                 const audio = document.getElementById('popSound');
                 audio.currentTime = 0;
-                audio.play().catch(e => { console.log("Audio autoplay prevented"); }); 
-            } catch(err) { console.log("Haptic/Audio error", err); }
+                audio.play().catch(e => { console.log("Audio prevented"); }); 
+            } catch(err) { console.log(err); }
         };
 
+        // Flying Cart Dot Animation
         window.createFlyingDot = (e) => {
             if(!e || !e.clientX) return;
             const target = document.getElementById('cart-icon-target');
@@ -1459,16 +1568,30 @@
             setTimeout(() => { 
                 dot.remove(); 
                 target.style.transform = 'scale(1.2)'; 
-                setTimeout(()=>target.style.transform='scale(1)', 200); 
+                setTimeout(() => target.style.transform = 'scale(1)', 200); 
             }, 600);
         };
 
+        // Translations Array
         const i18n = {
-            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "Search...", trackTitle: "Order Status", trackBtn: "Track", dineIn: "🍽️ Dine-in", takeaway: "🎒 Takeaway", waiter: "Waiter", notes: "Chef Notes (e.g. Make it spicy)", upsell: "💡 Frequently Bought Together", waiterTitle: "Call Waiter", waiterCancel: "Cancel", waiterCall: "Call Now", waiterInput: "Enter Table Number" },
-            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "खोजें...", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "🍽️ यहीं खाएंगे", takeaway: "🎒 पैक करें", waiter: "वेटर", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", upsell: "💡 अक्सर साथ खरीदे जाने वाले", waiterTitle: "वेटर बुलाएं", waiterCancel: "रद्द करें", waiterCall: "कॉल करें", waiterInput: "टेबल नंबर दर्ज करें" }
+            en: { 
+                add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", 
+                totalPay: "Total to Pay", alertOk: "OK, Got it", search: "Search...", trackTitle: "Order Status", trackBtn: "Track", 
+                dineIn: "🍽️ Dine-in", takeaway: "🎒 Takeaway", waiter: "Waiter", notes: "Chef Notes (e.g. Make it spicy)", 
+                upsell: "💡 Frequently Bought Together", waiterTitle: "Call Waiter", waiterCancel: "Cancel", waiterCall: "Call Now", 
+                waiterInput: "Enter Table Number", musicBtn: "Music", jukeTitle: "Request a Song", jukeInput1: "Song Name (e.g. Tum Hi Ho)"
+            },
+            hi: { 
+                add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", 
+                totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "खोजें...", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", 
+                dineIn: "🍽️ यहीं खाएंगे", takeaway: "🎒 पैक करें", waiter: "वेटर", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", 
+                upsell: "💡 अक्सर साथ खरीदे जाने वाले", waiterTitle: "वेटर बुलाएं", waiterCancel: "रद्द करें", waiterCall: "कॉल करें", 
+                waiterInput: "टेबल नंबर दर्ज करें", musicBtn: "संगीत", jukeTitle: "गाना फरमाइश", jukeInput1: "गाने का नाम (जैसे तुम ही हो)"
+            }
         };
         let currentLang = 'en';
 
+        // Apply Language function
         window.setLanguage = (l) => {
             currentLang = l;
             document.getElementById('btn-en').classList.toggle('active', l==='en');
@@ -1489,64 +1612,142 @@
             document.getElementById('waiter-btn-text').innerText = i18n[l].waiter;
             document.getElementById('cookingNotes').placeholder = i18n[l].notes;
             document.getElementById('upsell-text').innerText = i18n[l].upsell;
+            
+            // Modals text
             document.getElementById('waiterTitleText').innerText = i18n[l].waiterTitle;
             document.getElementById('waiterCancelBtn').innerText = i18n[l].waiterCancel;
             document.getElementById('waiterCallBtn').innerText = i18n[l].waiterCall;
             document.getElementById('waiterTableInput').placeholder = i18n[l].waiterInput;
             
+            document.getElementById('juke-btn-text').innerText = i18n[l].musicBtn;
+            document.getElementById('jukeTitleText').innerText = i18n[l].jukeTitle;
+            document.getElementById('jukeCancelBtn').innerText = i18n[l].waiterCancel;
+            document.getElementById('jukeCallBtn').innerText = i18n[l].waiterCall;
+            document.getElementById('jukeSongInput').placeholder = i18n[l].jukeInput1;
+            document.getElementById('jukeTableInput').placeholder = i18n[l].waiterInput;
+            
             setOrderType(currentOrderType);
             updateGlobalCartUI();
         };
 
-        // Call it initially safely
+        // Try to initialize language
         try { window.setLanguage(currentLang); } catch(e) { console.log(e); }
 
+        // Voice Search
         window.startVoiceSearch = () => {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) { alert("Voice search not supported in this browser."); return; }
+            
             const recognition = new SpeechRecognition();
             recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
+            
             const micBtn = document.getElementById('micBtn');
             micBtn.classList.add('listening');
             triggerHapticPop();
+            
             recognition.start();
-            recognition.onresult = (e) => { document.getElementById('searchInput').value = e.results[0][0].transcript; applyFilters(); };
+            recognition.onresult = (e) => { 
+                document.getElementById('searchInput').value = e.results[0][0].transcript; 
+                applyFilters(); 
+            };
             recognition.onspeechend = () => { micBtn.classList.remove('listening'); };
             recognition.onerror = () => { micBtn.classList.remove('listening'); };
         };
 
+        // 🔥 FIX: Correctly Send Waiter Call to Firebase 🔥
         window.openWaiterPrompt = () => {
             document.getElementById('waiterTableInput').value = '';
             document.getElementById('waiterPromptModal').classList.add('show');
             triggerHapticPop();
         };
-        window.closeWaiterPrompt = () => { document.getElementById('waiterPromptModal').classList.remove('show'); };
-
-        window.confirmCallWaiter = () => {
-            const tableNo = document.getElementById('waiterTableInput').value;
-            if(!tableNo) { alert(currentLang === 'hi' ? "कृपया टेबल नंबर डालें!" : "Please enter a table number!"); return; }
-            addDoc(collection(db, "waiter_calls"), { tableNumber: tableNo, status: "New", timestamp: new Date() })
-            .then(() => { closeWaiterPrompt(); showToast(currentLang === 'hi' ? "🛎️ वेटर आ रहा है!" : "🛎️ Waiter is on the way!"); triggerHapticPop(); })
-            .catch(e => console.log(e));
+        
+        window.closeWaiterPrompt = () => { 
+            document.getElementById('waiterPromptModal').classList.remove('show'); 
         };
 
+        window.confirmCallWaiter = async () => {
+            const tableNo = document.getElementById('waiterTableInput').value;
+            if(!tableNo) { 
+                alert(currentLang === 'hi' ? "कृपया टेबल नंबर डालें!" : "Please enter a table number!"); 
+                return; 
+            }
+            try {
+                await addDoc(collection(db, "waiter_calls"), { 
+                    tableNumber: tableNo, 
+                    status: "New", 
+                    timestamp: new Date() 
+                });
+                closeWaiterPrompt(); 
+                showToast(currentLang === 'hi' ? "🛎️ वेटर आ रहा है!" : "🛎️ Waiter is on the way!"); 
+                triggerHapticPop();
+            } catch(e) {
+                console.error("Waiter Call Error:", e);
+                alert("Error calling waiter!");
+            }
+        };
+
+        // 🔥 NEW: Jukebox Functions 🔥
+        window.openJukebox = () => {
+            document.getElementById('jukeSongInput').value = '';
+            document.getElementById('jukeTableInput').value = '';
+            document.getElementById('jukeboxModal').classList.add('show');
+            triggerHapticPop();
+        };
+        
+        window.closeJukebox = () => { 
+            document.getElementById('jukeboxModal').classList.remove('show'); 
+        };
+
+        window.confirmJukebox = async () => {
+            const songName = document.getElementById('jukeSongInput').value;
+            const tableNo = document.getElementById('jukeTableInput').value;
+            
+            if(!songName || !tableNo) { 
+                alert(currentLang === 'hi' ? "कृपया गाना और टेबल नंबर डालें!" : "Please enter Song Name and Table number!"); 
+                return; 
+            }
+            try {
+                await addDoc(collection(db, "jukebox_requests"), { 
+                    songName: songName,
+                    tableNumber: tableNo, 
+                    status: "New", 
+                    timestamp: new Date() 
+                });
+                closeJukebox(); 
+                showToast(currentLang === 'hi' ? "🎵 फरमाइश भेज दी गई!" : "🎵 Song requested!"); 
+                triggerHapticPop();
+            } catch(e) {
+                console.error("Jukebox Error:", e);
+            }
+        };
+
+        // Order Type Set
         window.setOrderType = (type) => {
             currentOrderType = type;
             document.getElementById('btn-dinein').classList.toggle('active', type === 'Dine-in');
             document.getElementById('btn-takeaway').classList.toggle('active', type === 'Takeaway');
+            
             const tableInput = document.getElementById('tableNumber');
             const nameInput = document.getElementById('customerName');
+            
             if(type === 'Takeaway') {
-                tableInput.style.display = 'none'; tableInput.required = false;
-                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (पैक करने के लिए ज़रूरी) *" : "Your Name (Required for Takeaway) *"; nameInput.required = true;
+                tableInput.style.display = 'none'; 
+                tableInput.required = false;
+                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (पैक करने के लिए ज़रूरी) *" : "Your Name (Required for Takeaway) *"; 
+                nameInput.required = true;
             } else {
-                tableInput.style.display = 'block'; tableInput.required = true;
-                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (वैकल्पिक)" : "Your Name (Optional)"; nameInput.required = false;
+                tableInput.style.display = 'block'; 
+                tableInput.required = true;
+                nameInput.placeholder = currentLang === 'hi' ? "आपका नाम (वैकल्पिक)" : "Your Name (Optional)"; 
+                nameInput.required = false;
             }
         };
 
-        window.toggleTracker = () => { document.getElementById('tracker-modal').classList.toggle('show'); };
+        window.toggleTracker = () => { 
+            document.getElementById('tracker-modal').classList.toggle('show'); 
+        };
 
+        // Fullscreen Image Logic
         let pzInstance = null; let fsImages = []; let fsCurrentIndex = 0;
         
         window.openFullscreen = (index) => { 
@@ -1563,14 +1764,36 @@
             img.style.transform = ''; 
             img.onload = () => { pzInstance = panzoom(img, { maxZoom: 5, minZoom: 1, bounds: true, boundsPadding: 0 }); };
             img.src = fsImages[fsCurrentIndex];
-            const prevBtn = document.querySelector('.fs-prev'); const nextBtn = document.querySelector('.fs-next');
-            if(fsImages.length <= 1) { prevBtn.classList.add('hide'); nextBtn.classList.add('hide'); } else { prevBtn.classList.remove('hide'); nextBtn.classList.remove('hide'); }
-            const dotsContainer = document.getElementById('fs-dots'); dotsContainer.innerHTML = '';
-            if(fsImages.length > 1) { fsImages.forEach((_, idx) => { const dot = document.createElement('div'); dot.className = `fs-dot ${idx === fsCurrentIndex ? 'active' : ''}`; dotsContainer.appendChild(dot); }); }
+            
+            const prevBtn = document.querySelector('.fs-prev'); 
+            const nextBtn = document.querySelector('.fs-next');
+            if(fsImages.length <= 1) { prevBtn.classList.add('hide'); nextBtn.classList.add('hide'); } 
+            else { prevBtn.classList.remove('hide'); nextBtn.classList.remove('hide'); }
+            
+            const dotsContainer = document.getElementById('fs-dots'); 
+            dotsContainer.innerHTML = '';
+            if(fsImages.length > 1) { 
+                fsImages.forEach((_, idx) => { 
+                    const dot = document.createElement('div'); 
+                    dot.className = `fs-dot ${idx === fsCurrentIndex ? 'active' : ''}`; 
+                    dotsContainer.appendChild(dot); 
+                }); 
+            }
         };
         
-        window.navigateFs = (direction) => { fsCurrentIndex += direction; if (fsCurrentIndex < 0) fsCurrentIndex = fsImages.length - 1; if (fsCurrentIndex >= fsImages.length) fsCurrentIndex = 0; updateFsImage(); };
-        window.closeFullscreen = (e) => { if(e) e.stopPropagation(); document.getElementById('fs-viewer').classList.remove('show'); if(pzInstance) { pzInstance.dispose(); pzInstance = null; } if(window.location.hash === "#photo") { history.back(); } };
+        window.navigateFs = (direction) => { 
+            fsCurrentIndex += direction; 
+            if (fsCurrentIndex < 0) fsCurrentIndex = fsImages.length - 1; 
+            if (fsCurrentIndex >= fsImages.length) fsCurrentIndex = 0; 
+            updateFsImage(); 
+        };
+        
+        window.closeFullscreen = (e) => { 
+            if(e) e.stopPropagation(); 
+            document.getElementById('fs-viewer').classList.remove('show'); 
+            if(pzInstance) { pzInstance.dispose(); pzInstance = null; } 
+            if(window.location.hash === "#photo") { history.back(); } 
+        };
         
         window.addEventListener('popstate', (e) => {
             if (document.getElementById('fs-viewer').classList.contains('show')) {
@@ -1579,6 +1802,7 @@
             }
         });
 
+        // Fullscreen Swipe Gestures
         let touchStartX = 0; let touchEndX = 0;
         const fsViewer = document.getElementById('fs-viewer');
         fsViewer.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
@@ -1595,33 +1819,62 @@
         }
 
         window.toggleMedia = () => {
-            const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle');
-            if (slider.classList.contains('hide')) { slider.classList.remove('hide'); toggleBtn.innerHTML = '🧊 View 3D'; } else { slider.classList.add('hide'); toggleBtn.innerHTML = '📸 View Photos'; }
+            const slider = document.getElementById('photo-slider'); 
+            const toggleBtn = document.getElementById('media-toggle');
+            if (slider.classList.contains('hide')) { 
+                slider.classList.remove('hide'); 
+                toggleBtn.innerHTML = '🧊 View 3D'; 
+            } else { 
+                slider.classList.add('hide'); 
+                toggleBtn.innerHTML = '📸 View Photos'; 
+            }
         };
 
-        window.viewOnTable = async () => { document.querySelector('#ar-viewer').activateAR(); if(currentDish) { try { await addDoc(collection(db, "ar_views"), { dishName: currentDish.name, timestamp: new Date() }); } catch(e){} } };
+        window.viewOnTable = async () => { 
+            document.querySelector('#ar-viewer').activateAR(); 
+            if(currentDish) { 
+                try { await addDoc(collection(db, "ar_views"), { dishName: currentDish.name, timestamp: new Date() }); } 
+                catch(e){} 
+            } 
+        };
 
-        window.customAlert = function(msg, icon) { document.getElementById('alertMessage').innerText = msg; document.getElementById('alertIcon').innerText = icon; document.getElementById('customAlert').classList.add('show'); triggerHapticPop(); }
-        window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
+        window.customAlert = function(msg, icon) { 
+            document.getElementById('alertMessage').innerText = msg; 
+            document.getElementById('alertIcon').innerText = icon; 
+            document.getElementById('customAlert').classList.add('show'); 
+            triggerHapticPop(); 
+        }
 
-        let activeOrderListeners = {}; let activeOrderData = {};
+        window.closeAlert = function() { 
+            document.getElementById('customAlert').classList.remove('show'); 
+        }
+
+        // 🔥 FIX: Domino's Style Visual Tracker Live Update Sync 🔥
+        let activeOrderListeners = {}; 
+        let activeOrderData = {};
         
-        function listenToLiveOrder(orderId) {
+        window.listenToLiveOrder = function(orderId) {
             if (activeOrderListeners[orderId]) return; 
             activeOrderListeners[orderId] = onSnapshot(doc(db, "orders", orderId), (d) => {
-                if(!d.exists()) return; activeOrderData[orderId] = d.data(); renderMultiTracker(); 
+                if(!d.exists()) return; 
+                activeOrderData[orderId] = d.data(); 
+                window.renderMultiTracker(); 
             });
         }
 
-        function renderMultiTracker() {
+        window.renderMultiTracker = function() {
             const container = document.getElementById('multi-tracker-body');
             const trackBtn = document.getElementById('btn-track-order');
             const pulse = document.getElementById('track-badge-pulse');
             
-            container.innerHTML = ''; let showTrackBtn = false; let showPulse = false;
+            container.innerHTML = ''; 
+            let showTrackBtn = false; 
+            let showPulse = false;
             
             let activeOrdersList = [];
-            try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) { activeOrdersList = []; }
+            try { 
+                activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); 
+            } catch(e) { activeOrdersList = []; }
             
             let newActiveList = [];
 
@@ -1629,16 +1882,26 @@
                 const data = activeOrderData[id];
                 if(!data) { newActiveList.push(id); return; }
 
-                let isPrep = data.status === 'Preparing';
-                let isDone = data.status === 'Completed';
+                let statusRaw = data.status; // New, Preparing, Completed, Cancelled
                 
-                if(data.status !== 'Cancelled' && !isDone) { showPulse = true; showTrackBtn = true; newActiveList.push(id); }
-                else if (isDone) showTrackBtn = true; 
+                if(statusRaw !== 'Cancelled') showTrackBtn = true;
+                if(statusRaw !== 'Cancelled' && statusRaw !== 'Completed') showPulse = true;
                 
-                if(data.status === 'Cancelled') {
-                    container.innerHTML += `<div style="padding:15px; border:1px solid #eee; border-radius:12px; margin-bottom:10px; color:var(--text-sub);">Order Cancelled ❌</div>`;
+                if(statusRaw === 'Cancelled') {
+                    container.innerHTML += `<div style="padding:15px; border:1px solid #eee; border-radius:12px; margin-bottom:10px; color:var(--text-sub);">Order #${id.slice(-4)} Cancelled ❌</div>`;
                     return;
                 }
+
+                newActiveList.push(id); // Keep valid orders in local storage
+
+                let isNew = (statusRaw === 'New');
+                let isPrep = (statusRaw === 'Preparing');
+                let isDone = (statusRaw === 'Completed');
+
+                // Advanced Tracker Class Logic
+                let s1Class = 'done'; // Placed is always done if it exists
+                let s2Class = isNew ? 'active' : (isPrep || isDone ? 'done' : ''); // Preparing
+                let s3Class = isPrep ? 'active' : (isDone ? 'done' : ''); // Ready
 
                 let itemsList = data.items.map(i => `${i.qty}x ${i.name}`).join(', ');
 
@@ -1651,13 +1914,13 @@
                         <div style="font-size: 12px; color: var(--text-main); font-weight: 600; margin-bottom: 15px;">${itemsList}</div>
                         
                         <div class="visual-tracker">
-                            <div class="tracker-step ${data.status !== 'Cancelled' ? 'done' : ''}">
+                            <div class="tracker-step ${s1Class}">
                                 <div class="step-icon">✓</div><div class="step-text">Placed</div>
                             </div>
-                            <div class="tracker-step ${isPrep || isDone ? 'done' : (data.status === 'New' ? '' : 'active')}">
+                            <div class="tracker-step ${s2Class}">
                                 <div class="step-icon">👨‍🍳</div><div class="step-text">Preparing</div>
                             </div>
-                            <div class="tracker-step ${isDone ? 'done' : (isPrep ? 'active' : '')}">
+                            <div class="tracker-step ${s3Class}">
                                 <div class="step-icon">🍽️</div><div class="step-text">Ready</div>
                             </div>
                         </div>
@@ -1666,15 +1929,25 @@
             });
 
             localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
-            if(showTrackBtn && activeOrdersList.length > 0) { trackBtn.classList.add('show'); pulse.style.display = showPulse ? 'block' : 'none'; } 
-            else { trackBtn.classList.remove('show'); }
-            if(container.innerHTML === '') container.innerHTML = `<p style="color:var(--text-sub); font-size:13px; font-weight:600;">No active orders.</p>`;
+            
+            if(showTrackBtn && activeOrdersList.length > 0) { 
+                trackBtn.classList.add('show'); 
+                pulse.style.display = showPulse ? 'block' : 'none'; 
+            } else { 
+                trackBtn.classList.remove('show'); 
+            }
+            
+            if(container.innerHTML === '') {
+                container.innerHTML = `<p style="color:var(--text-sub); font-size:13px; font-weight:600;">No active orders.</p>`;
+            }
         }
 
+        // Initialize Listeners for existing orders
         let savedOrdersList = [];
         try { savedOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
-        savedOrdersList.forEach(id => listenToLiveOrder(id));
+        savedOrdersList.forEach(id => window.listenToLiveOrder(id));
 
+        // Background Fetch Trending
         async function fetchTrendingDishes() {
             try {
                 const q = query(collection(db, "orders"), orderBy("timestamp", "desc"), limit(20));
@@ -1688,10 +1961,10 @@
                 trendingIds = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 5);
             } catch(e) { console.log("Trending fetch issue", e); }
         }
+        
+        fetchTrendingDishes(); // Called immediately
 
-        // 🔥 FIX: Run Trending Async without blocking Main Menu 🔥
-        fetchTrendingDishes();
-
+        // Main Menu Fetch
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
             allDishes = [];
             snapshot.forEach((doc) => { 
@@ -1711,7 +1984,12 @@
             document.getElementById('sidebar-menu').innerHTML = '<div style="padding:20px; font-size:10px; color:#E23744; text-align:center;">Network Error</div>';
         });
 
-        window.filterCategory = function(cat, element) { activeCategory = cat; document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); element.classList.add('active'); applyFilters(); };
+        window.filterCategory = function(cat, element) { 
+            activeCategory = cat; 
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); 
+            element.classList.add('active'); 
+            applyFilters(); 
+        };
 
         window.applyFilters = function() {
             const queryText = document.getElementById('searchInput').value.toLowerCase();
@@ -1720,24 +1998,48 @@
             else if (activeCategory === 'Non-Veg Only') filtered = filtered.filter(d => (d.emoji && d.emoji.includes('🔴')) || d.category === 'Non-Veg');
             else if (activeCategory === 'Trending') filtered = filtered.filter(d => trendingIds.includes(d.id));
             else if (activeCategory !== 'All') filtered = filtered.filter(dish => dish.category === activeCategory);
+            
             if (queryText) filtered = filtered.filter(dish => dish.name.toLowerCase().includes(queryText));
             renderSidebar(filtered);
         };
 
         window.renderSidebar = function(dishesToRender) {
-            const sidebar = document.getElementById('sidebar-menu'); sidebar.innerHTML = '';
-            if(dishesToRender.length === 0) { sidebar.innerHTML = '<div style="padding:20px; font-size:10px; color:#999; text-align:center;">No match</div>'; return; }
+            const sidebar = document.getElementById('sidebar-menu'); 
+            sidebar.innerHTML = '';
+            
+            if(dishesToRender.length === 0) { 
+                sidebar.innerHTML = '<div style="padding:20px; font-size:10px; color:#999; text-align:center;">No match</div>'; 
+                return; 
+            }
             
             const groupedDishes = {};
-            dishesToRender.forEach(dish => { const cat = activeCategory === 'Trending' ? 'TRENDING' : (dish.category || "Uncategorized"); if (!groupedDishes[cat]) groupedDishes[cat] = []; groupedDishes[cat].push(dish); });
+            dishesToRender.forEach(dish => { 
+                const cat = activeCategory === 'Trending' ? 'TRENDING' : (dish.category || "Uncategorized"); 
+                if (!groupedDishes[cat]) groupedDishes[cat] = []; 
+                groupedDishes[cat].push(dish); 
+            });
 
             for (let cat in groupedDishes) {
-                const header = document.createElement('div'); header.style.padding = "15px 5px 5px 5px"; header.style.fontSize = "10px"; header.style.fontWeight = "800"; header.style.color = "var(--text-sub)"; header.style.textAlign = "center"; header.style.borderBottom = "1px solid #f0f0f0"; header.innerText = cat.toUpperCase(); sidebar.appendChild(header);
+                const header = document.createElement('div'); 
+                header.style.padding = "15px 5px 5px 5px"; 
+                header.style.fontSize = "10px"; 
+                header.style.fontWeight = "800"; 
+                header.style.color = "var(--text-sub)"; 
+                header.style.textAlign = "center"; 
+                header.style.borderBottom = "1px solid #f0f0f0"; 
+                header.innerText = cat.toUpperCase(); 
+                sidebar.appendChild(header);
+
                 groupedDishes[cat].forEach((data) => {
-                    const itemDiv = document.createElement('div'); itemDiv.className = `side-item ${currentDish && currentDish.id === data.id ? 'active' : ''}`;
+                    const itemDiv = document.createElement('div'); 
+                    itemDiv.className = `side-item ${currentDish && currentDish.id === data.id ? 'active' : ''}`;
                     let trendTag = trendingIds.includes(data.id) ? '<div class="best-seller-tag">⭐ Best Seller</div>' : '';
                     itemDiv.innerHTML = `<div class="side-emoji">${data.emoji || "🍲"}</div><div class="side-name">${data.name}<br>${trendTag}</div>`;
-                    itemDiv.onclick = () => { document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active')); itemDiv.classList.add('active'); loadDish(data); };
+                    itemDiv.onclick = () => { 
+                        document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active')); 
+                        itemDiv.classList.add('active'); 
+                        loadDish(data); 
+                    };
                     sidebar.appendChild(itemDiv);
                 });
             }
@@ -1746,49 +2048,96 @@
         function loadDish(data) {
             currentDish = data; currentVariant = 'full'; 
             let catBadgeHtml = '';
+            
             if(data.category) {
                 let badgeClass = `cat-${data.category.replace(' ', '-')}`; let icon = '';
-                if(data.category === 'Veg') icon = '🟢 Veg'; else if(data.category === 'Non-Veg') icon = '🔴 Non-Veg';
-                else if(data.category === 'Drinks') icon = '🥤 Drinks'; else if(data.category === 'Desserts') icon = '🍰 Desserts';
+                if(data.category === 'Veg') icon = '🟢 Veg'; 
+                else if(data.category === 'Non-Veg') icon = '🔴 Non-Veg';
+                else if(data.category === 'Drinks') icon = '🥤 Drinks'; 
+                else if(data.category === 'Desserts') icon = '🍰 Desserts';
                 catBadgeHtml = `<span class="main-cat-badge ${badgeClass}">${icon}</span>`;
             }
+            
             document.getElementById('display-name').innerHTML = `${data.name} ${catBadgeHtml}`;
             document.getElementById('display-price').innerText = '₹' + data.price;
             
             const variantBox = document.getElementById('variant-box');
-            const btnHalf = document.getElementById('btn-half'); const btnFull = document.getElementById('btn-full'); const btnPiece = document.getElementById('btn-piece');
-            btnHalf.style.display = data.priceHalf ? 'block' : 'none'; btnPiece.style.display = data.pricePiece ? 'block' : 'none';
-            if(data.priceHalf || data.pricePiece) { variantBox.classList.remove('hide'); btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active'); } else { variantBox.classList.add('hide'); }
+            const btnHalf = document.getElementById('btn-half'); 
+            const btnFull = document.getElementById('btn-full'); 
+            const btnPiece = document.getElementById('btn-piece');
+            
+            btnHalf.style.display = data.priceHalf ? 'block' : 'none'; 
+            btnPiece.style.display = data.pricePiece ? 'block' : 'none';
+            
+            if(data.priceHalf || data.pricePiece) { 
+                variantBox.classList.remove('hide'); 
+                btnFull.classList.add('active'); 
+                btnHalf.classList.remove('active'); 
+                btnPiece.classList.remove('active'); 
+            } else { 
+                variantBox.classList.add('hide'); 
+            }
 
-            document.querySelector('.progress-bar').classList.remove('hide'); updateBar.style.width = '0%'; viewer.src = data.modelUrl;
+            document.querySelector('.progress-bar').classList.remove('hide'); 
+            updateBar.style.width = '0%'; 
+            viewer.src = data.modelUrl;
 
-            const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle'); slider.innerHTML = '';
+            const slider = document.getElementById('photo-slider'); 
+            const toggleBtn = document.getElementById('media-toggle'); 
+            slider.innerHTML = '';
+            
             if (data.images && data.images.length > 0) {
-                data.images.forEach((imgUrl, idx) => { const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.onclick = () => openFullscreen(idx); slider.appendChild(img); });
-                slider.classList.remove('hide'); toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '🧊 View 3D';
-            } else { slider.classList.add('hide'); toggleBtn.classList.add('hide'); }
+                data.images.forEach((imgUrl, idx) => { 
+                    const img = document.createElement('img'); 
+                    img.src = imgUrl; 
+                    img.className = 'slide-img'; 
+                    img.onclick = () => openFullscreen(idx); 
+                    slider.appendChild(img); 
+                });
+                slider.classList.remove('hide'); 
+                toggleBtn.classList.remove('hide'); 
+                toggleBtn.innerHTML = '🧊 View 3D';
+            } else { 
+                slider.classList.add('hide'); 
+                toggleBtn.classList.add('hide'); 
+            }
+            
             checkCartForCurrentDish();
         }
 
         window.selectVariant = (type) => {
-            currentVariant = type; document.querySelectorAll('.var-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active');
+            currentVariant = type; 
+            document.querySelectorAll('.var-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById('btn-' + type).classList.add('active');
+            
             if(type === 'half') document.getElementById('display-price').innerText = '₹' + currentDish.priceHalf;
             else if(type === 'piece') document.getElementById('display-price').innerText = '₹' + currentDish.pricePiece;
             else document.getElementById('display-price').innerText = '₹' + currentDish.price;
+            
             checkCartForCurrentDish(); 
         };
 
         function getCartKey() { return `${currentDish.id}_${currentVariant}`; }
 
         function checkCartForCurrentDish() {
-            const key = getCartKey(); const btnAdd = document.getElementById('btn-add-new'); const btnStepper = document.getElementById('btn-stepper');
-            if(cart[key] && cart[key].qty > 0) { btnAdd.style.display = 'none'; btnStepper.style.display = 'flex'; document.getElementById('current-qty-display').innerText = cart[key].qty; } 
-            else { btnAdd.style.display = 'block'; btnStepper.style.display = 'none'; }
+            const key = getCartKey(); 
+            const btnAdd = document.getElementById('btn-add-new'); 
+            const btnStepper = document.getElementById('btn-stepper');
+            
+            if(cart[key] && cart[key].qty > 0) { 
+                btnAdd.style.display = 'none'; 
+                btnStepper.style.display = 'flex'; 
+                document.getElementById('current-qty-display').innerText = cart[key].qty; 
+            } else { 
+                btnAdd.style.display = 'block'; 
+                btnStepper.style.display = 'none'; 
+            }
         }
 
         window.addCurrentToCart = (e) => {
             const key = getCartKey();
             let price = currentDish.price; let variantText = '';
+            
             if(currentVariant === 'half') { price = currentDish.priceHalf; variantText = '(Half)'; }
             if(currentVariant === 'piece') { price = currentDish.pricePiece; variantText = '(Per Piece)'; }
 
@@ -1805,36 +2154,68 @@
             const dish = allDishes.find(d => d.id === id);
             if(dish) {
                 const key = `${dish.id}_full`;
-                if(cart[key]) cart[key].qty++; else cart[key] = { id: dish.id, name: dish.name, price: dish.price, variant: '', qty: 1 };
-                triggerHapticPop(); showToast("✅ Added!"); updateGlobalCartUI(); renderCartModal();
+                if(cart[key]) cart[key].qty++; 
+                else cart[key] = { id: dish.id, name: dish.name, price: dish.price, variant: '', qty: 1 };
+                
+                triggerHapticPop(); 
+                showToast("✅ Added!"); 
+                updateGlobalCartUI(); 
+                renderCartModal();
             }
         };
 
         window.changeCurrentQty = (delta) => { const key = getCartKey(); changeCartQty(key, delta); };
-        window.changeCartQty = (key, delta) => { if(cart[key]) { cart[key].qty += delta; if(cart[key].qty <= 0) delete cart[key]; } triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
+        
+        window.changeCartQty = (key, delta) => { 
+            if(cart[key]) { 
+                cart[key].qty += delta; 
+                if(cart[key].qty <= 0) delete cart[key]; 
+            } 
+            triggerHapticPop(); 
+            updateGlobalCartUI(); 
+            checkCartForCurrentDish(); 
+            renderCartModal(); 
+        };
 
         function updateGlobalCartUI() {
-            const floatingBar = document.getElementById('floating-checkout'); const bottomUiCard = document.getElementById('bottom-ui-card');
+            const floatingBar = document.getElementById('floating-checkout'); 
+            const bottomUiCard = document.getElementById('bottom-ui-card');
+            
             let totalItems = 0; let totalPrice = 0;
-            for (let key in cart) { totalItems += cart[key].qty; totalPrice += (cart[key].price * cart[key].qty); }
+            
+            for (let key in cart) { 
+                totalItems += cart[key].qty; 
+                totalPrice += (cart[key].price * cart[key].qty); 
+            }
+            
             document.getElementById('cart-count').innerText = totalItems;
             
             if(totalItems > 0) {
                 let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
                 document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
                 document.getElementById('float-total').innerText = '₹' + totalPrice;
-                floatingBar.classList.add('show'); bottomUiCard.classList.add('with-cart');
+                floatingBar.classList.add('show'); 
+                bottomUiCard.classList.add('with-cart');
             } else {
-                floatingBar.classList.remove('show'); bottomUiCard.classList.remove('with-cart');
+                floatingBar.classList.remove('show'); 
+                bottomUiCard.classList.remove('with-cart');
             }
         }
 
         function renderUpsell() {
-            const upsellContainer = document.getElementById('upsell-container'); const upsellDiv = document.getElementById('upsell-items');
-            if(Object.keys(cart).length === 0) { upsellContainer.style.display = 'none'; return; }
+            const upsellContainer = document.getElementById('upsell-container'); 
+            const upsellDiv = document.getElementById('upsell-items');
+            
+            if(Object.keys(cart).length === 0) { 
+                upsellContainer.style.display = 'none'; 
+                return; 
+            }
+
             let suggestions = allDishes.filter(d => (d.category === 'Drinks' || d.category === 'Breads' || d.category === 'Desserts') && !Object.values(cart).find(c => c.id === d.id));
+            
             if(suggestions.length > 0) {
-                suggestions = suggestions.sort(() => 0.5 - Math.random()).slice(0, 4); upsellDiv.innerHTML = '';
+                suggestions = suggestions.sort(() => 0.5 - Math.random()).slice(0, 4); 
+                upsellDiv.innerHTML = '';
                 suggestions.forEach(s => {
                     upsellDiv.innerHTML += `
                         <div class="upsell-card">
@@ -1846,26 +2227,43 @@
                     `;
                 });
                 upsellContainer.style.display = 'block';
-            } else { upsellContainer.style.display = 'none'; }
+            } else { 
+                upsellContainer.style.display = 'none'; 
+            }
         }
 
-        window.toggleCart = () => { const modal = document.getElementById('cart-modal'); if(!modal.classList.contains('show')) { renderCartModal(); renderUpsell(); } modal.classList.toggle('show'); };
+        window.toggleCart = () => { 
+            const modal = document.getElementById('cart-modal'); 
+            if(!modal.classList.contains('show')) { 
+                renderCartModal(); 
+                renderUpsell(); 
+            } 
+            modal.classList.toggle('show'); 
+        };
 
         function renderCartModal() {
             const list = document.getElementById('cart-items-list');
-            list.innerHTML = ''; let totalPrice = 0; let isEmpty = true;
+            list.innerHTML = ''; 
+            let totalPrice = 0; 
+            let isEmpty = true;
 
             for (let key in cart) {
-                isEmpty = false; const item = cart[key]; totalPrice += (item.price * item.qty);
+                isEmpty = false; 
+                const item = cart[key]; 
+                totalPrice += (item.price * item.qty);
+                
                 list.innerHTML += `
                     <div class="swipe-wrap">
                         <div class="swipe-content">
                             <div class="cart-item-info">
-                                <b style="color:var(--text-main); font-size:14px;">${item.name}</b> <span style="font-size:12px; color:var(--text-sub);">${item.variant}</span>
+                                <b style="color:var(--text-main); font-size:14px;">${item.name}</b> 
+                                <span style="font-size:12px; color:var(--text-sub);">${item.variant}</span>
                                 <div style="font-weight:700; color:var(--text-sub); margin-top:3px;">₹${item.price} x ${item.qty} = ₹${item.price * item.qty}</div>
                             </div>
                             <div class="cart-item-qty">
-                                <button onclick="changeCartQty('${key}', -1)">-</button><span>${item.qty}</span><button onclick="changeCartQty('${key}', 1)">+</button>
+                                <button onclick="changeCartQty('${key}', -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button onclick="changeCartQty('${key}', 1)">+</button>
                             </div>
                         </div>
                         <div class="swipe-action" onclick="deleteCartItem('${key}')">🗑️</div>
@@ -1875,16 +2273,29 @@
             document.getElementById('bill-final').innerText = '₹' + totalPrice;
         }
 
-        window.deleteCartItem = (key) => { delete cart[key]; triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
+        window.deleteCartItem = (key) => { 
+            delete cart[key]; 
+            triggerHapticPop(); 
+            updateGlobalCartUI(); 
+            checkCartForCurrentDish(); 
+            renderCartModal(); 
+        };
 
-        function showToast(msg) { const toast = document.getElementById('toast'); toast.innerText = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1500); }
+        function showToast(msg) { 
+            const toast = document.getElementById('toast'); 
+            toast.innerText = msg; 
+            toast.classList.add('show'); 
+            setTimeout(() => toast.classList.remove('show'), 1500); 
+        }
 
         function launchConfetti() {
             const canvas = document.getElementById('confetti-canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight;
             let pieces = [];
             const colors = ['#E23744', '#28A745', '#FF9500', '#007AFF', '#FFD700'];
+            
             for(let i=0; i<100; i++) {
                 pieces.push({
                     x: canvas.width/2, y: canvas.height/2 + 100,
@@ -1893,6 +2304,7 @@
                     rot: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 10
                 });
             }
+
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 let active = false;
@@ -1906,7 +2318,8 @@
                         ctx.restore();
                     }
                 });
-                if(active) requestAnimationFrame(animate); else ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if(active) requestAnimationFrame(animate); 
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
             animate();
             triggerHapticPop();
@@ -1915,24 +2328,38 @@
         const restaurantWhatsApp = "917870276466"; 
 
         window.placeOrder = async () => {
-            if(Object.keys(cart).length === 0) { customAlert("Please add items to your cart first!", "🛒"); return; }
+            if(Object.keys(cart).length === 0) { 
+                customAlert("Please add items to your cart first!", "🛒"); 
+                return; 
+            }
             
             const tableNo = document.getElementById('tableNumber').value;
             const custName = document.getElementById('customerName').value;
             const custPhone = document.getElementById('customerPhone').value;
             const notes = document.getElementById('cookingNotes').value; 
 
-            if(currentOrderType === 'Dine-in' && !tableNo) { customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; }
-            if(currentOrderType === 'Takeaway' && !custName) { customAlert(currentLang === 'hi' ? "कृपया पैक करने के लिए अपना नाम लिखें!" : "Please enter your name for takeaway!", "🎒"); return; }
+            if(currentOrderType === 'Dine-in' && !tableNo) { 
+                customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; 
+            }
+            if(currentOrderType === 'Takeaway' && !custName) { 
+                customAlert(currentLang === 'hi' ? "कृपया पैक करने के लिए अपना नाम लिखें!" : "Please enter your name for takeaway!", "🎒"); return; 
+            }
 
             const btn = document.getElementById('checkoutBtn');
-            btn.innerText = "Processing..."; btn.style.background = "#FFB75E"; btn.disabled = true;
-            const modalContent = document.querySelector('.cart-content'); modalContent.style.opacity = "0.5";
+            btn.innerText = "Processing..."; 
+            btn.style.background = "#FFB75E"; 
+            btn.disabled = true;
+            
+            const modalContent = document.querySelector('.cart-content');
+            modalContent.style.opacity = "0.5";
 
             let orderItems = []; let grandTotal = 0;
             let orderId = Math.floor(1000 + Math.random() * 9000);
             let waText = `*[ NEW ORDER ]*\n`;
-            if(currentOrderType === 'Dine-in') waText += `*Type:* Dine-in | *Table:* ${tableNo}\n`; else waText += `*Type:* Takeaway\n`;
+            
+            if(currentOrderType === 'Dine-in') waText += `*Type:* Dine-in | *Table:* ${tableNo}\n`; 
+            else waText += `*Type:* Takeaway\n`;
+            
             waText += `*ID:* #ORD-${orderId}\n\n`;
 
             if(custName || custPhone) {
@@ -1941,11 +2368,13 @@
                 if(custPhone) waText += `Phone: ${custPhone}\n`;
                 waText += `\n`; 
             }
+            
             if(notes) waText += `*Chef Notes:* _${notes}_\n\n`;
             waText += `*Order Details:*\n`;
 
             for(let k in cart) { 
-                orderItems.push(cart[k]); grandTotal += (cart[k].price * cart[k].qty); 
+                orderItems.push(cart[k]); 
+                grandTotal += (cart[k].price * cart[k].qty); 
                 let variantText = cart[k].variant ? ` ${cart[k].variant}` : '';
                 waText += `${cart[k].qty} x ${cart[k].name}${variantText} = ₹${cart[k].price * cart[k].qty}\n`;
             }
@@ -1955,29 +2384,47 @@
 
             try {
                 const docRef = await addDoc(collection(db, "orders"), { 
-                    orderType: currentOrderType, tableNumber: tableNo || "N/A", customerName: custName || "N/A", customerPhone: custPhone || "N/A",
-                    chefNotes: notes || "None", items: orderItems, totalAmount: grandTotal, status: 'New', paymentMethod: 'Cash', timestamp: new Date() 
+                    orderType: currentOrderType, 
+                    tableNumber: tableNo || "N/A", 
+                    customerName: custName || "N/A", 
+                    customerPhone: custPhone || "N/A",
+                    chefNotes: notes || "None", 
+                    items: orderItems, 
+                    totalAmount: grandTotal, 
+                    status: 'New', 
+                    paymentMethod: 'Cash', 
+                    timestamp: new Date() 
                 });
                 
                 let activeOrders = [];
                 try { activeOrders = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
-                activeOrders.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
+                activeOrders.push(docRef.id); 
+                localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
                 listenToLiveOrder(docRef.id); 
 
-                cart = {}; document.getElementById('tableNumber').value = ''; document.getElementById('customerName').value = '';
-                document.getElementById('customerPhone').value = ''; document.getElementById('cookingNotes').value = '';
+                cart = {}; 
+                document.getElementById('tableNumber').value = ''; 
+                document.getElementById('customerName').value = '';
+                document.getElementById('customerPhone').value = ''; 
+                document.getElementById('cookingNotes').value = '';
                 
-                updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
+                updateGlobalCartUI(); 
+                checkCartForCurrentDish(); 
+                toggleCart(); 
                 modalContent.style.opacity = "1";
 
                 launchConfetti(); 
                 setTimeout(() => { window.open(`https://wa.me/${restaurantWhatsApp}?text=${finalWaText}`, '_blank'); }, 1500);
 
             } catch (e) { 
-                console.error(e); modalContent.style.opacity = "1"; customAlert("Order Failed. Please check your connection and try again.", "❌"); 
+                console.error(e); 
+                modalContent.style.opacity = "1"; 
+                customAlert("Order Failed. Please check your connection and try again.", "❌"); 
             }
 
-            btn.innerText = currentLang === 'hi' ? i18n.hi.place : i18n.en.place; btn.style.background = "var(--green)"; btn.disabled = false;
+            btn.innerText = currentLang === 'hi' ? i18n.hi.place : i18n.en.place; 
+            btn.style.background = "var(--green)"; 
+            btn.disabled = false;
         };
     </script>
 </body>
