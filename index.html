@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NextPlate - Smart Menu</title>
     
+    <!-- External Scripts & Fonts -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="manifest" href="./manifest.json">
@@ -780,7 +781,6 @@
             font-weight: 800; 
             flex: 1.3; 
             cursor: pointer; 
-            transition: 0.2s; 
             box-shadow: 0 4px 10px rgba(226, 55, 68, 0.2); 
         }
         
@@ -1006,7 +1006,7 @@
 
         .btn-checkout:active { transform: scale(0.96); }
         
-        /* Order Tracker Steps */
+        /* 🔥 FIX: Clean Visual Tracker CSS 🔥 */
         .visual-tracker { 
             display: flex; 
             justify-content: space-between; 
@@ -1040,7 +1040,7 @@
             height: 30px; 
             border-radius: 50%; 
             background: var(--border-light); 
-            color: var(--white); 
+            color: var(--text-sub); 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -1055,15 +1055,23 @@
             color: var(--text-sub); 
         }
 
-        .tracker-step.done .step-icon { background: var(--success); }
-        .tracker-step.done .step-text { color: var(--success); }
+        /* Fixed State Classes for Tracker */
+        .tracker-step.status-done .step-icon { 
+            background: var(--success); 
+            color: var(--white); 
+        }
+        .tracker-step.status-done .step-text { 
+            color: var(--success); 
+        }
         
-        .tracker-step.active .step-icon { 
+        .tracker-step.status-active .step-icon { 
             background: var(--warning); 
+            color: var(--white);
             animation: pulseStep 1.5s infinite; 
         }
-
-        .tracker-step.active .step-text { color: var(--warning); }
+        .tracker-step.status-active .step-text { 
+            color: var(--warning); 
+        }
         
         @keyframes pulseStep { 
             0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); } 
@@ -1264,6 +1272,7 @@
 </head>
 <body>
 
+    <!-- Bulletproof Loader Exit -->
     <script>
         window.addEventListener('load', function() {
             setTimeout(function() {
@@ -1290,9 +1299,11 @@
         <span>Loading...</span>
     </div>
 
+    <!-- Haptic Sound & Confetti Canvas -->
     <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3" preload="auto"></audio>
     <canvas id="confetti-canvas"></canvas>
 
+    <!-- Tracker Modal -->
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center;">
             <div class="cart-header">
@@ -1303,6 +1314,7 @@
         </div>
     </div>
 
+    <!-- Fullscreen Image Viewer -->
     <div class="fullscreen-viewer" id="fs-viewer">
         <div class="fs-bg" onclick="closeFullscreen(event)"></div> 
         <button class="fs-close" onclick="closeFullscreen(event)">✕</button>
@@ -1312,6 +1324,7 @@
         <div class="fs-dots" id="fs-dots"></div>
     </div>
 
+    <!-- General Error Alert -->
     <div class="custom-alert" id="customAlert">
         <div class="alert-box">
             <div class="alert-icon" id="alertIcon">🔢</div>
@@ -1320,6 +1333,7 @@
         </div>
     </div>
 
+    <!-- Waiter Call Prompt Modal -->
     <div class="custom-alert" id="waiterPromptModal">
         <div class="alert-box">
             <div class="alert-icon">🛎️</div>
@@ -1332,6 +1346,7 @@
         </div>
     </div>
 
+    <!-- Jukebox Request Modal -->
     <div class="custom-alert" id="jukeboxModal">
         <div class="alert-box">
             <div class="alert-icon">🎵</div>
@@ -1345,6 +1360,7 @@
         </div>
     </div>
 
+    <!-- App Header -->
     <div class="header">
         <div class="brand-name">
             NextPlate
@@ -1363,6 +1379,7 @@
         </div>
     </div>
 
+    <!-- Category Filters -->
     <div class="category-scroll" id="category-scroll">
         <div class="cat-pill active" onclick="filterCategory('All', this)">All</div>
         <div class="cat-pill" onclick="filterCategory('Trending', this)">🔥 Trending</div>
@@ -1376,6 +1393,7 @@
         <div class="cat-pill" onclick="filterCategory('Desserts', this)">🍰 Desserts</div>
     </div>
 
+    <!-- Main Layout (Sidebar + Viewer) -->
     <div class="app-layout">
         <div class="sidebar">
             <div class="search-box">
@@ -1392,6 +1410,7 @@
             </div>
             
             <div id="sidebar-menu">
+                <!-- Skeleton Shimmer Placeholders -->
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
@@ -1401,14 +1420,17 @@
         <div class="main-content">
             <div class="viewer-container">
                 
+                <!-- Floating Top Left Waiter Button -->
                 <div class="waiter-btn" onclick="openWaiterPrompt()">
                     🛎️ <span id="waiter-btn-text">Waiter</span>
                 </div>
 
+                <!-- Floating Bottom Right Jukebox Button -->
                 <button class="jukebox-btn" onclick="openJukebox()">
                     🎵 <span id="juke-btn-text">Music</span>
                 </button>
 
+                <!-- Media Display Elements -->
                 <div id="photo-slider" class="photo-slider hide"></div>
                 <div class="media-toggle hide" id="media-toggle" onclick="toggleMedia()">🧊 View 3D</div>
 
@@ -1417,6 +1439,7 @@
                 </model-viewer>
             </div>
 
+            <!-- Bottom Add To Cart Card -->
             <div class="bottom-ui" id="bottom-ui-card">
                 <div class="dish-header">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
@@ -1442,6 +1465,7 @@
         </div>
     </div>
 
+    <!-- Sticky Cart Bar -->
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
             <span class="checkout-items" id="float-items">1 Item</span>
@@ -1450,6 +1474,7 @@
         <div class="checkout-action" id="float-btn-view">View Cart ➔</div>
     </div>
 
+    <!-- Final Cart Checkout Modal -->
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <div class="cart-header">
@@ -1471,6 +1496,7 @@
                         <button id="btn-takeaway" class="type-btn" onclick="setOrderType('Takeaway')">🎒 Takeaway</button>
                     </div>
 
+                    <!-- Smart Upsell Suggestions -->
                     <div id="upsell-container" style="display:none; margin: 5px 0; background: #F8F9FA; padding: 10px; border-radius: 12px; border: 1px dashed var(--border-light);">
                          <div style="font-size:12px; font-weight:800; color:var(--zomato-red); margin-bottom:8px;" id="upsell-text">💡 Frequently Bought Together</div>
                          <div id="upsell-items" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:5px;"></div>
@@ -1488,8 +1514,10 @@
         </div>
     </div>
 
+    <!-- Small Toast Notification -->
     <div class="toast" id="toast">✅ Added to Cart!</div>
 
+    <!-- 🔥 FIREBASE & MAIN LOGIC 🔥 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -1654,7 +1682,7 @@
             recognition.onerror = () => { micBtn.classList.remove('listening'); };
         };
 
-        // 🔥 FIX: Correctly Send Waiter Call to Firebase 🔥
+        // Waiter Call Functionality
         window.openWaiterPrompt = () => {
             document.getElementById('waiterTableInput').value = '';
             document.getElementById('waiterPromptModal').classList.add('show');
@@ -1686,7 +1714,7 @@
             }
         };
 
-        // 🔥 NEW: Jukebox Functions 🔥
+        // Jukebox Functions
         window.openJukebox = () => {
             document.getElementById('jukeSongInput').value = '';
             document.getElementById('jukeTableInput').value = '';
@@ -1849,7 +1877,7 @@
             document.getElementById('customAlert').classList.remove('show'); 
         }
 
-        // 🔥 FIX: Domino's Style Visual Tracker Live Update Sync 🔥
+        // 🔥 FIX: Order Tracker Logic Re-Engineered 🔥
         let activeOrderListeners = {}; 
         let activeOrderData = {};
         
@@ -1885,23 +1913,26 @@
                 let statusRaw = data.status; // New, Preparing, Completed, Cancelled
                 
                 if(statusRaw !== 'Cancelled') showTrackBtn = true;
-                if(statusRaw !== 'Cancelled' && statusRaw !== 'Completed') showPulse = true;
+                if(statusRaw === 'New' || statusRaw === 'Preparing') showPulse = true;
                 
                 if(statusRaw === 'Cancelled') {
                     container.innerHTML += `<div style="padding:15px; border:1px solid #eee; border-radius:12px; margin-bottom:10px; color:var(--text-sub);">Order #${id.slice(-4)} Cancelled ❌</div>`;
                     return;
                 }
 
-                newActiveList.push(id); // Keep valid orders in local storage
+                newActiveList.push(id); 
 
-                let isNew = (statusRaw === 'New');
-                let isPrep = (statusRaw === 'Preparing');
-                let isDone = (statusRaw === 'Completed');
+                // Strict CSS Classes assignment
+                let step1 = 'status-done';
+                let step2 = '';
+                let step3 = '';
 
-                // Advanced Tracker Class Logic
-                let s1Class = 'done'; // Placed is always done if it exists
-                let s2Class = isNew ? 'active' : (isPrep || isDone ? 'done' : ''); // Preparing
-                let s3Class = isPrep ? 'active' : (isDone ? 'done' : ''); // Ready
+                if (statusRaw === 'Preparing') {
+                    step2 = 'status-active';
+                } else if (statusRaw === 'Completed') {
+                    step2 = 'status-done';
+                    step3 = 'status-done'; // Or status-active if you want it to pulse on Ready
+                }
 
                 let itemsList = data.items.map(i => `${i.qty}x ${i.name}`).join(', ');
 
@@ -1914,13 +1945,13 @@
                         <div style="font-size: 12px; color: var(--text-main); font-weight: 600; margin-bottom: 15px;">${itemsList}</div>
                         
                         <div class="visual-tracker">
-                            <div class="tracker-step ${s1Class}">
+                            <div class="tracker-step ${step1}">
                                 <div class="step-icon">✓</div><div class="step-text">Placed</div>
                             </div>
-                            <div class="tracker-step ${s2Class}">
+                            <div class="tracker-step ${step2}">
                                 <div class="step-icon">👨‍🍳</div><div class="step-text">Preparing</div>
                             </div>
-                            <div class="tracker-step ${s3Class}">
+                            <div class="tracker-step ${step3}">
                                 <div class="step-icon">🍽️</div><div class="step-text">Ready</div>
                             </div>
                         </div>
@@ -2325,8 +2356,7 @@
             triggerHapticPop();
         }
 
-        const restaurantWhatsApp = "917870276466"; 
-
+        // 🔥 FIX: WhatsApp Removed, Tracker Auto-Opens 🔥
         window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { 
                 customAlert("Please add items to your cart first!", "🛒"); 
@@ -2353,36 +2383,16 @@
             const modalContent = document.querySelector('.cart-content');
             modalContent.style.opacity = "0.5";
 
-            let orderItems = []; let grandTotal = 0;
-            let orderId = Math.floor(1000 + Math.random() * 9000);
-            let waText = `*[ NEW ORDER ]*\n`;
+            let orderItems = []; 
+            let grandTotal = 0;
             
-            if(currentOrderType === 'Dine-in') waText += `*Type:* Dine-in | *Table:* ${tableNo}\n`; 
-            else waText += `*Type:* Takeaway\n`;
-            
-            waText += `*ID:* #ORD-${orderId}\n\n`;
-
-            if(custName || custPhone) {
-                waText += `*Customer Details:*\n`;
-                if(custName) waText += `Name: ${custName}\n`;
-                if(custPhone) waText += `Phone: ${custPhone}\n`;
-                waText += `\n`; 
-            }
-            
-            if(notes) waText += `*Chef Notes:* _${notes}_\n\n`;
-            waText += `*Order Details:*\n`;
-
             for(let k in cart) { 
                 orderItems.push(cart[k]); 
                 grandTotal += (cart[k].price * cart[k].qty); 
-                let variantText = cart[k].variant ? ` ${cart[k].variant}` : '';
-                waText += `${cart[k].qty} x ${cart[k].name}${variantText} = ₹${cart[k].price * cart[k].qty}\n`;
             }
-            
-            waText += `=====================\n*Total Amount: ₹${grandTotal}*\n=====================\n_Powered by NextPlate_`;
-            let finalWaText = encodeURIComponent(waText); 
 
             try {
+                // Save Order to Firebase Only
                 const docRef = await addDoc(collection(db, "orders"), { 
                     orderType: currentOrderType, 
                     tableNumber: tableNo || "N/A", 
@@ -2400,8 +2410,11 @@
                 try { activeOrders = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
                 activeOrders.push(docRef.id); 
                 localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
-                listenToLiveOrder(docRef.id); 
+                
+                // Immediately start listening to the new order to show in tracker
+                window.listenToLiveOrder(docRef.id); 
 
+                // Reset Forms & Cart
                 cart = {}; 
                 document.getElementById('tableNumber').value = ''; 
                 document.getElementById('customerName').value = '';
@@ -2410,11 +2423,17 @@
                 
                 updateGlobalCartUI(); 
                 checkCartForCurrentDish(); 
-                toggleCart(); 
+                window.toggleCart(); // Hide Cart Modal
+                
                 modalContent.style.opacity = "1";
 
+                // Boom! Confetti
                 launchConfetti(); 
-                setTimeout(() => { window.open(`https://wa.me/${restaurantWhatsApp}?text=${finalWaText}`, '_blank'); }, 1500);
+                
+                // Auto-Open the Tracker after 1 second so customer sees progress!
+                setTimeout(() => { 
+                    window.toggleTracker(); 
+                }, 800);
 
             } catch (e) { 
                 console.error(e); 
