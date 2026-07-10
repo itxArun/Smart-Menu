@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NextPlate - Smart Menu</title>
     
-    <!-- External Scripts & Fonts -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
+    
     <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
 
     <style>
@@ -26,6 +26,7 @@
             --border-light: #E8E8E8; 
             --green: #28A745; 
             --warning: #FF9500; 
+            --danger: #FF3B30;
         }
 
         body { 
@@ -71,7 +72,6 @@
             margin-top: 2px; 
         }
         
-        /* Track Order Button */
         .track-icon { 
             position: relative; 
             font-size: 20px; 
@@ -113,7 +113,6 @@
             100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } 
         }
 
-        /* Language Switcher */
         .lang-switch { 
             display: flex; 
             background: #F1F1F6; 
@@ -140,7 +139,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
         }
         
-        /* Cart Icon */
         .cart-icon { 
             position: relative; 
             font-size: 22px; 
@@ -172,7 +170,6 @@
             align-items: center; 
         }
         
-        /* Flying Dot Animation */
         .flying-dot { 
             position: fixed; 
             width: 20px; 
@@ -253,7 +250,6 @@
             display: none; 
         }
         
-        /* Search Box with Embedded Mic */
         .search-box { 
             position: sticky; 
             top: 0; 
@@ -317,7 +313,6 @@
             100% { transform: translateY(-50%) scale(1); } 
         }
 
-        /* Sidebar Items */
         .side-item { 
             padding: 15px 5px; 
             text-align: center; 
@@ -363,7 +358,6 @@
             letter-spacing: 0.2px;
         }
 
-        /* Skeleton Loading Effect */
         .skeleton { 
             background: #e0e0e0; 
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); 
@@ -473,7 +467,6 @@
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
 
-        /* Floating Action Buttons */
         .waiter-btn { 
             position: absolute; 
             top: 15px; 
@@ -781,6 +774,7 @@
             font-weight: 800; 
             flex: 1.3; 
             cursor: pointer; 
+            transition: 0.2s; 
             box-shadow: 0 4px 10px rgba(226, 55, 68, 0.2); 
         }
         
@@ -1006,7 +1000,16 @@
 
         .btn-checkout:active { transform: scale(0.96); }
         
-        /* 🔥 FIX: Clean Visual Tracker CSS 🔥 */
+        /* 🔥 FIX: Tracker Visual CSS & Split Layout 🔥 */
+        .tracker-section-title { 
+            font-size: 14px; 
+            font-weight: 800; 
+            margin: 0 0 10px 0; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px; 
+        }
+        
         .visual-tracker { 
             display: flex; 
             justify-content: space-between; 
@@ -1054,8 +1057,8 @@
             font-weight: 700; 
             color: var(--text-sub); 
         }
-
-        /* Fixed State Classes for Tracker */
+        
+        /* State Colors */
         .tracker-step.status-done .step-icon { 
             background: var(--success); 
             color: var(--white); 
@@ -1066,7 +1069,7 @@
         
         .tracker-step.status-active .step-icon { 
             background: var(--warning); 
-            color: var(--white);
+            color: var(--white); 
             animation: pulseStep 1.5s infinite; 
         }
         .tracker-step.status-active .step-text { 
@@ -1272,7 +1275,6 @@
 </head>
 <body>
 
-    <!-- Bulletproof Loader Exit -->
     <script>
         window.addEventListener('load', function() {
             setTimeout(function() {
@@ -1299,22 +1301,35 @@
         <span>Loading...</span>
     </div>
 
-    <!-- Haptic Sound & Confetti Canvas -->
     <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3" preload="auto"></audio>
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- Tracker Modal -->
+    <div class="custom-alert" id="coinModal">
+        <div class="alert-box">
+            <div style="font-size:55px; margin-bottom:10px;">🪙</div>
+            <h3 style="margin:0 0 10px 0; color:var(--warning); font-size:20px;">Reward Unlocked!</h3>
+            <p style="color:var(--text-sub); font-size:14px; margin: 0 0 25px 0;">You earned <strong id="earnedCoins" style="color:var(--text-main); font-size:18px;">0</strong> NextCoins from this order!</p>
+            <button style="background:var(--warning); color:white; border:none; padding:14px 0; border-radius:50px; font-size:15px; font-weight:800; cursor:pointer; width:100%; box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);" onclick="document.getElementById('coinModal').classList.remove('show')">Awesome!</button>
+        </div>
+    </div>
+
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center;">
             <div class="cart-header">
                 <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;">Order Status</h2>
                 <button style="border:none; background:#eee; width:30px; height:30px; border-radius:50%; font-weight: bold; cursor:pointer;" onclick="toggleTracker()">✕</button>
             </div>
-            <div id="multi-tracker-body" style="padding: 10px 0; max-height: 60vh; overflow-y: auto;"></div>
+            
+            <div id="multi-tracker-body" style="padding: 10px 0; max-height: 60vh; overflow-y: auto; text-align: left;">
+                <h4 class="tracker-section-title" style="color:var(--zomato-red);">🔥 Live Orders</h4>
+                <div id="live-orders-container"></div>
+                
+                <h4 class="tracker-section-title" style="color:var(--text-sub); margin-top:25px;">📜 Past Orders</h4>
+                <div id="past-orders-container"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Fullscreen Image Viewer -->
     <div class="fullscreen-viewer" id="fs-viewer">
         <div class="fs-bg" onclick="closeFullscreen(event)"></div> 
         <button class="fs-close" onclick="closeFullscreen(event)">✕</button>
@@ -1324,7 +1339,6 @@
         <div class="fs-dots" id="fs-dots"></div>
     </div>
 
-    <!-- General Error Alert -->
     <div class="custom-alert" id="customAlert">
         <div class="alert-box">
             <div class="alert-icon" id="alertIcon">🔢</div>
@@ -1333,7 +1347,6 @@
         </div>
     </div>
 
-    <!-- Waiter Call Prompt Modal -->
     <div class="custom-alert" id="waiterPromptModal">
         <div class="alert-box">
             <div class="alert-icon">🛎️</div>
@@ -1346,7 +1359,6 @@
         </div>
     </div>
 
-    <!-- Jukebox Request Modal -->
     <div class="custom-alert" id="jukeboxModal">
         <div class="alert-box">
             <div class="alert-icon">🎵</div>
@@ -1360,7 +1372,6 @@
         </div>
     </div>
 
-    <!-- App Header -->
     <div class="header">
         <div class="brand-name">
             NextPlate
@@ -1379,7 +1390,6 @@
         </div>
     </div>
 
-    <!-- Category Filters -->
     <div class="category-scroll" id="category-scroll">
         <div class="cat-pill active" onclick="filterCategory('All', this)">All</div>
         <div class="cat-pill" onclick="filterCategory('Trending', this)">🔥 Trending</div>
@@ -1393,7 +1403,6 @@
         <div class="cat-pill" onclick="filterCategory('Desserts', this)">🍰 Desserts</div>
     </div>
 
-    <!-- Main Layout (Sidebar + Viewer) -->
     <div class="app-layout">
         <div class="sidebar">
             <div class="search-box">
@@ -1410,7 +1419,6 @@
             </div>
             
             <div id="sidebar-menu">
-                <!-- Skeleton Shimmer Placeholders -->
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
                 <div class="side-item"><div class="side-emoji skeleton" style="width:40px; height:40px; border-radius:50%; margin:0 auto 5px;"></div><div class="skeleton" style="width:80%; height:10px; margin:0 auto;"></div></div>
@@ -1420,17 +1428,14 @@
         <div class="main-content">
             <div class="viewer-container">
                 
-                <!-- Floating Top Left Waiter Button -->
                 <div class="waiter-btn" onclick="openWaiterPrompt()">
                     🛎️ <span id="waiter-btn-text">Waiter</span>
                 </div>
 
-                <!-- Floating Bottom Right Jukebox Button -->
                 <button class="jukebox-btn" onclick="openJukebox()">
                     🎵 <span id="juke-btn-text">Music</span>
                 </button>
 
-                <!-- Media Display Elements -->
                 <div id="photo-slider" class="photo-slider hide"></div>
                 <div class="media-toggle hide" id="media-toggle" onclick="toggleMedia()">🧊 View 3D</div>
 
@@ -1439,7 +1444,6 @@
                 </model-viewer>
             </div>
 
-            <!-- Bottom Add To Cart Card -->
             <div class="bottom-ui" id="bottom-ui-card">
                 <div class="dish-header">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
@@ -1465,7 +1469,6 @@
         </div>
     </div>
 
-    <!-- Sticky Cart Bar -->
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
             <span class="checkout-items" id="float-items">1 Item</span>
@@ -1474,7 +1477,6 @@
         <div class="checkout-action" id="float-btn-view">View Cart ➔</div>
     </div>
 
-    <!-- Final Cart Checkout Modal -->
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <div class="cart-header">
@@ -1496,7 +1498,6 @@
                         <button id="btn-takeaway" class="type-btn" onclick="setOrderType('Takeaway')">🎒 Takeaway</button>
                     </div>
 
-                    <!-- Smart Upsell Suggestions -->
                     <div id="upsell-container" style="display:none; margin: 5px 0; background: #F8F9FA; padding: 10px; border-radius: 12px; border: 1px dashed var(--border-light);">
                          <div style="font-size:12px; font-weight:800; color:var(--zomato-red); margin-bottom:8px;" id="upsell-text">💡 Frequently Bought Together</div>
                          <div id="upsell-items" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:5px;"></div>
@@ -1514,13 +1515,11 @@
         </div>
     </div>
 
-    <!-- Small Toast Notification -->
     <div class="toast" id="toast">✅ Added to Cart!</div>
 
-    <!-- 🔥 FIREBASE & MAIN LOGIC 🔥 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // ADD FIREBASE CONFIG HERE
         const firebaseConfig = {
@@ -1682,7 +1681,7 @@
             recognition.onerror = () => { micBtn.classList.remove('listening'); };
         };
 
-        // Waiter Call Functionality
+        // Waiter Call Prompt Modal
         window.openWaiterPrompt = () => {
             document.getElementById('waiterTableInput').value = '';
             document.getElementById('waiterPromptModal').classList.add('show');
@@ -1714,7 +1713,7 @@
             }
         };
 
-        // Jukebox Functions
+        // Jukebox Request Modal
         window.openJukebox = () => {
             document.getElementById('jukeSongInput').value = '';
             document.getElementById('jukeTableInput').value = '';
@@ -1749,7 +1748,7 @@
             }
         };
 
-        // Order Type Set
+        // Order Type Selection
         window.setOrderType = (type) => {
             currentOrderType = type;
             document.getElementById('btn-dinein').classList.toggle('active', type === 'Dine-in');
@@ -1771,16 +1770,20 @@
             }
         };
 
+        // Tracker Toggle
         window.toggleTracker = () => { 
             document.getElementById('tracker-modal').classList.toggle('show'); 
         };
 
         // Fullscreen Image Logic
-        let pzInstance = null; let fsImages = []; let fsCurrentIndex = 0;
+        let pzInstance = null; 
+        let fsImages = []; 
+        let fsCurrentIndex = 0;
         
         window.openFullscreen = (index) => { 
             if (!currentDish || !currentDish.images) return; 
-            fsImages = currentDish.images; fsCurrentIndex = index; 
+            fsImages = currentDish.images; 
+            fsCurrentIndex = index; 
             document.getElementById('fs-viewer').classList.add('show'); 
             updateFsImage(); 
             history.pushState({ fsOpen: true }, "", "#photo"); 
@@ -1877,7 +1880,48 @@
             document.getElementById('customAlert').classList.remove('show'); 
         }
 
-        // 🔥 FIX: Order Tracker Logic Re-Engineered 🔥
+        // 🔥 FIX: E-Receipt Download Logic 🔥
+        window.downloadReceipt = (id) => {
+            const data = activeOrderData[id];
+            if(!data) return;
+            
+            let receipt = `----- NEXTPLATE RECEIPT -----\n`;
+            receipt += `Order ID: #${id.slice(-4)}\n`;
+            receipt += `Date: ${data.timestamp.toDate().toLocaleString()}\n`;
+            receipt += `Table: ${data.tableNumber}\n`;
+            receipt += `Type: ${data.orderType}\n`;
+            receipt += `-----------------------------\n`;
+            
+            data.items.forEach(i => {
+                receipt += `${i.qty}x ${i.name} ${i.variant ? '('+i.variant+')' : ''} - Rs.${i.price * i.qty}\n`;
+            });
+            
+            receipt += `-----------------------------\n`;
+            receipt += `Total Amount: Rs.${data.totalAmount}\n`;
+            receipt += `-----------------------------\n`;
+            receipt += `Thank you for dining with us!\n`;
+            
+            const blob = new Blob([receipt], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `NextPlate_Receipt_${id.slice(-4)}.txt`;
+            a.click();
+        };
+
+        // 🔥 FIX: Cancel Customer Order Logic 🔥
+        window.cancelCustomerOrder = async (orderId) => {
+            if(confirm(currentLang === 'hi' ? "क्या आप सच में ऑर्डर रद्द करना चाहते हैं?" : "Are you sure you want to cancel this order?")) {
+                try {
+                    await updateDoc(doc(db, "orders", orderId), { status: 'Cancelled' });
+                    showToast(currentLang === 'hi' ? "❌ ऑर्डर रद्द हो गया।" : "❌ Order Cancelled.");
+                } catch(e) {
+                    console.error("Cancel failed:", e);
+                }
+            }
+        };
+
+        // 🔥 FIX: Live Tracker Logic with ETA, Cancel, & History 🔥
         let activeOrderListeners = {}; 
         let activeOrderData = {};
         
@@ -1891,11 +1935,14 @@
         }
 
         window.renderMultiTracker = function() {
-            const container = document.getElementById('multi-tracker-body');
+            const liveContainer = document.getElementById('live-orders-container');
+            const pastContainer = document.getElementById('past-orders-container');
             const trackBtn = document.getElementById('btn-track-order');
             const pulse = document.getElementById('track-badge-pulse');
             
-            container.innerHTML = ''; 
+            liveContainer.innerHTML = ''; 
+            pastContainer.innerHTML = ''; 
+            
             let showTrackBtn = false; 
             let showPulse = false;
             
@@ -1911,32 +1958,40 @@
                 if(!data) { newActiveList.push(id); return; }
 
                 let statusRaw = data.status; // New, Preparing, Completed, Cancelled
-                
-                if(statusRaw !== 'Cancelled') showTrackBtn = true;
-                if(statusRaw === 'New' || statusRaw === 'Preparing') showPulse = true;
-                
-                if(statusRaw === 'Cancelled') {
-                    container.innerHTML += `<div style="padding:15px; border:1px solid #eee; border-radius:12px; margin-bottom:10px; color:var(--text-sub);">Order #${id.slice(-4)} Cancelled ❌</div>`;
-                    return;
-                }
-
                 newActiveList.push(id); 
+                
+                let isNew = (statusRaw === 'New');
+                let isPrep = (statusRaw === 'Preparing');
+                let isDone = (statusRaw === 'Completed');
+                let isCanc = (statusRaw === 'Cancelled');
+                
+                if(!isCanc) showTrackBtn = true;
+                if(isNew || isPrep) showPulse = true;
 
-                // Strict CSS Classes assignment
+                // CSS Classes assignment for Visual Stepper
                 let step1 = 'status-done';
-                let step2 = '';
-                let step3 = '';
-
-                if (statusRaw === 'Preparing') {
-                    step2 = 'status-active';
-                } else if (statusRaw === 'Completed') {
-                    step2 = 'status-done';
-                    step3 = 'status-done'; // Or status-active if you want it to pulse on Ready
-                }
+                let step2 = isNew ? 'status-active' : (isPrep || isDone ? 'status-done' : '');
+                let step3 = isPrep ? 'status-active' : (isDone ? 'status-done' : '');
 
                 let itemsList = data.items.map(i => `${i.qty}x ${i.name}`).join(', ');
 
-                container.innerHTML += `
+                // Dynamic Action Buttons Area
+                let actionHtml = '';
+                if(isNew) {
+                    actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 12px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; width:100%; margin-top:10px; transition:0.2s;">Cancel Order ❌</button>`;
+                } else if(isPrep) {
+                    let eta = data.items.length * 5; // ETA Logic (5 mins per item)
+                    actionHtml = `<div style="background:#FFF0E5; color:var(--warning); padding:10px; border-radius:8px; font-size:12px; font-weight:bold; text-align:center; margin-top:10px;">⏳ ETA: ${eta} - ${eta+5} Mins</div>`;
+                } else if(isDone) {
+                    actionHtml = `
+                        <div style="background:#E5F8ED; color:var(--success); padding:10px; border-radius:8px; font-size:12px; font-weight:bold; text-align:center; margin-top:10px; margin-bottom:10px;">🎉 Order Done! Enjoy your meal.</div>
+                        <button onclick="downloadReceipt('${id}')" style="background:#F1F1F6; color:var(--text-main); border:1px solid var(--border-light); padding:8px 12px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; width:100%;">📄 Download Receipt</button>
+                    `;
+                } else if(isCanc) {
+                    actionHtml = `<div style="background:#F1F1F6; color:var(--text-sub); padding:10px; border-radius:8px; font-size:12px; font-weight:bold; text-align:center; margin-top:10px;">Order Cancelled</div>`;
+                }
+
+                let cardHtml = `
                     <div style="background: #fff; border: 1px solid var(--border-light); border-radius: 16px; padding: 15px; margin-bottom: 15px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
                             <div style="font-weight:800; color:var(--text-main); font-size:14px;">Order #${id.slice(-4)}</div>
@@ -1944,6 +1999,7 @@
                         </div>
                         <div style="font-size: 12px; color: var(--text-main); font-weight: 600; margin-bottom: 15px;">${itemsList}</div>
                         
+                        ${!isCanc ? `
                         <div class="visual-tracker">
                             <div class="tracker-step ${step1}">
                                 <div class="step-icon">✓</div><div class="step-text">Placed</div>
@@ -1954,9 +2010,17 @@
                             <div class="tracker-step ${step3}">
                                 <div class="step-icon">🍽️</div><div class="step-text">Ready</div>
                             </div>
-                        </div>
+                        </div>` : ''}
+                        
+                        ${actionHtml}
                     </div>
                 `;
+
+                if(isNew || isPrep) {
+                    liveContainer.innerHTML += cardHtml;
+                } else {
+                    pastContainer.innerHTML += cardHtml;
+                }
             });
 
             localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
@@ -1968,9 +2032,8 @@
                 trackBtn.classList.remove('show'); 
             }
             
-            if(container.innerHTML === '') {
-                container.innerHTML = `<p style="color:var(--text-sub); font-size:13px; font-weight:600;">No active orders.</p>`;
-            }
+            if(liveContainer.innerHTML === '') liveContainer.innerHTML = `<p style="color:var(--text-sub); font-size:12px; font-weight:600;">No live orders right now.</p>`;
+            if(pastContainer.innerHTML === '') pastContainer.innerHTML = `<p style="color:var(--text-sub); font-size:12px; font-weight:600;">No past orders found.</p>`;
         }
 
         // Initialize Listeners for existing orders
@@ -1978,7 +2041,7 @@
         try { savedOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
         savedOrdersList.forEach(id => window.listenToLiveOrder(id));
 
-        // Background Fetch Trending
+        // Fetch Trending Dishes Background
         async function fetchTrendingDishes() {
             try {
                 const q = query(collection(db, "orders"), orderBy("timestamp", "desc"), limit(20));
@@ -1993,9 +2056,9 @@
             } catch(e) { console.log("Trending fetch issue", e); }
         }
         
-        fetchTrendingDishes(); // Called immediately
+        fetchTrendingDishes(); // Background process
 
-        // Main Menu Fetch
+        // Main Menu Listener
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
             allDishes = [];
             snapshot.forEach((doc) => { 
@@ -2011,8 +2074,7 @@
             applyFilters(); 
             if(allDishes.length > 0 && !currentDish) loadDish(allDishes[0]);
         }, (error) => {
-            console.error("Firebase Snapshot Error:", error);
-            document.getElementById('sidebar-menu').innerHTML = '<div style="padding:20px; font-size:10px; color:#E23744; text-align:center;">Network Error</div>';
+            console.error("Firebase Error:", error);
         });
 
         window.filterCategory = function(cat, element) { 
@@ -2356,7 +2418,7 @@
             triggerHapticPop();
         }
 
-        // 🔥 FIX: WhatsApp Removed, Tracker Auto-Opens 🔥
+        // 🔥 FIX: 100% WhatsApp-Free Order Logic & Automation 🔥
         window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { 
                 customAlert("Please add items to your cart first!", "🛒"); 
@@ -2392,7 +2454,7 @@
             }
 
             try {
-                // Save Order to Firebase Only
+                // Save Order directly to Firebase Database
                 const docRef = await addDoc(collection(db, "orders"), { 
                     orderType: currentOrderType, 
                     tableNumber: tableNo || "N/A", 
@@ -2411,29 +2473,34 @@
                 activeOrders.push(docRef.id); 
                 localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
                 
-                // Immediately start listening to the new order to show in tracker
+                // Track this new order
                 window.listenToLiveOrder(docRef.id); 
 
-                // Reset Forms & Cart
+                // Reset specific forms, Keep table number logic for session
                 cart = {}; 
-                document.getElementById('tableNumber').value = ''; 
-                document.getElementById('customerName').value = '';
-                document.getElementById('customerPhone').value = ''; 
-                document.getElementById('cookingNotes').value = '';
+                document.getElementById('cookingNotes').value = ''; 
                 
                 updateGlobalCartUI(); 
                 checkCartForCurrentDish(); 
-                window.toggleCart(); // Hide Cart Modal
+                window.toggleCart(); 
                 
                 modalContent.style.opacity = "1";
 
-                // Boom! Confetti
+                // Play Confetti Celebration
                 launchConfetti(); 
                 
-                // Auto-Open the Tracker after 1 second so customer sees progress!
+                // Show Reward Popup
+                setTimeout(() => {
+                    let earnedCoins = Math.floor(grandTotal / 10); // Example 10% cash back logic
+                    document.getElementById('earnedCoins').innerText = earnedCoins;
+                    document.getElementById('coinModal').classList.add('show');
+                    triggerHapticPop();
+                }, 1000);
+                
+                // Auto-Open Tracker Panel after celebration
                 setTimeout(() => { 
                     window.toggleTracker(); 
-                }, 800);
+                }, 3000); 
 
             } catch (e) { 
                 console.error(e); 
