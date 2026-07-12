@@ -151,11 +151,12 @@
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* =========================================
-           MAIN CONTENT & VIEWER
+           MAIN CONTENT & VIEWER (IMAGE BIGGER)
         ========================================= */
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
         
-        .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; background: #E8E8E8; border-radius: 0 0 24px 24px; overflow: hidden; box-shadow: var(--shadow-soft); z-index: 5;}
+        /* Viewer height increased so photo looks full/big */
+        .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; background: #E8E8E8; border-radius: 0 0 20px 20px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.04); z-index: 5; height: 50vh;}
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
         .progress-bar { display: block; width: 50%; height: 4px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255,255,255,0.5); border-radius: 10px; overflow: hidden; }
@@ -233,46 +234,40 @@
         .fs-dot.active { background: white; transform: scale(1.3); }
 
         /* =========================================
-           BOTTOM UI (PREMIUM LAYOUT EXACT)
+           BOTTOM UI (COMPACT SO IMAGE IS BIG)
         ========================================= */
         .bottom-ui { 
-            flex-shrink: 0; background: var(--white); padding: 25px 20px; border-radius: 28px 28px 0 0; 
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05); position: relative; z-index: 10; transition: padding-bottom 0.3s ease; margin-top: -20px;
+            flex-shrink: 0; background: var(--white); padding: 15px 20px 95px 20px; border-radius: 20px 20px 0 0; 
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05); position: relative; z-index: 10; margin-top: -15px; flex: 1;
         }
-        .bottom-ui.with-cart { padding-bottom: 95px; }
 
-        .dish-header { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 10px; }
-        .dish-title-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px;}
-        .dish-title { font-size: 24px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
+        .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
+        .dish-title { font-size: 22px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
         
-        .price-section { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; }
-        .price { font-size: 26px; font-weight: 800; color: var(--text-main); display: flex; align-items: center;}
+        .price-section { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; margin-top: 5px;}
+        .price { font-size: 24px; font-weight: 800; color: var(--text-main); display: flex; align-items: center;}
         
-        .variant-selector { display: flex; background: var(--bg-light); border-radius: 16px; overflow: hidden; margin-bottom: 20px; padding: 5px; gap: 5px; border: 1px solid var(--border-light); }
+        .variant-selector { display: flex; background: var(--bg-light); border-radius: 50px; overflow: hidden; margin-bottom: 15px; padding: 4px; gap: 4px; border: 1px solid var(--border-light); }
         .variant-selector.hide { display: none; }
         
-        .var-btn { flex: 1; padding: 12px 0; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: var(--transition); }
-        .var-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
+        .var-btn { flex: 1; padding: 10px 0; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 50px; cursor: pointer; transition: var(--transition); }
+        .var-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
         
-        .action-row { display: flex; gap: 15px; width: 100%; margin-bottom: 10px;}
+        .action-row { display: flex; gap: 12px; width: 100%; margin-bottom: 5px;}
         
-        /* Premium Add Button */
+        /* ADD Button / Stepper (Proper fix for display block/flex) */
         .btn-cart { 
-            background: var(--primary-gradient); color: var(--white); border: none; padding: 16px 0; border-radius: 16px; font-size: 15px; font-weight: 800; flex: 1; cursor: pointer; transition: var(--transition); box-shadow: 0 8px 25px rgba(226, 55, 68, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; position: relative; overflow: hidden;
+            background: var(--primary-gradient); color: var(--white); border: none; padding: 12px 0; border-radius: 50px; font-size: 15px; font-weight: 800; flex: 1; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(226, 55, 68, 0.3); display: block; text-align: center; position: relative; overflow: hidden;
         }
-        .btn-cart:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(226, 55, 68, 0.2); }
-        .btn-cart::after {
-            content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.2); transform: translate(-50%, -50%) scale(0);
-            border-radius: 50%; transition: transform 0.4s;
-        }
-        .btn-cart:active::after { transform: translate(-50%, -50%) scale(2); opacity: 0;}
-
-        .stepper-control { display: none; flex: 1; background: var(--white); border: 2px solid var(--primary); border-radius: 16px; justify-content: space-between; align-items: center; padding: 0 10px; font-weight: 800; color: var(--primary); font-size: 16px; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.1);}
-        .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 20px; font-weight: 800; cursor: pointer; padding: 10px 15px; transition: var(--transition);}
+        .btn-cart i { font-size: 18px; margin-left: 4px;}
+        .btn-cart:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(226, 55, 68, 0.2); }
+        
+        .stepper-control { display: none; flex: 1; background: var(--white); border: 2px solid var(--primary); border-radius: 50px; justify-content: space-between; align-items: center; padding: 0 10px; font-weight: 800; color: var(--primary); font-size: 16px; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.1);}
+        .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 20px; font-weight: 800; cursor: pointer; padding: 8px 15px; transition: var(--transition);}
         .stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 10px; transform: scale(0.9);}
 
-        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 16px 0; border-radius: 16px; font-size: 14px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 12px 0; border-radius: 50px; font-size: 14px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px;}
+        .btn-premium i { font-size: 18px; color: var(--primary);}
         .btn-premium:hover { border-color: var(--primary); color: var(--primary);}
         .btn-premium:active { transform: scale(0.96); }
         
@@ -286,7 +281,7 @@
         .checkout-info { display: flex; flex-direction: column; text-align: left; gap: 2px;}
         .checkout-items { font-size: 11px; font-weight: 600; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px;}
         .checkout-total { font-size: 18px; font-weight: 800; }
-        .checkout-action { font-size: 15px; font-weight: 700; color: white; display: flex; align-items: center; gap: 6px;} /* Fixed color to white */
+        .checkout-action { font-size: 14px; font-weight: 700; color: var(--primary); background: white; padding: 6px 14px; border-radius: 50px; display: flex; align-items: center; gap: 4px;} 
 
         /* =========================================
            CART & TRACKER MODALS (GLASS EFFECT)
@@ -311,34 +306,56 @@
         .swipe-action { width: 80px; flex-shrink: 0; scroll-snap-align: start; background: var(--danger); color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; cursor: pointer; border-radius: 0 16px 16px 0; transition: 0.3s;}
         
         .cart-item-info { flex: 1; text-align: left; }
-        .cart-item-qty { display: flex; align-items: center; gap: 10px; background: rgba(226, 55, 68, 0.08); color: var(--primary); border-radius: 12px; padding: 6px 12px; font-weight: 700; border: 1px solid rgba(226, 55, 68, 0.2);}
+        .cart-item-qty { display: flex; align-items: center; gap: 10px; background: rgba(229, 57, 53, 0.08); color: var(--primary); border-radius: 12px; padding: 6px 12px; font-weight: 700; border: 1px solid rgba(229, 57, 53, 0.2);}
         .cart-item-qty button { border: none; background: transparent; font-size: 18px; font-weight: 800; color: var(--primary); cursor: pointer; padding: 0 5px; transition: 0.2s;}
         .cart-item-qty button:active { transform: scale(0.8); }
 
         .bill-details { background: #FAFAFA; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1); }
         .bill-total { display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; color: var(--text-main); }
         
-        .btn-checkout { background: var(--primary-gradient); color: white; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 8px 25px rgba(226, 55, 68, 0.3); transition: var(--transition); flex-shrink: 0; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-checkout { background: var(--primary-gradient); color: white; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 8px 25px rgba(229, 57, 53, 0.3); transition: var(--transition); flex-shrink: 0; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .btn-checkout:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(226, 55, 68, 0.2);}
 
-        .order-type-selector { display: flex; background: var(--bg-light); border-radius: 16px; padding: 5px; margin-bottom: 15px; border: 1px solid var(--border-light);}
-        .type-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 6px;}
+        /* TRACKER TABS & VISUAL TRACKER (RESTORED ZOMATO STYLE) */
+        .tracker-tabs { display: flex; background: var(--bg-light); border-radius: 12px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border-light);}
+        .tracker-tab-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .tracker-tab-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700;}
+
+        /* Restored classic horizontal visual tracker from index (6) */
+        .visual-tracker { display: flex; justify-content: space-between; align-items: center; position: relative; margin: 20px 10px; }
+        .visual-tracker::before { content: ''; position: absolute; top: 14px; left: 10%; right: 10%; height: 3px; background: var(--border-light); z-index: 1; }
+        .tracker-step { display: flex; flex-direction: column; align-items: center; z-index: 2; flex: 1; gap: 6px; }
+        .step-icon { width: 30px; height: 30px; border-radius: 50%; background: var(--border-light); color: var(--white); display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; transition: 0.3s; }
+        .step-text { font-size: 10px; font-weight: 700; color: var(--text-sub); margin-top: 4px; }
+        
+        .tracker-step.done .step-icon { background: var(--green); color: white;}
+        .tracker-step.done .step-text { color: var(--green); }
+        .tracker-step.active .step-icon { background: var(--warning); color: white; animation: pulseStep 1.5s infinite; }
+        .tracker-step.active .step-text { color: var(--warning); }
+
+        @keyframes pulseStep { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
+
+        /* Other Form UI */
+        .order-type-selector { display: flex; background: var(--bg-light); border-radius: 16px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border-light);}
+        .type-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 6px;}
         .type-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
 
         .input-field { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 16px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: var(--transition); background: var(--bg-light);}
         .input-field:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.1);}
 
         /* Alerts & Toasts */
-        .toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--text-main); color: white; padding: 14px 24px; border-radius: 50px; font-size: 14px; font-weight: 600; transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; opacity: 0; visibility: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        .toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--text-main); color: white; padding: 14px 24px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; opacity: 0; visibility: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
         .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); top: 120px; }
+        .toast i { font-size: 18px; color: var(--green); }
 
-        .custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
+        .custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .custom-alert.show { visibility: visible; opacity: 1; }
         .alert-box { background: var(--white); padding: 35px 25px; border-radius: 32px; text-align: center; max-width: 340px; width: 85%; transform: scale(0.9) translateY(20px); transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.8);}
         .custom-alert.show .alert-box { transform: scale(1) translateY(0); }
         .alert-icon { font-size: 50px; margin-bottom: 15px; display: flex; justify-content: center; color: var(--warning);}
-        .alert-box h3 { margin: 0 0 25px 0; font-size: 20px; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;}
-        .alert-btn-primary { background: var(--primary-gradient); color: white; border: none; padding: 16px 0; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; transition: var(--transition); box-shadow: 0 8px 20px rgba(226, 55, 68, 0.3);}
+        .alert-box h3 { margin: 0 0 10px 0; font-size: 20px; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;}
+        .alert-box p { font-size: 13px; color: var(--text-sub); margin-bottom: 25px; font-weight: 500;}
+        .alert-btn-primary { background: var(--primary-gradient); color: white; border: none; padding: 16px 0; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; transition: var(--transition); box-shadow: 0 8px 20px var(--primary-glow);}
         .alert-btn-primary:active { transform: scale(0.95); }
 
         #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
@@ -371,13 +388,33 @@
     <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3" preload="auto"></audio>
     <canvas id="confetti-canvas"></canvas>
 
+    <!-- Reward Modal -->
+    <div class="custom-alert" id="coinModal">
+        <div class="alert-box">
+            <div class="alert-icon" style="font-size: 60px;">🪙</div>
+            <h3 style="color:var(--warning);">Reward Unlocked!</h3>
+            <p style="color:var(--text-sub); font-size:14px; margin-bottom:20px;">You earned <strong id="earnedCoins" style="color:var(--text-main); font-size:16px;">0</strong> NextCoins from this order!</p>
+            <button class="alert-btn-primary" style="background:var(--warning); box-shadow: 0 8px 20px rgba(255,159,0,0.3);" onclick="document.getElementById('coinModal').classList.remove('show')">Awesome!</button>
+        </div>
+    </div>
+
+    <!-- Tracker Modal with Live and Past Tabs -->
     <div class="cart-modal" id="tracker-modal">
-        <div class="cart-content" style="text-align: center;">
+        <div class="cart-content" style="text-align: center; max-height: 90vh;">
             <div class="cart-header">
                 <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;"><i class="ph-fill ph-receipt"></i> Order Status</h2>
-                <button class="btn-close" onclick="toggleTracker()"><i class="ph ph-x"></i></button>
+                <button class="btn-close" onclick="toggleTracker()">✕</button>
             </div>
-            <div id="multi-tracker-body" style="padding: 10px 0; max-height: 60vh; overflow-y: auto;"></div>
+            
+            <div class="tracker-tabs">
+                <button id="tab-live-orders" class="tracker-tab-btn active" onclick="switchOrderTab('live')">Live Orders</button>
+                <button id="tab-past-orders" class="tracker-tab-btn" onclick="switchOrderTab('past')">Past Orders</button>
+            </div>
+
+            <div id="multi-tracker-body" style="padding: 10px 0; max-height: 60vh; overflow-y: auto; text-align: left;">
+                <div id="live-orders-container"></div>
+                <div id="past-orders-container" style="display: none;"></div>
+            </div>
         </div>
     </div>
 
@@ -402,7 +439,7 @@
         <div class="alert-box">
             <div class="alert-icon"><i class="ph-fill ph-bell-ringing" style="color: var(--primary);"></i></div>
             <h3 id="waiterTitleText">Call Waiter</h3>
-            <p style="margin-bottom: 15px; color:var(--text-sub); font-size:13px;">Need assistance? Enter your table number below.</p>
+            <p>Need assistance? Enter your table number below.</p>
             <input type="number" id="waiterTableInput" class="input-field" placeholder="Enter Table Number" style="margin-bottom: 25px; text-align: center; font-weight:700;">
             <div style="display: flex; gap: 12px;">
                 <button style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer; transition:0.2s;" onclick="closeWaiterPrompt()" id="waiterCancelBtn">Cancel</button>
@@ -418,7 +455,7 @@
         </div>
         <div style="display:flex; align-items:center;">
             <div class="track-icon" id="btn-track-order" onclick="toggleTracker()">
-                <i class="ph-fill ph-package"></i> <span style="font-size: 14px; font-weight:700; color:inherit;" id="track-btn-text">Track</span>
+                <i class="ph-fill ph-package"></i> <span style="font-size: 14px; font-weight:700; color:inherit;" id="track-btn-text">Orders</span>
                 <div class="track-pulse" id="track-badge-pulse"></div>
             </div>
             <div class="lang-switch">
@@ -478,7 +515,8 @@
                 <!-- 🔥 Favorite Button on Photo -->
                 <button class="photo-fav-btn" onclick="toggleFavIcon(event)">🤍</button>
 
-                <div class="waiter-btn" onclick="openWaiterPrompt()">
+                <!-- Waiter moved slightly down not to overlap with top badge -->
+                <div class="waiter-btn" onclick="openWaiterPrompt()" style="top: 55px;">
                     <i class="ph-fill ph-bell-ringing"></i>
                 </div>
 
@@ -492,14 +530,15 @@
                 </model-viewer>
             </div>
 
+            <!-- More compact bottom UI so image remains fully visible -->
             <div class="bottom-ui" id="bottom-ui-card">
                 <div class="dish-header-row">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
                     <span class="type-icon" id="display-type-icon"><i class="ph-fill ph-circle" style="color:var(--green)"></i></span>
                 </div>
                 
-                <div class="price-section" style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px; margin-top: 10px;">
-                    <p class="price" id="display-price" style="margin:0; font-size: 26px; font-weight:800; display:flex; align-items:center; color: var(--text-main);">₹0</p>
+                <div class="price-section" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; margin-top: 5px;">
+                    <p class="price" id="display-price" style="margin:0; font-size: 24px; font-weight:800; display:flex; align-items:center; color: var(--text-main);">₹0</p>
                 </div>
                 
                 <div class="variant-selector hide" id="variant-box">
@@ -509,6 +548,7 @@
                 </div>
                 
                 <div class="action-row">
+                    <!-- ADD Button uses default block display for exact javascript compatibility -->
                     <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">ADD <i class="ph-bold ph-plus"></i></button>
                     <div class="stepper-control" id="btn-stepper">
                         <button onclick="changeCurrentQty(-1)"><i class="ph-bold ph-minus"></i></button>
@@ -521,12 +561,13 @@
         </div>
     </div>
 
+    <!-- Floating Checkout uses fixed White Text -->
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
             <span class="checkout-items" id="float-items">1 Item</span>
             <span class="checkout-total" id="float-total">₹0</span>
         </div>
-        <div class="checkout-action" id="float-btn-view" style="color: var(--white);">Continue <i class="ph-bold ph-arrow-right"></i></div>
+        <div class="checkout-action" id="float-btn-view" style="color: var(--primary); background: white;">Continue <i class="ph-bold ph-arrow-right"></i></div>
     </div>
 
     <div class="cart-modal" id="cart-modal">
@@ -562,14 +603,14 @@
         </div>
     </div>
 
-    <!-- Original Toast Structure maintained -->
+    <!-- Original Safe Toast Structure maintained -->
     <div class="toast" id="toast">✅ Added to Cart!</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // 🔥 IMPORTANT: Same Firebase Config
+        // 🔥 Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
             authDomain: "itx-arun-bdf24.firebaseapp.com",
@@ -661,8 +702,8 @@
         };
 
         const i18n = {
-            en: { add: "ADD", ar: "View on Table", viewCart: "Continue", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "Search...", trackTitle: "Order Status", trackBtn: "Track", dineIn: "Dine-in", takeaway: "Takeaway", waiter: "Waiter", notes: "Chef Notes (e.g. Make it spicy)", waiterTitle: "Call Waiter", waiterCancel: "Cancel", waiterCall: "Call Now", waiterInput: "Enter Table Number" },
-            hi: { add: "जोड़ें", ar: "टेबल पर देखें", viewCart: "आगे बढ़ें", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "खोजें...", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "यहीं खाएंगे", takeaway: "पैक करें", waiter: "वेटर", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", waiterTitle: "वेटर बुलाएं", waiterCancel: "रद्द करें", waiterCall: "कॉल करें", waiterInput: "टेबल नंबर दर्ज करें" }
+            en: { add: "ADD", ar: "View on Table", viewCart: "Continue", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "Search...", trackTitle: "My Orders", trackBtn: "Orders", dineIn: "Dine-in", takeaway: "Takeaway", waiter: "Waiter", notes: "Chef Notes (e.g. Make it spicy)", waiterTitle: "Call Waiter", waiterCancel: "Cancel", waiterCall: "Call Now", waiterInput: "Enter Table Number" },
+            hi: { add: "जोड़ें", ar: "टेबल पर देखें", viewCart: "आगे बढ़ें", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "खोजें...", trackTitle: "मेरे ऑर्डर", trackBtn: "ऑर्डर", dineIn: "यहीं खाएंगे", takeaway: "पैक करें", waiter: "वेटर", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", waiterTitle: "वेटर बुलाएं", waiterCancel: "रद्द करें", waiterCall: "कॉल करें", waiterInput: "टेबल नंबर दर्ज करें" }
         };
         let currentLang = 'en';
 
@@ -674,12 +715,12 @@
             document.getElementById('btn-add-new').innerHTML = `${i18n[l].add} <i class="ph-bold ph-plus"></i>`;
             document.getElementById('btn-ar-view').innerHTML = `<i class="ph-fill ph-camera"></i> ${i18n[l].ar}`;
             document.getElementById('float-btn-view').innerHTML = `${i18n[l].viewCart} <i class="ph-bold ph-arrow-right"></i>`;
-            document.getElementById('cart-title-text').innerText = i18n[l].cartTitle;
+            document.getElementById('cart-title-text').innerHTML = `<i class="ph-fill ph-shopping-bag"></i> ${i18n[l].cartTitle}`;
             document.getElementById('checkoutBtn').innerHTML = `${i18n[l].place} <i class="ph-bold ph-arrow-right"></i>`;
             document.getElementById('bill-total-text').innerText = i18n[l].totalPay;
             document.getElementById('btn-alert-ok').innerText = i18n[l].alertOk;
             document.getElementById('searchInput').placeholder = i18n[l].search;
-            document.getElementById('tracker-title-text').innerText = i18n[l].trackTitle;
+            document.getElementById('tracker-title-text').innerHTML = `<i class="ph-fill ph-receipt"></i> ${i18n[l].trackTitle}`;
             document.getElementById('track-btn-text').innerText = i18n[l].trackBtn;
             document.getElementById('btn-dinein').innerHTML = `<i class="ph-fill ph-fork-knife"></i> ${i18n[l].dineIn}`;
             document.getElementById('btn-takeaway').innerHTML = `<i class="ph-fill ph-shopping-bag"></i> ${i18n[l].takeaway}`;
@@ -740,6 +781,17 @@
         };
 
         window.toggleTracker = () => { document.getElementById('tracker-modal').classList.toggle('show'); };
+
+        // Split Tab Tracker Logic
+        window.switchOrderTab = (tab) => {
+            document.getElementById('tab-live-orders').classList.remove('active');
+            document.getElementById('tab-past-orders').classList.remove('active');
+            document.getElementById('live-orders-container').style.display = 'none';
+            document.getElementById('past-orders-container').style.display = 'none';
+            
+            document.getElementById(`tab-${tab}-orders`).classList.add('active');
+            document.getElementById(`${tab}-orders-container`).style.display = 'block';
+        };
 
         let pzInstance = null; let fsImages = []; let fsCurrentIndex = 0;
         
@@ -807,12 +859,14 @@
             });
         }
 
+        // Restored Classic Horizontal Zomato Tracker
         function renderMultiTracker() {
-            const container = document.getElementById('multi-tracker-body');
+            const liveContainer = document.getElementById('live-orders-container');
+            const pastContainer = document.getElementById('past-orders-container');
             const trackBtn = document.getElementById('btn-track-order');
             const pulse = document.getElementById('track-badge-pulse');
             
-            container.innerHTML = ''; let showTrackBtn = false; let showPulse = false;
+            liveContainer.innerHTML = ''; pastContainer.innerHTML = ''; let showTrackBtn = false; let showPulse = false;
             
             let activeOrdersList = [];
             try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) { activeOrdersList = []; }
@@ -823,46 +877,71 @@
                 const data = activeOrderData[id];
                 if(!data) { newActiveList.push(id); return; }
 
-                let isPrep = data.status === 'Preparing';
-                let isDone = data.status === 'Completed';
-                
-                if(data.status !== 'Cancelled' && !isDone) { showPulse = true; showTrackBtn = true; newActiveList.push(id); }
-                else if (isDone) showTrackBtn = true; 
-                
-                if(data.status === 'Cancelled') {
-                    container.innerHTML += `<div style="padding:15px; border:1px solid #eee; border-radius:16px; margin-bottom:15px; color:var(--text-sub); text-align:center; font-weight:600; box-shadow: var(--shadow-soft);">Order Cancelled ❌</div>`;
-                    return;
-                }
+                let statusRaw = data.status; newActiveList.push(id); 
+                let isNew = (statusRaw === 'New'); let isPrep = (statusRaw === 'Preparing'); let isDone = (statusRaw === 'Completed'); let isCanc = (statusRaw === 'Cancelled');
+                if(!isCanc) showTrackBtn = true; if(isNew || isPrep) showPulse = true;
+
+                let isToday = false;
+                if(data.timestamp) {
+                    const d = data.timestamp.toDate(); const t = new Date();
+                    isToday = d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear();
+                } else { isToday = true; }
 
                 let itemsList = data.items.map(i => `<span style="display:block; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.02);"><b>${i.qty}x</b> ${i.name}</span>`).join('');
+                let orderTime = data.timestamp ? data.timestamp.toDate().toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'}) : '';
 
-                container.innerHTML += `
-                    <div style="background: var(--white); border: 1px solid var(--border-light); border-radius: 20px; padding: 18px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft);">
+                let actionHtml = '';
+                if(isNew) {
+                    actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:10px 16px; border-radius:50px; font-size:13px; font-weight:800; cursor:pointer; display:block; width: 100%; margin:15px auto 0 auto; transition:0.2s;">Cancel Order ❌</button>`;
+                } else if(isPrep) {
+                    let eta = data.items.length * 5; 
+                    actionHtml = `<div style="background:rgba(255, 159, 0, 0.1); color:var(--warning); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px; border:1px dashed var(--warning);">⏳ ETA: ${eta} - ${eta+5} Mins</div>`;
+                } else if(isDone) {
+                    actionHtml = `
+                        <div style="background:rgba(52, 199, 89, 0.1); color:var(--green); border:1px dashed var(--green); padding:10px; border-radius:12px; font-size:12px; font-weight:700; text-align:center; margin-top:15px; margin-bottom:10px;">🎉 Enjoy your meal!</div>
+                    `;
+                } else if(isCanc) {
+                    actionHtml = `<div style="background:var(--bg-light); color:var(--text-sub); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px;">Order Cancelled</div>`;
+                }
+
+                let cardBg = isDone ? '#F2FCF5' : '#fff'; let cardBorder = isDone ? '1px solid #34C759' : '1px solid var(--border-light)';
+
+                let cardHtml = `
+                    <div style="background:${cardBg}; border:${cardBorder}; border-radius: 20px; padding: 20px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft);">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom: 1px solid #eee; padding-bottom:10px;">
-                            <div style="font-weight:800; color:var(--text-main); font-size:15px;">#${id.slice(-4)}</div>
-                            <div style="font-size:16px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</div>
+                            <div style="font-weight:800; color:var(--text-main); font-size:16px;">#${id.slice(-4)}</div>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                                <div style="font-size:16px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</div>
+                                <div style="font-size:11px; color:var(--text-sub); font-weight:500;">${orderTime}</div>
+                            </div>
                         </div>
                         <div style="font-size: 13px; color: var(--text-main); font-weight: 500; margin-bottom: 20px;">${itemsList}</div>
                         
+                        ${!isCanc ? `
                         <div class="visual-tracker">
-                            <div class="tracker-step ${data.status !== 'Cancelled' ? 'status-done' : ''}">
-                                <div class="step-icon"><i class="ph-bold ph-check"></i></div><div class="step-text">Placed</div>
+                            <div class="tracker-step ${statusRaw !== 'Cancelled' ? 'done' : ''}">
+                                <div class="step-icon">✓</div><div class="step-text">Placed</div>
                             </div>
-                            <div class="tracker-step ${isPrep || isDone ? 'status-done' : (data.status === 'New' ? '' : 'status-active')}">
-                                <div class="step-icon"><i class="ph-fill ph-cooking-pot"></i></div><div class="step-text">Prep</div>
+                            <div class="tracker-step ${isPrep || isDone ? 'done' : (isNew ? 'active' : '')}">
+                                <div class="step-icon">👨‍🍳</div><div class="step-text">Preparing</div>
                             </div>
-                            <div class="tracker-step ${isDone ? 'status-done' : (isPrep ? 'status-active' : '')}">
-                                <div class="step-icon"><i class="ph-fill ph-bell-ringing"></i></div><div class="step-text">Ready</div>
+                            <div class="tracker-step ${isDone ? 'done' : (isPrep ? 'active' : '')}">
+                                <div class="step-icon">🍽️</div><div class="step-text">Ready</div>
                             </div>
-                        </div>
+                        </div>` : ''}
+                        
+                        ${actionHtml}
                     </div>
                 `;
+
+                if(isToday || (!isCanc && !isDone)) { liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; } else { pastContainer.innerHTML = cardHtml + pastContainer.innerHTML; }
             });
 
             localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
             if(showTrackBtn && activeOrdersList.length > 0) { trackBtn.classList.add('show'); pulse.style.display = showPulse ? 'block' : 'none'; } 
             else { trackBtn.classList.remove('show'); }
-            if(container.innerHTML === '') container.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
+            if(liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
+            if(pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
         }
 
         let savedOrdersList = [];
@@ -964,7 +1043,7 @@
             
             let currentPrice = data.price;
             let fakeOldPrice = currentPrice + Math.floor(currentPrice * 0.2);
-            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${currentPrice}`;
+            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${currentPrice} <span style="background: rgba(226, 55, 68, 0.1); color: var(--zomato-red); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; border: 1px dashed var(--zomato-red); margin-left: 8px; vertical-align: middle;">20% OFF</span>`;
             
             const variantBox = document.getElementById('variant-box');
             const btnHalf = document.getElementById('btn-half'); const btnFull = document.getElementById('btn-full'); const btnPiece = document.getElementById('btn-piece');
@@ -993,7 +1072,7 @@
             else if(type === 'piece') selPrice = currentDish.pricePiece;
             
             let fakeOldPrice = selPrice + Math.floor(selPrice * 0.2);
-            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${selPrice}`;
+            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${selPrice} <span style="background: rgba(226, 55, 68, 0.1); color: var(--zomato-red); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; border: 1px dashed var(--zomato-red); margin-left: 8px; vertical-align: middle;">20% OFF</span>`;
             
             checkCartForCurrentDish(); 
         };
@@ -1003,7 +1082,7 @@
         function checkCartForCurrentDish() {
             const key = getCartKey(); const btnAdd = document.getElementById('btn-add-new'); const btnStepper = document.getElementById('btn-stepper');
             if(cart[key] && cart[key].qty > 0) { btnAdd.style.display = 'none'; btnStepper.style.display = 'flex'; document.getElementById('current-qty-display').innerText = cart[key].qty; } 
-            else { btnAdd.style.display = 'flex'; btnStepper.style.display = 'none'; }
+            else { btnAdd.style.display = 'block'; btnStepper.style.display = 'none'; }
         }
 
         window.addCurrentToCart = (e) => {
@@ -1016,7 +1095,7 @@
             
             triggerHapticPop();
             createFlyingDot(e); 
-            document.getElementById('toast').innerHTML = currentLang === 'hi' ? "<i class='ph-fill ph-check-circle'></i> <span>कार्ट में जुड़ गया!</span>" : "<i class='ph-fill ph-check-circle'></i> <span>Added to Cart!</span>";
+            document.getElementById('toast').innerText = currentLang === 'hi' ? "✅ कार्ट में जुड़ गया!" : "✅ Added to Cart!";
             document.getElementById('toast').classList.add('show');
             setTimeout(() => document.getElementById('toast').classList.remove('show'), 2000);
             
@@ -1070,8 +1149,7 @@
 
         window.deleteCartItem = (key) => { delete cart[key]; triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
 
-        const restaurantWhatsApp = "917870276466"; 
-
+        // Real Firebase Orders System Only (No WhatsApp redirect)
         window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { window.customAlert("Please add items to your cart first!"); return; }
             
@@ -1089,47 +1167,42 @@
             const modalContent = document.querySelector('.cart-content'); modalContent.style.opacity = "0.5";
 
             let orderItems = []; let grandTotal = 0;
-            let orderId = Math.floor(1000 + Math.random() * 9000);
-            let waText = `*[ NEW ORDER ]*\n`;
-            if(currentOrderType === 'Dine-in') waText += `*Type:* Dine-in | *Table:* ${tableNo}\n`; else waText += `*Type:* Takeaway\n`;
-            waText += `*ID:* #ORD-${orderId}\n\n`;
-
-            if(custName || custPhone) {
-                waText += `*Customer Details:*\n`;
-                if(custName) waText += `Name: ${custName}\n`;
-                if(custPhone) waText += `Phone: ${custPhone}\n`;
-                waText += `\n`; 
-            }
-            if(notes) waText += `*Chef Notes:* _${notes}_\n\n`;
-            waText += `*Order Details:*\n`;
-
-            for(let k in cart) { 
-                orderItems.push(cart[k]); grandTotal += (cart[k].price * cart[k].qty); 
-                let variantText = cart[k].variant ? ` ${cart[k].variant}` : '';
-                waText += `${cart[k].qty} x ${cart[k].name}${variantText} = ₹${cart[k].price * cart[k].qty}\n`;
-            }
-            
-            waText += `=====================\n*Total Amount: ₹${grandTotal}*\n=====================\n_Powered by NextPlate_`;
-            let finalWaText = encodeURIComponent(waText); 
+            for(let k in cart) { orderItems.push(cart[k]); grandTotal += (cart[k].price * cart[k].qty); }
 
             try {
-                const docRef = await addDoc(collection(db, "orders"), { 
-                    orderType: currentOrderType, tableNumber: tableNo || "N/A", customerName: custName || "N/A", customerPhone: custPhone || "N/A",
-                    chefNotes: notes || "None", items: orderItems, totalAmount: grandTotal, status: 'New', paymentMethod: 'Cash', timestamp: new Date() 
-                });
+                // Live Session Merging / Add new Firebase doc
+                let activeOrderId = null; let activeData = null; let activeOrdersList = [];
+                try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
                 
-                let activeOrders = [];
-                try { activeOrders = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
-                activeOrders.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
-                listenToLiveOrder(docRef.id); 
+                for (let id of activeOrdersList) {
+                    const data = activeOrderData[id];
+                    if (data && (data.status === 'New' || data.status === 'Preparing') && data.orderType === currentOrderType && data.tableNumber === tableNo) {
+                        activeOrderId = id; activeData = data; break;
+                    }
+                }
 
-                cart = {}; document.getElementById('tableNumber').value = ''; document.getElementById('customerName').value = '';
-                document.getElementById('customerPhone').value = ''; document.getElementById('cookingNotes').value = '';
+                if (activeOrderId && currentOrderType === 'Dine-in') {
+                    let mergedItems = [...activeData.items]; for(let newItem of orderItems) { mergedItems.push(newItem); }
+                    let newTotal = activeData.totalAmount + grandTotal;
+                    let newNotes = activeData.chefNotes; if (notes) { newNotes = (newNotes === "None" || !newNotes) ? notes : newNotes + " | " + notes; }
+                    await updateDoc(doc(db, "orders", activeOrderId), { items: mergedItems, totalAmount: newTotal, chefNotes: newNotes, status: 'New', timestamp: new Date() });
+                } else {
+                    const docRef = await addDoc(collection(db, "orders"), { orderType: currentOrderType, tableNumber: tableNo || "N/A", customerName: custName || "N/A", customerPhone: custPhone || "N/A", chefNotes: notes || "None", items: orderItems, totalAmount: grandTotal, status: 'New', paymentMethod: 'Cash', timestamp: new Date() });
+                    activeOrdersList.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); window.listenToLiveOrder(docRef.id); 
+                }
+
+                cart = {}; document.getElementById('cookingNotes').value = ''; 
+                updateGlobalCartUI(); checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1";
+                launchConfetti(); 
                 
-                updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
-                modalContent.style.opacity = "1";
-
-                setTimeout(() => { window.open(`https://wa.me/${restaurantWhatsApp}?text=${finalWaText}`, '_blank'); }, 500);
+                setTimeout(() => {
+                    let earnedCoins = Math.floor(grandTotal / 10); 
+                    document.getElementById('earnedCoins').innerText = earnedCoins;
+                    document.getElementById('coinModal').classList.add('show');
+                    triggerHapticPop();
+                }, 1000);
+                
+                setTimeout(() => { window.switchOrderTab('live'); window.toggleTracker(); }, 3500); 
 
             } catch (e) { 
                 console.error(e); modalContent.style.opacity = "1"; window.customAlert("Order Failed. Please check your connection and try again."); 
