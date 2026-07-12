@@ -3,355 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NextPlate - Smart Menu</title>
+    <title>NextPlate - Premium Smart Menu</title>
     
-    <!-- External Scripts & Fonts -->
+    <!-- 3D Viewer & Modern Icons -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    <!-- Premium Fonts Setup -->
-    <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
+
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
-    <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
 
     <style>
         /* =========================================
-           VARIABLES & RESET (PREMIUM COLORS)
+           PREMIUM VARIABLES & RESET
         ========================================= */
         :root { 
             --bg-light: #F8F9FA; 
             --white: #FFFFFF; 
-            --text-main: #282C3F; 
-            --text-sub: #686B78; 
-            --zomato-red: #E23744; 
-            --primary-gradient: linear-gradient(135deg, #E23744 0%, #FF5252 100%);
-            --border-light: #E8E8E8; 
-            --green: #28A745; 
-            --warning: #FF9500; 
+            --text-main: #1C1C1E; 
+            --text-sub: #757575; 
+            --primary: #E53935;
+            --primary-gradient: linear-gradient(135deg, #E53935 0%, #FF5722 100%);
+            --border-light: rgba(0, 0, 0, 0.06); 
+            --green: #34C759; 
+            --warning: #FF9F00; 
             --danger: #FF3B30;
             --glass-bg: rgba(255, 255, 255, 0.85);
-            --shadow-soft: 0 8px 24px rgba(0,0,0,0.06);
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         body { 
-            margin: 0; 
-            padding: 0; 
+            margin: 0; padding: 0; 
             background: var(--bg-light); 
             color: var(--text-main); 
             font-family: 'Poppins', sans-serif; 
-            height: 100dvh; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
+            height: 100dvh; display: flex; flex-direction: column; overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
         }
 
         h1, h2, h3, h4, h5 { font-family: 'Okra', sans-serif; margin: 0; }
-        
+
         /* =========================================
-           HEADER SECTION (PREMIUM GLASS)
+           HEADER (GLASSMORPHISM)
         ========================================= */
         .header { 
-            flex-shrink: 0; 
-            padding: 12px 20px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(232, 232, 232, 0.6); 
-            z-index: 20; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            flex-shrink: 0; padding: 15px 20px; display: flex; justify-content: space-between; 
+            align-items: center; background: var(--glass-bg); backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-light); z-index: 20; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
 
         .brand-name { 
-            font-size: 24px; 
-            font-weight: 800; 
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            line-height: 1.1; 
+            font-size: 24px; font-weight: 800; 
+            background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: flex; flex-direction: column; line-height: 1.1; letter-spacing: -0.5px;
         }
 
-        .greeting-text { 
-            font-size: 11px; 
-            font-weight: 600; 
-            color: var(--text-sub); 
-            -webkit-text-fill-color: var(--text-sub);
-            margin-top: 2px; 
-        }
+        .greeting-text { font-size: 11px; font-weight: 500; color: var(--text-sub); -webkit-text-fill-color: var(--text-sub); margin-top: 2px; }
         
-        /* Track Order Button (Reverted to Original Style) */
-        .track-icon { 
-            position: relative; 
-            font-size: 18px; 
-            cursor: pointer; 
-            padding: 6px 12px; 
-            background: #FFF0E5; 
-            border-radius: 50px; 
-            color: var(--warning); 
-            transition: var(--transition); 
-            margin-right: 10px; 
-            display: none; 
-            align-items: center; 
-            gap: 5px; 
-            border: 1px solid rgba(255,149,0,0.3); 
-        }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
 
+        .track-icon { 
+            position: relative; font-size: 14px; cursor: pointer; padding: 8px 14px; 
+            background: rgba(255, 159, 0, 0.1); border-radius: 50px; color: var(--warning); 
+            transition: var(--transition); display: none; align-items: center; gap: 6px; 
+            border: 1px solid rgba(255, 159, 0, 0.2); font-weight: 600;
+        }
         .track-icon.show { display: flex; }
         .track-icon:active { transform: scale(0.95); }
         
         .track-pulse { 
-            position: absolute; 
-            top: -2px; 
-            right: -2px; 
-            background: var(--warning); 
-            width: 10px; 
-            height: 10px; 
-            border-radius: 50%; 
-            animation: pulse-orange 1.5s infinite; 
+            position: absolute; top: -2px; right: -2px; background: var(--warning); 
+            width: 12px; height: 12px; border-radius: 50%; animation: pulse-orange 1.5s infinite; border: 2px solid var(--white);
         }
 
-        @keyframes pulse-orange { 
-            0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); } 
-            70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); } 
-            100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } 
-        }
+        @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
 
-        .lang-switch { 
-            display: flex; 
-            background: #F1F1F6; 
-            padding: 3px; 
-            border-radius: 50px; 
-            margin-right: 15px; 
-            border: 1px solid var(--border-light);
-        }
-
-        .lang-btn { 
-            border: none; 
-            background: transparent; 
-            padding: 5px 12px; 
-            font-size: 11px; 
-            font-weight: 700; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            color: var(--text-sub); 
-            transition: var(--transition); 
-        }
-
-        .lang-btn.active { 
-            background: var(--primary-gradient); 
-            color: white; 
-            box-shadow: 0 2px 8px rgba(226,55,68,0.3); 
-        }
+        .lang-switch { display: flex; background: var(--bg-light); padding: 4px; border-radius: 50px; border: 1px solid var(--border-light); }
+        .lang-btn { border: none; background: transparent; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 50px; cursor: pointer; color: var(--text-sub); transition: var(--transition); }
+        .lang-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 2px 10px rgba(229, 57, 53, 0.3); }
         
         .cart-icon { 
-            position: relative; 
-            font-size: 22px; 
-            cursor: pointer; 
-            padding: 8px; 
-            background: #FDEEEE; 
-            border-radius: 50%; 
-            color: var(--zomato-red); 
-            transition: var(--transition); 
+            position: relative; font-size: 24px; cursor: pointer; padding: 8px; 
+            background: rgba(229, 57, 53, 0.08); border-radius: 50%; color: var(--primary); transition: var(--transition); display: flex; justify-content: center; align-items: center;
         }
-
         .cart-icon:active { transform: scale(0.9); }
         
         .cart-badge { 
-            position: absolute; 
-            top: -2px; 
-            right: -2px; 
-            background: var(--zomato-red); 
-            color: white; 
-            font-size: 10px; 
-            font-weight: 700; 
-            width: 18px; 
-            height: 18px; 
-            border-radius: 50%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            box-shadow: 0 2px 5px rgba(226,55,68,0.4);
+            position: absolute; top: -4px; right: -4px; background: var(--primary); color: white; 
+            font-size: 10px; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--white); box-shadow: 0 4px 8px rgba(229, 57, 53, 0.3);
         }
         
-        .flying-dot { 
-            position: fixed; 
-            width: 20px; 
-            height: 20px; 
-            background: var(--zomato-red); 
-            border-radius: 50%; 
-            z-index: 9999; 
-            pointer-events: none; 
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
-            opacity: 0; 
-            box-shadow: 0 4px 10px rgba(226,55,68,0.5); 
-        }
+        .flying-dot { position: fixed; width: 20px; height: 20px; background: var(--primary); border-radius: 50%; z-index: 9999; pointer-events: none; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0; box-shadow: 0 4px 10px rgba(229, 57, 53, 0.5); }
 
         /* =========================================
-           CATEGORIES & SIDEBAR (SMOOTH HOVER)
+           CATEGORY SCROLL
         ========================================= */
         .category-scroll { 
-            flex-shrink: 0; 
-            display: flex; 
-            overflow-x: auto; 
-            white-space: nowrap; 
-            background: var(--white); 
-            padding: 12px 20px; 
-            border-bottom: 1px solid var(--border-light); 
-            gap: 10px; 
-            z-index: 15; 
-            scroll-behavior: smooth;
+            flex-shrink: 0; display: flex; overflow-x: auto; white-space: nowrap; background: var(--white); padding: 15px 20px; border-bottom: 1px solid var(--border-light); gap: 12px; z-index: 15; scroll-behavior: smooth;
         }
-
         .category-scroll::-webkit-scrollbar { display: none; }
         
         .cat-pill { 
-            background: #F1F1F6; 
-            color: var(--text-sub); 
-            padding: 8px 18px; 
-            border-radius: 50px; 
-            font-size: 13px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: var(--transition); 
-            border: 1px solid transparent; 
-            display: flex; 
-            align-items: center; 
-            gap: 5px; 
+            background: var(--bg-light); color: var(--text-sub); padding: 10px 20px; border-radius: 50px; font-size: 13px; font-weight: 500; cursor: pointer; transition: var(--transition); border: 1px solid var(--border-light); display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
-
-        .cat-pill:hover { background: #FFF5F5; color: var(--zomato-red); }
-
-        .cat-pill.active { 
-            background: var(--primary-gradient); 
-            color: white; 
-            border-color: transparent; 
-            box-shadow: 0 4px 12px rgba(226,55,68,0.25);
-        }
-
+        .cat-pill:hover { background: #FFF9F9; border-color: rgba(229, 57, 53, 0.2); color: var(--primary); }
+        .cat-pill.active { background: var(--primary-gradient); color: var(--white); border-color: transparent; box-shadow: 0 6px 15px rgba(229, 57, 53, 0.3); font-weight: 600; transform: translateY(-2px);}
         .cat-pill:active { transform: scale(0.95); }
 
-        .app-layout { display: flex; flex: 1; overflow: hidden; }
+        /* =========================================
+           APP LAYOUT & SIDEBAR
+        ========================================= */
+        .app-layout { display: flex; flex: 1; overflow: hidden; background: var(--bg-light); }
         
         .sidebar { 
-            width: 95px; 
-            flex-shrink: 0; 
-            background: var(--white); 
-            border-right: 1px solid var(--border-light); 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column; 
-            padding-bottom: 20px; 
-            position: relative; 
+            width: 100px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; position: relative; z-index: 10;
         }
-
         .sidebar::-webkit-scrollbar { display: none; }
         
-        .search-box { 
-            position: sticky; 
-            top: 0; 
-            background: var(--glass-bg); 
-            padding: 10px 5px; 
-            border-bottom: 1px solid var(--border-light); 
-            z-index: 5; 
-            backdrop-filter: blur(10px);
-        }
+        .search-box { position: sticky; top: 0; background: var(--glass-bg); padding: 12px 10px; border-bottom: 1px solid var(--border-light); z-index: 5; backdrop-filter: blur(10px); }
 
         .search-input-wrapper { position: relative; width: 100%; }
         .search-input-wrapper input { 
-            width: 100%; 
-            padding: 8px 26px 8px 8px; 
-            border: 1px solid var(--border-light); 
-            border-radius: 8px; 
-            font-size: 11px; 
-            box-sizing: border-box; 
-            text-align: left; 
-            background: #F1F1F6; 
-            outline: none; 
-            font-family: inherit; 
-            transition: var(--transition);
+            width: 100%; padding: 12px 35px 12px 12px; border: 1px solid var(--border-light); border-radius: 16px; font-size: 12px; font-weight: 500; box-sizing: border-box; background: var(--bg-light); outline: none; font-family: inherit; color: var(--text-main); transition: var(--transition);
         }
-        .search-input-wrapper input:focus { 
-            border-color: var(--zomato-red); 
-            background: var(--white); 
-            box-shadow: 0 0 0 3px rgba(226,55,68,0.1); 
-        }
+        .search-input-wrapper input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(229,57,53,0.1); }
 
-        .mic-btn { 
-            position: absolute; 
-            right: 4px; 
-            top: 50%; 
-            transform: translateY(-50%); 
-            background: transparent; 
-            border: none; 
-            color: var(--text-sub); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            cursor: pointer; 
-            padding: 4px; 
-            transition: var(--transition); 
-        }
-
-        .mic-btn:hover { color: var(--zomato-red); }
-        .mic-btn:active { transform: translateY(-50%) scale(0.9); }
-        .mic-btn.listening { color: var(--zomato-red); animation: pulseMic 1.5s infinite; }
+        .mic-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-sub); display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 4px; transition: var(--transition); font-size: 18px; }
+        .mic-btn:active { transform: translateY(-50%) scale(0.9); color: var(--primary); }
+        .mic-btn.listening { color: var(--primary); animation: pulseMic 1.5s infinite; }
         
-        @keyframes pulseMic { 
-            0% { transform: translateY(-50%) scale(1); } 
-            50% { transform: translateY(-50%) scale(1.2); } 
-            100% { transform: translateY(-50%) scale(1); } 
-        }
+        @keyframes pulseMic { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.2); filter: drop-shadow(0 0 5px var(--primary));} 100% { transform: translateY(-50%) scale(1); } }
 
-        .side-item { 
-            padding: 15px 5px; 
-            text-align: center; 
-            cursor: pointer; 
-            border-left: 4px solid transparent; 
-            transition: var(--transition); 
-            border-bottom: 1px solid rgba(0,0,0,0.02); 
-            position: relative;
-        }
-
-        .side-item:hover { background: rgba(0,0,0,0.02); }
+        .side-item { padding: 16px 8px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: var(--transition); border-bottom: 1px solid rgba(0,0,0,0.02); position: relative; }
         .side-item:active { transform: scale(0.95); }
-        .side-item.active { border-left-color: var(--zomato-red); background: linear-gradient(90deg, rgba(226,55,68,0.08) 0%, transparent 100%); }
+        .side-item.active { border-left-color: var(--primary); background: linear-gradient(90deg, rgba(229,57,53,0.08) 0%, transparent 100%); }
+        .side-icon-wrapper { width: 48px; height: 48px; margin: 0 auto 8px auto; background: var(--bg-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: var(--transition); border: 1px solid var(--border-light); }
+        .side-item.active .side-icon-wrapper { background: var(--white); border-color: var(--primary); color: var(--primary); box-shadow: 0 8px 20px rgba(229,57,53,0.2); transform: scale(1.05); }
+        .side-name { font-size: 11px; font-weight: 600; color: var(--text-sub); line-height: 1.3; transition: var(--transition); word-wrap: break-word;}
+        .side-item.active .side-name { color: var(--primary); font-weight: 700; }
 
-        .side-emoji { font-size: 28px; margin-bottom: 5px; transition: var(--transition); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));}
-        .side-item.active .side-emoji { transform: scale(1.1); }
-        
-        .side-name { font-size: 10px; font-weight: 600; color: var(--text-sub); line-height: 1.2; word-wrap: break-word; transition: var(--transition);}
-        .side-item.active .side-name { font-weight: 700; color: var(--zomato-red); }
+        .best-seller-tag { display: inline-flex; align-items: center; gap: 2px; background: rgba(255, 159, 0, 0.1); color: var(--warning); font-size: 9px; padding: 3px 6px; border-radius: 6px; margin-top: 6px; border: 1px solid rgba(255,159,0,0.2); font-weight: 700; }
 
-        .best-seller-tag { 
-            display: inline-block; 
-            background: rgba(255, 149, 0, 0.1); 
-            color: var(--warning); 
-            font-size: 8px; 
-            padding: 2px 5px; 
-            border-radius: 4px; 
-            margin-top: 4px; 
-            border: 1px solid rgba(255,149,0,0.2); 
-            font-weight: 800; 
-            letter-spacing: 0.2px;
-        }
-
-        .skeleton { 
-            background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); 
-            background-size: 200% 100%; 
-            animation: shimmer 1.5s infinite; 
-            border-radius: 8px; 
-        }
-
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; border: none !important; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* =========================================
-           MAIN CONTENT & IMAGE VIEWER
+           MAIN CONTENT & VIEWER
         ========================================= */
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
         
@@ -362,32 +162,30 @@
         .progress-bar.hide { visibility: hidden; }
         .update-bar { background: var(--primary-gradient); width: 0%; height: 100%; transition: width 0.3s; }
 
-        /* Photo Slider Image Box */
-        .photo-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; background: var(--bg-light); z-index: 5; }
+        .photo-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; background: #111; z-index: 5; }
         .photo-slider::-webkit-scrollbar { display: none; }
         .photo-slider.hide { display: none; }
-        .slide-img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: center; cursor: zoom-in; opacity: 0.95; transition: transform 0.5s ease;}
+        .slide-img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: center; cursor: zoom-in; transition: transform 0.5s ease; opacity: 0.95;}
         .slide-img:hover { transform: scale(1.05); }
 
-        /* Image Gradient Overlay (For better text visibility) */
         .image-gradient-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 6; pointer-events: none; }
         
-        /* Floating Labels Top Left */
+        /* Badges Top Left */
         .premium-badges-top { position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; gap: 8px; flex-wrap: wrap; }
-        .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5);}
+        .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px;}
         .badge-chip.time { color: var(--text-main); }
 
-        /* 🔥 NEW: Rating Badge on Photo (Bottom Left) */
+        /* Rating Bottom Left */
         .photo-rating-badge {
             position: absolute; bottom: 15px; left: 15px; z-index: 10;
             background: var(--glass-bg); backdrop-filter: blur(5px);
             padding: 5px 10px; border-radius: 50px; display: flex; align-items: center; gap: 4px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4);
         }
-        .photo-rating-badge .star { font-weight: 800; font-size: 11px; color: var(--text-main); }
+        .photo-rating-badge .star { font-weight: 800; font-size: 11px; color: var(--text-main); display: flex; align-items: center; gap: 4px;}
         .photo-rating-badge .reviews { font-weight: 600; font-size: 10px; color: var(--text-sub); text-decoration: underline;}
 
-        /* 🔥 NEW: Favorite Button on Photo (Bottom Right) */
+        /* Favorite Bottom Right */
         .photo-fav-btn {
             position: absolute; bottom: 15px; right: 15px; z-index: 10;
             background: var(--glass-bg); backdrop-filter: blur(5px);
@@ -397,11 +195,10 @@
         }
         .photo-fav-btn:active { transform: scale(0.8); }
 
-        /* Media Toggle & Waiter Buttons */
         .media-toggle { 
             position: absolute; top: 15px; right: 15px; background: var(--glass-bg); color: var(--text-main); 
             border: 1px solid rgba(255,255,255,0.5); padding: 8px 14px; border-radius: 50px; font-size: 12px; font-weight: 800; 
-            z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); backdrop-filter: blur(8px);
+            z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 6px;
         }
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
@@ -411,19 +208,21 @@
             border: 1px solid rgba(255,255,255,0.5); padding: 8px 14px; border-radius: 50px; font-size: 12px; font-weight: 800; 
             z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); display: flex; align-items: center; gap: 5px; backdrop-filter: blur(8px);
         }
-        .waiter-btn:active { transform: scale(0.95); }
+        .waiter-btn i { font-size: 18px; color: var(--primary); animation: ringBell 3s infinite; transform-origin: top center;}
+        .waiter-btn:active { transform: scale(0.95); background: var(--bg-light);}
+        @keyframes ringBell { 0%, 100% { transform: rotate(0deg); } 10%, 30%, 50% { transform: rotate(15deg); } 20%, 40% { transform: rotate(-15deg); } 60% { transform: rotate(0deg); } }
 
         .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; visibility: hidden; opacity: 0; transition: var(--transition); }
         .fullscreen-viewer.show { visibility: visible; opacity: 1; }
         .fs-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         .fs-img-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; pointer-events: none; }
-        .fs-img-container img { max-width: 100%; max-height: 100%; width: auto; height: auto; transform-origin: center; pointer-events: auto; touch-action: none; border-radius: 8px;}
+        .fs-img-container img { max-width: 100%; max-height: 100%; width: auto; height: auto; transform-origin: center; pointer-events: auto; touch-action: none; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);}
         
         .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: var(--transition); backdrop-filter: blur(5px);}
         .fs-close:hover { background: var(--danger); transform: scale(1.1); }
         .fs-close:active { transform: scale(0.9); }
 
-        .fs-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.4); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: var(--transition); }
+        .fs-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: var(--transition); }
         .fs-nav:hover { background: rgba(255,255,255,0.2); }
         .fs-nav.hide { display: none; }
         .fs-prev { left: 15px; }
@@ -434,7 +233,7 @@
         .fs-dot.active { background: white; transform: scale(1.3); }
 
         /* =========================================
-           BOTTOM UI (DISH DETAILS & ADD)
+           BOTTOM UI (PREMIUM LAYOUT EXACT)
         ========================================= */
         .bottom-ui { 
             flex-shrink: 0; background: var(--white); padding: 25px 20px; border-radius: 28px 28px 0 0; 
@@ -442,23 +241,24 @@
         }
         .bottom-ui.with-cart { padding-bottom: 95px; }
 
-        .dish-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .dish-header { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 10px; }
+        .dish-title-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px;}
         .dish-title { font-size: 24px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
-        .price { font-size: 24px; font-weight: 800; color: var(--text-main); display: flex; align-items: center;}
         
-        .main-cat-badge { font-size: 11px; padding: 4px 8px; border-radius: 8px; font-weight: 700; white-space: nowrap; }
-
-        .variant-selector { display: flex; background: var(--bg-light); border-radius: 16px; overflow: hidden; margin-bottom: 15px; padding: 5px; gap: 5px; border: 1px solid var(--border-light);}
+        .price-section { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; }
+        .price { font-size: 26px; font-weight: 800; color: var(--text-main); display: flex; align-items: center;}
+        
+        .variant-selector { display: flex; background: var(--bg-light); border-radius: 16px; overflow: hidden; margin-bottom: 20px; padding: 5px; gap: 5px; border: 1px solid var(--border-light); }
         .variant-selector.hide { display: none; }
         
         .var-btn { flex: 1; padding: 12px 0; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: var(--transition); }
         .var-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
         
-        .action-row { display: flex; gap: 12px; width: 100%; }
+        .action-row { display: flex; gap: 15px; width: 100%; margin-bottom: 10px;}
         
-        /* Add Button - Premium Pulse */
+        /* Premium Add Button */
         .btn-cart { 
-            background: var(--primary-gradient); color: var(--white); border: none; padding: 16px 0; border-radius: 16px; font-size: 15px; font-weight: 800; flex: 1; cursor: pointer; transition: var(--transition); box-shadow: 0 8px 25px rgba(226, 55, 68, 0.3); position: relative; overflow: hidden;
+            background: var(--primary-gradient); color: var(--white); border: none; padding: 16px 0; border-radius: 16px; font-size: 15px; font-weight: 800; flex: 1; cursor: pointer; transition: var(--transition); box-shadow: 0 8px 25px rgba(226, 55, 68, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; position: relative; overflow: hidden;
         }
         .btn-cart:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(226, 55, 68, 0.2); }
         .btn-cart::after {
@@ -468,25 +268,25 @@
         }
         .btn-cart:active::after { transform: translate(-50%, -50%) scale(2); opacity: 0;}
 
-        .stepper-control { display: none; flex: 1; background: var(--white); border: 2px solid var(--zomato-red); border-radius: 16px; justify-content: space-between; align-items: center; padding: 0 10px; font-weight: 800; color: var(--zomato-red); font-size: 16px; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.1);}
-        .stepper-control button { background: transparent; border: none; color: var(--zomato-red); font-size: 20px; font-weight: 800; cursor: pointer; padding: 10px 15px; transition: var(--transition);}
+        .stepper-control { display: none; flex: 1; background: var(--white); border: 2px solid var(--primary); border-radius: 16px; justify-content: space-between; align-items: center; padding: 0 10px; font-weight: 800; color: var(--primary); font-size: 16px; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.1);}
+        .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 20px; font-weight: 800; cursor: pointer; padding: 10px 15px; transition: var(--transition);}
         .stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 10px; transform: scale(0.9);}
 
-        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 16px 0; border-radius: 16px; font-size: 14px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); }
+        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 16px 0; border-radius: 16px; font-size: 14px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 8px;}
         .btn-premium:hover { border-color: var(--primary); color: var(--primary);}
         .btn-premium:active { transform: scale(0.96); }
         
         /* Floating Checkout */
         .floating-checkout { 
-            position: fixed; bottom: -100px; left: 15px; right: 15px; background: var(--text-main); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 12px 40px rgba(0,0,0,0.25); border-radius: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
+            position: fixed; bottom: -100px; left: 15px; right: 15px; background: var(--text-main); color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 15px 40px rgba(0,0,0,0.25); border-radius: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
         }
         .floating-checkout.show { bottom: 15px; animation: bounceUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);}
         @keyframes bounceUp { 0% { bottom: -100px; } 100% { bottom: 15px; } }
         
         .checkout-info { display: flex; flex-direction: column; text-align: left; gap: 2px;}
         .checkout-items { font-size: 11px; font-weight: 600; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px;}
-        .checkout-total { font-size: 16px; font-weight: 800; }
-        .checkout-action { font-size: 14px; font-weight: 700; color: var(--primary); background: white; padding: 6px 14px; border-radius: 50px;}
+        .checkout-total { font-size: 18px; font-weight: 800; }
+        .checkout-action { font-size: 15px; font-weight: 700; color: white; display: flex; align-items: center; gap: 6px;} /* Fixed color to white */
 
         /* =========================================
            CART & TRACKER MODALS (GLASS EFFECT)
@@ -497,15 +297,15 @@
         .cart-modal.show .cart-content { transform: translateY(0); }
         
         .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; margin-bottom: 15px; flex-shrink: 0; }
-        .cart-header h2 { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0;}
+        .cart-header h2 { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;}
         .btn-close { background: var(--bg-light); border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: var(--transition); color: var(--text-sub);}
         .btn-close:active { transform: scale(0.9); background: #eee;}
 
         .cart-scroll-body { overflow-y: auto; flex: 1; padding-bottom: 20px; overflow-x: hidden; }
         .cart-scroll-body::-webkit-scrollbar { display: none; }
-        .cart-items-container { display: flex; flex-direction: column; margin-bottom: 15px; gap: 12px; }
+        .cart-items-container { display: flex; flex-direction: column; margin-bottom: 20px; gap: 12px; }
 
-        .swipe-wrap { overflow-x: auto; scroll-snap-type: x mandatory; display: flex; width: 100%; scrollbar-width: none; border-radius: 16px; background: #FFF0F0; margin-bottom: 10px; border: 1px solid var(--border-light); box-shadow: var(--shadow-soft);}
+        .swipe-wrap { overflow-x: auto; scroll-snap-type: x mandatory; display: flex; width: 100%; scrollbar-width: none; border-radius: 16px; background: #FFF0F0; border: 1px solid var(--border-light); box-shadow: var(--shadow-soft);}
         .swipe-wrap::-webkit-scrollbar { display: none; }
         .swipe-content { width: 100%; flex-shrink: 0; scroll-snap-align: start; padding: 15px; background: var(--white); border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; border-right: 1px solid var(--border-light);}
         .swipe-action { width: 80px; flex-shrink: 0; scroll-snap-align: start; background: var(--danger); color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; cursor: pointer; border-radius: 0 16px 16px 0; transition: 0.3s;}
@@ -518,56 +318,34 @@
         .bill-details { background: #FAFAFA; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1); }
         .bill-total { display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; color: var(--text-main); }
         
-        .btn-checkout { background: var(--primary-gradient); color: white; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 8px 25px rgba(226, 55, 68, 0.3); transition: var(--transition); flex-shrink: 0; margin-top: 10px; }
+        .btn-checkout { background: var(--primary-gradient); color: white; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 8px 25px rgba(226, 55, 68, 0.3); transition: var(--transition); flex-shrink: 0; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .btn-checkout:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(226, 55, 68, 0.2);}
 
-        /* TRACKER TABS & VISUAL TRACKER */
-        .tracker-tabs { display: flex; background: var(--bg-light); border-radius: 12px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border-light);}
-        .tracker-tab-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.3s; }
-        .tracker-tab-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700;}
+        .order-type-selector { display: flex; background: var(--bg-light); border-radius: 16px; padding: 5px; margin-bottom: 15px; border: 1px solid var(--border-light);}
+        .type-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 6px;}
+        .type-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
 
-        .visual-tracker { display: flex; justify-content: space-between; align-items: center; position: relative; margin: 25px 15px 15px 15px; }
-        .visual-tracker::before { content: ''; position: absolute; top: 14px; left: 10%; right: 10%; height: 4px; background: var(--border-light); z-index: 1; border-radius: 5px;}
-        .tracker-step { display: flex; flex-direction: column; align-items: center; z-index: 2; flex: 1; gap: 8px; }
-        .step-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--bg-light); color: var(--text-sub); display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; transition: 0.3s; border: 3px solid var(--white); box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
-        .step-text { font-size: 11px; font-weight: 600; color: var(--text-sub); }
-        
-        .tracker-step.status-done .step-icon { background: var(--green); color: var(--white); border-color: var(--green); box-shadow: 0 4px 10px rgba(52, 199, 89, 0.3);}
-        .tracker-step.status-done .step-text { color: var(--green); font-weight: 700;}
-        .tracker-step.status-active .step-icon { background: var(--warning); color: var(--white); animation: pulseWarning 1.5s infinite; border-color: var(--warning);}
-        .tracker-step.status-active .step-text { color: var(--warning); font-weight: 700;}
-        .tracker-step.status-blink .step-icon { background: var(--green); color: var(--white); animation: pulseSuccess 1.5s infinite; border-color: var(--green);}
-        .tracker-step.status-blink .step-text { color: var(--green); font-weight: 700;}
-        
-        @keyframes pulseWarning { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
-        @keyframes pulseSuccess { 0% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.4); } 70% { box-shadow: 0 0 0 12px rgba(52, 199, 89, 0); } 100% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0); } }
-
-        /* Other Form UI */
-        .order-type-selector { display: flex; background: var(--bg-light); border-radius: 16px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border-light);}
-        .type-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: 0.3s; }
-        .type-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700;}
-        
         .input-field { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 16px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: var(--transition); background: var(--bg-light);}
         .input-field:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.1);}
 
         /* Alerts & Toasts */
-        .toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--text-main); color: white; padding: 12px 24px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; opacity: 0; visibility: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);}
+        .toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--text-main); color: white; padding: 14px 24px; border-radius: 50px; font-size: 14px; font-weight: 600; transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; opacity: 0; visibility: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
         .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); top: 120px; }
 
         .custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .custom-alert.show { visibility: visible; opacity: 1; }
-        .alert-box { background: var(--white); padding: 35px 25px; border-radius: 32px; text-align: center; max-width: 320px; width: 85%; transform: scale(0.9) translateY(20px); transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.8);}
+        .alert-box { background: var(--white); padding: 35px 25px; border-radius: 32px; text-align: center; max-width: 340px; width: 85%; transform: scale(0.9) translateY(20px); transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.8);}
         .custom-alert.show .alert-box { transform: scale(1) translateY(0); }
-        .alert-icon { font-size: 48px; margin-bottom: 15px; color: var(--warning); display: flex; justify-content: center;}
+        .alert-icon { font-size: 50px; margin-bottom: 15px; display: flex; justify-content: center; color: var(--warning);}
         .alert-box h3 { margin: 0 0 25px 0; font-size: 20px; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;}
-        .alert-btn-primary { background: var(--primary-gradient); color: white; border: none; padding: 15px 0; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; box-shadow: 0 8px 20px var(--primary-glow);}
+        .alert-btn-primary { background: var(--primary-gradient); color: white; border: none; padding: 16px 0; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; transition: var(--transition); box-shadow: 0 8px 20px rgba(226, 55, 68, 0.3);}
         .alert-btn-primary:active { transform: scale(0.95); }
 
         #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 
-        /* Loading Screen */
+        /* Loader */
         #premium-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
-        .loader-spinner { width: 50px; height: 50px; border: 3px solid rgba(226,55,68,0.2); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; margin-bottom: 20px; }
+        .loader-spinner { width: 55px; height: 55px; border: 4px solid rgba(226, 55, 68, 0.2); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; margin-bottom: 20px; }
         #premium-loader p { font-size: 24px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
         #premium-loader span { font-size: 13px; color: var(--text-sub); margin-top: 5px; font-weight: 500;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -593,48 +371,28 @@
     <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3" preload="auto"></audio>
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- Reward Modal -->
-    <div class="custom-alert" id="coinModal">
-        <div class="alert-box">
-            <div class="alert-icon" style="font-size: 60px;">🪙</div>
-            <h3 style="color:var(--warning);">Reward Unlocked!</h3>
-            <p style="color:var(--text-sub); font-size:14px; margin-bottom:20px;">You earned <strong id="earnedCoins" style="color:var(--text-main); font-size:16px;">0</strong> NextCoins from this order!</p>
-            <button class="alert-btn-primary" style="background:var(--warning); box-shadow: 0 8px 20px rgba(255,159,0,0.3);" onclick="document.getElementById('coinModal').classList.remove('show')">Awesome!</button>
-        </div>
-    </div>
-
-    <!-- Tracker Modal -->
     <div class="cart-modal" id="tracker-modal">
-        <div class="cart-content" style="text-align: center; max-height: 90vh;">
+        <div class="cart-content" style="text-align: center;">
             <div class="cart-header">
-                <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;">My Orders</h2>
-                <button class="btn-close" onclick="toggleTracker()">✕</button>
+                <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;"><i class="ph-fill ph-receipt"></i> Order Status</h2>
+                <button class="btn-close" onclick="toggleTracker()"><i class="ph ph-x"></i></button>
             </div>
-            
-            <div class="tracker-tabs">
-                <button id="tab-live-orders" class="tracker-tab-btn active" onclick="switchOrderTab('live')">Live Orders</button>
-                <button id="tab-past-orders" class="tracker-tab-btn" onclick="switchOrderTab('past')">Past Orders</button>
-            </div>
-
-            <div id="multi-tracker-body" style="padding: 10px 0; max-height: 60vh; overflow-y: auto; text-align: left;">
-                <div id="live-orders-container"></div>
-                <div id="past-orders-container" style="display: none;"></div>
-            </div>
+            <div id="multi-tracker-body" style="padding: 10px 0; max-height: 60vh; overflow-y: auto;"></div>
         </div>
     </div>
 
     <div class="fullscreen-viewer" id="fs-viewer">
         <div class="fs-bg" onclick="closeFullscreen(event)"></div> 
-        <button class="fs-close" onclick="closeFullscreen(event)">✕</button>
-        <button class="fs-nav fs-prev" onclick="navigateFs(-1)">&#10094;</button>
-        <button class="fs-nav fs-next" onclick="navigateFs(1)">&#10095;</button>
+        <button class="fs-close" onclick="closeFullscreen(event)"><i class="ph-bold ph-x"></i></button>
+        <button class="fs-nav fs-prev" onclick="navigateFs(-1)"><i class="ph-bold ph-caret-left"></i></button>
+        <button class="fs-nav fs-next" onclick="navigateFs(1)"><i class="ph-bold ph-caret-right"></i></button>
         <div class="fs-img-container"><img id="fs-img" src="" alt="Full Screen"></div>
         <div class="fs-dots" id="fs-dots"></div>
     </div>
 
     <div class="custom-alert" id="customAlert">
         <div class="alert-box">
-            <div class="alert-icon" id="alertIcon">⚠️</div>
+            <div class="alert-icon" id="alertIcon"><i class="ph-fill ph-warning-circle"></i></div>
             <h3 id="alertMessage">Please enter Table Number!</h3>
             <button class="alert-btn-primary" onclick="closeAlert()" id="btn-alert-ok">OK, Got it</button>
         </div>
@@ -642,11 +400,12 @@
 
     <div class="custom-alert" id="waiterPromptModal">
         <div class="alert-box">
-            <div class="alert-icon">🛎️</div>
+            <div class="alert-icon"><i class="ph-fill ph-bell-ringing" style="color: var(--primary);"></i></div>
             <h3 id="waiterTitleText">Call Waiter</h3>
-            <input type="number" id="waiterTableInput" class="input-field" placeholder="Enter Table Number" style="margin-bottom: 20px; text-align: center; font-weight:700;">
+            <p style="margin-bottom: 15px; color:var(--text-sub); font-size:13px;">Need assistance? Enter your table number below.</p>
+            <input type="number" id="waiterTableInput" class="input-field" placeholder="Enter Table Number" style="margin-bottom: 25px; text-align: center; font-weight:700;">
             <div style="display: flex; gap: 12px;">
-                <button style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer;" onclick="closeWaiterPrompt()" id="waiterCancelBtn">Cancel</button>
+                <button style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer; transition:0.2s;" onclick="closeWaiterPrompt()" id="waiterCancelBtn">Cancel</button>
                 <button class="alert-btn-primary" style="flex:1; margin:0;" onclick="confirmCallWaiter()" id="waiterCallBtn">Call Now</button>
             </div>
         </div>
@@ -655,11 +414,11 @@
     <div class="header">
         <div class="brand-name">
             NextPlate
-            <span class="greeting-text" id="greeting-display">Good Morning ☕</span>
+            <span class="greeting-text" id="greeting-display">Good Morning <i class="ph-fill ph-coffee"></i></span>
         </div>
         <div style="display:flex; align-items:center;">
             <div class="track-icon" id="btn-track-order" onclick="toggleTracker()">
-                <span style="font-size: 14px; font-weight:800; color:inherit;" id="track-btn-text">Track</span> 📦
+                <i class="ph-fill ph-package"></i> <span style="font-size: 14px; font-weight:700; color:inherit;" id="track-btn-text">Track</span>
                 <div class="track-pulse" id="track-badge-pulse"></div>
             </div>
             <div class="lang-switch">
@@ -667,22 +426,22 @@
                 <button class="lang-btn" id="btn-hi" onclick="setLanguage('hi')">HI</button>
             </div>
             <div class="cart-icon" id="cart-icon-target" onclick="toggleCart()">
-                🛒 <div class="cart-badge" id="cart-count">0</div>
+                <i class="ph-fill ph-shopping-cart-simple"></i> <div class="cart-badge" id="cart-count">0</div>
             </div>
         </div>
     </div>
 
     <div class="category-scroll" id="category-scroll">
-        <div class="cat-pill active" onclick="filterCategory('All', this)">All</div>
-        <div class="cat-pill" onclick="filterCategory('Trending', this)">🔥 Trending</div>
-        <div class="cat-pill" onclick="filterCategory('Veg Only', this)">🟢 Veg Only</div>
-        <div class="cat-pill" onclick="filterCategory('Non-Veg Only', this)">🔴 Non-Veg Only</div>
-        <div class="cat-pill" onclick="filterCategory('Starters', this)">🔥 Starters</div>
-        <div class="cat-pill" onclick="filterCategory('Main Course', this)">🍛 Main Course</div>
-        <div class="cat-pill" onclick="filterCategory('Breads', this)">🥖 Breads</div>
-        <div class="cat-pill" onclick="filterCategory('Rice', this)">🍚 Rice</div>
-        <div class="cat-pill" onclick="filterCategory('Drinks', this)">🥤 Drinks</div>
-        <div class="cat-pill" onclick="filterCategory('Desserts', this)">🍰 Desserts</div>
+        <div class="cat-pill active" onclick="filterCategory('All', this)"><i class="ph-fill ph-squares-four"></i> All</div>
+        <div class="cat-pill" onclick="filterCategory('Trending', this)"><i class="ph-fill ph-fire" style="color: var(--warning);"></i> Trending</div>
+        <div class="cat-pill" onclick="filterCategory('Veg Only', this)"><i class="ph-fill ph-leaf" style="color: var(--green);"></i> Veg Only</div>
+        <div class="cat-pill" onclick="filterCategory('Non-Veg Only', this)"><i class="ph-fill ph-bone" style="color: var(--danger);"></i> Non-Veg</div>
+        <div class="cat-pill" onclick="filterCategory('Starters', this)"><i class="ph-fill ph-bowl-food"></i> Starters</div>
+        <div class="cat-pill" onclick="filterCategory('Main Course', this)"><i class="ph-fill ph-cooking-pot"></i> Main Course</div>
+        <div class="cat-pill" onclick="filterCategory('Breads', this)"><i class="ph-fill ph-bread"></i> Breads</div>
+        <div class="cat-pill" onclick="filterCategory('Rice', this)"><i class="ph-fill ph-bowl-steam"></i> Rice</div>
+        <div class="cat-pill" onclick="filterCategory('Drinks', this)"><i class="ph-fill ph-brandy"></i> Drinks</div>
+        <div class="cat-pill" onclick="filterCategory('Desserts', this)"><i class="ph-fill ph-ice-cream"></i> Desserts</div>
     </div>
 
     <div class="app-layout">
@@ -690,41 +449,43 @@
             <div class="search-box">
                 <div class="search-input-wrapper">
                     <input type="text" id="searchInput" placeholder="Search..." onkeyup="applyFilters()">
-                    <button id="micBtn" onclick="startVoiceSearch()" class="mic-btn" aria-label="Voice Search">🎙️</button>
+                    <button id="micBtn" onclick="startVoiceSearch()" class="mic-btn" aria-label="Voice Search">
+                        <i class="ph-fill ph-microphone"></i>
+                    </button>
                 </div>
             </div>
             
             <div id="sidebar-menu">
-                <div class="side-item"><div class="side-emoji skeleton" style="width:48px; height:48px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="width:70%; height:10px; margin:0 auto;"></div></div>
-                <div class="side-item"><div class="side-emoji skeleton" style="width:48px; height:48px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="width:70%; height:10px; margin:0 auto;"></div></div>
+                <div class="side-item"><div class="side-icon-wrapper skeleton" style="width:48px; height:48px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="width:70%; height:10px; margin:0 auto;"></div></div>
+                <div class="side-item"><div class="side-icon-wrapper skeleton" style="width:48px; height:48px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="width:70%; height:10px; margin:0 auto;"></div></div>
+                <div class="side-item"><div class="side-icon-wrapper skeleton" style="width:48px; height:48px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="width:70%; height:10px; margin:0 auto;"></div></div>
             </div>
         </div>
 
         <div class="main-content">
             <div class="viewer-container">
-                <!-- Top Badges -->
-                <div class="premium-badges-top">
-                    <span class="badge-chip hot">🔥 Best Seller</span>
-                    <span class="badge-chip time">⏰ 15 Min</span>
+                <div class="premium-badges-top" style="position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; gap: 8px;">
+                    <span style="background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.5);"><i class="ph-fill ph-fire"></i> Best Seller</span>
+                    <span style="background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.5);"><i class="ph-fill ph-clock"></i> 15 Min</span>
                 </div>
 
-                <!-- 🔥 NEW: Rating in Photo Corner -->
+                <!-- 🔥 Rating in Photo Corner -->
                 <div class="photo-rating-badge">
-                    <span class="star">⭐ 4.8</span>
+                    <span class="star"><i class="ph-fill ph-star"></i> 4.8</span>
                     <span class="reviews">(245)</span>
                 </div>
 
-                <!-- 🔥 NEW: Favorite Button on Photo -->
+                <!-- 🔥 Favorite Button on Photo -->
                 <button class="photo-fav-btn" onclick="toggleFavIcon(event)">🤍</button>
 
                 <div class="waiter-btn" onclick="openWaiterPrompt()">
-                    🛎️ <span id="waiter-btn-text">Waiter</span>
+                    <i class="ph-fill ph-bell-ringing"></i>
                 </div>
 
                 <div id="photo-slider" class="photo-slider hide"></div>
-                <div class="image-gradient-overlay"></div>
+                <div class="image-gradient-overlay" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); z-index: 6; pointer-events: none;"></div>
                 
-                <button class="media-toggle hide" id="media-toggle" onclick="toggleMedia()">🧊 View 3D</button>
+                <button class="media-toggle hide" id="media-toggle" onclick="toggleMedia()"><i class="ph-fill ph-cube"></i> View 3D</button>
 
                 <model-viewer id="ar-viewer" src="" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral">
                     <div slot="progress-bar" class="progress-bar"><div class="update-bar" id="update-bar"></div></div>
@@ -732,9 +493,13 @@
             </div>
 
             <div class="bottom-ui" id="bottom-ui-card">
-                <div class="dish-header">
+                <div class="dish-header-row">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
-                    <p class="price" id="display-price">₹0</p>
+                    <span class="type-icon" id="display-type-icon"><i class="ph-fill ph-circle" style="color:var(--green)"></i></span>
+                </div>
+                
+                <div class="price-section" style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px; margin-top: 10px;">
+                    <p class="price" id="display-price" style="margin:0; font-size: 26px; font-weight:800; display:flex; align-items:center; color: var(--text-main);">₹0</p>
                 </div>
                 
                 <div class="variant-selector hide" id="variant-box">
@@ -744,23 +509,13 @@
                 </div>
                 
                 <div class="action-row">
-                    <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">ADD +</button>
+                    <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">ADD <i class="ph-bold ph-plus"></i></button>
                     <div class="stepper-control" id="btn-stepper">
-                        <button onclick="changeCurrentQty(-1)">-</button>
+                        <button onclick="changeCurrentQty(-1)"><i class="ph-bold ph-minus"></i></button>
                         <span id="current-qty-display">1</span>
-                        <button onclick="changeCurrentQty(1); triggerHapticPop();">+</button>
+                        <button onclick="changeCurrentQty(1); triggerHapticPop();"><i class="ph-bold ph-plus"></i></button>
                     </div>
-                    <button class="btn-premium" id="btn-ar-view" onclick="viewOnTable()">View on Table 📸</button>
-                </div>
-
-                <!-- Recommended Items Section -->
-                <div style="margin-top: 35px;">
-                    <h4 style="font-size: 16px; font-weight: 800; margin: 0 0 15px 0;">🔥 You May Also Like</h4>
-                    <div style="display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; scroll-behavior: smooth;" class="related-scroll">
-                        <div style="min-width: 120px; background: var(--white); border: 1px solid var(--border-light); border-radius: 16px; padding: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); cursor: pointer;"><div style="width: 100%; height: 80px; background: #eee; border-radius: 10px; margin-bottom: 8px; background-image:url('https://images.unsplash.com/photo-1601050690597-df0568f70950?w=200'); background-size: cover;"></div><span style="font-size: 12px; font-weight: 700; color: var(--text-main);">Butter Naan</span></div>
-                        <div style="min-width: 120px; background: var(--white); border: 1px solid var(--border-light); border-radius: 16px; padding: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); cursor: pointer;"><div style="width: 100%; height: 80px; background: #eee; border-radius: 10px; margin-bottom: 8px; background-image:url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200'); background-size: cover;"></div><span style="font-size: 12px; font-weight: 700; color: var(--text-main);">Mix Salad</span></div>
-                        <div style="min-width: 120px; background: var(--white); border: 1px solid var(--border-light); border-radius: 16px; padding: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); cursor: pointer;"><div style="width: 100%; height: 80px; background: #eee; border-radius: 10px; margin-bottom: 8px; background-image:url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200'); background-size: cover;"></div><span style="font-size: 12px; font-weight: 700; color: var(--text-main);">Cold Drink</span></div>
-                    </div>
+                    <button class="btn-premium" id="btn-ar-view" onclick="viewOnTable()"><i class="ph-fill ph-camera"></i> View on Table</button>
                 </div>
             </div>
         </div>
@@ -771,49 +526,50 @@
             <span class="checkout-items" id="float-items">1 Item</span>
             <span class="checkout-total" id="float-total">₹0</span>
         </div>
-        <div class="checkout-action" id="float-btn-view">View Cart ➔</div>
+        <div class="checkout-action" id="float-btn-view" style="color: var(--white);">Continue <i class="ph-bold ph-arrow-right"></i></div>
     </div>
 
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <div class="cart-header">
-                <h2 id="cart-title-text" style="margin: 0; font-size: 20px;">Your Cart</h2>
-                <button class="btn-close" onclick="toggleCart()">✕</button>
+                <h2 id="cart-title-text" style="margin: 0; font-size: 22px; font-weight: 800; display:flex; align-items:center; gap:8px;"><i class="ph-fill ph-shopping-bag"></i> Your Cart</h2>
+                <button class="btn-close" onclick="toggleCart()"><i class="ph ph-x"></i></button>
             </div>
             
             <div class="cart-scroll-body">
                 <div class="cart-items-container" id="cart-items-list"></div>
                 
-                <div class="bill-details">
-                    <div class="bill-total"><span id="bill-total-text">Total to Pay</span><span id="bill-final">₹0</span></div>
+                <div class="bill-details" style="background: var(--bg-light); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1);">
+                    <div class="bill-total" style="font-size: 20px; color: var(--text-main); font-weight:800; display:flex; justify-content:space-between;"><span id="bill-total-text">Total to Pay</span><span id="bill-final">₹0</span></div>
                 </div>
                 
                 <div style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 12px;">
                     <div class="order-type-selector">
-                        <button id="btn-dinein" class="type-btn active" onclick="setOrderType('Dine-in')">🍽️ Dine-in</button>
-                        <button id="btn-takeaway" class="type-btn" onclick="setOrderType('Takeaway')">🎒 Takeaway</button>
+                        <button id="btn-dinein" class="type-btn active" onclick="setOrderType('Dine-in')"><i class="ph-fill ph-fork-knife"></i> Dine-in</button>
+                        <button id="btn-takeaway" class="type-btn" onclick="setOrderType('Takeaway')"><i class="ph-fill ph-shopping-bag"></i> Takeaway</button>
                     </div>
 
                     <textarea id="cookingNotes" class="input-field" placeholder="Chef Notes (e.g. Make it extra spicy)" style="resize:none; height:60px;"></textarea>
+
                     <input type="number" id="tableNumber" class="input-field" placeholder="Table Number (e.g. 5) *" required>
                     <input type="text" id="customerName" class="input-field" placeholder="Your Name (Optional)">
                     <input type="tel" id="customerPhone" class="input-field" placeholder="Phone Number (Optional)">
                 </div>
             </div>
 
-            <button class="btn-checkout" id="checkoutBtn" onclick="placeOrder()">Place Order</button>
+            <button class="btn-checkout" id="checkoutBtn" onclick="placeOrder()">Place Order <i class="ph-bold ph-arrow-right"></i></button>
+            
         </div>
     </div>
 
-    <!-- Original Toast Structure strictly maintained for JS safety -->
+    <!-- Original Toast Structure maintained -->
     <div class="toast" id="toast">✅ Added to Cart!</div>
 
-    <!-- 🔥 FIREBASE & MAIN LOGIC 🔥 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // ADD FIREBASE CONFIG HERE
+        // 🔥 IMPORTANT: Same Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
             authDomain: "itx-arun-bdf24.firebaseapp.com",
@@ -844,11 +600,11 @@
 
         function updateGreeting() {
             const hr = new Date().getHours();
-            let greet = "Good Day ☕";
-            if(hr >= 5 && hr < 12) greet = "Good Morning ☕";
-            else if(hr >= 12 && hr < 17) greet = "Good Afternoon ☀️";
-            else greet = "Good Evening 🌙";
-            document.getElementById('greeting-display').innerText = greet;
+            let greet = "Good Day <i class='ph-fill ph-sun'></i>";
+            if(hr >= 5 && hr < 12) greet = "Good Morning <i class='ph-fill ph-coffee'></i>";
+            else if(hr >= 12 && hr < 17) greet = "Good Afternoon <i class='ph-fill ph-sun'></i>";
+            else greet = "Good Evening <i class='ph-fill ph-moon'></i>";
+            document.getElementById('greeting-display').innerHTML = greet;
         }
         updateGreeting();
 
@@ -884,7 +640,7 @@
             }, 600);
         };
 
-        // Favorite Icon Toggle Logic
+        // Favorite Icon Logic
         window.toggleFavIcon = (e) => {
             e.stopPropagation();
             triggerHapticPop();
@@ -892,17 +648,21 @@
             if(btn.innerText.includes('❤️')) {
                 btn.innerText = '🤍';
                 btn.classList.remove('active');
-                showToast("Removed from Favorites");
+                document.getElementById('toast').innerText = "Removed from Favorites";
+                document.getElementById('toast').classList.add('show');
+                setTimeout(() => document.getElementById('toast').classList.remove('show'), 2000); 
             } else {
                 btn.innerText = '❤️';
                 btn.classList.add('active');
-                showToast("❤️ Added to Favorites!");
+                document.getElementById('toast').innerText = "❤️ Added to Favorites!";
+                document.getElementById('toast').classList.add('show');
+                setTimeout(() => document.getElementById('toast').classList.remove('show'), 2000); 
             }
         };
 
         const i18n = {
-            en: { add: "ADD +", ar: "View on Table 📸", viewCart: "View Cart ➔", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "Search...", trackTitle: "Order Status", trackBtn: "Track", dineIn: "🍽️ Dine-in", takeaway: "🎒 Takeaway", waiter: "Waiter", notes: "Chef Notes (e.g. Make it spicy)", waiterTitle: "Call Waiter", waiterCancel: "Cancel", waiterCall: "Call Now", waiterInput: "Enter Table Number" },
-            hi: { add: "जोड़ें +", ar: "टेबल पर देखें 📸", viewCart: "कार्ट देखें ➔", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "खोजें...", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "🍽️ यहीं खाएंगे", takeaway: "🎒 पैक करें", waiter: "वेटर", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", waiterTitle: "वेटर बुलाएं", waiterCancel: "रद्द करें", waiterCall: "कॉल करें", waiterInput: "टेबल नंबर दर्ज करें" }
+            en: { add: "ADD", ar: "View on Table", viewCart: "Continue", cartTitle: "Your Cart", place: "Place Order", totalPay: "Total to Pay", alertOk: "OK, Got it", search: "Search...", trackTitle: "Order Status", trackBtn: "Track", dineIn: "Dine-in", takeaway: "Takeaway", waiter: "Waiter", notes: "Chef Notes (e.g. Make it spicy)", waiterTitle: "Call Waiter", waiterCancel: "Cancel", waiterCall: "Call Now", waiterInput: "Enter Table Number" },
+            hi: { add: "जोड़ें", ar: "टेबल पर देखें", viewCart: "आगे बढ़ें", cartTitle: "आपकी कार्ट", place: "ऑर्डर दें", totalPay: "कुल भुगतान", alertOk: "ठीक है", search: "खोजें...", trackTitle: "ऑर्डर स्थिति", trackBtn: "ट्रैक", dineIn: "यहीं खाएंगे", takeaway: "पैक करें", waiter: "वेटर", notes: "शेफ के लिए निर्देश (जैसे तीखा बनाएं)", waiterTitle: "वेटर बुलाएं", waiterCancel: "रद्द करें", waiterCall: "कॉल करें", waiterInput: "टेबल नंबर दर्ज करें" }
         };
         let currentLang = 'en';
 
@@ -911,20 +671,18 @@
             document.getElementById('btn-en').classList.toggle('active', l==='en');
             document.getElementById('btn-hi').classList.toggle('active', l==='hi');
             
-            document.getElementById('btn-add-new').innerText = i18n[l].add;
-            document.getElementById('btn-ar-view').innerText = i18n[l].ar;
-            document.getElementById('float-btn-view').innerText = i18n[l].viewCart;
+            document.getElementById('btn-add-new').innerHTML = `${i18n[l].add} <i class="ph-bold ph-plus"></i>`;
+            document.getElementById('btn-ar-view').innerHTML = `<i class="ph-fill ph-camera"></i> ${i18n[l].ar}`;
+            document.getElementById('float-btn-view').innerHTML = `${i18n[l].viewCart} <i class="ph-bold ph-arrow-right"></i>`;
             document.getElementById('cart-title-text').innerText = i18n[l].cartTitle;
-            document.getElementById('checkoutBtn').innerText = i18n[l].place;
+            document.getElementById('checkoutBtn').innerHTML = `${i18n[l].place} <i class="ph-bold ph-arrow-right"></i>`;
             document.getElementById('bill-total-text').innerText = i18n[l].totalPay;
             document.getElementById('btn-alert-ok').innerText = i18n[l].alertOk;
             document.getElementById('searchInput').placeholder = i18n[l].search;
             document.getElementById('tracker-title-text').innerText = i18n[l].trackTitle;
             document.getElementById('track-btn-text').innerText = i18n[l].trackBtn;
-            document.getElementById('btn-dinein').innerText = i18n[l].dineIn;
-            document.getElementById('btn-takeaway').innerText = i18n[l].takeaway;
-            document.getElementById('waiter-btn-text').innerText = i18n[l].waiter;
-            document.getElementById('cookingNotes').placeholder = i18n[l].notes;
+            document.getElementById('btn-dinein').innerHTML = `<i class="ph-fill ph-fork-knife"></i> ${i18n[l].dineIn}`;
+            document.getElementById('btn-takeaway').innerHTML = `<i class="ph-fill ph-shopping-bag"></i> ${i18n[l].takeaway}`;
             
             document.getElementById('waiterTitleText').innerText = i18n[l].waiterTitle;
             document.getElementById('waiterCancelBtn').innerText = i18n[l].waiterCancel;
@@ -939,7 +697,7 @@
 
         window.startVoiceSearch = () => {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) { alert("Voice search not supported in this browser."); return; }
+            if (!SpeechRecognition) { document.getElementById('toast').innerText = "Voice search not supported"; document.getElementById('toast').classList.add('show'); setTimeout(()=>document.getElementById('toast').classList.remove('show'),2000); return; }
             const recognition = new SpeechRecognition();
             recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
             const micBtn = document.getElementById('micBtn');
@@ -960,9 +718,9 @@
 
         window.confirmCallWaiter = () => {
             const tableNo = document.getElementById('waiterTableInput').value;
-            if(!tableNo) { alert(currentLang === 'hi' ? "कृपया टेबल नंबर डालें!" : "Please enter a table number!"); return; }
+            if(!tableNo) { window.customAlert(currentLang === 'hi' ? "कृपया टेबल नंबर डालें!" : "Please enter a table number!"); return; }
             addDoc(collection(db, "waiter_calls"), { tableNumber: tableNo, status: "New", timestamp: new Date() })
-            .then(() => { closeWaiterPrompt(); showToast(currentLang === 'hi' ? "🛎️ वेटर आ रहा है!" : "🛎️ Waiter is on the way!"); triggerHapticPop(); })
+            .then(() => { closeWaiterPrompt(); document.getElementById('toast').innerText = currentLang === 'hi' ? "🛎️ वेटर आ रहा है!" : "🛎️ Waiter is on the way!"; document.getElementById('toast').classList.add('show'); setTimeout(()=>document.getElementById('toast').classList.remove('show'),2000); triggerHapticPop(); })
             .catch(e => console.log(e));
         };
 
@@ -982,17 +740,6 @@
         };
 
         window.toggleTracker = () => { document.getElementById('tracker-modal').classList.toggle('show'); };
-
-        // Split Tab Tracker Logic
-        window.switchOrderTab = (tab) => {
-            document.getElementById('tab-live-orders').classList.remove('active');
-            document.getElementById('tab-past-orders').classList.remove('active');
-            document.getElementById('live-orders-container').style.display = 'none';
-            document.getElementById('past-orders-container').style.display = 'none';
-            
-            document.getElementById(`tab-${tab}-orders`).classList.add('active');
-            document.getElementById(`${tab}-orders-container`).style.display = 'block';
-        };
 
         let pzInstance = null; let fsImages = []; let fsCurrentIndex = 0;
         
@@ -1043,32 +790,13 @@
 
         window.toggleMedia = () => {
             const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle');
-            if (slider.classList.contains('hide')) { slider.classList.remove('hide'); toggleBtn.innerHTML = '🧊 View 3D'; } else { slider.classList.add('hide'); toggleBtn.innerHTML = '📸 View Photos'; }
+            if (slider.classList.contains('hide')) { slider.classList.remove('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D'; } else { slider.classList.add('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-image"></i> View Photos'; }
         };
 
         window.viewOnTable = async () => { document.querySelector('#ar-viewer').activateAR(); if(currentDish) { try { await addDoc(collection(db, "ar_views"), { dishName: currentDish.name, timestamp: new Date() }); } catch(e){} } };
 
-        window.customAlert = function(msg, icon) { document.getElementById('alertMessage').innerText = msg; document.getElementById('alertIcon').innerText = icon || '⚠️'; document.getElementById('customAlert').classList.add('show'); triggerHapticPop(); }
+        window.customAlert = function(msg) { document.getElementById('alertMessage').innerText = msg; document.getElementById('customAlert').classList.add('show'); triggerHapticPop(); }
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
-
-        window.downloadReceipt = (id) => {
-            const data = activeOrderData[id];
-            if(!data) return;
-            let receipt = `----- NEXTPLATE RECEIPT -----\nOrder ID: #${id.slice(-4)}\nDate: ${data.timestamp.toDate().toLocaleString()}\nTable: ${data.tableNumber}\nType: ${data.orderType}\n-----------------------------\n`;
-            data.items.forEach(i => { receipt += `${i.qty}x ${i.name} ${i.variant ? '('+i.variant+')' : ''} - Rs.${i.price * i.qty}\n`; });
-            receipt += `-----------------------------\nTotal Amount: Rs.${data.totalAmount}\n-----------------------------\nThank you for dining with us!\n`;
-            const blob = new Blob([receipt], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `NextPlate_Receipt_${id.slice(-4)}.txt`; a.click();
-        };
-
-        window.cancelCustomerOrder = async (orderId) => {
-            if(confirm(currentLang === 'hi' ? "क्या आप सच में ऑर्डर रद्द करना चाहते हैं?" : "Are you sure you want to cancel this order?")) {
-                try {
-                    await updateDoc(doc(db, "orders", orderId), { status: 'Cancelled' });
-                    showToast(currentLang === 'hi' ? "❌ ऑर्डर रद्द हो गया।" : "❌ Order Cancelled.");
-                } catch(e) { console.error("Cancel failed:", e); }
-            }
-        };
 
         let activeOrderListeners = {}; let activeOrderData = {};
         
@@ -1080,12 +808,11 @@
         }
 
         function renderMultiTracker() {
-            const liveContainer = document.getElementById('live-orders-container');
-            const pastContainer = document.getElementById('past-orders-container');
+            const container = document.getElementById('multi-tracker-body');
             const trackBtn = document.getElementById('btn-track-order');
             const pulse = document.getElementById('track-badge-pulse');
             
-            liveContainer.innerHTML = ''; pastContainer.innerHTML = ''; let showTrackBtn = false; let showPulse = false;
+            container.innerHTML = ''; let showTrackBtn = false; let showPulse = false;
             
             let activeOrdersList = [];
             try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) { activeOrdersList = []; }
@@ -1096,70 +823,46 @@
                 const data = activeOrderData[id];
                 if(!data) { newActiveList.push(id); return; }
 
-                let statusRaw = data.status; newActiveList.push(id); 
-                let isNew = (statusRaw === 'New'); let isPrep = (statusRaw === 'Preparing'); let isDone = (statusRaw === 'Completed'); let isCanc = (statusRaw === 'Cancelled');
-                if(!isCanc) showTrackBtn = true; if(isNew || isPrep) showPulse = true;
-
-                let isToday = false;
-                if(data.timestamp) {
-                    const d = data.timestamp.toDate(); const t = new Date();
-                    isToday = d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear();
-                } else { isToday = true; }
-
-                let step1 = 'status-done';
-                let step2 = isNew ? 'status-active' : (isPrep || isDone ? 'status-done' : '');
-                let step3 = isPrep ? 'status-active' : (isDone ? 'status-done' : '');
-                let step4 = isDone ? 'status-blink' : '';
-
-                let itemsList = data.items.map(i => `${i.qty}x ${i.name}`).join(', ');
-                let orderTime = data.timestamp ? data.timestamp.toDate().toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'}) : '';
-
-                let actionHtml = '';
-                if(isNew) {
-                    actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:6px 16px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer; display:block; margin:10px auto 0 auto; transition:0.2s;">Cancel ❌</button>`;
-                } else if(isPrep) {
-                    let eta = data.items.length * 5; 
-                    actionHtml = `<div style="background:#FFF0E5; color:var(--warning); padding:8px; border-radius:8px; font-size:12px; font-weight:bold; text-align:center; margin-top:10px;">⏳ ETA: ${eta} - ${eta+5} Mins</div>`;
-                } else if(isDone) {
-                    actionHtml = `
-                        <div style="background:#fff; color:var(--green); border:1px dashed var(--green); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold; text-align:center; margin-top:10px; margin-bottom:10px;">🎉 Enjoy your meal!</div>
-                        <button onclick="downloadReceipt('${id}')" style="background:#F1F1F6; color:var(--text-main); border:1px solid var(--border-light); padding:8px 12px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; width:100%;">📄 Receipt</button>
-                    `;
-                } else if(isCanc) {
-                    actionHtml = `<div style="background:#F1F1F6; color:var(--text-sub); padding:8px; border-radius:8px; font-size:12px; font-weight:bold; text-align:center; margin-top:10px;">Order Cancelled</div>`;
+                let isPrep = data.status === 'Preparing';
+                let isDone = data.status === 'Completed';
+                
+                if(data.status !== 'Cancelled' && !isDone) { showPulse = true; showTrackBtn = true; newActiveList.push(id); }
+                else if (isDone) showTrackBtn = true; 
+                
+                if(data.status === 'Cancelled') {
+                    container.innerHTML += `<div style="padding:15px; border:1px solid #eee; border-radius:16px; margin-bottom:15px; color:var(--text-sub); text-align:center; font-weight:600; box-shadow: var(--shadow-soft);">Order Cancelled ❌</div>`;
+                    return;
                 }
 
-                let cardBg = isDone ? '#E8F8F0' : '#fff'; let cardBorder = isDone ? '1px solid #28A745' : '1px solid var(--border-light)';
+                let itemsList = data.items.map(i => `<span style="display:block; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.02);"><b>${i.qty}x</b> ${i.name}</span>`).join('');
 
-                let cardHtml = `
-                    <div style="background:${cardBg}; border:${cardBorder}; border-radius: 16px; padding: 15px; margin-bottom: 15px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition:0.3s;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                            <div style="font-weight:800; color:var(--text-main); font-size:14px;">Order #${id.slice(-4)}</div>
-                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                                <div style="font-size:12px; font-weight:800; color:var(--text-sub);">₹${data.totalAmount}</div>
-                                <div style="font-size:10px; color:var(--text-sub); font-weight:600;">${orderTime}</div>
+                container.innerHTML += `
+                    <div style="background: var(--white); border: 1px solid var(--border-light); border-radius: 20px; padding: 18px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom: 1px solid #eee; padding-bottom:10px;">
+                            <div style="font-weight:800; color:var(--text-main); font-size:15px;">#${id.slice(-4)}</div>
+                            <div style="font-size:16px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</div>
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-main); font-weight: 500; margin-bottom: 20px;">${itemsList}</div>
+                        
+                        <div class="visual-tracker">
+                            <div class="tracker-step ${data.status !== 'Cancelled' ? 'status-done' : ''}">
+                                <div class="step-icon"><i class="ph-bold ph-check"></i></div><div class="step-text">Placed</div>
+                            </div>
+                            <div class="tracker-step ${isPrep || isDone ? 'status-done' : (data.status === 'New' ? '' : 'status-active')}">
+                                <div class="step-icon"><i class="ph-fill ph-cooking-pot"></i></div><div class="step-text">Prep</div>
+                            </div>
+                            <div class="tracker-step ${isDone ? 'status-done' : (isPrep ? 'status-active' : '')}">
+                                <div class="step-icon"><i class="ph-fill ph-bell-ringing"></i></div><div class="step-text">Ready</div>
                             </div>
                         </div>
-                        <div style="font-size: 12px; color: var(--text-main); font-weight: 600; margin-bottom: 15px;">${itemsList}</div>
-                        ${!isCanc ? `
-                        <div class="visual-tracker">
-                            <div class="tracker-step ${step1}"><div class="step-icon">✓</div><div class="step-text">Placed</div></div>
-                            <div class="tracker-step ${step2}"><div class="step-icon">👨‍🍳</div><div class="step-text">Prep</div></div>
-                            <div class="tracker-step ${step3}"><div class="step-icon">🍽️</div><div class="step-text">Ready</div></div>
-                            <div class="tracker-step ${step4}"><div class="step-icon">✅</div><div class="step-text">Served</div></div>
-                        </div>` : ''}
-                        ${actionHtml}
                     </div>
                 `;
-
-                if(isToday || (!isCanc && !isDone)) { liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; } else { pastContainer.innerHTML = cardHtml + pastContainer.innerHTML; }
             });
 
             localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
             if(showTrackBtn && activeOrdersList.length > 0) { trackBtn.classList.add('show'); pulse.style.display = showPulse ? 'block' : 'none'; } 
             else { trackBtn.classList.remove('show'); }
-            if(liveContainer.innerHTML === '') liveContainer.innerHTML = `<p style="color:var(--text-sub); font-size:12px; font-weight:600; text-align:center; padding: 20px 0;">No live orders right now.</p>`;
-            if(pastContainer.innerHTML === '') pastContainer.innerHTML = `<p style="color:var(--text-sub); font-size:12px; font-weight:600; text-align:center; padding: 20px 0;">No past orders found.</p>`;
+            if(container.innerHTML === '') container.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
         }
 
         let savedOrdersList = [];
@@ -1198,10 +901,22 @@
             if(allDishes.length > 0 && !currentDish) loadDish(allDishes[0]);
         }, (error) => {
             console.error("Firebase Snapshot Error:", error);
-            document.getElementById('sidebar-menu').innerHTML = '<div style="padding:20px; font-size:10px; color:#E23744; text-align:center;">Network Error</div>';
         });
 
         window.filterCategory = function(cat, element) { activeCategory = cat; document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); element.classList.add('active'); applyFilters(); };
+
+        function getPremiumIcon(category) {
+            let cat = (category || '').toLowerCase();
+            if (cat.includes('veg') && !cat.includes('non')) return '<i class="ph-fill ph-leaf" style="color: var(--green);"></i>';
+            if (cat.includes('non')) return '<i class="ph-fill ph-bone" style="color: var(--danger);"></i>';
+            if (cat.includes('starter')) return '<i class="ph-fill ph-bowl-food" style="color: var(--warning);"></i>';
+            if (cat.includes('main')) return '<i class="ph-fill ph-cooking-pot" style="color: var(--primary);"></i>';
+            if (cat.includes('bread')) return '<i class="ph-fill ph-bread"></i>';
+            if (cat.includes('rice')) return '<i class="ph-fill ph-bowl-steam"></i>';
+            if (cat.includes('drink')) return '<i class="ph-fill ph-martini"></i>';
+            if (cat.includes('dessert')) return '<i class="ph-fill ph-ice-cream"></i>';
+            return '<i class="ph-fill ph-fork-knife"></i>';
+        }
 
         window.applyFilters = function() {
             const queryText = document.getElementById('searchInput').value.toLowerCase();
@@ -1216,17 +931,19 @@
 
         window.renderSidebar = function(dishesToRender) {
             const sidebar = document.getElementById('sidebar-menu'); sidebar.innerHTML = '';
-            if(dishesToRender.length === 0) { sidebar.innerHTML = '<div style="padding:20px; font-size:10px; color:#999; text-align:center;">No match</div>'; return; }
+            if(dishesToRender.length === 0) { sidebar.innerHTML = '<div style="padding:40px 10px; font-size:12px; color:var(--text-sub); text-align:center;"><i class="ph-fill ph-magnifying-glass" style="font-size:30px; opacity:0.5; margin-bottom:10px;"></i><br>No match</div>'; return; }
             
             const groupedDishes = {};
             dishesToRender.forEach(dish => { const cat = activeCategory === 'Trending' ? 'TRENDING' : (dish.category || "Uncategorized"); if (!groupedDishes[cat]) groupedDishes[cat] = []; groupedDishes[cat].push(dish); });
 
             for (let cat in groupedDishes) {
-                const header = document.createElement('div'); header.style.padding = "15px 5px 5px 5px"; header.style.fontSize = "10px"; header.style.fontWeight = "800"; header.style.color = "var(--text-sub)"; header.style.textAlign = "center"; header.style.borderBottom = "1px solid #f0f0f0"; header.innerText = cat.toUpperCase(); sidebar.appendChild(header);
+                const header = document.createElement('div'); header.style.padding = "20px 5px 10px 5px"; header.style.fontSize = "10px"; header.style.fontWeight = "800"; header.style.color = "var(--text-sub)"; header.style.textAlign = "center"; header.innerText = cat.toUpperCase(); sidebar.appendChild(header);
                 groupedDishes[cat].forEach((data) => {
                     const itemDiv = document.createElement('div'); itemDiv.className = `side-item ${currentDish && currentDish.id === data.id ? 'active' : ''}`;
-                    let trendTag = trendingIds.includes(data.id) ? '<div class="best-seller-tag">⭐ Best Seller</div>' : '';
-                    itemDiv.innerHTML = `<div class="side-emoji">${data.emoji || "🍲"}</div><div class="side-name">${data.name}<br>${trendTag}</div>`;
+                    let trendTag = trendingIds.includes(data.id) ? '<div class="best-seller-tag"><i class="ph-fill ph-star"></i> Best Seller</div>' : '';
+                    let displayIcon = data.emoji && data.emoji.length < 5 && !data.emoji.includes('http') && data.emoji !== '🍲' ? data.emoji : getPremiumIcon(data.category);
+                    
+                    itemDiv.innerHTML = `<div class="side-icon-wrapper" style="font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${displayIcon}</div><div class="side-name">${data.name}<br>${trendTag}</div>`;
                     itemDiv.onclick = () => { document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active')); itemDiv.classList.add('active'); loadDish(data); };
                     sidebar.appendChild(itemDiv);
                 });
@@ -1235,19 +952,19 @@
 
         function loadDish(data) {
             currentDish = data; currentVariant = 'full'; 
-            let catBadgeHtml = '';
-            if(data.category) {
-                let badgeClass = `cat-${data.category.replace(' ', '-')}`; let icon = '';
-                if(data.category === 'Veg') icon = '🟢 Veg'; else if(data.category === 'Non-Veg') icon = '🔴 Non-Veg';
-                else if(data.category === 'Drinks') icon = '🥤 Drinks'; else if(data.category === 'Desserts') icon = '🍰 Desserts';
-                catBadgeHtml = `<span class="main-cat-badge ${badgeClass}">${icon}</span>`;
-            }
-            document.getElementById('display-name').innerHTML = `${data.name} ${catBadgeHtml}`;
             
-            // Premium Price Strike-Through Setup
+            let iconClass = 'ph-circle'; let iconColor = 'var(--text-sub)';
+            if(data.category === 'Veg') { iconClass = 'ph-circle'; iconColor = 'var(--green)'; }
+            else if(data.category === 'Non-Veg') { iconClass = 'ph-triangle'; iconColor = 'var(--danger)'; }
+            else if(data.category === 'Drinks') { iconClass = 'ph-brandy'; iconColor = '#007AFF'; }
+            else if(data.category === 'Desserts') { iconClass = 'ph-ice-cream'; iconColor = 'var(--warning)'; }
+
+            document.getElementById('display-type-icon').innerHTML = `<i class="ph-fill ${iconClass}" style="color:${iconColor}"></i>`;
+            document.getElementById('display-name').innerText = data.name; 
+            
             let currentPrice = data.price;
             let fakeOldPrice = currentPrice + Math.floor(currentPrice * 0.2);
-            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${currentPrice} <span style="background: rgba(226, 55, 68, 0.1); color: var(--zomato-red); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; border: 1px dashed var(--zomato-red); margin-left: 8px; vertical-align: middle;">20% OFF</span>`;
+            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${currentPrice}`;
             
             const variantBox = document.getElementById('variant-box');
             const btnHalf = document.getElementById('btn-half'); const btnFull = document.getElementById('btn-full'); const btnPiece = document.getElementById('btn-piece');
@@ -1258,13 +975,12 @@
 
             const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle'); slider.innerHTML = '';
             
-            // Image Loading Loop Exact Restoration
             if (data.images && data.images.length > 0) {
                 data.images.forEach((imgUrl, idx) => { 
                     const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; 
                     img.onclick = () => openFullscreen(idx); slider.appendChild(img); 
                 });
-                slider.classList.remove('hide'); toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '🧊 View 3D';
+                slider.classList.remove('hide'); toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D';
             } else { slider.classList.add('hide'); toggleBtn.classList.add('hide'); }
             
             checkCartForCurrentDish();
@@ -1277,7 +993,7 @@
             else if(type === 'piece') selPrice = currentDish.pricePiece;
             
             let fakeOldPrice = selPrice + Math.floor(selPrice * 0.2);
-            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${selPrice} <span style="background: rgba(226, 55, 68, 0.1); color: var(--zomato-red); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; border: 1px dashed var(--zomato-red); margin-left: 8px; vertical-align: middle;">20% OFF</span>`;
+            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${selPrice}`;
             
             checkCartForCurrentDish(); 
         };
@@ -1287,7 +1003,7 @@
         function checkCartForCurrentDish() {
             const key = getCartKey(); const btnAdd = document.getElementById('btn-add-new'); const btnStepper = document.getElementById('btn-stepper');
             if(cart[key] && cart[key].qty > 0) { btnAdd.style.display = 'none'; btnStepper.style.display = 'flex'; document.getElementById('current-qty-display').innerText = cart[key].qty; } 
-            else { btnAdd.style.display = 'block'; btnStepper.style.display = 'none'; }
+            else { btnAdd.style.display = 'flex'; btnStepper.style.display = 'none'; }
         }
 
         window.addCurrentToCart = (e) => {
@@ -1300,8 +1016,7 @@
             
             triggerHapticPop();
             createFlyingDot(e); 
-            // Fixed showToast directly addressing the root element to prevent crash
-            document.getElementById('toast').innerText = currentLang === 'hi' ? "✅ कार्ट में जुड़ गया!" : "✅ Added to Cart!";
+            document.getElementById('toast').innerHTML = currentLang === 'hi' ? "<i class='ph-fill ph-check-circle'></i> <span>कार्ट में जुड़ गया!</span>" : "<i class='ph-fill ph-check-circle'></i> <span>Added to Cart!</span>";
             document.getElementById('toast').classList.add('show');
             setTimeout(() => document.getElementById('toast').classList.remove('show'), 2000);
             
@@ -1312,7 +1027,7 @@
         window.changeCartQty = (key, delta) => { if(cart[key]) { cart[key].qty += delta; if(cart[key].qty <= 0) delete cart[key]; } triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
 
         function updateGlobalCartUI() {
-            const floatingBar = document.getElementById('floating-checkout'); const bottomUiCard = document.getElementById('bottom-ui-card');
+            const floatingBar = document.getElementById('floating-checkout'); 
             let totalItems = 0; let totalPrice = 0;
             for (let key in cart) { totalItems += cart[key].qty; totalPrice += (cart[key].price * cart[key].qty); }
             document.getElementById('cart-count').innerText = totalItems;
@@ -1321,9 +1036,9 @@
                 let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
                 document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
                 document.getElementById('float-total').innerText = '₹' + totalPrice;
-                floatingBar.classList.add('show'); bottomUiCard.classList.add('with-cart');
+                floatingBar.classList.add('show'); 
             } else {
-                floatingBar.classList.remove('show'); bottomUiCard.classList.remove('with-cart');
+                floatingBar.classList.remove('show'); 
             }
         }
 
@@ -1339,121 +1054,89 @@
                     <div class="swipe-wrap">
                         <div class="swipe-content">
                             <div class="cart-item-info">
-                                <b style="color:var(--text-main); font-size:14px;">${item.name}</b> <span style="font-size:12px; color:var(--text-sub);">${item.variant}</span>
-                                <div style="font-weight:700; color:var(--text-sub); margin-top:3px;">₹${item.price} x ${item.qty} = ₹${item.price * item.qty}</div>
+                                <b style="color:var(--text-main); font-size:14px; font-weight:700; letter-spacing:-0.3px;">${item.name}</b> <span style="font-size:12px; color:var(--text-sub);">${item.variant}</span>
+                                <div style="font-weight:600; color:var(--text-sub); margin-top:5px;">₹${item.price} x ${item.qty} = <strong style="color:var(--text-main);">₹${item.price * item.qty}</strong></div>
                             </div>
                             <div class="cart-item-qty">
-                                <button onclick="changeCartQty('${key}', -1)">-</button><span>${item.qty}</span><button onclick="changeCartQty('${key}', 1)">+</button>
+                                <button onclick="changeCartQty('${key}', -1)"><i class="ph-bold ph-minus"></i></button><span style="min-width:15px; text-align:center;">${item.qty}</span><button onclick="changeCartQty('${key}', 1)"><i class="ph-bold ph-plus"></i></button>
                             </div>
                         </div>
-                        <div class="swipe-action" onclick="deleteCartItem('${key}')">🗑️</div>
+                        <div class="swipe-action" onclick="deleteCartItem('${key}')"><i class="ph-bold ph-trash"></i></div>
                     </div>`;
             }
-            if(isEmpty) list.innerHTML = '<p style="text-align:center; color:#888; font-weight:600; margin-top:20px;">Your cart is empty!</p>';
+            if(isEmpty) list.innerHTML = '<div style="text-align:center; padding:30px 0;"><i class="ph-fill ph-shopping-cart" style="font-size:40px; color:var(--text-sub); opacity:0.3; margin-bottom:10px;"></i><p style="color:var(--text-sub); font-weight:600; margin:0;">Your cart is empty!</p></div>';
             document.getElementById('bill-final').innerText = '₹' + totalPrice;
         }
 
         window.deleteCartItem = (key) => { delete cart[key]; triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
 
-        function showToast(msg) { 
-            const toast = document.getElementById('toast'); 
-            toast.innerText = msg; 
-            toast.classList.add('show'); 
-            setTimeout(() => toast.classList.remove('show'), 2000); 
-        }
+        const restaurantWhatsApp = "917870276466"; 
 
-        function launchConfetti() {
-            const canvas = document.getElementById('confetti-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            let pieces = [];
-            const colors = ['#E23744', '#28A745', '#FF9500', '#007AFF', '#FFD700'];
-            for(let i=0; i<100; i++) {
-                pieces.push({
-                    x: canvas.width/2, y: canvas.height/2 + 100,
-                    vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 1) * 20 - 5,
-                    size: Math.random() * 10 + 5, color: colors[Math.floor(Math.random() * colors.length)],
-                    rot: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 10
-                });
-            }
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                let active = false;
-                pieces.forEach(p => {
-                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; 
-                    p.rot += p.rotSpeed;
-                    if(p.y < canvas.height) {
-                        active = true;
-                        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
-                        ctx.fillStyle = p.color; ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
-                        ctx.restore();
-                    }
-                });
-                if(active) requestAnimationFrame(animate); else ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            animate();
-            triggerHapticPop();
-        }
-
-        // 100% Secure WhatsApp-Free Order Logic (Single Session Bill)
         window.placeOrder = async () => {
-            if(Object.keys(cart).length === 0) { window.customAlert("Please add items to your cart first!", "🛒"); return; }
+            if(Object.keys(cart).length === 0) { window.customAlert("Please add items to your cart first!"); return; }
             
             const tableNo = document.getElementById('tableNumber').value;
             const custName = document.getElementById('customerName').value;
             const custPhone = document.getElementById('customerPhone').value;
             const notes = document.getElementById('cookingNotes').value; 
 
-            if(currentOrderType === 'Dine-in' && !tableNo) { window.customAlert("Please enter your Table Number so we know where to serve you!", "🔢"); return; }
-            if(currentOrderType === 'Takeaway' && !custName) { window.customAlert(currentLang === 'hi' ? "कृपया पैक करने के लिए अपना नाम लिखें!" : "Please enter your name for takeaway!", "🎒"); return; }
+            if(currentOrderType === 'Dine-in' && !tableNo) { window.customAlert("Please enter your Table Number so we know where to serve you!"); return; }
+            if(currentOrderType === 'Takeaway' && !custName) { window.customAlert(currentLang === 'hi' ? "कृपया पैक करने के लिए अपना नाम लिखें!" : "Please enter your name for takeaway!"); return; }
 
             const btn = document.getElementById('checkoutBtn');
-            btn.innerText = "Processing..."; btn.style.background = "#FFB75E"; btn.disabled = true;
+            btn.innerHTML = 'Processing <i class="ph-bold ph-spinner ph-spin"></i>'; 
+            btn.style.background = "#FF9F00"; btn.style.boxShadow = "none"; btn.disabled = true;
             const modalContent = document.querySelector('.cart-content'); modalContent.style.opacity = "0.5";
 
             let orderItems = []; let grandTotal = 0;
-            for(let k in cart) { orderItems.push(cart[k]); grandTotal += (cart[k].price * cart[k].qty); }
+            let orderId = Math.floor(1000 + Math.random() * 9000);
+            let waText = `*[ NEW ORDER ]*\n`;
+            if(currentOrderType === 'Dine-in') waText += `*Type:* Dine-in | *Table:* ${tableNo}\n`; else waText += `*Type:* Takeaway\n`;
+            waText += `*ID:* #ORD-${orderId}\n\n`;
+
+            if(custName || custPhone) {
+                waText += `*Customer Details:*\n`;
+                if(custName) waText += `Name: ${custName}\n`;
+                if(custPhone) waText += `Phone: ${custPhone}\n`;
+                waText += `\n`; 
+            }
+            if(notes) waText += `*Chef Notes:* _${notes}_\n\n`;
+            waText += `*Order Details:*\n`;
+
+            for(let k in cart) { 
+                orderItems.push(cart[k]); grandTotal += (cart[k].price * cart[k].qty); 
+                let variantText = cart[k].variant ? ` ${cart[k].variant}` : '';
+                waText += `${cart[k].qty} x ${cart[k].name}${variantText} = ₹${cart[k].price * cart[k].qty}\n`;
+            }
+            
+            waText += `=====================\n*Total Amount: ₹${grandTotal}*\n=====================\n_Powered by NextPlate_`;
+            let finalWaText = encodeURIComponent(waText); 
 
             try {
-                // Single Bill Merge Logic
-                let activeOrderId = null; let activeData = null; let activeOrdersList = [];
-                try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
+                const docRef = await addDoc(collection(db, "orders"), { 
+                    orderType: currentOrderType, tableNumber: tableNo || "N/A", customerName: custName || "N/A", customerPhone: custPhone || "N/A",
+                    chefNotes: notes || "None", items: orderItems, totalAmount: grandTotal, status: 'New', paymentMethod: 'Cash', timestamp: new Date() 
+                });
                 
-                for (let id of activeOrdersList) {
-                    const data = activeOrderData[id];
-                    if (data && (data.status === 'New' || data.status === 'Preparing') && data.orderType === currentOrderType && data.tableNumber === tableNo) {
-                        activeOrderId = id; activeData = data; break;
-                    }
-                }
+                let activeOrders = [];
+                try { activeOrders = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
+                activeOrders.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrders));
+                listenToLiveOrder(docRef.id); 
 
-                if (activeOrderId && currentOrderType === 'Dine-in') {
-                    let mergedItems = [...activeData.items]; for(let newItem of orderItems) { mergedItems.push(newItem); }
-                    let newTotal = activeData.totalAmount + grandTotal;
-                    let newNotes = activeData.chefNotes; if (notes) { newNotes = (newNotes === "None" || !newNotes) ? notes : newNotes + " | " + notes; }
-                    await updateDoc(doc(db, "orders", activeOrderId), { items: mergedItems, totalAmount: newTotal, chefNotes: newNotes, status: 'New', timestamp: new Date() });
-                } else {
-                    const docRef = await addDoc(collection(db, "orders"), { orderType: currentOrderType, tableNumber: tableNo || "N/A", customerName: custName || "N/A", customerPhone: custPhone || "N/A", chefNotes: notes || "None", items: orderItems, totalAmount: grandTotal, status: 'New', paymentMethod: 'Cash', timestamp: new Date() });
-                    activeOrdersList.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); window.listenToLiveOrder(docRef.id); 
-                }
+                cart = {}; document.getElementById('tableNumber').value = ''; document.getElementById('customerName').value = '';
+                document.getElementById('customerPhone').value = ''; document.getElementById('cookingNotes').value = '';
+                
+                updateGlobalCartUI(); checkCartForCurrentDish(); toggleCart(); 
+                modalContent.style.opacity = "1";
 
-                cart = {}; document.getElementById('cookingNotes').value = ''; 
-                updateGlobalCartUI(); checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1";
-                launchConfetti(); 
-                
-                setTimeout(() => {
-                    let earnedCoins = Math.floor(grandTotal / 10); 
-                    document.getElementById('earnedCoins').innerText = earnedCoins;
-                    document.getElementById('coinModal').classList.add('show');
-                    triggerHapticPop();
-                }, 1000);
-                
-                setTimeout(() => { window.switchOrderTab('live'); window.toggleTracker(); }, 3500); 
+                setTimeout(() => { window.open(`https://wa.me/${restaurantWhatsApp}?text=${finalWaText}`, '_blank'); }, 500);
 
             } catch (e) { 
-                console.error(e); modalContent.style.opacity = "1"; window.customAlert("Order Failed. Please check your connection and try again.", "❌"); 
+                console.error(e); modalContent.style.opacity = "1"; window.customAlert("Order Failed. Please check your connection and try again."); 
             }
 
-            btn.innerText = currentLang === 'hi' ? i18n.hi.place : i18n.en.place; btn.style.background = "var(--green)"; btn.disabled = false;
+            btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; 
+            btn.style.background = "var(--primary-gradient)"; btn.style.boxShadow = "0 8px 25px rgba(226, 55, 68, 0.3)"; btn.disabled = false;
         };
     </script>
 </body>
