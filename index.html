@@ -25,9 +25,9 @@
             --text-main: #1C1C1E; 
             --text-sub: #757575; 
             --primary: #E53935;
-            --primary-gradient: linear-gradient(135deg, #E53935 0%, #FF5722 100%);
+            --primary-gradient: linear-gradient(135deg, #E53935 0%, #FF5252 100%);
             --border-light: rgba(0, 0, 0, 0.06); 
-            --green: #24963F; /* Premium Checkout Green */
+            --green: #24963F; /* Premium Success Green */
             --light-green: #E8F5E9; /* Delivered Background */
             --warning: #FF9F00; 
             --danger: #FF3B30;
@@ -65,7 +65,8 @@
 
         .greeting-text { font-size: 11px; font-weight: 500; color: var(--text-sub); -webkit-text-fill-color: var(--text-sub); margin-top: 2px; }
         
-        .header-actions { display: flex; align-items: center; gap: 12px; }
+        /* 🔥 FIXED: Gap increased so Fav Icon doesn't touch Orders Button 🔥 */
+        .header-actions { display: flex; align-items: center; gap: 16px; }
 
         .track-icon { 
             position: relative; font-size: 13px; font-weight: 700; cursor: pointer; padding: 6px 12px; 
@@ -83,7 +84,7 @@
 
         @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
 
-        /* 🔥 FIXED: Favorite Header Icon Alignment 🔥 */
+        /* Premium Favorite Header Icon */
         .fav-header-icon {
             font-size: 20px; cursor: pointer; padding: 6px; 
             background: rgba(255, 59, 48, 0.08); border-radius: 50%; color: var(--danger); 
@@ -150,11 +151,20 @@
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* =========================================
-           MAIN CONTENT & VIEWER (FULL HEIGHT IMAGE)
+           MAIN CONTENT & VIEWER (SCROLLABLE & FULL HEIGHT IMAGE)
         ========================================= */
-        .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
+        /* 🔥 FIXED: main-content allows scrolling, so UI won't collapse 🔥 */
+        .main-content { 
+            flex: 1; display: flex; flex-direction: column; background: var(--bg-light); 
+            overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
+        }
+        .main-content::-webkit-scrollbar { display: none; }
         
-        .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; background: #E8E8E8; border-radius: 0 0 24px 24px; overflow: hidden; z-index: 5;}
+        /* 🔥 FIXED: Large Image Size (55vh) so photo is fully visible 🔥 */
+        .viewer-container { 
+            width: 100%; height: 55vh; flex-shrink: 0; position: relative; background: #E8E8E8; 
+            border-radius: 0 0 24px 24px; overflow: hidden; z-index: 5;
+        }
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
         .progress-bar { display: block; width: 50%; height: 4px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255,255,255,0.5); border-radius: 10px; overflow: hidden; }
@@ -169,10 +179,12 @@
 
         .image-gradient-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 35%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 6; pointer-events: none; }
         
+        /* Badges Top Left */
         .premium-badges-top { position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; gap: 8px; flex-wrap: wrap; }
         .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px;}
         .badge-chip.time { color: var(--text-main); }
 
+        /* Zomato Style Green Rating Bottom Left */
         .photo-rating-badge {
             position: absolute; bottom: 15px; left: 15px; z-index: 10;
             background: var(--green); color: var(--white);
@@ -182,6 +194,7 @@
         .photo-rating-badge .star { font-weight: 800; font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--white);}
         .photo-rating-badge .reviews { font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.9); margin-left: 2px;}
 
+        /* Premium Favorite Bottom Right */
         .photo-fav-btn {
             position: absolute; bottom: 15px; right: 15px; z-index: 10;
             background: rgba(255,255,255,0.95); color: #BDBDBD;
@@ -196,7 +209,7 @@
         .media-toggle.hide { display: none; }
 
         .waiter-btn { position: absolute; top: 60px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 8px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; backdrop-filter: blur(8px); }
-        .waiter-btn i { font-size: 18px; color: var(--primary); animation: ringBell 3s infinite; transform-origin: top center;}
+        .waiter-btn i { font-size: 18px; color: var(--danger); animation: ringBell 3s infinite; transform-origin: top center;}
         .waiter-btn span { line-height: 1; color: var(--text-main); }
         .waiter-btn:active { transform: scale(0.95); background: var(--bg-light);}
         @keyframes ringBell { 0%, 100% { transform: rotate(0deg); } 10%, 30%, 50% { transform: rotate(15deg); } 20%, 40% { transform: rotate(-15deg); } 60% { transform: rotate(0deg); } }
@@ -219,19 +232,20 @@
         .fs-dot.active { background: white; transform: scale(1.3); }
 
         /* =========================================
-           BOTTOM UI (COMPACT SO IMAGE IS BIG)
+           BOTTOM UI (COMPACT & PUSHED DOWN)
         ========================================= */
         .bottom-ui { 
-            flex-shrink: 0; background: var(--white); padding: 15px 20px 20px 20px; border-radius: 24px 24px 0 0; 
-            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05); position: relative; z-index: 10; margin-top: -15px;
+            flex-shrink: 0; background: var(--white); padding: 15px 15px 20px 15px; 
+            border-radius: 28px 28px 0 0; box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.08); 
+            position: relative; z-index: 10; margin-top: -25px; transition: padding-bottom 0.3s ease;
         }
-        /* Extra padding so checkout bar doesn't overlap */
-        .bottom-ui.with-cart { padding-bottom: 110px !important; }
+        /* Extra padding so checkout bar doesn't overlap the buttons */
+        .bottom-ui.with-cart { padding-bottom: 100px !important; }
 
         .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
         .dish-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
         
-        .price-section { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; margin-top: 5px;}
+        .price-section { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; margin-top: 4px;}
         .price { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center;}
         
         .variant-selector { display: flex; background: var(--bg-light); border-radius: 50px; overflow: hidden; margin-bottom: 12px; padding: 4px; gap: 4px; border: 1px solid var(--border-light); }
@@ -239,18 +253,19 @@
         .var-btn { flex: 1; padding: 8px 0; border: none; background: transparent; font-size: 12px; font-weight: 600; color: var(--text-sub); border-radius: 50px; cursor: pointer; transition: var(--transition); }
         .var-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
         
-        /* 🔥 FIXED: Smooth Action Row with 3D Slide Stepper */
-        .action-row { display: flex; gap: 10px; width: 100%; margin-bottom: 5px; align-items: center;}
+        /* 🔥 FIXED: Action Row with Smooth Sliding Stepper Transition 🔥 */
+        .action-row { display: flex; gap: 10px; width: 100%; height: 48px; align-items: center; margin-top: 5px; margin-bottom: 5px;}
 
-        .action-container {
-            position: relative; flex: 1; height: 48px; border-radius: 14px; overflow: hidden; background: var(--bg-light);
+        .add-action-wrapper {
+            position: relative; flex: 1; height: 100%; overflow: hidden; 
+            border-radius: 14px; background: var(--bg-light);
         }
         
         .btn-cart { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--primary-gradient); color: var(--white); border: none; border-radius: 14px; 
-            font-size: 14px; font-weight: 700; cursor: pointer; 
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s; 
+            background: var(--primary-gradient); color: var(--white); border: none; 
+            border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; 
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; 
             box-shadow: 0 4px 15px rgba(226, 55, 68, 0.25); display: flex; justify-content: center; align-items: center; gap: 4px;
         }
         .btn-cart i { font-size: 16px; margin-left: 2px;}
@@ -259,23 +274,25 @@
         .stepper-control { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--white); border: 2px solid var(--primary); border-radius: 14px; 
-            display: flex; justify-content: space-between; align-items: center; padding: 0 10px; 
-            font-weight: 700; color: var(--primary); font-size: 16px; box-shadow: 0 4px 10px rgba(226, 55, 68, 0.1);
-            transform: translateY(100%); opacity: 0; pointer-events: none;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; box-sizing: border-box;
+            justify-content: space-between; align-items: center; padding: 0 10px; 
+            font-weight: 700; color: var(--primary); font-size: 15px; 
+            box-shadow: 0 4px 10px rgba(226, 55, 68, 0.1);
+            transform: translateY(100%); opacity: 0; pointer-events: none; /* CSS controlled hide */
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; 
+            display: flex; box-sizing: border-box;
         }
 
-        .action-container.show-stepper .btn-cart {
+        .add-action-wrapper.show-stepper .btn-cart {
             transform: translateY(-100%); opacity: 0; pointer-events: none;
         }
-        .action-container.show-stepper .stepper-control {
+        .add-action-wrapper.show-stepper .stepper-control {
             transform: translateY(0); opacity: 1; pointer-events: auto;
         }
 
         .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 18px; font-weight: 800; cursor: pointer; padding: 8px 12px; transition: var(--transition);}
         .stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 8px; transform: scale(0.9);}
 
-        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 12px 0; border-radius: 14px; font-size: 13px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px; height: 48px; box-sizing: border-box;}
+        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 0; border-radius: 14px; font-size: 12px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px; height: 100%; box-sizing: border-box;}
         .btn-premium i { font-size: 16px; color: var(--primary);}
         .btn-premium:hover { border-color: var(--primary); color: var(--primary);}
         .btn-premium:active { transform: scale(0.96); }
@@ -284,7 +301,8 @@
            FLOATING CHECKOUT BAR (GREEN SUCCESS)
         ========================================= */
         .floating-checkout { 
-            position: fixed; bottom: -120px; left: 15px; right: 15px; background: var(--green); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 30px rgba(36,150,63,0.3); border-radius: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
+            position: fixed; bottom: -120px; left: 15px; right: 15px; 
+            background: #24963F; color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 30px rgba(36,150,63,0.3); border-radius: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
         }
         .floating-checkout.show { bottom: 15px; animation: bounceUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);}
         @keyframes bounceUp { 0% { bottom: -120px; } 100% { bottom: 15px; } }
@@ -292,7 +310,9 @@
         .checkout-info { display: flex; flex-direction: column; text-align: left; gap: 2px;}
         .checkout-items { font-size: 10px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;}
         .checkout-total { font-size: 16px; font-weight: 800; }
-        .checkout-action { font-size: 13px; font-weight: 800; color: var(--green); background: #ffffff; padding: 8px 16px; border-radius: 50px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);} 
+        
+        /* Premium Green Checkout Button */
+        .checkout-action { font-size: 13px; font-weight: 800; color: #24963F; background: #ffffff; padding: 8px 16px; border-radius: 50px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 10px rgba(255,255,255,0.2);} 
 
         /* =========================================
            CART, TRACKER & FAV MODALS (GLASS EFFECT)
@@ -338,8 +358,8 @@
         .step-icon { width: 30px; height: 30px; border-radius: 50%; background: var(--border-light); color: var(--white); display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; transition: 0.3s; }
         .step-text { font-size: 10px; font-weight: 700; color: var(--text-sub); margin-top: 4px; }
         
-        .tracker-step.done .step-icon { background: var(--green); color: white;}
-        .tracker-step.done .step-text { color: var(--green); }
+        .tracker-step.done .step-icon { background: #24963F; color: white;}
+        .tracker-step.done .step-text { color: #24963F; }
         .tracker-step.active .step-icon { background: var(--warning); color: white; animation: pulseStep 1.5s infinite; }
         .tracker-step.active .step-text { color: var(--warning); }
 
@@ -355,7 +375,7 @@
         /* Alerts & Toasts */
         .toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--text-main); color: white; padding: 14px 24px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; opacity: 0; visibility: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
         .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); top: 120px; }
-        .toast i { font-size: 18px; color: var(--green); }
+        .toast i { font-size: 18px; color: #34C759; }
 
         .custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .custom-alert.show { visibility: visible; opacity: 1; }
@@ -427,7 +447,7 @@
         </div>
     </div>
 
-    <!-- 🔥 NEW: Favorites Modal 🔥 -->
+    <!-- 🔥 Favorites Modal 🔥 -->
     <div class="cart-modal" id="fav-modal">
         <div class="cart-content" style="text-align: center; max-height: 90vh;">
             <div class="cart-header">
@@ -455,12 +475,11 @@
         </div>
     </div>
 
-    <!-- Waiter Prompt Modal -->
     <div class="custom-alert" id="waiterPromptModal">
         <div class="alert-box">
             <div class="alert-icon"><i class="ph-fill ph-bell-ringing" style="color: var(--primary);"></i></div>
             <h3 id="waiterTitleText">Call Waiter</h3>
-            <p>Need assistance? Enter your table number below.</p>
+            <p>Enter table & any remark to call the waiter.</p>
             <input type="number" id="waiterTableInput" class="input-field" placeholder="Table Number *" style="margin-bottom: 10px; text-align: center; font-weight:700;">
             <input type="text" id="waiterRemarkInput" class="input-field" placeholder="Remark (Optional) e.g. Water" style="margin-bottom: 25px; text-align: center; font-weight:500;">
             <div style="display: flex; gap: 12px;">
@@ -481,8 +500,8 @@
                 <div class="track-pulse" id="track-badge-pulse"></div>
             </div>
             
-            <!-- 🔥 FIXED: Premium Favorite Icon perfectly centered with gap 🔥 -->
-            <div class="fav-header-icon" onclick="toggleFavList()" style="font-size: 20px; cursor: pointer; padding: 6px; background: rgba(255, 59, 48, 0.08); border-radius: 50%; color: var(--danger); transition: var(--transition); display: flex; align-items: center; justify-content: center;">
+            <!-- Favorite Icon in Header -->
+            <div class="fav-header-icon" onclick="toggleFavList()">
                 <i class="ph-fill ph-heart"></i>
             </div>
 
@@ -528,11 +547,10 @@
         </div>
 
         <div class="main-content">
-            <!-- 🔥 FIXED: Image container adjusted for bigger photo 🔥 -->
-            <div class="viewer-container" style="flex: 1; min-height: 45vh; height: 100%;">
-                <div class="premium-badges-top" style="position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; gap: 8px;">
-                    <span style="background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.5);"><i class="ph-fill ph-fire"></i> Best Seller</span>
-                    <span style="background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.5);"><i class="ph-fill ph-clock"></i> 15 Min</span>
+            <div class="viewer-container">
+                <div class="premium-badges-top">
+                    <span class="badge-chip hot"><i class="ph-fill ph-fire"></i> Best Seller</span>
+                    <span class="badge-chip time"><i class="ph-fill ph-clock"></i> 15 Min</span>
                 </div>
 
                 <!-- Zomato Green Rating in Corner -->
@@ -544,13 +562,13 @@
                 <!-- Favorite Button in Corner -->
                 <button class="photo-fav-btn" onclick="toggleFavIcon(event)"><i class="ph-fill ph-heart"></i></button>
 
-                <div class="waiter-btn" onclick="openWaiterPrompt()" style="top: 55px;">
+                <div class="waiter-btn" onclick="openWaiterPrompt()">
                     <i class="ph-fill ph-bell-ringing"></i>
                     <span>Waiter</span>
                 </div>
 
                 <div id="photo-slider" class="photo-slider hide"></div>
-                <div class="image-gradient-overlay" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); z-index: 6; pointer-events: none;"></div>
+                <div class="image-gradient-overlay"></div>
                 
                 <button class="media-toggle hide" id="media-toggle" onclick="toggleMedia()"><i class="ph-fill ph-cube"></i> View 3D</button>
 
@@ -559,15 +577,14 @@
                 </model-viewer>
             </div>
 
-            <!-- 🔥 FIXED: Bottom UI padding adjusted so image doesn't get covered too much 🔥 -->
             <div class="bottom-ui" id="bottom-ui-card">
                 <div class="dish-header-row">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
                     <span class="type-icon" id="display-type-icon"><i class="ph-fill ph-circle" style="color:var(--green)"></i></span>
                 </div>
                 
-                <div class="price-section" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; margin-top: 5px;">
-                    <p class="price" id="display-price" style="margin:0; font-size: 24px; font-weight:800; display:flex; align-items:center; color: var(--text-main);">₹0</p>
+                <div class="price-section">
+                    <p class="price" id="display-price">₹0</p>
                 </div>
                 
                 <div class="variant-selector hide" id="variant-box">
@@ -577,15 +594,15 @@
                 </div>
                 
                 <!-- 🔥 FIXED: Action Row with Smooth Sliding Transition 🔥 -->
-                <div class="action-row" style="display: flex; gap: 10px; width: 100%; align-items: center;">
-                    <div class="action-container" id="action-container" style="position: relative; flex: 1; height: 48px; border-radius: 14px; overflow: hidden; background: var(--bg-light);">
-                        <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-gradient); color: var(--white); border: none; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.25); display: flex; justify-content: center; align-items: center; gap: 4px;">
+                <div class="action-row">
+                    <div class="add-action-wrapper" id="add-action-wrapper">
+                        <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">
                             ADD <i class="ph-bold ph-plus"></i>
                         </button>
-                        <div class="stepper-control" id="btn-stepper" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--white); border: 2px solid var(--primary); border-radius: 14px; justify-content: space-between; align-items: center; padding: 0 10px; font-weight: 700; color: var(--primary); font-size: 15px; box-shadow: 0 4px 10px rgba(226, 55, 68, 0.1); transform: translateY(100%); opacity: 0; pointer-events: none; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; display: flex; box-sizing: border-box;">
-                            <button onclick="changeCurrentQty(-1)" style="background: transparent; border: none; color: var(--primary); font-size: 18px; font-weight: 800; cursor: pointer; padding: 8px 12px; transition: var(--transition);"><i class="ph-bold ph-minus"></i></button>
+                        <div class="stepper-control" id="btn-stepper">
+                            <button onclick="changeCurrentQty(-1)"><i class="ph-bold ph-minus"></i></button>
                             <span id="current-qty-display">1</span>
-                            <button onclick="changeCurrentQty(1); triggerHapticPop();" style="background: transparent; border: none; color: var(--primary); font-size: 18px; font-weight: 800; cursor: pointer; padding: 8px 12px; transition: var(--transition);"><i class="ph-bold ph-plus"></i></button>
+                            <button onclick="changeCurrentQty(1); triggerHapticPop();"><i class="ph-bold ph-plus"></i></button>
                         </div>
                     </div>
                     <button class="btn-premium" id="btn-ar-view" onclick="viewOnTable()"><i class="ph-fill ph-camera"></i> View on Table</button>
@@ -613,8 +630,8 @@
             <div class="cart-scroll-body">
                 <div class="cart-items-container" id="cart-items-list"></div>
                 
-                <div class="bill-details" style="background: var(--bg-light); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1);">
-                    <div class="bill-total" style="font-size: 20px; color: var(--text-main); font-weight:800; display:flex; justify-content:space-between;"><span id="bill-total-text">Total to Pay</span><span id="bill-final">₹0</span></div>
+                <div class="bill-details">
+                    <div class="bill-total"><span id="bill-total-text">Total to Pay</span><span id="bill-final">₹0</span></div>
                 </div>
                 
                 <div style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 12px;">
@@ -636,7 +653,6 @@
         </div>
     </div>
 
-    <!-- Original Safe Toast Structure maintained -->
     <div class="toast" id="toast"><i class="ph-fill ph-check-circle"></i> <span>Added to Cart!</span></div>
 
     <script type="module">
@@ -905,7 +921,6 @@
             document.getElementById('waiterPromptModal').classList.remove('show'); 
         };
 
-        // 🔥 Waiter Modal Remark Support
         window.confirmCallWaiter = async () => {
             const tableNo = document.getElementById('waiterTableInput').value;
             const remark = document.getElementById('waiterRemarkInput').value || "No remark";
@@ -1192,7 +1207,7 @@
 
                 let actionHtml = '';
                 if (isNew) {
-                    actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:6px 14px; border-radius:12px; font-size:11px; font-weight:700; cursor:pointer; display:block; margin:10px auto 0 auto; transition:0.2s;">Cancel Order ❌</button>`;
+                    actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 16px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:10px; transition:0.2s;">Cancel Order ❌</button>`;
                 } else if (isPrep) {
                     let eta = data.items.length * 5; 
                     actionHtml = `<div style="background:rgba(255, 159, 0, 0.1); color:var(--warning); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px; border:1px dashed var(--warning);">⏳ ETA: ${eta} - ${eta+5} Mins</div>`;
@@ -1209,7 +1224,7 @@
                 let cardBorder = isDone ? '1px solid #24963F' : '1px solid var(--border-light)';
 
                 let cardHtml = `
-                    <div style="background:${cardBg}; border:${cardBorder}; border-radius: 20px; padding: 20px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft);">
+                    <div style="background:${cardBg}; border:${cardBorder}; border-radius: 20px; padding: 20px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft); transition:0.3s;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom: 1px solid #eee; padding-bottom:10px;">
                             <div style="font-weight:800; color:var(--text-main); font-size:16px;">#${id.slice(-4)}</div>
                             <div style="display:flex; flex-direction:column; align-items:flex-end;">
@@ -1222,13 +1237,13 @@
                         ${!isCanc ? `
                         <div class="visual-tracker">
                             <div class="tracker-step ${statusRaw !== 'Cancelled' ? 'done' : ''}">
-                                <div class="step-icon">✓</div><div class="step-text">Placed</div>
+                                <div class="step-icon"><i class="ph-bold ph-check"></i></div><div class="step-text">Placed</div>
                             </div>
                             <div class="tracker-step ${isPrep || isDone ? 'done' : (isNew ? 'active' : '')}">
-                                <div class="step-icon">👨‍🍳</div><div class="step-text">Preparing</div>
+                                <div class="step-icon"><i class="ph-fill ph-cooking-pot"></i></div><div class="step-text">Preparing</div>
                             </div>
                             <div class="tracker-step ${isDone ? 'done' : (isPrep ? 'active' : '')}">
-                                <div class="step-icon">🍽️</div><div class="step-text">Ready</div>
+                                <div class="step-icon"><i class="ph-fill ph-bell-ringing"></i></div><div class="step-text">Ready</div>
                             </div>
                         </div>` : ''}
                         
@@ -1514,10 +1529,10 @@
             return `${currentDish.id}_${currentVariant}`; 
         }
 
-        // 🔥 FIXED: Smooth Sliding Stepper Transition
-        function checkCartForCurrentDish() {
+        // 🔥 FIXED: CSS Controlled Smooth Sliding Stepper
+        window.checkCartForCurrentDish = () => {
             const key = getCartKey(); 
-            const wrapper = document.getElementById('action-container');
+            const wrapper = document.getElementById('add-action-wrapper');
             
             if (cart[key] && cart[key].qty > 0) { 
                 wrapper.classList.add('show-stepper');
@@ -1525,7 +1540,7 @@
             } else { 
                 wrapper.classList.remove('show-stepper');
             }
-        }
+        };
 
         window.addCurrentToCart = (e) => {
             const key = getCartKey();
@@ -1712,7 +1727,7 @@
             triggerHapticPop();
         }
 
-        // 🔥 FIXED: Direct Admin Panel AddDoc (Order Failed Bug Removed & No WhatsApp) 🔥
+        // 🔥 FIXED: Direct Admin Panel AddDoc (No Merging logic, 100% stable) 🔥
         window.placeOrder = async () => {
             if (Object.keys(cart).length === 0) { 
                 window.customAlert("Please add items to your cart first!", "ph-shopping-cart"); 
@@ -1751,7 +1766,6 @@
 
             try {
                 // Direct addDoc to bypass any rules validation errors completely.
-                // Works perfectly like original. No WhatsApp opening.
                 const docRef = await addDoc(collection(db, "orders"), { 
                     orderType: currentOrderType, 
                     tableNumber: tableNo || "N/A", 
