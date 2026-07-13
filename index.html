@@ -161,9 +161,8 @@
         }
         .main-content::-webkit-scrollbar { display: none; }
         
-        /* 🔥 BIGGER IMAGE AREA 🔥 */
         .viewer-container { 
-            width: 100%; flex: 1; position: relative; background: #E8E8E8; 
+            width: 100%; height: 55vh; flex-shrink: 0; position: relative; background: #E8E8E8; 
             border-radius: 0 0 24px 24px; overflow: hidden; z-index: 5;
         }
 
@@ -181,20 +180,22 @@
 
         .image-gradient-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 35%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 6; pointer-events: none; }
         
-        /* Badges Top Left */
         .premium-badges-top { position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; gap: 8px; flex-wrap: wrap; }
-        .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px;}
-        .badge-chip.time { color: var(--text-main); }
+        
+        .waiter-btn-chip { 
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); padding: 5px 12px; border-radius: 50px; 
+            font-size: 11px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s;
+        }
+        .waiter-btn-chip:active { transform: scale(0.95); }
+        .waiter-btn-chip i { font-size: 14px; animation: ringBell 3s infinite; transform-origin: top center;}
+        @keyframes ringBell { 0%, 100% { transform: rotate(0deg); } 10%, 30%, 50% { transform: rotate(15deg); } 20%, 40% { transform: rotate(-15deg); } 60% { transform: rotate(0deg); } }
 
+        .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px;}
+        
         .media-toggle { position: absolute; top: 15px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 800; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 6px; }
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
-
-        .waiter-btn { position: absolute; top: 55px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; backdrop-filter: blur(8px); }
-        .waiter-btn i { font-size: 18px; color: var(--danger); animation: ringBell 3s infinite; transform-origin: top center;}
-        .waiter-btn span { line-height: 1; color: var(--text-main); }
-        .waiter-btn:active { transform: scale(0.95); background: var(--bg-light);}
-        @keyframes ringBell { 0%, 100% { transform: rotate(0deg); } 10%, 30%, 50% { transform: rotate(15deg); } 20%, 40% { transform: rotate(-15deg); } 60% { transform: rotate(0deg); } }
 
         .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; visibility: hidden; opacity: 0; transition: var(--transition); }
         .fullscreen-viewer.show { visibility: visible; opacity: 1; }
@@ -214,35 +215,27 @@
         .fs-dot.active { background: white; transform: scale(1.3); }
 
         /* =========================================
-           BOTTOM UI (NO EXTRA WHITESPACE, ITEMS MOVED DOWN)
+           BOTTOM UI (COMPACT & PUSHED DOWN)
         ========================================= */
         .bottom-ui { 
-            flex-shrink: 0; background: var(--white); padding: 20px 20px; 
+            flex-shrink: 0; background: var(--white); padding: 15px 20px 20px 20px; 
             border-radius: 28px 28px 0 0; box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05); 
             position: relative; z-index: 10; margin-top: -20px; transition: padding-bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
-        /* 🔥 FIXED: Dynamic Lift Animation - When item is added, pad bottom to reveal checkout bar safely 🔥 */
         .bottom-ui.with-cart { padding-bottom: 90px; }
 
-        /* 🔥 FIXED: Header Row includes Favorite Icon perfectly aligned 🔥 */
-        .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+        .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0px; }
         .dish-title { font-size: 22px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px; line-height: 1.2;}
         
         .card-fav-btn {
-            background: var(--bg-light); color: #BDBDBD;
-            border: 1px solid var(--border-light); width: 36px; height: 36px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 18px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: var(--transition);
+            background: var(--bg-light); color: #BDBDBD; border: 1px solid var(--border-light); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: var(--transition);
         }
         .card-fav-btn:active { transform: scale(0.8); }
 
-        /* 🔥 FIXED: Rating Badge Moved Below Title 🔥 */
-        .rating-type-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .rating-type-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; margin-top: 4px; }
         .card-rating-badge {
-            background: var(--green); color: var(--white);
-            padding: 4px 8px; border-radius: 6px; display: flex; align-items: center; gap: 2px;
-            box-shadow: 0 4px 10px rgba(36, 150, 63, 0.3); border: none;
+            background: var(--green); color: var(--white); padding: 4px 8px; border-radius: 6px; display: flex; align-items: center; gap: 2px; box-shadow: 0 4px 10px rgba(36, 150, 63, 0.3); border: none;
         }
         .card-rating-badge .star { font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 4px; color: var(--white);}
         .card-rating-badge .reviews { font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.9); margin-left: 2px;}
@@ -255,7 +248,6 @@
         .var-btn { flex: 1; padding: 8px 0; border: none; background: transparent; font-size: 12px; font-weight: 600; color: var(--text-sub); border-radius: 50px; cursor: pointer; transition: var(--transition); }
         .var-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
         
-        /* 🔥 FIXED: Action Row with Smooth Sliding Stepper Transition 🔥 */
         .action-row { display: flex; gap: 10px; width: 100%; height: 48px; align-items: center; margin-bottom: 0;}
 
         .add-action-wrapper {
@@ -295,7 +287,7 @@
         .stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 8px; transform: scale(0.9);}
 
         .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 0; border-radius: 14px; font-size: 13px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px; height: 100%; box-sizing: border-box;}
-        .btn-premium i { font-size: 18px; color: var(--primary);}
+        .btn-premium i { font-size: 16px; color: var(--primary);}
         .btn-premium:hover { border-color: var(--primary); color: var(--primary);}
         .btn-premium:active { transform: scale(0.96); }
         
@@ -447,7 +439,7 @@
         </div>
     </div>
 
-    <!-- 🔥 Favorites Modal 🔥 -->
+    <!-- Favorites Modal -->
     <div class="cart-modal" id="fav-modal">
         <div class="cart-content" style="text-align: center; max-height: 90vh;">
             <div class="cart-header">
@@ -475,12 +467,11 @@
         </div>
     </div>
 
-    <!-- Waiter Prompt Modal -->
     <div class="custom-alert" id="waiterPromptModal">
         <div class="alert-box">
             <div class="alert-icon"><i class="ph-fill ph-bell-ringing" style="color: var(--primary);"></i></div>
             <h3 id="waiterTitleText">Call Waiter</h3>
-            <p>Enter table & any remark to call the waiter.</p>
+            <p>Need assistance? Enter your table number below.</p>
             <input type="number" id="waiterTableInput" class="input-field" placeholder="Table Number *" style="margin-bottom: 10px; text-align: center; font-weight:700;">
             <input type="text" id="waiterRemarkInput" class="input-field" placeholder="Remark (Optional) e.g. Water" style="margin-bottom: 25px; text-align: center; font-weight:500;">
             <div style="display: flex; gap: 12px;">
@@ -501,7 +492,6 @@
                 <div class="track-pulse" id="track-badge-pulse"></div>
             </div>
             
-            <!-- 🔥 SAFE GAP for Favorite Icon in Header 🔥 -->
             <div class="fav-header-icon" onclick="toggleFavList()">
                 <i class="ph-fill ph-heart"></i>
             </div>
@@ -549,7 +539,7 @@
 
         <div class="main-content">
             <div class="viewer-container">
-                <!-- 🔥 Waiter button safely top-left 🔥 -->
+                <!-- Waiter Button at Top Left -->
                 <div class="premium-badges-top">
                     <button onclick="openWaiterPrompt()" class="waiter-btn-chip" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; cursor: pointer;">
                         <i class="ph-fill ph-bell-ringing" style="font-size:14px;"></i> Waiter
@@ -567,20 +557,15 @@
                 </model-viewer>
             </div>
 
-            <!-- 🔥 FIXED: Clean & Compact Bottom UI without extra empty space 🔥 -->
+            <!-- COMPACT BOTTOM UI -->
             <div class="bottom-ui" id="bottom-ui-card">
                 
                 <div class="dish-header-row">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
-                    
-                    <!-- 🔥 NEW: Favorite Button moved next to name in White Card 🔥 -->
-                    <button class="card-fav-btn" onclick="toggleFavIcon(event)">
-                        <i class="ph-fill ph-heart"></i>
-                    </button>
+                    <button class="card-fav-btn" onclick="toggleFavIcon(event)"><i class="ph-fill ph-heart"></i></button>
                 </div>
 
                 <div class="rating-type-row">
-                    <!-- 🔥 NEW: Green Rating Badge moved below title 🔥 -->
                     <div class="card-rating-badge">
                         <span class="star"><i class="ph-fill ph-star"></i> 4.8</span>
                         <span class="reviews">(245 Reviews)</span>
@@ -598,7 +583,6 @@
                     <button class="var-btn" id="btn-piece" onclick="selectVariant('piece')">Per Piece</button>
                 </div>
                 
-                <!-- 🔥 FIXED: Action Row with Smooth Sliding Stepper Transition 🔥 -->
                 <div class="action-row">
                     <div class="add-action-wrapper" id="add-action-wrapper">
                         <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">
@@ -616,7 +600,7 @@
         </div>
     </div>
 
-    <!-- 🔥 FIXED: Success Green Floating Checkout Bar 🔥 -->
+    <!-- Green Success Floating Checkout Bar -->
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
             <span class="checkout-items" id="float-items">1 Item</span>
@@ -754,7 +738,6 @@
             }, 600);
         };
 
-        // 🔥 Favorites Logic 🔥
         window.toggleFavIcon = (e) => {
             e.stopPropagation();
             triggerHapticPop();
@@ -978,7 +961,6 @@
             document.getElementById('tracker-modal').classList.toggle('show'); 
         };
 
-        // Split Tab Tracker Logic
         window.switchOrderTab = (tab) => {
             document.getElementById('tab-live-orders').classList.remove('active');
             document.getElementById('tab-past-orders').classList.remove('active');
@@ -1213,7 +1195,7 @@
 
                 let actionHtml = '';
                 if (isNew) {
-                    actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 16px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:15px; transition:0.2s;">Cancel ❌</button>`;
+                    actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:6px 14px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:15px; transition:0.2s;">Cancel ❌</button>`;
                 } else if (isPrep) {
                     let eta = data.items.length * 5; 
                     actionHtml = `<div style="background:rgba(255, 159, 0, 0.1); color:var(--warning); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px; border:1px dashed var(--warning);">⏳ ETA: ${eta} - ${eta+5} Mins</div>`;
@@ -1501,7 +1483,6 @@
                 toggleBtn.classList.add('hide'); 
             }
             
-            // 🔥 Reset Favorite Icon Status 🔥
             const favBtn = document.querySelector('.card-fav-btn');
             if(favorites.includes(data.id)) {
                 favBtn.style.color = 'var(--danger)';
@@ -1534,7 +1515,7 @@
             return `${currentDish.id}_${currentVariant}`; 
         }
 
-        // 🔥 FIXED: Check Stepper Smoothly without jumping
+        // 🔥 FIXED: Smooth Sliding Stepper Transition Without Hiding View 3D Button
         window.checkCartForCurrentDish = () => {
             const key = getCartKey(); 
             const wrapper = document.getElementById('add-action-wrapper');
@@ -1579,12 +1560,6 @@
             
             updateGlobalCartUI(); 
             checkCartForCurrentDish();
-
-            // Auto-scroll slightly to ensure checkout bar doesn't overlap
-            setTimeout(() => {
-                const mainContent = document.querySelector('.main-content');
-                mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: 'smooth' });
-            }, 100);
         }
 
         window.changeCurrentQty = (delta) => { 
@@ -1682,7 +1657,66 @@
             renderCartModal(); 
         };
 
-        // 🔥 Direct Admin Panel AddDoc (Order Failed Bug Removed 100%)
+        function showToast(msg) { 
+            const toast = document.getElementById('toast'); 
+            toast.querySelector('span').innerText = msg; 
+            toast.classList.add('show'); 
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000); 
+        }
+
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight;
+            let pieces = [];
+            const colors = ['#E53935', '#24963F', '#FF9F00', '#FF5252', '#34C759'];
+            
+            for (let i = 0; i < 100; i++) {
+                pieces.push({
+                    x: canvas.width / 2, 
+                    y: canvas.height / 2 + 100,
+                    vx: (Math.random() - 0.5) * 20, 
+                    vy: (Math.random() - 1) * 20 - 5,
+                    size: Math.random() * 8 + 5, 
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rot: Math.random() * 360, 
+                    rotSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+                pieces.forEach(p => {
+                    p.x += p.vx; 
+                    p.y += p.vy; 
+                    p.vy += 0.5; 
+                    p.rot += p.rotSpeed;
+                    
+                    if (p.y < canvas.height) {
+                        active = true;
+                        ctx.save(); 
+                        ctx.translate(p.x, p.y); 
+                        ctx.rotate(p.rot * Math.PI / 180);
+                        ctx.fillStyle = p.color; 
+                        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                        ctx.restore();
+                    }
+                });
+                if (active) {
+                    requestAnimationFrame(animate); 
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            animate();
+            triggerHapticPop();
+        }
+
+        // 🔥 FIXED: Direct Admin Panel AddDoc Data (Bug Free Order Logic) 🔥
         window.placeOrder = async () => {
             if (Object.keys(cart).length === 0) { 
                 window.customAlert("Please add items to your cart first!", "ph-shopping-cart"); 
@@ -1714,21 +1748,29 @@
 
             let orderItems = []; 
             let grandTotal = 0;
+            
+            // Validate data to prevent firebase crash
             for (let k in cart) { 
-                orderItems.push(cart[k]); 
+                orderItems.push({
+                    id: cart[k].id || "",
+                    name: cart[k].name || "",
+                    price: cart[k].price || 0,
+                    variant: cart[k].variant || "",
+                    qty: cart[k].qty || 1
+                }); 
                 grandTotal += (cart[k].price * cart[k].qty); 
             }
 
             try {
-                // Direct addDoc to bypass any rules validation errors completely.
+                // Direct addDoc - 100% stable
                 const docRef = await addDoc(collection(db, "orders"), { 
-                    orderType: currentOrderType, 
-                    tableNumber: tableNo || "N/A", 
-                    customerName: custName || "N/A", 
-                    customerPhone: custPhone || "N/A", 
-                    chefNotes: notes || "None", 
+                    orderType: currentOrderType || "Dine-in", 
+                    tableNumber: String(tableNo || "N/A"), 
+                    customerName: String(custName || "N/A"), 
+                    customerPhone: String(custPhone || "N/A"), 
+                    chefNotes: String(notes || "None"), 
                     items: orderItems, 
-                    totalAmount: grandTotal, 
+                    totalAmount: Number(grandTotal), 
                     status: 'New', 
                     paymentMethod: 'Cash', 
                     timestamp: new Date() 
@@ -1767,7 +1809,7 @@
                 }, 3500); 
 
             } catch (e) { 
-                console.error(e); 
+                console.error("FIREBASE ERROR: ", e); 
                 modalContent.style.opacity = "1"; 
                 window.customAlert("Order Failed. Check connection.", "ph-x-circle"); 
             } finally {
