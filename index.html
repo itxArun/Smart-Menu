@@ -5,28 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NextPlate - Premium Smart Menu</title>
     
-    <!-- External Scripts & Fonts -->
+    <!-- 3D Viewer & Modern Icons -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
+
+    <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
 
     <style>
         /* =========================================
-           VARIABLES & PREMIUM RESET
+           PREMIUM VARIABLES & RESET
         ========================================= */
         :root { 
             --bg-light: #F8F9FA; 
             --white: #FFFFFF; 
             --text-main: #1C1C1E; 
             --text-sub: #757575; 
-            --zomato-red: #E23744; 
-            --primary-gradient: linear-gradient(135deg, #E23744 0%, #FF5252 100%);
-            --border-light: rgba(0, 0, 0, 0.05); 
-            --green: #34C759; 
+            --primary: #E53935;
+            --primary-gradient: linear-gradient(135deg, #E53935 0%, #FF5722 100%);
+            --border-light: rgba(0, 0, 0, 0.06); 
+            --green: #24963F; /* Zomato Green */
             --warning: #FF9F00; 
             --danger: #FF3B30;
             --glass-bg: rgba(255, 255, 255, 0.85);
@@ -56,93 +57,92 @@
         }
 
         .brand-name { 
-            font-size: 24px; font-weight: 800; 
+            font-size: 22px; font-weight: 800; 
             background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin: 0; display: flex; flex-direction: column; line-height: 1.1; 
+            margin: 0; display: flex; flex-direction: column; line-height: 1.1; letter-spacing: -0.5px;
         }
 
-        .greeting-text { font-size: 11px; font-weight: 600; color: var(--text-sub); -webkit-text-fill-color: var(--text-sub); margin-top: 2px; }
+        .greeting-text { font-size: 11px; font-weight: 500; color: var(--text-sub); -webkit-text-fill-color: var(--text-sub); margin-top: 2px; }
         
         .header-actions { display: flex; align-items: center; gap: 12px; }
 
         .track-icon { 
-            position: relative; font-size: 14px; font-weight: 700; cursor: pointer; padding: 8px 14px; 
+            position: relative; font-size: 13px; font-weight: 700; cursor: pointer; padding: 6px 12px; 
             background: rgba(255, 159, 0, 0.1); border-radius: 50px; color: var(--warning); 
-            transition: var(--transition); display: none; align-items: center; gap: 6px; border: 1px solid rgba(255, 159, 0, 0.2); 
+            transition: var(--transition); display: none; align-items: center; gap: 4px; border: 1px solid rgba(255, 159, 0, 0.2); 
         }
         .track-icon.show { display: flex; }
         .track-icon:active { transform: scale(0.95); }
-        .track-icon i { font-size: 18px; }
+        .track-icon i { font-size: 16px; }
         
         .track-pulse { 
             position: absolute; top: -2px; right: -2px; background: var(--warning); 
             width: 10px; height: 10px; border-radius: 50%; animation: pulse-orange 1.5s infinite; border: 2px solid var(--white);
         }
+
         @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
 
-        .lang-switch { display: flex; background: var(--bg-light); padding: 4px; border-radius: 50px; border: 1px solid var(--border-light); }
-        .lang-btn { border: none; background: transparent; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 50px; cursor: pointer; color: var(--text-sub); transition: var(--transition); }
+        .lang-switch { display: flex; background: var(--bg-light); padding: 3px; border-radius: 50px; border: 1px solid var(--border-light); }
+        .lang-btn { border: none; background: transparent; padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 50px; cursor: pointer; color: var(--text-sub); transition: var(--transition); }
         .lang-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 2px 8px rgba(226,55,68,0.3); }
         
-        .cart-icon { position: relative; font-size: 24px; cursor: pointer; padding: 8px; background: rgba(226,55,68,0.08); border-radius: 50%; color: var(--zomato-red); transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+        .cart-icon { position: relative; font-size: 22px; cursor: pointer; padding: 6px; background: rgba(226,55,68,0.08); border-radius: 50%; color: var(--primary); transition: var(--transition); display: flex; align-items: center; justify-content: center; }
         .cart-icon:active { transform: scale(0.9); }
-        .cart-badge { position: absolute; top: -2px; right: -2px; background: var(--zomato-red); color: white; font-size: 10px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--white); box-shadow: 0 2px 5px rgba(226,55,68,0.4); }
+        .cart-badge { position: absolute; top: -4px; right: -4px; background: var(--primary); color: white; font-size: 10px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--white); box-shadow: 0 2px 5px rgba(226,55,68,0.4); }
         
-        .flying-dot { position: fixed; width: 20px; height: 20px; background: var(--zomato-red); border-radius: 50%; z-index: 9999; pointer-events: none; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0; box-shadow: 0 4px 10px rgba(226,55,68,0.5); }
+        .flying-dot { position: fixed; width: 16px; height: 16px; background: var(--primary); border-radius: 50%; z-index: 9999; pointer-events: none; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0; box-shadow: 0 4px 10px rgba(226,55,68,0.5); }
 
         /* =========================================
            CATEGORY SCROLL
         ========================================= */
-        .category-scroll { flex-shrink: 0; display: flex; overflow-x: auto; white-space: nowrap; background: var(--white); padding: 12px 20px; border-bottom: 1px solid var(--border-light); gap: 12px; z-index: 15; scroll-behavior: smooth; }
+        .category-scroll { flex-shrink: 0; display: flex; overflow-x: auto; white-space: nowrap; background: var(--white); padding: 12px 20px; border-bottom: 1px solid var(--border-light); gap: 10px; z-index: 15; scroll-behavior: smooth; }
         .category-scroll::-webkit-scrollbar { display: none; }
         
-        .cat-pill { background: var(--bg-light); color: var(--text-sub); padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); border: 1px solid var(--border-light); display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .cat-pill i { font-size: 16px; }
-        .cat-pill:hover { background: #FFF5F5; color: var(--zomato-red); border-color: rgba(226,55,68,0.2); }
-        .cat-pill.active { background: var(--primary-gradient); color: var(--white); border-color: transparent; box-shadow: 0 4px 12px rgba(226,55,68,0.25); font-weight: 700; transform: translateY(-2px); }
+        .cat-pill { background: var(--bg-light); color: var(--text-sub); padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 500; cursor: pointer; transition: var(--transition); border: 1px solid var(--border-light); display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .cat-pill i { font-size: 14px; }
+        .cat-pill:hover { background: #FFF9F9; border-color: rgba(226,55,68,0.2); color: var(--primary); }
+        .cat-pill.active { background: var(--primary-gradient); color: var(--white); border-color: transparent; box-shadow: 0 4px 12px rgba(226,55,68,0.25); font-weight: 600; transform: translateY(-2px);}
         .cat-pill:active { transform: scale(0.95); }
 
         /* =========================================
            APP LAYOUT & SIDEBAR
         ========================================= */
-        .app-layout { display: flex; flex: 1; overflow: hidden; }
+        .app-layout { display: flex; flex: 1; overflow: hidden; background: var(--bg-light); }
         
-        .sidebar { width: 95px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; position: relative; z-index: 10; }
+        .sidebar { width: 90px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; position: relative; z-index: 10; }
         .sidebar::-webkit-scrollbar { display: none; }
         
         .search-box { position: sticky; top: 0; background: var(--glass-bg); padding: 10px 5px; border-bottom: 1px solid var(--border-light); z-index: 5; backdrop-filter: blur(10px); }
         .search-input-wrapper { position: relative; width: 100%; }
-        .search-input-wrapper input { width: 100%; padding: 10px 30px 10px 8px; border: 1px solid var(--border-light); border-radius: 12px; font-size: 11px; font-weight: 500; box-sizing: border-box; text-align: left; background: var(--bg-light); outline: none; font-family: inherit; transition: var(--transition); color: var(--text-main); }
-        .search-input-wrapper input:focus { border-color: var(--zomato-red); background: var(--white); box-shadow: 0 0 0 3px rgba(226,55,68,0.1); }
+        .search-input-wrapper input { width: 100%; padding: 10px 28px 10px 8px; border: 1px solid var(--border-light); border-radius: 12px; font-size: 11px; font-weight: 500; box-sizing: border-box; text-align: left; background: var(--bg-light); outline: none; font-family: inherit; transition: var(--transition); color: var(--text-main); }
+        .search-input-wrapper input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(229,57,53,0.1); }
 
         .mic-btn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-sub); display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 4px; transition: var(--transition); font-size: 16px; }
-        .mic-btn:hover { color: var(--zomato-red); }
+        .mic-btn:hover { color: var(--primary); }
         .mic-btn:active { transform: translateY(-50%) scale(0.9); }
-        .mic-btn.listening { color: var(--zomato-red); animation: pulseMic 1.5s infinite; }
-        @keyframes pulseMic { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.2); filter: drop-shadow(0 0 5px var(--zomato-red));} 100% { transform: translateY(-50%) scale(1); } }
+        .mic-btn.listening { color: var(--primary); animation: pulseMic 1.5s infinite; }
+        @keyframes pulseMic { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.2); filter: drop-shadow(0 0 5px var(--primary));} 100% { transform: translateY(-50%) scale(1); } }
 
-        .side-item { padding: 15px 5px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: var(--transition); border-bottom: 1px solid rgba(0,0,0,0.02); position: relative; }
+        .side-item { padding: 12px 5px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: var(--transition); border-bottom: 1px solid rgba(0,0,0,0.02); position: relative; }
         .side-item:hover { background: rgba(0,0,0,0.02); }
         .side-item:active { transform: scale(0.95); }
-        .side-item.active { border-left-color: var(--zomato-red); background: linear-gradient(90deg, rgba(226,55,68,0.08) 0%, transparent 100%); }
+        .side-item.active { border-left-color: var(--primary); background: linear-gradient(90deg, rgba(229,57,53,0.08) 0%, transparent 100%); }
+        .side-icon-wrapper { width: 44px; height: 44px; margin: 0 auto 6px auto; background: var(--bg-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: var(--transition); border: 1px solid var(--border-light); }
+        .side-item.active .side-icon-wrapper { background: var(--white); border-color: var(--primary); color: var(--primary); box-shadow: 0 4px 15px rgba(229,57,53,0.15); transform: scale(1.05); }
+        .side-name { font-size: 10px; font-weight: 500; color: var(--text-sub); line-height: 1.2; word-wrap: break-word; transition: var(--transition);}
+        .side-item.active .side-name { color: var(--primary); font-weight: 700; }
 
-        .side-emoji { font-size: 26px; margin-bottom: 8px; transition: var(--transition); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); display: flex; justify-content: center;}
-        .side-item.active .side-emoji { transform: scale(1.1); color: var(--zomato-red); }
-        .side-name { font-size: 10px; font-weight: 600; color: var(--text-sub); line-height: 1.2; word-wrap: break-word; transition: var(--transition);}
-        .side-item.active .side-name { font-weight: 700; color: var(--zomato-red); }
-
-        .best-seller-tag { display: inline-flex; align-items: center; gap: 2px; background: rgba(255, 159, 0, 0.1); color: var(--warning); font-size: 8px; padding: 2px 4px; border-radius: 4px; margin-top: 4px; border: 1px solid rgba(255,159,0,0.2); font-weight: 800; letter-spacing: 0.2px; }
+        .best-seller-tag { display: inline-flex; align-items: center; gap: 2px; background: rgba(255, 159, 0, 0.1); color: var(--warning); font-size: 8px; padding: 2px 4px; border-radius: 4px; margin-top: 4px; border: 1px solid rgba(255,159,0,0.2); font-weight: 700; }
 
         .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; border: none !important; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* =========================================
-           MAIN CONTENT & IMAGE VIEWER (FULL HEIGHT)
+           MAIN CONTENT & VIEWER (FULL HEIGHT IMAGE)
         ========================================= */
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
         
-        /* 🔥 FIXED: flex: 1 makes image take all available space, keeping it BIG */
-        .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; background: #000; overflow: hidden; z-index: 5;}
+        .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; background: #E8E8E8; overflow: hidden; z-index: 5;}
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
         .progress-bar { display: block; width: 50%; height: 4px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255,255,255,0.5); border-radius: 10px; overflow: hidden; }
@@ -155,27 +155,46 @@
         .slide-img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: center; cursor: zoom-in; transition: transform 0.5s ease; opacity: 0.95;}
         .slide-img:hover { transform: scale(1.05); }
 
-        .image-gradient-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 6; pointer-events: none; }
+        .image-gradient-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 35%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 6; pointer-events: none; }
         
+        /* Badges Top Left */
         .premium-badges-top { position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; gap: 8px; flex-wrap: wrap; }
-        .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px;}
+        .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px;}
         .badge-chip.time { color: var(--text-main); }
 
-        .photo-rating-badge { position: absolute; bottom: 35px; left: 15px; z-index: 10; background: var(--glass-bg); backdrop-filter: blur(5px); padding: 4px 10px; border-radius: 50px; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4); }
-        .photo-rating-badge .star { font-weight: 800; font-size: 11px; color: var(--text-main); display: flex; align-items: center; gap: 4px;}
-        .photo-rating-badge .reviews { font-weight: 600; font-size: 10px; color: var(--text-sub); text-decoration: underline;}
+        /* 🔥 Zomato Style Green Rating Bottom Left */
+        .photo-rating-badge {
+            position: absolute; bottom: 15px; left: 15px; z-index: 10;
+            background: var(--green); color: var(--white);
+            padding: 4px 8px; border-radius: 6px; display: flex; align-items: center; gap: 2px;
+            box-shadow: 0 4px 10px rgba(36, 150, 63, 0.3); border: none;
+        }
+        .photo-rating-badge .star { font-weight: 800; font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--white);}
+        .photo-rating-badge .reviews { font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.9); margin-left: 2px;}
 
-        .photo-fav-btn { position: absolute; bottom: 35px; right: 15px; z-index: 10; background: var(--glass-bg); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.4); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); cursor: pointer; transition: var(--transition); }
+        /* 🔥 Premium Favorite Bottom Right */
+        .photo-fav-btn {
+            position: absolute; bottom: 15px; right: 15px; z-index: 10;
+            background: rgba(255,255,255,0.95); color: #BDBDBD;
+            border: none; width: 36px; height: 36px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); cursor: pointer; transition: var(--transition);
+        }
         .photo-fav-btn:active { transform: scale(0.8); }
 
-        .media-toggle { position: absolute; top: 15px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 800; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 6px; }
+        /* Waiter Button with Text */
+        .waiter-btn { 
+            position: absolute; top: 60px; right: 15px; background: var(--glass-bg); color: var(--text-main); 
+            border: 1px solid rgba(255,255,255,0.5); padding: 8px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; 
+            z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; backdrop-filter: blur(8px); 
+        }
+        .waiter-btn i { font-size: 20px; color: var(--danger); animation: ringBell 3s infinite; transform-origin: top center;}
+        .waiter-btn span { line-height: 1; color: var(--text-main); }
+        .waiter-btn:active { transform: scale(0.95); background: var(--bg-light);}
+
+        .media-toggle { position: absolute; top: 15px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 4px; }
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
-
-        .waiter-btn { position: absolute; top: 55px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 800; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); display: flex; align-items: center; gap: 5px; backdrop-filter: blur(8px); }
-        .waiter-btn i { font-size: 16px; color: var(--primary); animation: ringBell 3s infinite; transform-origin: top center;}
-        .waiter-btn:active { transform: scale(0.95); background: var(--bg-light);}
-        @keyframes ringBell { 0%, 100% { transform: rotate(0deg); } 10%, 30%, 50% { transform: rotate(15deg); } 20%, 40% { transform: rotate(-15deg); } 60% { transform: rotate(0deg); } }
 
         .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; visibility: hidden; opacity: 0; transition: var(--transition); }
         .fullscreen-viewer.show { visibility: visible; opacity: 1; }
@@ -184,7 +203,6 @@
         .fs-img-container img { max-width: 100%; max-height: 100%; width: auto; height: auto; transform-origin: center; pointer-events: auto; touch-action: none; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);}
         .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: var(--transition); backdrop-filter: blur(5px);}
         .fs-close:hover { background: var(--danger); transform: scale(1.1); }
-        .fs-close:active { transform: scale(0.9); }
         .fs-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: var(--transition); }
         .fs-nav:hover { background: rgba(255,255,255,0.2); }
         .fs-nav.hide { display: none; }
@@ -195,59 +213,61 @@
         .fs-dot.active { background: white; transform: scale(1.3); }
 
         /* =========================================
-           BOTTOM UI (PUSHED DOWN TO SHOW FULL IMAGE)
+           BOTTOM UI (COMPACT & PUSHED DOWN)
         ========================================= */
         .bottom-ui { 
-            flex-shrink: 0; background: var(--white); padding: 20px 20px; border-radius: 28px 28px 0 0; 
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08); position: relative; z-index: 10; 
-            transition: padding-bottom 0.3s ease; 
-            margin-top: -20px; /* Adjusting so it doesn't cover image */
+            flex-shrink: 0; background: var(--white); padding: 15px 20px 20px 20px; border-radius: 24px 24px 0 0; 
+            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05); position: relative; z-index: 10; margin-top: -15px;
         }
-        .bottom-ui.with-cart { padding-bottom: 95px; }
+        /* 🔥 PADDING INCREASED TO PREVENT CHECKOUT BAR OVERLAP 🔥 */
+        .bottom-ui.with-cart { padding-bottom: 120px !important; }
 
-        .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
-        .dish-title { font-size: 22px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
+        .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
+        .dish-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
         
-        .price-section { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; margin-top: 5px;}
-        .price { font-size: 24px; font-weight: 800; color: var(--text-main); display: flex; align-items: center;}
+        .price-section { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; margin-top: 5px;}
+        .price { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center;}
         
-        .variant-selector { display: flex; background: var(--bg-light); border-radius: 50px; overflow: hidden; margin-bottom: 15px; padding: 4px; gap: 4px; border: 1px solid var(--border-light); }
+        .variant-selector { display: flex; background: var(--bg-light); border-radius: 50px; overflow: hidden; margin-bottom: 12px; padding: 4px; gap: 4px; border: 1px solid var(--border-light); }
         .variant-selector.hide { display: none; }
-        .var-btn { flex: 1; padding: 10px 0; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 50px; cursor: pointer; transition: var(--transition); }
+        .var-btn { flex: 1; padding: 8px 0; border: none; background: transparent; font-size: 12px; font-weight: 600; color: var(--text-sub); border-radius: 50px; cursor: pointer; transition: var(--transition); }
         .var-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
         
-        .action-row { display: flex; gap: 12px; width: 100%; margin-bottom: 5px;}
+        .action-row { display: flex; gap: 10px; width: 100%; margin-bottom: 5px;}
         
-        /* 🔥 FIXED: ADD Button UI */
+        /* 🔥 FIXED DISPLAY BLOCK TO PREVENT HIDE ISSUE */
         .btn-cart { 
-            background: var(--primary-gradient); color: var(--white); border: none; padding: 14px 0; border-radius: 16px; font-size: 15px; font-weight: 800; flex: 1; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(226, 55, 68, 0.3); display: flex; justify-content: center; align-items: center; gap: 6px; position: relative; overflow: hidden;
+            background: var(--primary-gradient); color: var(--white); border: none; padding: 12px 0; border-radius: 14px; font-size: 14px; font-weight: 700; flex: 1; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(226, 55, 68, 0.25); display: flex; justify-content: center; align-items: center; gap: 4px; position: relative; overflow: hidden;
         }
-        .btn-cart i { font-size: 18px; margin-left: 2px;}
-        .btn-cart:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(226, 55, 68, 0.2); }
+        .btn-cart i { font-size: 16px; margin-left: 2px;}
+        .btn-cart:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(226, 55, 68, 0.2); }
         
-        .stepper-control { display: none; flex: 1; background: var(--white); border: 2px solid var(--primary); border-radius: 16px; justify-content: space-between; align-items: center; padding: 0 10px; font-weight: 800; color: var(--primary); font-size: 16px; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.1);}
-        .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 20px; font-weight: 800; cursor: pointer; padding: 10px 15px; transition: var(--transition);}
+        .stepper-control { display: none; flex: 1; background: var(--white); border: 2px solid var(--primary); border-radius: 14px; justify-content: space-between; align-items: center; padding: 0 10px; font-weight: 700; color: var(--primary); font-size: 15px; box-shadow: 0 4px 10px rgba(226, 55, 68, 0.1);}
+        .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 18px; font-weight: 800; cursor: pointer; padding: 8px 12px; transition: var(--transition);}
         .stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 8px; transform: scale(0.9);}
 
-        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 14px 0; border-radius: 16px; font-size: 13px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px;}
-        .btn-premium i { font-size: 18px; color: var(--primary);}
+        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 12px 0; border-radius: 14px; font-size: 13px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px;}
+        .btn-premium i { font-size: 16px; color: var(--primary);}
         .btn-premium:hover { border-color: var(--primary); color: var(--primary);}
         .btn-premium:active { transform: scale(0.96); }
         
-        /* Floating Checkout */
+        /* =========================================
+           FLOATING CHECKOUT BAR (FIXED COLOR & OVERLAP)
+        ========================================= */
         .floating-checkout { 
-            position: fixed; bottom: -100px; left: 15px; right: 15px; background: var(--text-main); color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 15px 40px rgba(0,0,0,0.25); border-radius: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
+            position: fixed; bottom: -120px; left: 15px; right: 15px; background: var(--text-main); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
         }
         .floating-checkout.show { bottom: 15px; animation: bounceUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);}
-        @keyframes bounceUp { 0% { bottom: -100px; } 100% { bottom: 15px; } }
+        @keyframes bounceUp { 0% { bottom: -120px; } 100% { bottom: 15px; } }
         
         .checkout-info { display: flex; flex-direction: column; text-align: left; gap: 2px;}
-        .checkout-items { font-size: 11px; font-weight: 600; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px;}
-        .checkout-total { font-size: 18px; font-weight: 800; }
-        .checkout-action { font-size: 14px; font-weight: 700; color: var(--primary); background: white; padding: 6px 14px; border-radius: 50px; display: flex; align-items: center; gap: 4px;} 
+        .checkout-items { font-size: 10px; font-weight: 600; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;}
+        .checkout-total { font-size: 16px; font-weight: 800; }
+        /* 🔥 FIXED: Explicit White Background & Dark Text for Continue Button */
+        .checkout-action { font-size: 13px; font-weight: 800; color: var(--primary); background: #ffffff; padding: 8px 16px; border-radius: 50px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 10px rgba(255,255,255,0.2);} 
 
         /* =========================================
-           CART & TRACKER MODALS (GLASS EFFECT)
+           CART & TRACKER MODALS
         ========================================= */
         .cart-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: var(--transition); }
         .cart-modal.show { visibility: visible; opacity: 1; }
@@ -274,21 +294,14 @@
         .cart-item-qty button:active { transform: scale(0.8); }
 
         .bill-details { background: #FAFAFA; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1); }
-        .bill-total { display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; color: var(--text-main); }
+        .bill-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; color: var(--text-main); }
         
-        .btn-checkout { background: var(--primary-gradient); color: white; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 8px 25px rgba(229, 57, 53, 0.3); transition: var(--transition); flex-shrink: 0; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-checkout { background: var(--primary-gradient); color: white; border: none; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 8px 25px rgba(229, 57, 53, 0.3); transition: var(--transition); flex-shrink: 0; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .btn-checkout:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(226, 55, 68, 0.2);}
 
-        .order-type-selector { display: flex; background: var(--bg-light); border-radius: 16px; padding: 5px; margin-bottom: 15px; border: 1px solid var(--border-light);}
-        .type-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 6px;}
-        .type-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
-
-        .input-field { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 16px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: var(--transition); background: var(--bg-light);}
-        .input-field:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.1);}
-
-        /* 🔥 TRACKER TABS & VISUAL TRACKER (RESTORED ZOMATO STYLE) 🔥 */
-        .tracker-tabs { display: flex; background: var(--bg-light); border-radius: 12px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border-light);}
-        .tracker-tab-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        /* TRACKER TABS & ZOMATO VISUAL TRACKER */
+        .tracker-tabs { display: flex; background: var(--bg-light); border-radius: 12px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--border-light);}
+        .tracker-tab-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.3s; }
         .tracker-tab-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700;}
 
         .visual-tracker { display: flex; justify-content: space-between; align-items: center; position: relative; margin: 20px 10px; }
@@ -304,26 +317,32 @@
 
         @keyframes pulseStep { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
 
+        .order-type-selector { display: flex; background: var(--bg-light); border-radius: 16px; padding: 5px; margin-bottom: 15px; border: 1px solid var(--border-light);}
+        .type-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 6px;}
+        .type-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
+
+        .input-field { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 16px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: var(--transition); background: var(--bg-light);}
+        .input-field:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.1);}
+
         /* Alerts & Toasts */
         .toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--text-main); color: white; padding: 14px 24px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; opacity: 0; visibility: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
         .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); top: 120px; }
-        .toast i { font-size: 18px; color: var(--green); }
 
         .custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .custom-alert.show { visibility: visible; opacity: 1; }
-        .alert-box { background: var(--white); padding: 35px 25px; border-radius: 32px; text-align: center; max-width: 340px; width: 85%; transform: scale(0.9) translateY(20px); transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.8);}
+        .alert-box { background: var(--white); padding: 30px 20px; border-radius: 28px; text-align: center; max-width: 340px; width: 85%; transform: scale(0.9) translateY(20px); transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.8);}
         .custom-alert.show .alert-box { transform: scale(1) translateY(0); }
-        .alert-icon { font-size: 50px; margin-bottom: 15px; display: flex; justify-content: center; color: var(--warning);}
-        .alert-box h3 { margin: 0 0 10px 0; font-size: 20px; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;}
-        .alert-box p { font-size: 13px; color: var(--text-sub); margin-bottom: 25px; font-weight: 500;}
-        .alert-btn-primary { background: var(--primary-gradient); color: white; border: none; padding: 16px 0; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; transition: var(--transition); box-shadow: 0 8px 20px var(--primary-glow);}
+        .alert-icon { font-size: 50px; margin-bottom: 10px; display: flex; justify-content: center; color: var(--warning);}
+        .alert-box h3 { margin: 0 0 10px 0; font-size: 18px; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;}
+        .alert-box p { font-size: 12px; color: var(--text-sub); margin-bottom: 20px; font-weight: 500;}
+        .alert-btn-primary { background: var(--primary-gradient); color: white; border: none; padding: 14px 0; border-radius: 50px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; transition: var(--transition); box-shadow: 0 8px 20px rgba(226, 55, 68, 0.3);}
         .alert-btn-primary:active { transform: scale(0.95); }
 
         #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 
         /* Loader */
         #premium-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
-        .loader-spinner { width: 55px; height: 55px; border: 4px solid rgba(226, 55, 68, 0.2); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; margin-bottom: 20px; }
+        .loader-spinner { width: 50px; height: 50px; border: 3px solid rgba(226, 55, 68, 0.2); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; margin-bottom: 20px; }
         #premium-loader p { font-size: 24px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
         #premium-loader span { font-size: 13px; color: var(--text-sub); margin-top: 5px; font-weight: 500;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -359,11 +378,11 @@
         </div>
     </div>
 
-    <!-- Tracker Modal -->
+    <!-- Tracker Modal with Live and Past Tabs -->
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center; max-height: 90vh;">
             <div class="cart-header">
-                <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;"><i class="ph-fill ph-receipt"></i> My Orders</h2>
+                <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;"><i class="ph-fill ph-receipt"></i> Order Status</h2>
                 <button class="btn-close" onclick="toggleTracker()"><i class="ph ph-x"></i></button>
             </div>
             
@@ -396,15 +415,19 @@
         </div>
     </div>
 
+    <!-- Waiter Prompt Modal -->
     <div class="custom-alert" id="waiterPromptModal">
         <div class="alert-box">
             <div class="alert-icon"><i class="ph-fill ph-bell-ringing" style="color: var(--primary);"></i></div>
             <h3 id="waiterTitleText">Call Waiter</h3>
-            <p>Need assistance? Enter your table number below.</p>
-            <input type="number" id="waiterTableInput" class="input-field" placeholder="Enter Table Number" style="margin-bottom: 25px; text-align: center; font-weight:700;">
-            <div style="display: flex; gap: 12px;">
-                <button style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer; transition:0.2s;" onclick="closeWaiterPrompt()" id="waiterCancelBtn">Cancel</button>
-                <button class="alert-btn-primary" style="flex:1; margin:0;" onclick="confirmCallWaiter()" id="waiterCallBtn">Call Now</button>
+            <p>Enter table & any remark to call the waiter.</p>
+            <input type="number" id="waiterTableInput" class="input-field" placeholder="Table Number *" style="margin-bottom: 10px; text-align: center; font-weight:700;">
+            <!-- 🔥 NEW: Optional Remark Box -->
+            <input type="text" id="waiterRemarkInput" class="input-field" placeholder="Remark (Optional) e.g. Water" style="margin-bottom: 20px; text-align: center; font-weight:500;">
+            
+            <div style="display: flex; gap: 10px;">
+                <button style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 14px; border-radius:50px; border:none; font-weight:700; cursor:pointer; transition:0.2s;" onclick="closeWaiterPrompt()" id="waiterCancelBtn">Cancel</button>
+                <button class="alert-btn-primary" style="flex:1.2; margin:0;" onclick="confirmCallWaiter()" id="waiterCallBtn">Call Now</button>
             </div>
         </div>
     </div>
@@ -454,35 +477,36 @@
             </div>
             
             <div id="sidebar-menu">
-                <div class="side-item"><div class="side-icon-wrapper skeleton" style="width:48px; height:48px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="width:70%; height:10px; margin:0 auto;"></div></div>
-                <div class="side-item"><div class="side-icon-wrapper skeleton" style="width:48px; height:48px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="width:70%; height:10px; margin:0 auto;"></div></div>
-                <div class="side-item"><div class="side-icon-wrapper skeleton" style="width:48px; height:48px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="width:70%; height:10px; margin:0 auto;"></div></div>
+                <div class="side-item"><div class="side-icon-wrapper skeleton" style="width:44px; height:44px; border-radius:50%; margin:0 auto 6px;"></div><div class="skeleton" style="width:70%; height:8px; margin:0 auto;"></div></div>
+                <div class="side-item"><div class="side-icon-wrapper skeleton" style="width:44px; height:44px; border-radius:50%; margin:0 auto 6px;"></div><div class="skeleton" style="width:70%; height:8px; margin:0 auto;"></div></div>
             </div>
         </div>
 
         <div class="main-content">
-            <div class="viewer-container">
-                <div class="premium-badges-top" style="position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; gap: 8px;">
-                    <span style="background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.5);"><i class="ph-fill ph-fire"></i> Best Seller</span>
-                    <span style="background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.5);"><i class="ph-fill ph-clock"></i> 15 Min</span>
+            <!-- 🔥 FIXED: Image container takes more space -->
+            <div class="viewer-container" style="flex: 1; height: 45vh;">
+                <div class="premium-badges-top">
+                    <span class="badge-chip hot"><i class="ph-fill ph-fire"></i> Best Seller</span>
+                    <span class="badge-chip time"><i class="ph-fill ph-clock"></i> 15 Min</span>
                 </div>
 
-                <!-- 🔥 Rating in Photo Corner -->
+                <!-- 🔥 NEW: Zomato Green Rating in Corner -->
                 <div class="photo-rating-badge">
                     <span class="star"><i class="ph-fill ph-star"></i> 4.8</span>
                     <span class="reviews">(245)</span>
                 </div>
 
-                <!-- 🔥 Favorite Button on Photo -->
-                <button class="photo-fav-btn" onclick="toggleFavIcon(event)">🤍</button>
+                <!-- 🔥 NEW: Favorite Button in Corner -->
+                <button class="photo-fav-btn" onclick="toggleFavIcon(event)"><i class="ph-fill ph-heart"></i></button>
 
-                <!-- Waiter Button -->
-                <div class="waiter-btn" onclick="openWaiterPrompt()" style="top: 55px;">
+                <!-- 🔥 NEW: Waiter Icon with Text -->
+                <div class="waiter-btn" onclick="openWaiterPrompt()">
                     <i class="ph-fill ph-bell-ringing"></i>
+                    <span>Waiter</span>
                 </div>
 
                 <div id="photo-slider" class="photo-slider hide"></div>
-                <div class="image-gradient-overlay" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 6; pointer-events: none;"></div>
+                <div class="image-gradient-overlay"></div>
                 
                 <button class="media-toggle hide" id="media-toggle" onclick="toggleMedia()"><i class="ph-fill ph-cube"></i> View 3D</button>
 
@@ -491,15 +515,14 @@
                 </model-viewer>
             </div>
 
-            <!-- 🔥 FIXED: More compact bottom UI to keep image fully visible -->
             <div class="bottom-ui" id="bottom-ui-card">
                 <div class="dish-header-row">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
                     <span class="type-icon" id="display-type-icon"><i class="ph-fill ph-circle" style="color:var(--green)"></i></span>
                 </div>
                 
-                <div class="price-section" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; margin-top: 5px;">
-                    <p class="price" id="display-price" style="margin:0; font-size: 24px; font-weight:800; display:flex; align-items:center; color: var(--text-main);">₹0</p>
+                <div class="price-section">
+                    <p class="price" id="display-price">₹0</p>
                 </div>
                 
                 <div class="variant-selector hide" id="variant-box">
@@ -509,8 +532,8 @@
                 </div>
                 
                 <div class="action-row">
-                    <!-- 🔥 FIXED: ADD Button uses display flex safely so it doesn't break -->
-                    <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">ADD <i class="ph-bold ph-plus"></i></button>
+                    <!-- 🔥 FIXED: Always display flex correctly to toggle with stepper -->
+                    <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)" style="display:flex;">ADD <i class="ph-bold ph-plus"></i></button>
                     <div class="stepper-control" id="btn-stepper">
                         <button onclick="changeCurrentQty(-1)"><i class="ph-bold ph-minus"></i></button>
                         <span id="current-qty-display">1</span>
@@ -522,27 +545,27 @@
         </div>
     </div>
 
-    <!-- 🔥 FIXED: Floating Checkout Text & Arrow Color -->
+    <!-- 🔥 FIXED: Text is Explicitly Colored and Background is White -->
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
             <span class="checkout-items" id="float-items">1 Item</span>
             <span class="checkout-total" id="float-total">₹0</span>
         </div>
-        <div class="checkout-action" id="float-btn-view" style="color: var(--primary); background: white;">Continue <i class="ph-bold ph-arrow-right"></i></div>
+        <div class="checkout-action" id="float-btn-view">Continue <i class="ph-bold ph-arrow-right"></i></div>
     </div>
 
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <div class="cart-header">
-                <h2 id="cart-title-text" style="margin: 0; font-size: 22px; font-weight: 800; display:flex; align-items:center; gap:8px;"><i class="ph-fill ph-shopping-bag"></i> Your Cart</h2>
+                <h2 id="cart-title-text" style="margin: 0; font-size: 20px; display:flex; align-items:center; gap:8px;"><i class="ph-fill ph-shopping-bag"></i> Your Cart</h2>
                 <button class="btn-close" onclick="toggleCart()"><i class="ph ph-x"></i></button>
             </div>
             
             <div class="cart-scroll-body">
                 <div class="cart-items-container" id="cart-items-list"></div>
                 
-                <div class="bill-details" style="background: var(--bg-light); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1);">
-                    <div class="bill-total" style="font-size: 20px; color: var(--text-main); font-weight:800; display:flex; justify-content:space-between;"><span id="bill-total-text">Total to Pay</span><span id="bill-final">₹0</span></div>
+                <div class="bill-details">
+                    <div class="bill-total"><span id="bill-total-text">Total to Pay</span><span id="bill-final">₹0</span></div>
                 </div>
                 
                 <div style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 12px;">
@@ -565,7 +588,7 @@
     </div>
 
     <!-- Original Safe Toast Structure maintained -->
-    <div class="toast" id="toast">✅ Added to Cart!</div>
+    <div class="toast" id="toast"><i class="ph-fill ph-check-circle"></i> <span>Added to Cart!</span></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -642,21 +665,19 @@
             }, 600);
         };
 
-        // Favorite Icon Logic
+        // 🔥 Premium Favorite Icon Logic
         window.toggleFavIcon = (e) => {
             e.stopPropagation();
             triggerHapticPop();
             const btn = e.currentTarget;
-            if(btn.innerText.includes('❤️')) {
-                btn.innerText = '🤍';
-                btn.classList.remove('active');
-                document.getElementById('toast').innerText = "Removed from Favorites";
+            if(btn.style.color === 'var(--danger)') {
+                btn.style.color = '#BDBDBD';
+                document.getElementById('toast').innerHTML = "<i class='ph-fill ph-heart-break'></i> <span>Removed from Favorites</span>";
                 document.getElementById('toast').classList.add('show');
                 setTimeout(() => document.getElementById('toast').classList.remove('show'), 2000); 
             } else {
-                btn.innerText = '❤️';
-                btn.classList.add('active');
-                document.getElementById('toast').innerText = "❤️ Added to Favorites!";
+                btn.style.color = 'var(--danger)';
+                document.getElementById('toast').innerHTML = "<i class='ph-fill ph-heart'></i> <span>Added to Favorites!</span>";
                 document.getElementById('toast').classList.add('show');
                 setTimeout(() => document.getElementById('toast').classList.remove('show'), 2000); 
             }
@@ -685,6 +706,8 @@
             document.getElementById('track-btn-text').innerText = i18n[l].trackBtn;
             document.getElementById('btn-dinein').innerHTML = `<i class="ph-fill ph-fork-knife"></i> ${i18n[l].dineIn}`;
             document.getElementById('btn-takeaway').innerHTML = `<i class="ph-fill ph-shopping-bag"></i> ${i18n[l].takeaway}`;
+            document.getElementById('waiter-btn-text').innerText = i18n[l].waiter;
+            document.getElementById('cookingNotes').placeholder = i18n[l].notes;
             
             document.getElementById('waiterTitleText').innerText = i18n[l].waiterTitle;
             document.getElementById('waiterCancelBtn').innerText = i18n[l].waiterCancel;
@@ -699,7 +722,7 @@
 
         window.startVoiceSearch = () => {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) { document.getElementById('toast').innerText = "Voice search not supported"; document.getElementById('toast').classList.add('show'); setTimeout(()=>document.getElementById('toast').classList.remove('show'),2000); return; }
+            if (!SpeechRecognition) { document.getElementById('toast').innerHTML = "<i class='ph-fill ph-microphone-slash'></i> <span>Voice search not supported</span>"; document.getElementById('toast').classList.add('show'); setTimeout(()=>document.getElementById('toast').classList.remove('show'),2000); return; }
             const recognition = new SpeechRecognition();
             recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
             const micBtn = document.getElementById('micBtn');
@@ -713,17 +736,32 @@
 
         window.openWaiterPrompt = () => {
             document.getElementById('waiterTableInput').value = '';
+            document.getElementById('waiterRemarkInput').value = '';
             document.getElementById('waiterPromptModal').classList.add('show');
             triggerHapticPop();
         };
         window.closeWaiterPrompt = () => { document.getElementById('waiterPromptModal').classList.remove('show'); };
 
-        window.confirmCallWaiter = () => {
+        // 🔥 Waiter Modal Remark Support
+        window.confirmCallWaiter = async () => {
             const tableNo = document.getElementById('waiterTableInput').value;
-            if(!tableNo) { window.customAlert(currentLang === 'hi' ? "कृपया टेबल नंबर डालें!" : "Please enter a table number!"); return; }
-            addDoc(collection(db, "waiter_calls"), { tableNumber: tableNo, status: "New", timestamp: new Date() })
-            .then(() => { closeWaiterPrompt(); document.getElementById('toast').innerText = currentLang === 'hi' ? "🛎️ वेटर आ रहा है!" : "🛎️ Waiter is on the way!"; document.getElementById('toast').classList.add('show'); setTimeout(()=>document.getElementById('toast').classList.remove('show'),2000); triggerHapticPop(); })
-            .catch(e => console.log(e));
+            const remark = document.getElementById('waiterRemarkInput').value || "No remark";
+            if(!tableNo) { window.customAlert(currentLang === 'hi' ? "कृपया टेबल नंबर डालें!" : "Please enter a table number!", "ph-warning-circle"); return; }
+            try {
+                await addDoc(collection(db, "waiter_calls"), { 
+                    tableNumber: tableNo, 
+                    remark: remark,
+                    status: "New", 
+                    timestamp: new Date() 
+                });
+                closeWaiterPrompt(); 
+                document.getElementById('toast').innerHTML = currentLang === 'hi' ? "<i class='ph-fill ph-bell-ringing'></i> <span>वेटर आ रहा है!</span>" : "<i class='ph-fill ph-bell-ringing'></i> <span>Waiter is on the way!</span>"; 
+                document.getElementById('toast').classList.add('show'); setTimeout(()=>document.getElementById('toast').classList.remove('show'),2000); 
+                triggerHapticPop();
+            } catch(e) {
+                console.error("Waiter Call Error:", e);
+                window.customAlert("Failed to call waiter. Check connection.", "ph-x-circle");
+            }
         };
 
         window.setOrderType = (type) => {
@@ -808,7 +846,7 @@
 
         window.viewOnTable = async () => { document.querySelector('#ar-viewer').activateAR(); if(currentDish) { try { await addDoc(collection(db, "ar_views"), { dishName: currentDish.name, timestamp: new Date() }); } catch(e){} } };
 
-        window.customAlert = function(msg) { document.getElementById('alertMessage').innerText = msg; document.getElementById('customAlert').classList.add('show'); triggerHapticPop(); }
+        window.customAlert = function(msg, iconClass="ph-warning-circle") { document.getElementById('alertMessage').innerText = msg; document.getElementById('alertIcon').innerHTML = `<i class="ph-fill ${iconClass}"></i>`; document.getElementById('customAlert').classList.add('show'); triggerHapticPop(); }
         window.closeAlert = function() { document.getElementById('customAlert').classList.remove('show'); }
 
         let activeOrderListeners = {}; let activeOrderData = {};
@@ -820,7 +858,7 @@
             });
         }
 
-        // 🔥 FIXED: Restored Classic Horizontal Zomato Tracker properly 
+        // Restored Classic Horizontal Zomato Tracker
         function renderMultiTracker() {
             const liveContainer = document.getElementById('live-orders-container');
             const pastContainer = document.getElementById('past-orders-container');
@@ -909,7 +947,7 @@
             if(confirm(currentLang === 'hi' ? "क्या आप सच में ऑर्डर रद्द करना चाहते हैं?" : "Are you sure you want to cancel this order?")) {
                 try {
                     await updateDoc(doc(db, "orders", orderId), { status: 'Cancelled' });
-                    document.getElementById('toast').innerText = currentLang === 'hi' ? "❌ ऑर्डर रद्द हो गया।" : "❌ Order Cancelled.";
+                    document.getElementById('toast').innerHTML = "<i class='ph-fill ph-x-circle'></i> <span>Order Cancelled.</span>";
                     document.getElementById('toast').classList.add('show'); setTimeout(()=>document.getElementById('toast').classList.remove('show'),2000);
                 } catch(e) { console.error("Cancel failed:", e); }
             }
@@ -1014,7 +1052,7 @@
             
             let currentPrice = data.price;
             let fakeOldPrice = currentPrice + Math.floor(currentPrice * 0.2);
-            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${currentPrice}`;
+            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${currentPrice} <span style="background: rgba(226, 55, 68, 0.1); color: var(--zomato-red); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; border: 1px dashed var(--zomato-red); margin-left: 8px; vertical-align: middle;">20% OFF</span>`;
             
             const variantBox = document.getElementById('variant-box');
             const btnHalf = document.getElementById('btn-half'); const btnFull = document.getElementById('btn-full'); const btnPiece = document.getElementById('btn-piece');
@@ -1043,21 +1081,17 @@
             else if(type === 'piece') selPrice = currentDish.pricePiece;
             
             let fakeOldPrice = selPrice + Math.floor(selPrice * 0.2);
-            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${selPrice}`;
+            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${selPrice} <span style="background: rgba(226, 55, 68, 0.1); color: var(--zomato-red); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; border: 1px dashed var(--zomato-red); margin-left: 8px; vertical-align: middle;">20% OFF</span>`;
             
             checkCartForCurrentDish(); 
         };
 
         function getCartKey() { return `${currentDish.id}_${currentVariant}`; }
 
-        // 🔥 FIXED: Stepper works properly replacing ADD block 
         function checkCartForCurrentDish() {
             const key = getCartKey(); const btnAdd = document.getElementById('btn-add-new'); const btnStepper = document.getElementById('btn-stepper');
-            if(cart[key] && cart[key].qty > 0) { 
-                btnAdd.style.display = 'none'; btnStepper.style.display = 'flex'; document.getElementById('current-qty-display').innerText = cart[key].qty; 
-            } else { 
-                btnAdd.style.display = 'flex'; btnStepper.style.display = 'none'; 
-            }
+            if(cart[key] && cart[key].qty > 0) { btnAdd.style.display = 'none'; btnStepper.style.display = 'flex'; document.getElementById('current-qty-display').innerText = cart[key].qty; } 
+            else { btnAdd.style.display = 'flex'; btnStepper.style.display = 'none'; }
         }
 
         window.addCurrentToCart = (e) => {
@@ -1081,7 +1115,7 @@
         window.changeCartQty = (key, delta) => { if(cart[key]) { cart[key].qty += delta; if(cart[key].qty <= 0) delete cart[key]; } triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
 
         function updateGlobalCartUI() {
-            const floatingBar = document.getElementById('floating-checkout'); 
+            const floatingBar = document.getElementById('floating-checkout'); const bottomUiCard = document.getElementById('bottom-ui-card');
             let totalItems = 0; let totalPrice = 0;
             for (let key in cart) { totalItems += cart[key].qty; totalPrice += (cart[key].price * cart[key].qty); }
             document.getElementById('cart-count').innerText = totalItems;
@@ -1090,9 +1124,9 @@
                 let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
                 document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
                 document.getElementById('float-total').innerText = '₹' + totalPrice;
-                floatingBar.classList.add('show'); 
+                floatingBar.classList.add('show'); bottomUiCard.classList.add('with-cart');
             } else {
-                floatingBar.classList.remove('show'); 
+                floatingBar.classList.remove('show'); bottomUiCard.classList.remove('with-cart');
             }
         }
 
@@ -1124,7 +1158,7 @@
 
         window.deleteCartItem = (key) => { delete cart[key]; triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
 
-        // 🔥 FIXED: 100% WhatsApp-Free, Secure Order Logic with Multi-Session Fix 🔥
+        // 🔥 FIXED: Direct Admin Panel AddDoc (No Session Merging to Prevent Rules Crash)
         window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { window.customAlert("Please add items to your cart first!"); return; }
             
@@ -1145,26 +1179,24 @@
             for(let k in cart) { orderItems.push(cart[k]); grandTotal += (cart[k].price * cart[k].qty); }
 
             try {
-                // Live Session Merging / Add new Firebase doc
-                let activeOrderId = null; let activeData = null; let activeOrdersList = [];
-                try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
+                // Direct addDoc to prevent updateDoc permission issues
+                const docRef = await addDoc(collection(db, "orders"), { 
+                    orderType: currentOrderType, 
+                    tableNumber: tableNo || "N/A", 
+                    customerName: custName || "N/A", 
+                    customerPhone: custPhone || "N/A", 
+                    chefNotes: notes || "None", 
+                    items: orderItems, 
+                    totalAmount: grandTotal, 
+                    status: 'New', 
+                    paymentMethod: 'Cash', 
+                    timestamp: new Date() 
+                });
                 
-                for (let id of activeOrdersList) {
-                    const data = activeOrderData[id];
-                    if (data && (data.status === 'New' || data.status === 'Preparing') && data.orderType === currentOrderType && data.tableNumber === tableNo) {
-                        activeOrderId = id; activeData = data; break;
-                    }
-                }
-
-                if (activeOrderId && currentOrderType === 'Dine-in') {
-                    let mergedItems = [...activeData.items]; for(let newItem of orderItems) { mergedItems.push(newItem); }
-                    let newTotal = activeData.totalAmount + grandTotal;
-                    let newNotes = activeData.chefNotes; if (notes) { newNotes = (newNotes === "None" || !newNotes) ? notes : newNotes + " | " + notes; }
-                    await updateDoc(doc(db, "orders", activeOrderId), { items: mergedItems, totalAmount: newTotal, chefNotes: newNotes, status: 'New', timestamp: new Date() });
-                } else {
-                    const docRef = await addDoc(collection(db, "orders"), { orderType: currentOrderType, tableNumber: tableNo || "N/A", customerName: custName || "N/A", customerPhone: custPhone || "N/A", chefNotes: notes || "None", items: orderItems, totalAmount: grandTotal, status: 'New', paymentMethod: 'Cash', timestamp: new Date() });
-                    activeOrdersList.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); window.listenToLiveOrder(docRef.id); 
-                }
+                let activeOrdersList = [];
+                try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
+                activeOrdersList.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); 
+                listenToLiveOrder(docRef.id); 
 
                 cart = {}; document.getElementById('cookingNotes').value = ''; 
                 updateGlobalCartUI(); checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1";
@@ -1180,11 +1212,11 @@
                 setTimeout(() => { window.switchOrderTab('live'); window.toggleTracker(); }, 3500); 
 
             } catch (e) { 
-                console.error(e); modalContent.style.opacity = "1"; window.customAlert("Order Failed. Check connection."); 
+                console.error(e); modalContent.style.opacity = "1"; window.customAlert("Order Failed. Check connection.", "ph-x-circle"); 
+            } finally {
+                btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; 
+                btn.style.background = "var(--primary-gradient)"; btn.style.boxShadow = "0 8px 25px rgba(226, 55, 68, 0.3)"; btn.disabled = false;
             }
-
-            btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; 
-            btn.style.background = "var(--primary-gradient)"; btn.style.boxShadow = "0 8px 25px rgba(226, 55, 68, 0.3)"; btn.disabled = false;
         };
     </script>
 </body>
