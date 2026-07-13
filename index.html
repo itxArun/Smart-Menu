@@ -5,32 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NextPlate - Premium Smart Menu</title>
     
-    <!-- 3D Viewer & Modern Icons -->
+    <!-- External Scripts & Fonts -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
-
-    <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
 
     <style>
         /* =========================================
-           PREMIUM VARIABLES & RESET
+           VARIABLES & PREMIUM RESET
         ========================================= */
         :root { 
             --bg-light: #F8F9FA; 
             --white: #FFFFFF; 
             --text-main: #1C1C1E; 
             --text-sub: #757575; 
-            --primary: #E53935;
-            --primary-gradient: linear-gradient(135deg, #E53935 0%, #FF5722 100%);
-            --border-light: rgba(0, 0, 0, 0.06); 
+            --zomato-red: #E23744; 
+            --primary-gradient: linear-gradient(135deg, #E23744 0%, #FF5252 100%);
+            --border-light: rgba(0, 0, 0, 0.05); 
             --green: #34C759; 
             --warning: #FF9F00; 
             --danger: #FF3B30;
             --glass-bg: rgba(255, 255, 255, 0.85);
+            --shadow-soft: 0 8px 24px rgba(0,0,0,0.06);
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
@@ -49,114 +49,100 @@
            HEADER (GLASSMORPHISM)
         ========================================= */
         .header { 
-            flex-shrink: 0; padding: 15px 20px; display: flex; justify-content: space-between; 
+            flex-shrink: 0; padding: 12px 20px; display: flex; justify-content: space-between; 
             align-items: center; background: var(--glass-bg); backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-light); z-index: 20; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
 
         .brand-name { 
             font-size: 24px; font-weight: 800; 
             background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            display: flex; flex-direction: column; line-height: 1.1; letter-spacing: -0.5px;
+            margin: 0; display: flex; flex-direction: column; line-height: 1.1; 
         }
 
-        .greeting-text { font-size: 11px; font-weight: 500; color: var(--text-sub); -webkit-text-fill-color: var(--text-sub); margin-top: 2px; }
+        .greeting-text { font-size: 11px; font-weight: 600; color: var(--text-sub); -webkit-text-fill-color: var(--text-sub); margin-top: 2px; }
         
         .header-actions { display: flex; align-items: center; gap: 12px; }
 
         .track-icon { 
-            position: relative; font-size: 14px; cursor: pointer; padding: 8px 14px; 
+            position: relative; font-size: 14px; font-weight: 700; cursor: pointer; padding: 8px 14px; 
             background: rgba(255, 159, 0, 0.1); border-radius: 50px; color: var(--warning); 
-            transition: var(--transition); display: none; align-items: center; gap: 6px; 
-            border: 1px solid rgba(255, 159, 0, 0.2); font-weight: 600;
+            transition: var(--transition); display: none; align-items: center; gap: 6px; border: 1px solid rgba(255, 159, 0, 0.2); 
         }
         .track-icon.show { display: flex; }
         .track-icon:active { transform: scale(0.95); }
+        .track-icon i { font-size: 18px; }
         
         .track-pulse { 
             position: absolute; top: -2px; right: -2px; background: var(--warning); 
-            width: 12px; height: 12px; border-radius: 50%; animation: pulse-orange 1.5s infinite; border: 2px solid var(--white);
+            width: 10px; height: 10px; border-radius: 50%; animation: pulse-orange 1.5s infinite; border: 2px solid var(--white);
         }
-
         @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
 
         .lang-switch { display: flex; background: var(--bg-light); padding: 4px; border-radius: 50px; border: 1px solid var(--border-light); }
         .lang-btn { border: none; background: transparent; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 50px; cursor: pointer; color: var(--text-sub); transition: var(--transition); }
-        .lang-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 2px 10px rgba(229, 57, 53, 0.3); }
+        .lang-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 2px 8px rgba(226,55,68,0.3); }
         
-        .cart-icon { 
-            position: relative; font-size: 24px; cursor: pointer; padding: 8px; 
-            background: rgba(229, 57, 53, 0.08); border-radius: 50%; color: var(--primary); transition: var(--transition); display: flex; justify-content: center; align-items: center;
-        }
+        .cart-icon { position: relative; font-size: 24px; cursor: pointer; padding: 8px; background: rgba(226,55,68,0.08); border-radius: 50%; color: var(--zomato-red); transition: var(--transition); display: flex; align-items: center; justify-content: center; }
         .cart-icon:active { transform: scale(0.9); }
+        .cart-badge { position: absolute; top: -2px; right: -2px; background: var(--zomato-red); color: white; font-size: 10px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--white); box-shadow: 0 2px 5px rgba(226,55,68,0.4); }
         
-        .cart-badge { 
-            position: absolute; top: -4px; right: -4px; background: var(--primary); color: white; 
-            font-size: 10px; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--white); box-shadow: 0 4px 8px rgba(229, 57, 53, 0.3);
-        }
-        
-        .flying-dot { position: fixed; width: 20px; height: 20px; background: var(--primary); border-radius: 50%; z-index: 9999; pointer-events: none; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0; box-shadow: 0 4px 10px rgba(229, 57, 53, 0.5); }
+        .flying-dot { position: fixed; width: 20px; height: 20px; background: var(--zomato-red); border-radius: 50%; z-index: 9999; pointer-events: none; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0; box-shadow: 0 4px 10px rgba(226,55,68,0.5); }
 
         /* =========================================
            CATEGORY SCROLL
         ========================================= */
-        .category-scroll { 
-            flex-shrink: 0; display: flex; overflow-x: auto; white-space: nowrap; background: var(--white); padding: 15px 20px; border-bottom: 1px solid var(--border-light); gap: 12px; z-index: 15; scroll-behavior: smooth;
-        }
+        .category-scroll { flex-shrink: 0; display: flex; overflow-x: auto; white-space: nowrap; background: var(--white); padding: 12px 20px; border-bottom: 1px solid var(--border-light); gap: 12px; z-index: 15; scroll-behavior: smooth; }
         .category-scroll::-webkit-scrollbar { display: none; }
         
-        .cat-pill { 
-            background: var(--bg-light); color: var(--text-sub); padding: 10px 20px; border-radius: 50px; font-size: 13px; font-weight: 500; cursor: pointer; transition: var(--transition); border: 1px solid var(--border-light); display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-        .cat-pill:hover { background: #FFF9F9; border-color: rgba(229, 57, 53, 0.2); color: var(--primary); }
-        .cat-pill.active { background: var(--primary-gradient); color: var(--white); border-color: transparent; box-shadow: 0 6px 15px rgba(229, 57, 53, 0.3); font-weight: 600; transform: translateY(-2px);}
+        .cat-pill { background: var(--bg-light); color: var(--text-sub); padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); border: 1px solid var(--border-light); display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .cat-pill i { font-size: 16px; }
+        .cat-pill:hover { background: #FFF5F5; color: var(--zomato-red); border-color: rgba(226,55,68,0.2); }
+        .cat-pill.active { background: var(--primary-gradient); color: var(--white); border-color: transparent; box-shadow: 0 4px 12px rgba(226,55,68,0.25); font-weight: 700; transform: translateY(-2px); }
         .cat-pill:active { transform: scale(0.95); }
 
         /* =========================================
            APP LAYOUT & SIDEBAR
         ========================================= */
-        .app-layout { display: flex; flex: 1; overflow: hidden; background: var(--bg-light); }
+        .app-layout { display: flex; flex: 1; overflow: hidden; }
         
-        .sidebar { 
-            width: 100px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; position: relative; z-index: 10;
-        }
+        .sidebar { width: 95px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border-light); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 20px; position: relative; z-index: 10; }
         .sidebar::-webkit-scrollbar { display: none; }
         
-        .search-box { position: sticky; top: 0; background: var(--glass-bg); padding: 12px 10px; border-bottom: 1px solid var(--border-light); z-index: 5; backdrop-filter: blur(10px); }
-
+        .search-box { position: sticky; top: 0; background: var(--glass-bg); padding: 10px 5px; border-bottom: 1px solid var(--border-light); z-index: 5; backdrop-filter: blur(10px); }
         .search-input-wrapper { position: relative; width: 100%; }
-        .search-input-wrapper input { 
-            width: 100%; padding: 12px 35px 12px 12px; border: 1px solid var(--border-light); border-radius: 16px; font-size: 12px; font-weight: 500; box-sizing: border-box; background: var(--bg-light); outline: none; font-family: inherit; color: var(--text-main); transition: var(--transition);
-        }
-        .search-input-wrapper input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(229,57,53,0.1); }
+        .search-input-wrapper input { width: 100%; padding: 10px 30px 10px 8px; border: 1px solid var(--border-light); border-radius: 12px; font-size: 11px; font-weight: 500; box-sizing: border-box; text-align: left; background: var(--bg-light); outline: none; font-family: inherit; transition: var(--transition); color: var(--text-main); }
+        .search-input-wrapper input:focus { border-color: var(--zomato-red); background: var(--white); box-shadow: 0 0 0 3px rgba(226,55,68,0.1); }
 
-        .mic-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-sub); display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 4px; transition: var(--transition); font-size: 18px; }
-        .mic-btn:active { transform: translateY(-50%) scale(0.9); color: var(--primary); }
-        .mic-btn.listening { color: var(--primary); animation: pulseMic 1.5s infinite; }
-        
-        @keyframes pulseMic { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.2); filter: drop-shadow(0 0 5px var(--primary));} 100% { transform: translateY(-50%) scale(1); } }
+        .mic-btn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-sub); display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 4px; transition: var(--transition); font-size: 16px; }
+        .mic-btn:hover { color: var(--zomato-red); }
+        .mic-btn:active { transform: translateY(-50%) scale(0.9); }
+        .mic-btn.listening { color: var(--zomato-red); animation: pulseMic 1.5s infinite; }
+        @keyframes pulseMic { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.2); filter: drop-shadow(0 0 5px var(--zomato-red));} 100% { transform: translateY(-50%) scale(1); } }
 
-        .side-item { padding: 16px 8px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: var(--transition); border-bottom: 1px solid rgba(0,0,0,0.02); position: relative; }
+        .side-item { padding: 15px 5px; text-align: center; cursor: pointer; border-left: 4px solid transparent; transition: var(--transition); border-bottom: 1px solid rgba(0,0,0,0.02); position: relative; }
+        .side-item:hover { background: rgba(0,0,0,0.02); }
         .side-item:active { transform: scale(0.95); }
-        .side-item.active { border-left-color: var(--primary); background: linear-gradient(90deg, rgba(229,57,53,0.08) 0%, transparent 100%); }
-        .side-icon-wrapper { width: 48px; height: 48px; margin: 0 auto 8px auto; background: var(--bg-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: var(--transition); border: 1px solid var(--border-light); }
-        .side-item.active .side-icon-wrapper { background: var(--white); border-color: var(--primary); color: var(--primary); box-shadow: 0 8px 20px rgba(229,57,53,0.2); transform: scale(1.05); }
-        .side-name { font-size: 11px; font-weight: 600; color: var(--text-sub); line-height: 1.3; transition: var(--transition); word-wrap: break-word;}
-        .side-item.active .side-name { color: var(--primary); font-weight: 700; }
+        .side-item.active { border-left-color: var(--zomato-red); background: linear-gradient(90deg, rgba(226,55,68,0.08) 0%, transparent 100%); }
 
-        .best-seller-tag { display: inline-flex; align-items: center; gap: 2px; background: rgba(255, 159, 0, 0.1); color: var(--warning); font-size: 9px; padding: 3px 6px; border-radius: 6px; margin-top: 6px; border: 1px solid rgba(255,159,0,0.2); font-weight: 700; }
+        .side-emoji { font-size: 26px; margin-bottom: 8px; transition: var(--transition); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); display: flex; justify-content: center;}
+        .side-item.active .side-emoji { transform: scale(1.1); color: var(--zomato-red); }
+        .side-name { font-size: 10px; font-weight: 600; color: var(--text-sub); line-height: 1.2; word-wrap: break-word; transition: var(--transition);}
+        .side-item.active .side-name { font-weight: 700; color: var(--zomato-red); }
+
+        .best-seller-tag { display: inline-flex; align-items: center; gap: 2px; background: rgba(255, 159, 0, 0.1); color: var(--warning); font-size: 8px; padding: 2px 4px; border-radius: 4px; margin-top: 4px; border: 1px solid rgba(255,159,0,0.2); font-weight: 800; letter-spacing: 0.2px; }
 
         .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; border: none !important; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* =========================================
-           MAIN CONTENT & VIEWER (IMAGE BIGGER)
+           MAIN CONTENT & IMAGE VIEWER (FULL HEIGHT)
         ========================================= */
         .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-light); overflow: hidden; }
         
-        /* Viewer height increased so photo looks full/big */
-        .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; background: #E8E8E8; border-radius: 0 0 20px 20px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.04); z-index: 5; height: 50vh;}
+        /* 🔥 FIXED: flex: 1 makes image take all available space, keeping it BIG */
+        .viewer-container { flex: 1; min-height: 0; position: relative; width: 100%; background: #000; overflow: hidden; z-index: 5;}
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
         .progress-bar { display: block; width: 50%; height: 4px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255,255,255,0.5); border-radius: 10px; overflow: hidden; }
@@ -171,45 +157,23 @@
 
         .image-gradient-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 6; pointer-events: none; }
         
-        /* Badges Top Left */
         .premium-badges-top { position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; gap: 8px; flex-wrap: wrap; }
         .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px;}
         .badge-chip.time { color: var(--text-main); }
 
-        /* Rating Bottom Left */
-        .photo-rating-badge {
-            position: absolute; bottom: 15px; left: 15px; z-index: 10;
-            background: var(--glass-bg); backdrop-filter: blur(5px);
-            padding: 5px 10px; border-radius: 50px; display: flex; align-items: center; gap: 4px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4);
-        }
+        .photo-rating-badge { position: absolute; bottom: 35px; left: 15px; z-index: 10; background: var(--glass-bg); backdrop-filter: blur(5px); padding: 4px 10px; border-radius: 50px; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4); }
         .photo-rating-badge .star { font-weight: 800; font-size: 11px; color: var(--text-main); display: flex; align-items: center; gap: 4px;}
         .photo-rating-badge .reviews { font-weight: 600; font-size: 10px; color: var(--text-sub); text-decoration: underline;}
 
-        /* Favorite Bottom Right */
-        .photo-fav-btn {
-            position: absolute; bottom: 15px; right: 15px; z-index: 10;
-            background: var(--glass-bg); backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.4); width: 38px; height: 38px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15); cursor: pointer; transition: var(--transition);
-        }
+        .photo-fav-btn { position: absolute; bottom: 35px; right: 15px; z-index: 10; background: var(--glass-bg); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.4); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); cursor: pointer; transition: var(--transition); }
         .photo-fav-btn:active { transform: scale(0.8); }
 
-        .media-toggle { 
-            position: absolute; top: 15px; right: 15px; background: var(--glass-bg); color: var(--text-main); 
-            border: 1px solid rgba(255,255,255,0.5); padding: 8px 14px; border-radius: 50px; font-size: 12px; font-weight: 800; 
-            z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 6px;
-        }
+        .media-toggle { position: absolute; top: 15px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 800; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 6px; }
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
 
-        .waiter-btn { 
-            position: absolute; top: 60px; right: 15px; background: var(--glass-bg); color: var(--text-main); 
-            border: 1px solid rgba(255,255,255,0.5); padding: 8px 14px; border-radius: 50px; font-size: 12px; font-weight: 800; 
-            z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); display: flex; align-items: center; gap: 5px; backdrop-filter: blur(8px);
-        }
-        .waiter-btn i { font-size: 18px; color: var(--primary); animation: ringBell 3s infinite; transform-origin: top center;}
+        .waiter-btn { position: absolute; top: 55px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 800; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); display: flex; align-items: center; gap: 5px; backdrop-filter: blur(8px); }
+        .waiter-btn i { font-size: 16px; color: var(--primary); animation: ringBell 3s infinite; transform-origin: top center;}
         .waiter-btn:active { transform: scale(0.95); background: var(--bg-light);}
         @keyframes ringBell { 0%, 100% { transform: rotate(0deg); } 10%, 30%, 50% { transform: rotate(15deg); } 20%, 40% { transform: rotate(-15deg); } 60% { transform: rotate(0deg); } }
 
@@ -218,55 +182,54 @@
         .fs-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         .fs-img-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; pointer-events: none; }
         .fs-img-container img { max-width: 100%; max-height: 100%; width: auto; height: auto; transform-origin: center; pointer-events: auto; touch-action: none; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);}
-        
         .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: var(--transition); backdrop-filter: blur(5px);}
         .fs-close:hover { background: var(--danger); transform: scale(1.1); }
         .fs-close:active { transform: scale(0.9); }
-
         .fs-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; justify-content: center; align-items: center; transition: var(--transition); }
         .fs-nav:hover { background: rgba(255,255,255,0.2); }
         .fs-nav.hide { display: none; }
         .fs-prev { left: 15px; }
         .fs-next { right: 15px; }
-        
         .fs-dots { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10; pointer-events: none; }
         .fs-dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; transition: var(--transition); }
         .fs-dot.active { background: white; transform: scale(1.3); }
 
         /* =========================================
-           BOTTOM UI (COMPACT SO IMAGE IS BIG)
+           BOTTOM UI (PUSHED DOWN TO SHOW FULL IMAGE)
         ========================================= */
         .bottom-ui { 
-            flex-shrink: 0; background: var(--white); padding: 15px 20px 95px 20px; border-radius: 20px 20px 0 0; 
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05); position: relative; z-index: 10; margin-top: -15px; flex: 1;
+            flex-shrink: 0; background: var(--white); padding: 20px 20px; border-radius: 28px 28px 0 0; 
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08); position: relative; z-index: 10; 
+            transition: padding-bottom 0.3s ease; 
+            margin-top: -20px; /* Adjusting so it doesn't cover image */
         }
+        .bottom-ui.with-cart { padding-bottom: 95px; }
 
-        .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
+        .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
         .dish-title { font-size: 22px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
         
-        .price-section { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; margin-top: 5px;}
+        .price-section { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; margin-top: 5px;}
         .price { font-size: 24px; font-weight: 800; color: var(--text-main); display: flex; align-items: center;}
         
         .variant-selector { display: flex; background: var(--bg-light); border-radius: 50px; overflow: hidden; margin-bottom: 15px; padding: 4px; gap: 4px; border: 1px solid var(--border-light); }
         .variant-selector.hide { display: none; }
-        
         .var-btn { flex: 1; padding: 10px 0; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 50px; cursor: pointer; transition: var(--transition); }
         .var-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
         
         .action-row { display: flex; gap: 12px; width: 100%; margin-bottom: 5px;}
         
-        /* ADD Button / Stepper (Proper fix for display block/flex) */
+        /* 🔥 FIXED: ADD Button UI */
         .btn-cart { 
-            background: var(--primary-gradient); color: var(--white); border: none; padding: 12px 0; border-radius: 50px; font-size: 15px; font-weight: 800; flex: 1; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(226, 55, 68, 0.3); display: block; text-align: center; position: relative; overflow: hidden;
+            background: var(--primary-gradient); color: var(--white); border: none; padding: 14px 0; border-radius: 16px; font-size: 15px; font-weight: 800; flex: 1; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(226, 55, 68, 0.3); display: flex; justify-content: center; align-items: center; gap: 6px; position: relative; overflow: hidden;
         }
-        .btn-cart i { font-size: 18px; margin-left: 4px;}
+        .btn-cart i { font-size: 18px; margin-left: 2px;}
         .btn-cart:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(226, 55, 68, 0.2); }
         
-        .stepper-control { display: none; flex: 1; background: var(--white); border: 2px solid var(--primary); border-radius: 50px; justify-content: space-between; align-items: center; padding: 0 10px; font-weight: 800; color: var(--primary); font-size: 16px; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.1);}
-        .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 20px; font-weight: 800; cursor: pointer; padding: 8px 15px; transition: var(--transition);}
-        .stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 10px; transform: scale(0.9);}
+        .stepper-control { display: none; flex: 1; background: var(--white); border: 2px solid var(--primary); border-radius: 16px; justify-content: space-between; align-items: center; padding: 0 10px; font-weight: 800; color: var(--primary); font-size: 16px; box-shadow: 0 4px 15px rgba(226, 55, 68, 0.1);}
+        .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 20px; font-weight: 800; cursor: pointer; padding: 10px 15px; transition: var(--transition);}
+        .stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 8px; transform: scale(0.9);}
 
-        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 12px 0; border-radius: 50px; font-size: 14px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px;}
+        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 14px 0; border-radius: 16px; font-size: 13px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px;}
         .btn-premium i { font-size: 18px; color: var(--primary);}
         .btn-premium:hover { border-color: var(--primary); color: var(--primary);}
         .btn-premium:active { transform: scale(0.96); }
@@ -316,12 +279,18 @@
         .btn-checkout { background: var(--primary-gradient); color: white; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; box-shadow: 0 8px 25px rgba(229, 57, 53, 0.3); transition: var(--transition); flex-shrink: 0; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .btn-checkout:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(226, 55, 68, 0.2);}
 
-        /* TRACKER TABS & VISUAL TRACKER (RESTORED ZOMATO STYLE) */
+        .order-type-selector { display: flex; background: var(--bg-light); border-radius: 16px; padding: 5px; margin-bottom: 15px; border: 1px solid var(--border-light);}
+        .type-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 6px;}
+        .type-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
+
+        .input-field { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 16px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: var(--transition); background: var(--bg-light);}
+        .input-field:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.1);}
+
+        /* 🔥 TRACKER TABS & VISUAL TRACKER (RESTORED ZOMATO STYLE) 🔥 */
         .tracker-tabs { display: flex; background: var(--bg-light); border-radius: 12px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border-light);}
         .tracker-tab-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.3s; }
         .tracker-tab-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700;}
 
-        /* Restored classic horizontal visual tracker from index (6) */
         .visual-tracker { display: flex; justify-content: space-between; align-items: center; position: relative; margin: 20px 10px; }
         .visual-tracker::before { content: ''; position: absolute; top: 14px; left: 10%; right: 10%; height: 3px; background: var(--border-light); z-index: 1; }
         .tracker-step { display: flex; flex-direction: column; align-items: center; z-index: 2; flex: 1; gap: 6px; }
@@ -334,14 +303,6 @@
         .tracker-step.active .step-text { color: var(--warning); }
 
         @keyframes pulseStep { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
-
-        /* Other Form UI */
-        .order-type-selector { display: flex; background: var(--bg-light); border-radius: 16px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border-light);}
-        .type-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 6px;}
-        .type-btn.active { background: var(--white); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
-
-        .input-field { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 16px; box-sizing: border-box; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: var(--transition); background: var(--bg-light);}
-        .input-field:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.1);}
 
         /* Alerts & Toasts */
         .toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--text-main); color: white; padding: 14px 24px; border-radius: 50px; font-size: 13px; font-weight: 600; transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; opacity: 0; visibility: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
@@ -398,12 +359,12 @@
         </div>
     </div>
 
-    <!-- Tracker Modal with Live and Past Tabs -->
+    <!-- Tracker Modal -->
     <div class="cart-modal" id="tracker-modal">
         <div class="cart-content" style="text-align: center; max-height: 90vh;">
             <div class="cart-header">
-                <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;"><i class="ph-fill ph-receipt"></i> Order Status</h2>
-                <button class="btn-close" onclick="toggleTracker()">✕</button>
+                <h2 id="tracker-title-text" style="margin: 0; font-size: 20px;"><i class="ph-fill ph-receipt"></i> My Orders</h2>
+                <button class="btn-close" onclick="toggleTracker()"><i class="ph ph-x"></i></button>
             </div>
             
             <div class="tracker-tabs">
@@ -515,13 +476,13 @@
                 <!-- 🔥 Favorite Button on Photo -->
                 <button class="photo-fav-btn" onclick="toggleFavIcon(event)">🤍</button>
 
-                <!-- Waiter moved slightly down not to overlap with top badge -->
+                <!-- Waiter Button -->
                 <div class="waiter-btn" onclick="openWaiterPrompt()" style="top: 55px;">
                     <i class="ph-fill ph-bell-ringing"></i>
                 </div>
 
                 <div id="photo-slider" class="photo-slider hide"></div>
-                <div class="image-gradient-overlay" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); z-index: 6; pointer-events: none;"></div>
+                <div class="image-gradient-overlay" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 6; pointer-events: none;"></div>
                 
                 <button class="media-toggle hide" id="media-toggle" onclick="toggleMedia()"><i class="ph-fill ph-cube"></i> View 3D</button>
 
@@ -530,14 +491,14 @@
                 </model-viewer>
             </div>
 
-            <!-- More compact bottom UI so image remains fully visible -->
+            <!-- 🔥 FIXED: More compact bottom UI to keep image fully visible -->
             <div class="bottom-ui" id="bottom-ui-card">
                 <div class="dish-header-row">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
                     <span class="type-icon" id="display-type-icon"><i class="ph-fill ph-circle" style="color:var(--green)"></i></span>
                 </div>
                 
-                <div class="price-section" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; margin-top: 5px;">
+                <div class="price-section" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; margin-top: 5px;">
                     <p class="price" id="display-price" style="margin:0; font-size: 24px; font-weight:800; display:flex; align-items:center; color: var(--text-main);">₹0</p>
                 </div>
                 
@@ -548,7 +509,7 @@
                 </div>
                 
                 <div class="action-row">
-                    <!-- ADD Button uses default block display for exact javascript compatibility -->
+                    <!-- 🔥 FIXED: ADD Button uses display flex safely so it doesn't break -->
                     <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">ADD <i class="ph-bold ph-plus"></i></button>
                     <div class="stepper-control" id="btn-stepper">
                         <button onclick="changeCurrentQty(-1)"><i class="ph-bold ph-minus"></i></button>
@@ -561,7 +522,7 @@
         </div>
     </div>
 
-    <!-- Floating Checkout uses fixed White Text -->
+    <!-- 🔥 FIXED: Floating Checkout Text & Arrow Color -->
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
             <span class="checkout-items" id="float-items">1 Item</span>
@@ -859,7 +820,7 @@
             });
         }
 
-        // Restored Classic Horizontal Zomato Tracker
+        // 🔥 FIXED: Restored Classic Horizontal Zomato Tracker properly 
         function renderMultiTracker() {
             const liveContainer = document.getElementById('live-orders-container');
             const pastContainer = document.getElementById('past-orders-container');
@@ -943,6 +904,16 @@
             if(liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
             if(pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
         }
+
+        window.cancelCustomerOrder = async (orderId) => {
+            if(confirm(currentLang === 'hi' ? "क्या आप सच में ऑर्डर रद्द करना चाहते हैं?" : "Are you sure you want to cancel this order?")) {
+                try {
+                    await updateDoc(doc(db, "orders", orderId), { status: 'Cancelled' });
+                    document.getElementById('toast').innerText = currentLang === 'hi' ? "❌ ऑर्डर रद्द हो गया।" : "❌ Order Cancelled.";
+                    document.getElementById('toast').classList.add('show'); setTimeout(()=>document.getElementById('toast').classList.remove('show'),2000);
+                } catch(e) { console.error("Cancel failed:", e); }
+            }
+        };
 
         let savedOrdersList = [];
         try { savedOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
@@ -1043,7 +1014,7 @@
             
             let currentPrice = data.price;
             let fakeOldPrice = currentPrice + Math.floor(currentPrice * 0.2);
-            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${currentPrice} <span style="background: rgba(226, 55, 68, 0.1); color: var(--zomato-red); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; border: 1px dashed var(--zomato-red); margin-left: 8px; vertical-align: middle;">20% OFF</span>`;
+            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${currentPrice}`;
             
             const variantBox = document.getElementById('variant-box');
             const btnHalf = document.getElementById('btn-half'); const btnFull = document.getElementById('btn-full'); const btnPiece = document.getElementById('btn-piece');
@@ -1072,17 +1043,21 @@
             else if(type === 'piece') selPrice = currentDish.pricePiece;
             
             let fakeOldPrice = selPrice + Math.floor(selPrice * 0.2);
-            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${selPrice} <span style="background: rgba(226, 55, 68, 0.1); color: var(--zomato-red); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; border: 1px dashed var(--zomato-red); margin-left: 8px; vertical-align: middle;">20% OFF</span>`;
+            document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${selPrice}`;
             
             checkCartForCurrentDish(); 
         };
 
         function getCartKey() { return `${currentDish.id}_${currentVariant}`; }
 
+        // 🔥 FIXED: Stepper works properly replacing ADD block 
         function checkCartForCurrentDish() {
             const key = getCartKey(); const btnAdd = document.getElementById('btn-add-new'); const btnStepper = document.getElementById('btn-stepper');
-            if(cart[key] && cart[key].qty > 0) { btnAdd.style.display = 'none'; btnStepper.style.display = 'flex'; document.getElementById('current-qty-display').innerText = cart[key].qty; } 
-            else { btnAdd.style.display = 'block'; btnStepper.style.display = 'none'; }
+            if(cart[key] && cart[key].qty > 0) { 
+                btnAdd.style.display = 'none'; btnStepper.style.display = 'flex'; document.getElementById('current-qty-display').innerText = cart[key].qty; 
+            } else { 
+                btnAdd.style.display = 'flex'; btnStepper.style.display = 'none'; 
+            }
         }
 
         window.addCurrentToCart = (e) => {
@@ -1095,7 +1070,7 @@
             
             triggerHapticPop();
             createFlyingDot(e); 
-            document.getElementById('toast').innerText = currentLang === 'hi' ? "✅ कार्ट में जुड़ गया!" : "✅ Added to Cart!";
+            document.getElementById('toast').innerHTML = currentLang === 'hi' ? "<i class='ph-fill ph-check-circle'></i> <span>कार्ट में जुड़ गया!</span>" : "<i class='ph-fill ph-check-circle'></i> <span>Added to Cart!</span>";
             document.getElementById('toast').classList.add('show');
             setTimeout(() => document.getElementById('toast').classList.remove('show'), 2000);
             
@@ -1149,7 +1124,7 @@
 
         window.deleteCartItem = (key) => { delete cart[key]; triggerHapticPop(); updateGlobalCartUI(); checkCartForCurrentDish(); renderCartModal(); };
 
-        // Real Firebase Orders System Only (No WhatsApp redirect)
+        // 🔥 FIXED: 100% WhatsApp-Free, Secure Order Logic with Multi-Session Fix 🔥
         window.placeOrder = async () => {
             if(Object.keys(cart).length === 0) { window.customAlert("Please add items to your cart first!"); return; }
             
@@ -1205,7 +1180,7 @@
                 setTimeout(() => { window.switchOrderTab('live'); window.toggleTracker(); }, 3500); 
 
             } catch (e) { 
-                console.error(e); modalContent.style.opacity = "1"; window.customAlert("Order Failed. Please check your connection and try again."); 
+                console.error(e); modalContent.style.opacity = "1"; window.customAlert("Order Failed. Check connection."); 
             }
 
             btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; 
