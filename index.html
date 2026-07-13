@@ -83,7 +83,6 @@
 
         @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
 
-        /* Premium Favorite Header Icon */
         .fav-header-icon {
             font-size: 20px; cursor: pointer; padding: 6px; 
             background: rgba(255, 59, 48, 0.08); border-radius: 50%; color: var(--danger); 
@@ -129,7 +128,6 @@
         .sidebar::-webkit-scrollbar { display: none; }
         
         .search-box { position: sticky; top: 0; background: var(--glass-bg); padding: 10px 5px; border-bottom: 1px solid var(--border-light); z-index: 5; backdrop-filter: blur(10px); }
-
         .search-input-wrapper { position: relative; width: 100%; }
         .search-input-wrapper input { width: 100%; padding: 10px 28px 10px 8px; border: 1px solid var(--border-light); border-radius: 12px; font-size: 11px; font-weight: 500; box-sizing: border-box; text-align: left; background: var(--bg-light); outline: none; font-family: inherit; transition: var(--transition); color: var(--text-main); }
         .search-input-wrapper input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(229,57,53,0.1); }
@@ -149,21 +147,23 @@
         .side-name { font-size: 10px; font-weight: 500; color: var(--text-sub); line-height: 1.2; word-wrap: break-word; transition: var(--transition);}
         .side-item.active .side-name { color: var(--primary); font-weight: 700; }
 
+        .best-seller-tag { display: inline-flex; align-items: center; gap: 2px; background: rgba(255, 159, 0, 0.1); color: var(--warning); font-size: 8px; padding: 2px 4px; border-radius: 4px; margin-top: 4px; border: 1px solid rgba(255,159,0,0.2); font-weight: 700; }
+
         .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; border: none !important; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* =========================================
-           MAIN CONTENT & IMAGE VIEWER (FIXED)
+           MAIN CONTENT & VIEWER (FULL HEIGHT IMAGE)
         ========================================= */
         .main-content { 
             flex: 1; display: flex; flex-direction: column; background: var(--bg-light); 
             overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
-            padding-bottom: 90px; /* SPACE FOR CHECKOUT BAR TO PREVENT OVERLAP */
         }
         .main-content::-webkit-scrollbar { display: none; }
         
+        /* 🔥 BIGGER IMAGE AREA 🔥 */
         .viewer-container { 
-            width: 100%; height: 55vh; flex-shrink: 0; position: relative; background: #E8E8E8; 
+            width: 100%; flex: 1; position: relative; background: #E8E8E8; 
             border-radius: 0 0 24px 24px; overflow: hidden; z-index: 5;
         }
 
@@ -181,44 +181,20 @@
 
         .image-gradient-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 35%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 6; pointer-events: none; }
         
-        /* 🔥 FIXED: Waiter Button at Top Left (Replaced Best Seller) 🔥 */
+        /* Badges Top Left */
         .premium-badges-top { position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; gap: 8px; flex-wrap: wrap; }
-        
-        .waiter-btn-chip { 
-            background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); padding: 5px 12px; border-radius: 50px; 
-            font-size: 11px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-            border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s;
-        }
-        .waiter-btn-chip:active { transform: scale(0.95); }
-        .waiter-btn-chip i { font-size: 14px; animation: ringBell 3s infinite; transform-origin: top center;}
-
-        @keyframes ringBell { 0%, 100% { transform: rotate(0deg); } 10%, 30%, 50% { transform: rotate(15deg); } 20%, 40% { transform: rotate(-15deg); } 60% { transform: rotate(0deg); } }
-
-        .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px;}
-        
-        /* 🔥 FIXED: Rating Badge Moved Up to Prevent Overlap 🔥 */
-        .photo-rating-badge {
-            position: absolute; bottom: 35px; left: 15px; z-index: 10;
-            background: var(--green); color: var(--white);
-            padding: 4px 8px; border-radius: 6px; display: flex; align-items: center; gap: 2px;
-            box-shadow: 0 4px 10px rgba(36, 150, 63, 0.3); border: none;
-        }
-        .photo-rating-badge .star { font-weight: 800; font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--white);}
-        .photo-rating-badge .reviews { font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.9); margin-left: 2px;}
-
-        /* Premium Favorite Bottom Right */
-        .photo-fav-btn {
-            position: absolute; bottom: 35px; right: 15px; z-index: 10;
-            background: rgba(255,255,255,0.95); color: #BDBDBD;
-            border: none; width: 36px; height: 36px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15); cursor: pointer; transition: var(--transition);
-        }
-        .photo-fav-btn:active { transform: scale(0.8); }
+        .badge-chip { background: var(--glass-bg); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px;}
+        .badge-chip.time { color: var(--text-main); }
 
         .media-toggle { position: absolute; top: 15px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 800; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 6px; }
         .media-toggle:active { transform: scale(0.95); }
         .media-toggle.hide { display: none; }
+
+        .waiter-btn { position: absolute; top: 55px; right: 15px; background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700; z-index: 10; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: var(--transition); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; backdrop-filter: blur(8px); }
+        .waiter-btn i { font-size: 18px; color: var(--danger); animation: ringBell 3s infinite; transform-origin: top center;}
+        .waiter-btn span { line-height: 1; color: var(--text-main); }
+        .waiter-btn:active { transform: scale(0.95); background: var(--bg-light);}
+        @keyframes ringBell { 0%, 100% { transform: rotate(0deg); } 10%, 30%, 50% { transform: rotate(15deg); } 20%, 40% { transform: rotate(-15deg); } 60% { transform: rotate(0deg); } }
 
         .fullscreen-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(5px); z-index: 9999; visibility: hidden; opacity: 0; transition: var(--transition); }
         .fullscreen-viewer.show { visibility: visible; opacity: 1; }
@@ -238,38 +214,59 @@
         .fs-dot.active { background: white; transform: scale(1.3); }
 
         /* =========================================
-           BOTTOM UI (COMPACT SO IMAGE IS BIG)
+           BOTTOM UI (NO EXTRA WHITESPACE, ITEMS MOVED DOWN)
         ========================================= */
         .bottom-ui { 
-            flex-shrink: 0; background: var(--white); padding: 15px 20px 20px 20px; 
-            border-radius: 24px 24px 0 0; box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05); 
-            position: relative; z-index: 10; margin-top: -20px;
+            flex-shrink: 0; background: var(--white); padding: 20px 20px; 
+            border-radius: 28px 28px 0 0; box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05); 
+            position: relative; z-index: 10; margin-top: -20px; transition: padding-bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+        
+        /* 🔥 FIXED: Dynamic Lift Animation - When item is added, pad bottom to reveal checkout bar safely 🔥 */
+        .bottom-ui.with-cart { padding-bottom: 90px; }
 
-        /* 🔥 FIXED: Whitespace Reduced Completely 🔥 */
-        .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0px; }
-        .dish-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
+        /* 🔥 FIXED: Header Row includes Favorite Icon perfectly aligned 🔥 */
+        .dish-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+        .dish-title { font-size: 22px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px; line-height: 1.2;}
         
-        .price-section { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; margin-top: 2px;}
-        .price { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center;}
+        .card-fav-btn {
+            background: var(--bg-light); color: #BDBDBD;
+            border: 1px solid var(--border-light); width: 36px; height: 36px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: var(--transition);
+        }
+        .card-fav-btn:active { transform: scale(0.8); }
+
+        /* 🔥 FIXED: Rating Badge Moved Below Title 🔥 */
+        .rating-type-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .card-rating-badge {
+            background: var(--green); color: var(--white);
+            padding: 4px 8px; border-radius: 6px; display: flex; align-items: center; gap: 2px;
+            box-shadow: 0 4px 10px rgba(36, 150, 63, 0.3); border: none;
+        }
+        .card-rating-badge .star { font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 4px; color: var(--white);}
+        .card-rating-badge .reviews { font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.9); margin-left: 2px;}
+
+        .price-section { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .price { font-size: 24px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; margin: 0;}
         
-        .variant-selector { display: flex; background: var(--bg-light); border-radius: 50px; overflow: hidden; margin-bottom: 10px; padding: 4px; gap: 4px; border: 1px solid var(--border-light); }
+        .variant-selector { display: flex; background: var(--bg-light); border-radius: 50px; overflow: hidden; margin-bottom: 15px; padding: 4px; gap: 4px; border: 1px solid var(--border-light); }
         .variant-selector.hide { display: none; }
         .var-btn { flex: 1; padding: 8px 0; border: none; background: transparent; font-size: 12px; font-weight: 600; color: var(--text-sub); border-radius: 50px; cursor: pointer; transition: var(--transition); }
         .var-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
         
         /* 🔥 FIXED: Action Row with Smooth Sliding Stepper Transition 🔥 */
-        .action-row { display: flex; gap: 10px; width: 100%; height: 44px; align-items: center; margin-bottom: 0px;}
+        .action-row { display: flex; gap: 10px; width: 100%; height: 48px; align-items: center; margin-bottom: 0;}
 
         .add-action-wrapper {
             position: relative; flex: 1; height: 100%; overflow: hidden; 
-            border-radius: 12px; background: var(--bg-light);
+            border-radius: 14px; background: var(--bg-light);
         }
         
         .btn-cart { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--primary-gradient); color: var(--white); border: none; 
-            border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; 
+            border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; 
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; 
             box-shadow: 0 4px 15px rgba(226, 55, 68, 0.25); display: flex; justify-content: center; align-items: center; gap: 4px;
         }
@@ -278,7 +275,7 @@
         
         .stepper-control { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--white); border: 2px solid var(--primary); border-radius: 12px; 
+            background: var(--white); border: 2px solid var(--primary); border-radius: 14px; 
             justify-content: space-between; align-items: center; padding: 0 10px; 
             font-weight: 700; color: var(--primary); font-size: 15px; 
             box-shadow: 0 4px 10px rgba(226, 55, 68, 0.1);
@@ -294,11 +291,11 @@
             transform: translateY(0); opacity: 1; pointer-events: auto;
         }
 
-        .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 18px; font-weight: 800; cursor: pointer; padding: 6px 12px; transition: var(--transition);}
+        .stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 18px; font-weight: 800; cursor: pointer; padding: 8px 12px; transition: var(--transition);}
         .stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 8px; transform: scale(0.9);}
 
-        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 0; border-radius: 12px; font-size: 12px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px; height: 100%; box-sizing: border-box;}
-        .btn-premium i { font-size: 16px; color: var(--primary);}
+        .btn-premium { background: var(--white); color: var(--text-main); border: 1px solid var(--border-light); padding: 0; border-radius: 14px; font-size: 13px; font-weight: 700; flex: 1.2; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 6px; height: 100%; box-sizing: border-box;}
+        .btn-premium i { font-size: 18px; color: var(--primary);}
         .btn-premium:hover { border-color: var(--primary); color: var(--primary);}
         .btn-premium:active { transform: scale(0.96); }
         
@@ -307,7 +304,7 @@
         ========================================= */
         .floating-checkout { 
             position: fixed; bottom: -120px; left: 15px; right: 15px; 
-            background: #24963F; color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 30px rgba(36,150,63,0.3); border-radius: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
+            background: var(--green); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 30px rgba(36,150,63,0.3); border-radius: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
         }
         .floating-checkout.show { bottom: 15px; animation: bounceUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);}
         @keyframes bounceUp { 0% { bottom: -120px; } 100% { bottom: 15px; } }
@@ -315,7 +312,7 @@
         .checkout-info { display: flex; flex-direction: column; text-align: left; gap: 2px;}
         .checkout-items { font-size: 10px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;}
         .checkout-total { font-size: 16px; font-weight: 800; }
-        .checkout-action { font-size: 13px; font-weight: 800; color: #24963F; background: #ffffff; padding: 8px 16px; border-radius: 50px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 10px rgba(255,255,255,0.2);} 
+        .checkout-action { font-size: 13px; font-weight: 800; color: var(--green); background: #ffffff; padding: 8px 16px; border-radius: 50px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);} 
 
         /* =========================================
            CART, TRACKER & FAV MODALS (GLASS EFFECT)
@@ -478,11 +475,12 @@
         </div>
     </div>
 
+    <!-- Waiter Prompt Modal -->
     <div class="custom-alert" id="waiterPromptModal">
         <div class="alert-box">
             <div class="alert-icon"><i class="ph-fill ph-bell-ringing" style="color: var(--primary);"></i></div>
             <h3 id="waiterTitleText">Call Waiter</h3>
-            <p>Need assistance? Enter your table number below.</p>
+            <p>Enter table & any remark to call the waiter.</p>
             <input type="number" id="waiterTableInput" class="input-field" placeholder="Table Number *" style="margin-bottom: 10px; text-align: center; font-weight:700;">
             <input type="text" id="waiterRemarkInput" class="input-field" placeholder="Remark (Optional) e.g. Water" style="margin-bottom: 25px; text-align: center; font-weight:500;">
             <div style="display: flex; gap: 12px;">
@@ -503,7 +501,7 @@
                 <div class="track-pulse" id="track-badge-pulse"></div>
             </div>
             
-            <!-- 🔥 FIXED: Safe Gap added in Header Actions to prevent overlap 🔥 -->
+            <!-- 🔥 SAFE GAP for Favorite Icon in Header 🔥 -->
             <div class="fav-header-icon" onclick="toggleFavList()">
                 <i class="ph-fill ph-heart"></i>
             </div>
@@ -553,20 +551,11 @@
             <div class="viewer-container">
                 <!-- 🔥 Waiter button safely top-left 🔥 -->
                 <div class="premium-badges-top">
-                    <button onclick="openWaiterPrompt()" class="waiter-btn-chip">
-                        <i class="ph-fill ph-bell-ringing"></i> Waiter
+                    <button onclick="openWaiterPrompt()" class="waiter-btn-chip" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; color: var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                        <i class="ph-fill ph-bell-ringing" style="font-size:14px;"></i> Waiter
                     </button>
                     <span class="badge-chip time"><i class="ph-fill ph-clock"></i> 15 Min</span>
                 </div>
-
-                <!-- 🔥 Zomato Green Rating Safely Above White Card 🔥 -->
-                <div class="photo-rating-badge">
-                    <span class="star"><i class="ph-fill ph-star"></i> 4.8</span>
-                    <span class="reviews">(245)</span>
-                </div>
-
-                <!-- Favorite Button Bottom Right -->
-                <button class="photo-fav-btn" onclick="toggleFavIcon(event)"><i class="ph-fill ph-heart"></i></button>
 
                 <div id="photo-slider" class="photo-slider hide"></div>
                 <div class="image-gradient-overlay"></div>
@@ -578,9 +567,24 @@
                 </model-viewer>
             </div>
 
+            <!-- 🔥 FIXED: Clean & Compact Bottom UI without extra empty space 🔥 -->
             <div class="bottom-ui" id="bottom-ui-card">
+                
                 <div class="dish-header-row">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
+                    
+                    <!-- 🔥 NEW: Favorite Button moved next to name in White Card 🔥 -->
+                    <button class="card-fav-btn" onclick="toggleFavIcon(event)">
+                        <i class="ph-fill ph-heart"></i>
+                    </button>
+                </div>
+
+                <div class="rating-type-row">
+                    <!-- 🔥 NEW: Green Rating Badge moved below title 🔥 -->
+                    <div class="card-rating-badge">
+                        <span class="star"><i class="ph-fill ph-star"></i> 4.8</span>
+                        <span class="reviews">(245 Reviews)</span>
+                    </div>
                     <span class="type-icon" id="display-type-icon"><i class="ph-fill ph-circle" style="color:var(--green)"></i></span>
                 </div>
                 
@@ -594,7 +598,7 @@
                     <button class="var-btn" id="btn-piece" onclick="selectVariant('piece')">Per Piece</button>
                 </div>
                 
-                <!-- 🔥 FIXED: Action Row CSS animation structure completely bug-free 🔥 -->
+                <!-- 🔥 FIXED: Action Row with Smooth Sliding Stepper Transition 🔥 -->
                 <div class="action-row">
                     <div class="add-action-wrapper" id="add-action-wrapper">
                         <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">
@@ -1209,7 +1213,7 @@
 
                 let actionHtml = '';
                 if (isNew) {
-                    actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:6px 14px; border-radius:12px; font-size:11px; font-weight:700; cursor:pointer; display:inline-block; margin-top:15px; transition:0.2s;">Cancel ❌</button>`;
+                    actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 16px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:15px; transition:0.2s;">Cancel ❌</button>`;
                 } else if (isPrep) {
                     let eta = data.items.length * 5; 
                     actionHtml = `<div style="background:rgba(255, 159, 0, 0.1); color:var(--warning); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px; border:1px dashed var(--warning);">⏳ ETA: ${eta} - ${eta+5} Mins</div>`;
@@ -1221,7 +1225,6 @@
                     actionHtml = `<div style="background:var(--bg-light); color:var(--text-sub); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px;">Order Cancelled</div>`;
                 }
 
-                // 🔥 Order Delivered Light Green Background Update
                 let cardBg = isDone ? 'var(--light-green)' : '#fff'; 
                 let cardBorder = isDone ? '1px solid #24963F' : '1px solid var(--border-light)';
 
@@ -1498,8 +1501,8 @@
                 toggleBtn.classList.add('hide'); 
             }
             
-            // 🔥 Reset Favorite Icon Status
-            const favBtn = document.querySelector('.photo-fav-btn');
+            // 🔥 Reset Favorite Icon Status 🔥
+            const favBtn = document.querySelector('.card-fav-btn');
             if(favorites.includes(data.id)) {
                 favBtn.style.color = 'var(--danger)';
             } else {
@@ -1531,7 +1534,7 @@
             return `${currentDish.id}_${currentVariant}`; 
         }
 
-        // 🔥 FIXED: Check Stepper Smoothly 🔥
+        // 🔥 FIXED: Check Stepper Smoothly without jumping
         window.checkCartForCurrentDish = () => {
             const key = getCartKey(); 
             const wrapper = document.getElementById('add-action-wrapper');
@@ -1577,7 +1580,7 @@
             updateGlobalCartUI(); 
             checkCartForCurrentDish();
 
-            // 🔥 FIXED: Smooth auto-scroll down to make sure Stepper is not covered by Checkout Bar 🔥
+            // Auto-scroll slightly to ensure checkout bar doesn't overlap
             setTimeout(() => {
                 const mainContent = document.querySelector('.main-content');
                 mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: 'smooth' });
@@ -1679,66 +1682,7 @@
             renderCartModal(); 
         };
 
-        function showToast(msg) { 
-            const toast = document.getElementById('toast'); 
-            toast.querySelector('span').innerText = msg; 
-            toast.classList.add('show'); 
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000); 
-        }
-
-        function launchConfetti() {
-            const canvas = document.getElementById('confetti-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; 
-            canvas.height = window.innerHeight;
-            let pieces = [];
-            const colors = ['#E53935', '#24963F', '#FF9F00', '#FF5252', '#34C759'];
-            
-            for (let i = 0; i < 100; i++) {
-                pieces.push({
-                    x: canvas.width / 2, 
-                    y: canvas.height / 2 + 100,
-                    vx: (Math.random() - 0.5) * 20, 
-                    vy: (Math.random() - 1) * 20 - 5,
-                    size: Math.random() * 8 + 5, 
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    rot: Math.random() * 360, 
-                    rotSpeed: (Math.random() - 0.5) * 10
-                });
-            }
-            
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                let active = false;
-                pieces.forEach(p => {
-                    p.x += p.vx; 
-                    p.y += p.vy; 
-                    p.vy += 0.5; 
-                    p.rot += p.rotSpeed;
-                    
-                    if (p.y < canvas.height) {
-                        active = true;
-                        ctx.save(); 
-                        ctx.translate(p.x, p.y); 
-                        ctx.rotate(p.rot * Math.PI / 180);
-                        ctx.fillStyle = p.color; 
-                        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-                        ctx.restore();
-                    }
-                });
-                if (active) {
-                    requestAnimationFrame(animate); 
-                } else {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                }
-            }
-            animate();
-            triggerHapticPop();
-        }
-
-        // 🔥 FIXED: Direct Admin Panel AddDoc (Order Failed Bug Removed 100%) 🔥
+        // 🔥 Direct Admin Panel AddDoc (Order Failed Bug Removed 100%)
         window.placeOrder = async () => {
             if (Object.keys(cart).length === 0) { 
                 window.customAlert("Please add items to your cart first!", "ph-shopping-cart"); 
@@ -1776,7 +1720,7 @@
             }
 
             try {
-                // Bypass merge rules completely, just add standard document.
+                // Direct addDoc to bypass any rules validation errors completely.
                 const docRef = await addDoc(collection(db, "orders"), { 
                     orderType: currentOrderType, 
                     tableNumber: tableNo || "N/A", 
