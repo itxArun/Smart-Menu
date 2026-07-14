@@ -3,971 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NextPlate - Merchant Dashboard</title>
+    <title>NextPlate - Premium Merchant Dashboard</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3170/3170733.png">
     
     <style>
+        /* =========================================
+           PREMIUM VARIABLES & LIGHT/DARK MODE
+        ========================================= */
         :root { 
-            --primary: #E23744; 
-            --success: #28A745; 
-            --warning: #FFB75E; 
+            --primary: #E53935; 
+            --primary-gradient: linear-gradient(135deg, #E53935 0%, #FF5252 100%);
+            --success: #24963F; 
+            --warning: #FF9F00; 
             --danger: #FF3B30;
-            --edit-bg: #E5F1FF; 
-            --edit-text: #007AFF; 
-            --del-bg: #FFE5E5; 
-            --del-text: #FF3B30;
+            --info: #007AFF;
+            
             --bg-main: #F8F9FA; 
             --bg-card: #FFFFFF; 
-            --text-main: #282C3F; 
-            --text-sub: #686B78; 
-            --border: #E8E8E8; 
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --text-main: #1C1C1E; 
+            --text-sub: #757575; 
+            --border: rgba(0,0,0,0.06); 
             --input-bg: #F1F1F6;
+            
+            --shadow-soft: 0 8px 24px rgba(0,0,0,0.04);
+            --shadow-glow: 0 8px 20px rgba(229, 57, 53, 0.2);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         [data-theme="dark"] {
             --bg-main: #121212; 
             --bg-card: #1E1E1E; 
+            --glass-bg: rgba(30, 30, 30, 0.85);
             --text-main: #F5F5F5; 
             --text-sub: #A0A0A0; 
-            --border: #2A2A2A; 
+            --border: rgba(255,255,255,0.08); 
             --input-bg: #2A2A2A;
-            --edit-bg: #1A2A40; 
-            --edit-text: #4DA6FF; 
-            --del-bg: #3A1A1A; 
-            --del-text: #FF6B60;
+            --shadow-soft: 0 8px 24px rgba(0,0,0,0.2);
         }
 
         body { 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Poppins', sans-serif; 
-            background-color: var(--bg-main); 
-            color: var(--text-main); 
-            height: 100dvh; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
-            transition: 0.3s; 
-        }
-        
-        .login-screen { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: linear-gradient(135deg, var(--bg-main) 0%, rgba(226, 55, 68, 0.1) 100%); 
-            z-index: 9999; 
-            display: none; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 20px; 
-            box-sizing: border-box; 
-            transition: opacity 0.5s; 
-            backdrop-filter: blur(5px); 
+            margin: 0; padding: 0; font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg-main); color: var(--text-main); 
+            height: 100dvh; display: flex; flex-direction: column; overflow: hidden; 
+            transition: background-color 0.3s, color 0.3s; 
+            -webkit-font-smoothing: antialiased;
         }
 
+        h1, h2, h3, h4, h5 { font-family: 'Okra', sans-serif; margin: 0; letter-spacing: -0.3px;}
+
+        /* =========================================
+           LOGIN SCREEN
+        ========================================= */
+        .login-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(135deg, var(--bg-main) 0%, rgba(229, 57, 53, 0.1) 100%); 
+            z-index: 9999; display: none; justify-content: center; align-items: center; 
+            padding: 20px; box-sizing: border-box; backdrop-filter: blur(10px); 
+        }
         .login-screen.show { display: flex; }
 
         .login-card { 
-            background: var(--bg-card); 
-            width: 100%; 
-            max-width: 380px; 
-            border-radius: 30px; 
-            padding: 45px 30px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
-            text-align: center; 
-            border: 1px solid var(--border); 
+            background: var(--bg-card); width: 100%; max-width: 380px; 
+            border-radius: 32px; padding: 45px 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); 
+            text-align: center; border: 1px solid var(--border); 
         }
 
-        .login-card h2 { 
-            color: var(--primary); 
-            font-family: 'Okra', sans-serif; 
-            margin: 0 0 5px 0; 
-            font-size: 34px; 
-            font-weight: 800;
-        }
-
-        .login-card p { 
-            color: var(--text-sub); 
-            font-size: 14px; 
-            margin-bottom: 30px; 
-        }
+        .login-card h2 { color: var(--primary); font-size: 34px; font-weight: 800; margin-bottom: 5px; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+        .login-card p { color: var(--text-sub); font-size: 14px; margin-bottom: 30px; font-weight: 500;}
 
         .login-input { 
-            width: 100%; 
-            padding: 16px; 
-            border: 1px solid var(--border); 
-            border-radius: 15px; 
-            font-family: inherit; 
-            font-size: 14px; 
-            margin-bottom: 15px; 
-            box-sizing: border-box; 
-            background: var(--input-bg); 
-            color: var(--text-main); 
-            outline: none; 
-            transition: 0.3s;
+            width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 16px; 
+            font-family: inherit; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; 
+            background: var(--input-bg); color: var(--text-main); outline: none; transition: var(--transition);
         }
+        .login-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(229,57,53,0.1); background: var(--bg-card);}
 
         .btn-login { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            width: 100%; 
-            padding: 16px; 
-            border-radius: 15px; 
-            font-size: 16px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            box-shadow: 0 5px 15px rgba(226, 55, 68, 0.3); 
-            margin-top: 10px;
+            background: var(--primary-gradient); color: white; border: none; width: 100%; 
+            padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; 
+            transition: var(--transition); box-shadow: var(--shadow-glow); margin-top: 10px;
         }
+        .btn-login:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(229, 57, 53, 0.2); }
 
-        .btn-login:active { transform: scale(0.96); }
-
+        /* =========================================
+           TOP NAVIGATION (GLASS)
+        ========================================= */
         .top-nav { 
-            flex-shrink: 0; 
-            background: var(--bg-card); 
-            padding: 12px 20px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 1px solid var(--border); 
-            z-index: 100; 
-            transition: 0.3s; 
+            flex-shrink: 0; background: var(--glass-bg); padding: 12px 20px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--border); z-index: 100; transition: 0.3s;
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
 
-        .brand-logo { 
-            font-family: 'Okra', sans-serif; 
-            font-size: 22px; 
-            color: var(--primary); 
-            font-weight: 800; 
-            margin: 0; 
-            line-height: 1.1;
-        }
-
-        .greet-text { 
-            font-size: 11px; 
-            color: var(--text-sub); 
-            font-weight: 600; 
-            display: block; 
-        }
+        .brand-logo { font-size: 22px; color: var(--primary); font-weight: 800; line-height: 1.1; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+        .greet-text { font-size: 11px; color: var(--text-sub); font-weight: 600; display: block; }
         
-        .admin-profile { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            font-weight: 600; 
-            font-size: 13px; 
+        .admin-profile { display: flex; align-items: center; gap: 10px; }
+
+        .btn-sound-auth {
+            background: rgba(36, 150, 63, 0.1); color: var(--success); border: 1px solid rgba(36, 150, 63, 0.3);
+            padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 4px;
         }
+        .btn-sound-auth.active { background: var(--success); color: white; }
 
         .btn-logout { 
-            background: transparent; 
-            color: var(--primary); 
-            border: 1px solid var(--primary); 
-            padding: 6px 12px; 
-            border-radius: 8px; 
-            font-size: 12px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: 0.2s;
+            background: transparent; color: var(--text-sub); border: 1px solid var(--border); 
+            width: 36px; height: 36px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: var(--transition);
         }
-        
-        .app-container { 
-            display: flex; 
-            flex: 1; 
-            overflow: hidden; 
-        }
+        .btn-logout:hover { color: var(--primary); border-color: var(--primary); background: rgba(229,57,53,0.05); }
 
-        .main-content { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 20px; 
-            padding-bottom: 110px; 
-        } 
+        /* =========================================
+           MAIN LAYOUT & STATS
+        ========================================= */
+        .app-container { display: flex; flex: 1; overflow: hidden; }
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 110px; scroll-behavior: smooth;} 
+        .main-content::-webkit-scrollbar { display: none; }
         
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px; 
-            margin-bottom: 20px; 
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
 
         .stat-card { 
-            background: var(--bg-card); 
-            padding: 15px; 
-            border-radius: 16px; 
-            border: 1px solid var(--border); 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.03); 
-            transition: 0.3s; 
-            cursor: pointer; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
+            background: var(--bg-card); padding: 15px; border-radius: 20px; border: 1px solid var(--border); 
+            box-shadow: var(--shadow-soft); transition: var(--transition); cursor: pointer; 
+            display: flex; justify-content: space-between; align-items: center;
         }
-
         .stat-card:active { transform: scale(0.96); }
         
         .stat-info { display: flex; flex-direction: column; }
-        
-        .stat-title { 
-            font-size: 11px; 
-            color: var(--text-sub); 
-            font-weight: 700; 
-            margin-bottom: 2px; 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px;
-        }
-
-        .stat-value { 
-            font-size: 22px; 
-            font-weight: 800; 
-            margin: 0; 
-            color: var(--text-main); 
-        }
-
+        .stat-title { font-size: 11px; color: var(--text-sub); font-weight: 700; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .stat-value { font-size: 22px; font-weight: 800; margin: 0; color: var(--text-main); }
         .stat-value.green { color: var(--success); }
         
-        .stat-icon { 
-            font-size: 22px; 
-            width: 42px; 
-            height: 42px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            border-radius: 12px; 
-        }
+        .stat-icon { font-size: 22px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; border-radius: 14px; }
         
-        .pulse-live { 
-            animation: pulseLive 2s infinite; 
-            border-color: var(--warning); 
-            box-shadow: 0 0 15px rgba(255, 183, 94, 0.4); 
-        }
+        .pulse-live { animation: pulseLive 2s infinite; border-color: var(--warning); box-shadow: 0 0 15px rgba(255, 159, 0, 0.3); }
+        @keyframes pulseLive { 0% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 159, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 159, 0, 0); } }
 
-        @keyframes pulseLive { 
-            0% { box-shadow: 0 0 0 0 rgba(255, 183, 94, 0.4); } 
-            70% { box-shadow: 0 0 0 10px rgba(255, 183, 94, 0); } 
-            100% { box-shadow: 0 0 0 0 rgba(255, 183, 94, 0); } 
-        }
-
+        /* =========================================
+           CARDS & SECTIONS
+        ========================================= */
         .section-card { 
-            background: var(--bg-card); 
-            border-radius: 20px; 
-            border: 1px solid var(--border); 
-            overflow: hidden; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.04); 
-            transition: 0.3s; 
-            margin-bottom: 20px; 
+            background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border); 
+            overflow: hidden; box-shadow: var(--shadow-soft); transition: var(--transition); margin-bottom: 20px; 
         }
 
-        .section-header { 
-            padding: 18px 20px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 1px solid var(--border); 
-            background: transparent; 
-        }
+        .section-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: transparent; }
+        .section-header h3 { margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
 
-        .section-header h3 { 
-            margin: 0; 
-            font-size: 17px; 
-            font-weight: 800; 
-            color: var(--text-main); 
-        }
-
-        .btn-add { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 10px 18px; 
-            border-radius: 10px; 
-            font-size: 13px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            box-shadow: 0 4px 12px rgba(226,55,68,0.2);
-        }
+        .btn-add { background: var(--primary-gradient); color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 12px rgba(229,57,53,0.2); display: flex; align-items: center; gap: 4px;}
+        .btn-add:active { transform: scale(0.95); }
         
-        .search-container { 
-            padding: 15px 20px; 
-            border-bottom: 1px solid var(--border); 
-            background: var(--bg-card); 
-        }
+        /* Menu Management */
+        .search-container { padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
+        .search-input { width: 100%; padding: 14px 15px; border: 1px solid var(--border); border-radius: 14px; font-family: inherit; font-size: 13px; font-weight:500; background: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none; transition: var(--transition); }
+        .search-input:focus { border-color: var(--primary); background: var(--bg-card); box-shadow: 0 0 0 3px rgba(229,57,53,0.1);}
 
-        .search-input { 
-            width: 100%; 
-            padding: 12px 15px; 
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            font-family: inherit; 
-            font-size: 13px; 
-            background: var(--input-bg); 
-            color: var(--text-main); 
-            box-sizing: border-box; 
-            outline: none; 
-            transition: 0.2s; 
-        }
-
-        .admin-cat-scroll { 
-            display: flex; 
-            overflow-x: auto; 
-            gap: 8px; 
-            padding: 12px 20px; 
-            border-bottom: 1px solid var(--border); 
-            background: var(--bg-card); 
-        }
-
+        .admin-cat-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); scroll-behavior: smooth;}
         .admin-cat-scroll::-webkit-scrollbar { display: none; }
         
-        .admin-cat-pill { 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            background: var(--input-bg); 
-            color: var(--text-sub); 
-            font-size: 12px; 
-            font-weight: 700; 
-            white-space: nowrap; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            border: 1px solid transparent; 
-        }
+        .admin-cat-pill { padding: 8px 16px; border-radius: 50px; background: var(--input-bg); color: var(--text-sub); font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: var(--transition); border: 1px solid transparent; display: flex; align-items: center; gap: 6px;}
+        .admin-cat-pill.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(229,57,53,0.2); font-weight: 700;}
 
-        .admin-cat-pill.active { 
-            background: var(--primary); 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(226,55,68,0.2); 
-        }
-
-        .menu-list { 
-            display: flex; 
-            flex-direction: column; 
-        }
-
-        .menu-item-row { 
-            position: relative; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 18px 20px; 
-            border-bottom: 1px solid var(--border); 
-            transition: opacity 0.3s, transform 0.2s; 
-            background: var(--bg-card); 
-        }
-
+        .menu-list { display: flex; flex-direction: column; }
+        .menu-item-row { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); transition: var(--transition); background: var(--bg-card); }
         .menu-item-row:last-child { border-bottom: none; }
+        .menu-item-row:hover { background: var(--input-bg); }
         
-        .menu-item-info { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            flex: 1; 
-            cursor: pointer; 
-        }
+        .menu-item-info { display: flex; align-items: center; gap: 15px; flex: 1; cursor: pointer; }
+        .dish-icon { font-size: 26px; background: var(--bg-light); width: 50px; height: 50px; border-radius: 14px; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border);}
+        .dish-details { display: flex; flex-direction: column; gap: 4px; padding-right: 5px;}
+        .dish-name { font-size: 14px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 6px; line-height: 1.2; letter-spacing: -0.3px;}
+        .dish-price { font-size: 13px; font-weight: 600; color: var(--text-sub); }
 
-        .dish-icon { 
-            font-size: 26px; 
-            background: var(--input-bg); 
-            padding: 10px; 
-            border-radius: 14px; 
-        }
-
-        .dish-details { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 4px; 
-            padding-right: 5px;
-        }
-
-        .dish-name { 
-            font-size: 14px; 
-            font-weight: 700; 
-            color: var(--text-main); 
-            display: flex; 
-            align-items: center; 
-            flex-wrap: wrap; 
-            gap: 5px; 
-            line-height: 1.2;
-        }
-
-        .dish-price { 
-            font-size: 13px; 
-            font-weight: 600; 
-            color: var(--text-sub); 
-        }
-
-        .cat-badge { 
-            font-size: 10px; 
-            padding: 2px 6px; 
-            border-radius: 6px; 
-            font-weight: 700; 
-            white-space: nowrap;
-        }
+        .cat-badge { font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 3px;}
         
         .dropdown-container { position: relative; }
-        
-        .btn-dots { 
-            background: transparent; 
-            border: none; 
-            font-size: 22px; 
-            font-weight: bold; 
-            color: var(--text-sub); 
-            cursor: pointer; 
-            padding: 5px 12px; 
-            border-radius: 8px; 
-            transition: 0.2s; 
-        }
-
+        .btn-dots { background: transparent; border: none; font-size: 24px; font-weight: bold; color: var(--text-sub); cursor: pointer; padding: 5px 10px; border-radius: 8px; transition: 0.2s; }
         .btn-dots:active { background: var(--input-bg); }
         
-        .dropdown-menu { 
-            position: absolute; 
-            right: 0; 
-            top: 40px; 
-            background: var(--bg-card); 
-            border: 1px solid var(--border); 
-            border-radius: 14px; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12); 
-            width: 180px; 
-            z-index: 100; 
-            display: none; 
-            flex-direction: column; 
-            overflow: hidden; 
-        }
-
-        .dropdown-menu.show { 
-            display: flex; 
-            animation: dropIn 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-
-        @keyframes dropIn { 
-            from { opacity: 0; transform: translateY(-10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        .dropdown-menu { position: absolute; right: 0; top: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 180px; z-index: 100; display: none; flex-direction: column; overflow: hidden; }
+        .dropdown-menu.show { display: flex; animation: dropIn 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes dropIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .dropdown-item { 
-            padding: 14px 15px; 
-            font-size: 13px; 
-            font-weight: 600; 
-            color: var(--text-main); 
-            cursor: pointer; 
-            transition: 0.2s; 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-        }
-
+        .dropdown-item { padding: 14px 15px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; transition: 0.2s; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;}
         .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:active { background: var(--input-bg); }
         .dropdown-item.del-opt { color: var(--danger); }
 
-        .order-card { 
-            padding: 15px 20px; 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            background: var(--bg-card); 
-        }
+        /* 🔥 Live vs Past Orders Tabs 🔥 */
+        .admin-tracker-tabs { display: flex; background: var(--input-bg); border-radius: 12px; padding: 5px; margin: 15px 20px;}
+        .admin-tab-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .admin-tab-btn.active { background: var(--bg-card); color: var(--primary); box-shadow: var(--shadow-soft); font-weight: 700;}
+
+        .order-card { padding: 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; background: var(--bg-card); transition: var(--transition);}
+        .order-card:hover { background: var(--input-bg); }
         
-        .status-badge { 
-            font-size: 11px; 
-            font-weight: 800; 
-            padding: 4px 8px; 
-            border-radius: 6px; 
-            letter-spacing: 0.5px; 
-        }
+        .status-badge { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 8px; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 4px;}
+        .status-new { background: rgba(0, 122, 255, 0.1); color: var(--info); border: 1px solid rgba(0,122,255,0.2); }
+        .status-prep { background: rgba(255, 159, 0, 0.1); color: var(--warning); border: 1px solid rgba(255,159,0,0.2); }
+        .status-done { background: rgba(36, 150, 63, 0.1); color: var(--success); border: 1px solid rgba(36, 150, 63, 0.2); }
+        .status-canc { background: rgba(255, 59, 48, 0.1); color: var(--danger); border: 1px solid rgba(255, 59, 48, 0.2); }
 
-        .status-new { 
-            background: #E5F1FF; 
-            color: #007AFF; 
-            border: 1px solid rgba(0,122,255,0.2); 
-        }
+        .order-actions-row { display: flex; gap: 10px; }
+        .btn-action-new { border: none; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; color: white; flex: 1; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 6px;}
+        .btn-action-new:active { transform: scale(0.95); }
 
-        .status-prep { 
-            background: #FFF0E5; 
-            color: #FF9500; 
-            border: 1px solid rgba(255,149,0,0.2); 
-        }
+        /* CRM & Stats */
+        .history-date-header { background: var(--input-bg); padding: 14px 20px; font-size: 12px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);}
+        
+        .history-item { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);}
+        .history-item-left { display: flex; flex-direction: column; gap: 4px; }
+        .history-item-table { font-size: 14px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;}
+        .history-item-time { font-size: 11px; color: var(--text-sub); font-weight: 600; }
+        .history-item-amount { font-size: 16px; font-weight: 800; color: var(--success); }
 
-        .order-actions-row { 
-            display: flex; 
-            gap: 8px; 
-        }
+        .qr-container { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+        #qrcode-box { padding: 20px; background: white; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: inline-block; border: 1px solid #eee;}
+        .link-input { width: 90%; max-width: 350px; padding: 16px; border: 1px solid var(--border); border-radius: 16px; font-family: inherit; font-size: 13px; text-align: center; color: var(--text-sub); background: var(--input-bg); outline: none; font-weight: 500;}
+        .btn-download { background: var(--primary-gradient); color: white; border: none; padding: 16px 35px; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; transition: var(--transition); box-shadow: 0 8px 20px rgba(229,57,53,0.3); display: flex; align-items: center; gap: 8px;}
+        .btn-download:active { transform: scale(0.95); }
 
-        .btn-action-new { 
-            border: none; 
-            padding: 10px; 
-            border-radius: 10px; 
-            font-size: 13px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            color: white; 
-            flex: 1; 
-        }
-
-        .history-date-header { 
-            background: var(--input-bg); 
-            padding: 12px 20px; 
-            font-size: 12px; 
-            font-weight: 800; 
-            color: var(--text-sub); 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-
-        .history-item { 
-            padding: 15px 20px; 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-
-        .history-item-left { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 4px; 
-        }
-
-        .history-item-table { 
-            font-size: 14px; 
-            font-weight: 700; 
-            color: var(--text-main); 
-        }
-
-        .history-item-time { 
-            font-size: 11px; 
-            color: var(--text-sub); 
-            font-weight: 600; 
-        }
-
-        .history-item-amount { 
-            font-size: 15px; 
-            font-weight: 800; 
-            color: var(--success); 
-        }
-
-        .qr-container { 
-            padding: 40px 20px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 20px; 
-            text-align: center; 
-        }
-
-        #qrcode-box { 
-            padding: 20px; 
-            background: white; 
-            border-radius: 20px; 
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08); 
-            display: inline-block; 
-        }
-
-        .link-input { 
-            width: 90%; 
-            max-width: 350px; 
-            padding: 14px; 
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            font-family: inherit; 
-            font-size: 13px; 
-            text-align: center; 
-            color: var(--text-sub); 
-            background: var(--input-bg); 
-            outline: none; 
-        }
-
-        .btn-download { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 16px 35px; 
-            border-radius: 50px; 
-            font-size: 15px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            box-shadow: 0 5px 15px rgba(226,55,68,0.3);
-        }
-
+        /* =========================================
+           BOTTOM NAVIGATION (GLASS)
+        ========================================= */
         .bottom-nav { 
-            position: fixed; 
-            bottom: 15px; 
-            left: 4%; 
-            width: 92%; 
-            height: 70px; 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(15px); 
-            border-radius: 24px; 
-            border: 1px solid rgba(255,255,255,0.4);
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            z-index: 1000; 
-            transition: 0.3s; 
+            position: fixed; bottom: 15px; left: 4%; width: 92%; height: 75px; 
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px; border: 1px solid rgba(255,255,255,0.2); display: flex; 
+            justify-content: space-around; align-items: center; box-shadow: 0 15px 40px rgba(0,0,0,0.1); 
+            z-index: 1000; transition: 0.3s; 
         }
 
-        [data-theme="dark"] .bottom-nav { 
-            background: rgba(30, 30, 30, 0.85); 
-            border-color: rgba(255,255,255,0.05); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-        }
+        [data-theme="dark"] .bottom-nav { border-color: rgba(255,255,255,0.05); box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
         
-        .nav-tab { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 4px; 
-            color: var(--text-sub); 
-            cursor: pointer; 
-            transition: 0.2s; 
-            text-decoration: none; 
-            width: 60px;
-        }
+        .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); cursor: pointer; transition: var(--transition); text-decoration: none; width: 60px;}
+        .nav-tab.active { color: var(--primary); transform: translateY(-4px); }
+        .nav-tab i { font-size: 24px; }
+        .nav-tab label { font-size: 10px; font-weight: 700; }
 
-        .nav-tab.active { 
-            color: var(--primary); 
-            transform: translateY(-3px); 
-        }
-
-        .nav-tab span { font-size: 20px; }
-        .nav-tab label { font-size: 10px; font-weight: 800; }
-
-        .setting-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 18px 20px; 
-            border-bottom: 1px solid var(--border); 
-        }
-
-        .setting-label { 
-            font-size: 15px; 
-            font-weight: 600; 
-            color: var(--text-main); 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-        }
-
-        .setting-desc { 
-            font-size: 12px; 
-            color: var(--text-sub); 
-            font-weight: 400; 
-            margin-top: 4px; 
-            display: block; 
-        }
+        /* Settings */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--border); }
+        .setting-label { font-size: 15px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 12px;}
+        .setting-label i { font-size: 22px; color: var(--primary);}
+        .setting-desc { font-size: 12px; color: var(--text-sub); font-weight: 500; margin-top: 4px; display: block; }
         
-        .switch { 
-            position: relative; 
-            display: inline-block; 
-            width: 50px; 
-            height: 28px; 
-        }
-
+        .switch { position: relative; display: inline-block; width: 52px; height: 30px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        
-        .slider { 
-            position: absolute; 
-            cursor: pointer; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            bottom: 0; 
-            background-color: var(--border); 
-            transition: .4s; 
-            border-radius: 34px; 
-        }
-
-        .slider:before { 
-            position: absolute; 
-            content: ""; 
-            height: 20px; 
-            width: 20px; 
-            left: 4px; 
-            bottom: 4px; 
-            background-color: white; 
-            transition: .4s; 
-            border-radius: 50%; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--text-sub); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
         input:checked + .slider { background-color: var(--success); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        .switch-sm { width: 36px; height: 20px; }
-        .switch-sm .slider:before { height: 14px; width: 14px; left: 3px; bottom: 3px; }
-        input:checked + .slider.sm:before { transform: translateX(16px); }
-
-        .modal-overlay { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.6); 
-            backdrop-filter: blur(5px); 
-            display: flex; 
-            justify-content: center; 
-            align-items: flex-end; 
-            z-index: 2000; 
-            visibility: hidden; 
-            opacity: 0; 
-            transition: 0.3s; 
-        }
-
-        .modal-overlay.show { 
-            visibility: visible; 
-            opacity: 1; 
-        }
-
-        .modal-card { 
-            background: var(--bg-card); 
-            width: 100%; 
-            max-width: 500px; 
-            border-radius: 30px 30px 0 0; 
-            padding: 30px 25px; 
-            transform: translateY(100%); 
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            max-height: 90vh; 
-            overflow-y: auto;
-        }
-
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; visibility: hidden; opacity: 0; transition: var(--transition); }
+        .modal-overlay.show { visibility: visible; opacity: 1; }
+        .modal-card { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 32px 32px 0 0; padding: 30px 25px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); max-height: 90vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.1);}
         .modal-overlay.show .modal-card { transform: translateY(0); }
         
-        .form-group { margin-bottom: 18px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-sub); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 16px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: var(--input-bg); color: var(--text-main); outline: none; transition: var(--transition); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); background: var(--bg-card); box-shadow: 0 0 0 3px rgba(229,57,53,0.1);}
+
+        .btn-save { background: var(--primary-gradient); color: white; border: none; width: 100%; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 800; margin-top: 10px; cursor: pointer; transition: var(--transition); box-shadow: 0 8px 20px rgba(229,57,53,0.3);}
+        .btn-save:active { transform: scale(0.96); }
+
+        .custom-confirm { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 4000; visibility: hidden; opacity: 0; transition: var(--transition); }
+        .custom-confirm.show { visibility: visible; opacity: 1; }
+        .confirm-box { background: var(--bg-card); padding: 35px 25px; border-radius: 32px; text-align: center; max-width: 320px; width: 85%; transform: scale(0.9) translateY(20px); transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.8);}
+        .custom-confirm.show .confirm-box { transform: scale(1) translateY(0); }
+        .confirm-icon { font-size: 50px; margin-bottom: 15px; color: var(--danger);}
+        .confirm-box h3 { margin: 0 0 10px 0; font-size: 20px; color: var(--text-main); font-weight: 800; letter-spacing:-0.5px;}
+        .confirm-box p { color: var(--text-sub); font-size: 13px; margin: 0 0 25px 0; line-height: 1.5; font-weight: 500;}
+        .confirm-actions { display: flex; gap: 12px; }
         
-        .form-group label { 
-            display: block; 
-            font-size: 13px; 
-            font-weight: 700; 
-            margin-bottom: 8px; 
-            color: var(--text-sub); 
-        }
-
-        .form-group input, .form-group select, .form-group textarea { 
-            width: 100%; 
-            padding: 15px; 
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            box-sizing: border-box; 
-            font-family: inherit; 
-            font-size: 14px; 
-            background: var(--input-bg); 
-            color: var(--text-main); 
-            outline: none; 
-            transition: 0.2s; 
-        }
-
-        .btn-save { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            width: 100%; 
-            padding: 16px; 
-            border-radius: 15px; 
-            font-size: 16px; 
-            font-weight: 800; 
-            margin-top: 10px; 
-            cursor: pointer; 
-            transition: 0.2s;
-        }
-
-        .custom-confirm { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.5); 
-            backdrop-filter: blur(5px); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 4000; 
-            visibility: hidden; 
-            opacity: 0; 
-            transition: 0.3s; 
-        }
-
-        .custom-confirm.show { 
-            visibility: visible; 
-            opacity: 1; 
-        }
-
-        .confirm-box { 
-            background: var(--bg-card); 
-            padding: 30px 25px; 
-            border-radius: 24px; 
-            text-align: center; 
-            max-width: 320px; 
-            width: 85%; 
-            transform: scale(0.9); 
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
-            border: 1px solid var(--border);
-        }
-
-        .custom-confirm.show .confirm-box { transform: scale(1); }
+        .btn-cancel, .btn-confirm-del { flex: 1; padding: 16px 0; border-radius: 16px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; transition: var(--transition);}
+        .btn-cancel { background: var(--input-bg); color: var(--text-main); }
+        .btn-confirm-del { background: var(--primary-gradient); color: white; box-shadow: 0 8px 20px rgba(229,57,53,0.3);}
+        .btn-cancel:active, .btn-confirm-del:active { transform: scale(0.95); }
         
-        .confirm-icon { 
-            font-size: 45px; 
-            margin-bottom: 15px; 
-        }
-
-        .confirm-box h3 { 
-            margin: 0 0 10px 0; 
-            font-size: 18px; 
-            color: var(--text-main); 
-            font-weight: 800; 
-        }
-
-        .confirm-box p { 
-            color: var(--text-sub); 
-            font-size: 13px; 
-            margin: 0 0 25px 0; 
-            line-height: 1.5; 
-        }
-
-        .confirm-actions { display: flex; gap: 10px; }
-        
-        .btn-cancel, .btn-confirm-del { 
-            flex: 1; 
-            padding: 14px 0; 
-            border-radius: 12px; 
-            font-size: 14px; 
-            font-weight: 700; 
-            border: none; 
-            cursor: pointer; 
-            transition: 0.2s;
-        }
-
-        .btn-cancel { 
-            background: var(--input-bg); 
-            color: var(--text-main); 
-        }
-
-        .btn-confirm-del { 
-            background: var(--primary); 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(226,55,68,0.2);
-        }
-        
-        .view-section { 
-            display: none; 
-            animation: fadeIn 0.3s; 
-        }
-
+        .view-section { display: none; animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
         .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-        
-        .date-filter-box { 
-            padding: 6px 10px; 
-            border-radius: 8px; 
-            border: 1px solid var(--border); 
-            font-family: inherit; 
-            font-size: 13px; 
-            background: var(--bg-card); 
-            color: var(--text-main); 
-            outline: none; 
-        }
+        .date-filter-box { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; font-weight:600; background: var(--input-bg); color: var(--text-main); outline: none; transition: var(--transition);}
+        .chart-filter-select { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 13px; font-weight: 600; outline: none; cursor: pointer;}
 
-        .chart-filter-select { 
-            padding: 6px 12px; 
-            border-radius: 8px; 
-            border: 1px solid var(--border); 
-            background: var(--input-bg); 
-            color: var(--text-main); 
-            font-family: inherit; 
-            font-size: 12px; 
-            font-weight: 700; 
-            outline: none; 
-            cursor: pointer;
-        }
+        .action-alert { background: rgba(255, 59, 48, 0.08); border: 1px solid rgba(255, 59, 48, 0.2); padding: 15px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; transition: var(--transition);}
+        .action-alert.music { background: rgba(0, 122, 255, 0.08); border-color: rgba(0, 122, 255, 0.2); }
 
-        .btn-view-all { 
-            background: var(--input-bg); 
-            color: var(--primary); 
-            border: 1px solid var(--primary); 
-            padding: 4px 10px; 
-            border-radius: 6px; 
-            font-size: 10px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            transition: 0.2s; 
-        }
-
-        .btn-view-all:active { 
-            background: var(--primary); 
-            color: white; 
-        }
-
-        /* 🔥 NEW: Action Center Alerts CSS 🔥 */
-        .action-alert { 
-            background: #FFE5E5; 
-            border: 1px solid var(--danger); 
-            padding: 12px 15px; 
-            border-radius: 12px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 10px; 
-        }
-
-        .action-alert.music { 
-            background: #E5F1FF; 
-            border-color: #007AFF; 
-        }
-
-        .crm-customer-row { 
-            padding: 15px; 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: var(--bg-card);
-        }
-
-        .btn-wa { 
-            background: #25D366; 
-            color: white; 
-            border: none; 
-            padding: 8px 15px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 12px;
-            box-shadow: 0 2px 5px rgba(37, 211, 102, 0.3);
-        }
+        .crm-customer-row { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); transition: var(--transition);}
+        .crm-customer-row:hover { background: var(--input-bg); }
+        .btn-wa { background: #25D366; color: white; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 13px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3); display: flex; align-items: center; gap: 6px; transition: var(--transition);}
+        .btn-wa:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
     
     <audio id="orderSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+    <audio id="waiterSound" src="https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3" preload="auto"></audio>
 
     <div class="custom-confirm" id="deleteConfirmModal">
         <div class="confirm-box">
-            <div class="confirm-icon">🥺</div>
+            <div class="confirm-icon"><i class="ph-fill ph-trash"></i></div>
             <h3>Delete Dish?</h3>
             <p>Are you sure you want to remove this dish? It will be gone forever.</p>
             <div class="confirm-actions">
@@ -983,7 +330,7 @@
             <p>Merchant Panel Login</p>
             <input type="email" id="adminEmail" class="login-input" placeholder="Email Address" required>
             <input type="password" id="adminPass" class="login-input" placeholder="Password" required>
-            <button class="btn-login" id="loginBtn" onclick="loginAdmin()">Login</button>
+            <button class="btn-login" id="loginBtn" onclick="loginAdmin()">Login <i class="ph-bold ph-arrow-right"></i></button>
         </div>
     </div>
 
@@ -993,8 +340,11 @@
             <span class="greet-text">Welcome back, Admin 👋</span>
         </div>
         <div class="admin-profile">
+            <button id="soundAuthBtn" class="btn-sound-auth" onclick="enableAudioContext()">
+                <i class="ph-bold ph-speaker-slash"></i> Enable Sound
+            </button>
             <input type="date" id="reportDate" class="date-filter-box" onchange="initAdminData()">
-            <button class="btn-logout" onclick="location.reload()">Refresh</button>
+            <button class="btn-logout" onclick="location.reload()"><i class="ph-bold ph-arrows-clockwise"></i></button>
         </div>
     </div>
 
@@ -1007,120 +357,127 @@
                         <div class="stat-title">Menu Items</div>
                         <div class="stat-value" id="total-dishes">0</div>
                     </div>
-                    <div class="stat-icon" style="background:var(--edit-bg); color:var(--edit-text);">🍽️</div>
+                    <div class="stat-icon" style="background:rgba(0,122,255,0.1); color:var(--info);"><i class="ph-fill ph-book-open"></i></div>
                 </div>
                 <div class="stat-card" id="live-order-card" onclick="switchTab('orders')">
                     <div class="stat-info">
                         <div class="stat-title">Live Orders</div>
                         <div class="stat-value" id="total-orders" style="color:var(--warning);">0</div>
                     </div>
-                    <div class="stat-icon" style="background:#FFF0E5; color:#FF9500;">🔔</div>
+                    <div class="stat-icon" style="background:rgba(255,159,0,0.1); color:var(--warning);"><i class="ph-fill ph-bell-ringing"></i></div>
                 </div>
                 <div class="stat-card" onclick="switchTab('crm')">
                     <div class="stat-info">
                         <div class="stat-title">Customers</div>
                         <div class="stat-value" id="total-customers">0</div>
                     </div>
-                    <div class="stat-icon" style="background:#E5F8ED; color:var(--success);">👥</div>
+                    <div class="stat-icon" style="background:rgba(36,150,63,0.1); color:var(--success);"><i class="ph-fill ph-users"></i></div>
                 </div>
                 <div class="stat-card" onclick="switchTab('stats')">
                     <div class="stat-info">
                         <div class="stat-title">Revenue</div>
                         <div class="stat-value green" id="total-revenue">₹0</div>
                     </div>
-                    <div class="stat-icon" style="background:#FFF9C4; color:#FBC02D;">💰</div>
+                    <div class="stat-icon" style="background:rgba(255,159,0,0.1); color:var(--warning);"><i class="ph-fill ph-currency-inr"></i></div>
                 </div>
             </div>
 
             <div class="section-card view-section active" id="section-menu">
                 <div class="section-header">
-                    <h3>Menu Management</h3>
-                    <button class="btn-add" onclick="openModal()">+ Add Dish</button>
+                    <h3><i class="ph-fill ph-book-open text-primary"></i> Menu Management</h3>
+                    <button class="btn-add" onclick="openModal()"><i class="ph-bold ph-plus"></i> Add Dish</button>
                 </div>
                 
                 <div class="search-container">
-                    <input type="text" class="search-input" id="adminSearchInput" placeholder="🔍 Search dishes..." onkeyup="filterAdminMenu()">
+                    <div class="search-input-wrapper">
+                        <input type="text" class="search-input" id="adminSearchInput" placeholder="Search dishes..." onkeyup="filterAdminMenu()">
+                        <i class="ph-bold ph-magnifying-glass" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:var(--text-sub);"></i>
+                    </div>
                 </div>
                 
                 <div class="admin-cat-scroll" id="admin-category-filter">
                     <div class="admin-cat-pill active" onclick="filterAdminCat('All', this)">All</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Starters', this)">🔥 Starters</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Main Course', this)">🍛 Main Course</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Breads', this)">🥖 Breads</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Rice', this)">🍚 Rice</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Drinks', this)">🥤 Drinks</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Desserts', this)">🍰 Desserts</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Starters', this)"><i class="ph-fill ph-fire"></i> Starters</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Main Course', this)"><i class="ph-fill ph-cooking-pot"></i> Main Course</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Breads', this)"><i class="ph-fill ph-bread"></i> Breads</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Rice', this)"><i class="ph-fill ph-bowl-steam"></i> Rice</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Drinks', this)"><i class="ph-fill ph-brandy"></i> Drinks</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Desserts', this)"><i class="ph-fill ph-ice-cream"></i> Desserts</div>
                 </div>
 
                 <div class="menu-list" id="menu-body">
-                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Loading...</div>
+                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Loading Menu...</div>
                 </div>
             </div>
 
             <div class="section-card view-section" id="section-orders">
                 <div class="section-header">
-                    <h3>Live Kitchen Orders 🔔</h3>
+                    <h3><i class="ph-fill ph-receipt text-primary"></i> Kitchen Orders</h3>
                 </div>
 
-                <div id="action-center-container" style="padding: 15px 20px 0 20px; display: none; background: #fafafa; border-bottom: 1px solid var(--border);">
-                    <h4 style="margin: 0 0 10px 0; font-size: 14px; display: flex; align-items: center; gap: 5px;">🚨 Action Center</h4>
+                <div id="action-center-container" style="padding: 20px 20px 0 20px; display: none; background: var(--bg-main); border-bottom: 1px solid var(--border);">
+                    <h4 style="margin: 0 0 12px 0; font-size: 14px; font-weight:800; display: flex; align-items: center; gap: 6px;"><i class="ph-fill ph-warning-circle" style="color:var(--danger);"></i> Action Center</h4>
                     <div id="action-alerts-list"></div>
                 </div>
 
-                <div class="menu-list" id="orders-body">
+                <div class="admin-tracker-tabs">
+                    <button id="tab-admin-live" class="admin-tab-btn active" onclick="switchAdminOrderTab('live')">Live Orders</button>
+                    <button id="tab-admin-past" class="admin-tab-btn" onclick="switchAdminOrderTab('past')">Order History</button>
+                </div>
+
+                <div class="menu-list" id="admin-live-orders">
                     <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for new orders...</div>
+                </div>
+                
+                <div class="menu-list" id="admin-past-orders" style="display: none;">
+                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No past orders for today.</div>
                 </div>
             </div>
 
             <div class="section-card view-section" id="section-crm">
                 <div class="section-header">
-                    <h3>WhatsApp CRM 📢</h3>
+                    <h3><i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i> WhatsApp CRM</h3>
                 </div>
                 <div style="padding: 20px;">
-                    <p style="font-size: 13px; color: var(--text-sub); margin-top: 0;">Send promotional offers directly to your past customers via WhatsApp.</p>
-                    <textarea id="promoMessage" class="input-field" placeholder="Type your discount offer here... (e.g. Get 20% OFF this weekend! Use code: WEEKEND20)" style="height: 80px; resize: none; margin-bottom: 15px;"></textarea>
+                    <p style="font-size: 13px; color: var(--text-sub); margin-top: 0; font-weight:500;">Send promotional offers directly to your past customers via WhatsApp.</p>
+                    <textarea id="promoMessage" class="input-field" placeholder="Type your discount offer here... (e.g. Get 20% OFF this weekend! Use code: WEEKEND20)" style="height: 100px; resize: none; margin-bottom: 15px;"></textarea>
                 </div>
                 <div class="history-date-header">Customer Database</div>
                 <div class="menu-list" id="crm-body">
-                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Loading customers...</div>
+                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-bold ph-spinner ph-spin" style="font-size:24px;"></i><br>Loading customers...</div>
                 </div>
             </div>
 
             <div class="section-card view-section" id="section-stats">
-                <div class="section-header" style="background: rgba(40,167,69,0.1);">
-                    <h3>Business Analytics 📈</h3>
+                <div class="section-header" style="background: rgba(36,150,63,0.05);">
+                    <h3><i class="ph-fill ph-chart-line-up" style="color:var(--success);"></i> Business Analytics</h3>
                 </div>
                 
-                <div class="history-date-header" style="background: var(--bg-card); border-bottom: 1px solid var(--border);">
+                <div class="history-date-header" style="background: var(--bg-card);">
                     <span>Revenue Insights 📊</span>
                     <select id="chartFilter" class="chart-filter-select" onchange="if(window.allCompletedOrdersForChart) updateRevenueChart(window.allCompletedOrdersForChart)">
-                        <option value="weekly">Weekly (Mon-Sun)</option>
-                        <option value="monthly">Monthly (Jan-Dec)</option>
-                        <option value="yearly">Yearly (Last 5 Years)</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
                     </select>
                 </div>
                 <div style="padding: 20px; text-align: center; background: var(--bg-card); display:flex; flex-direction:column; align-items:center; border-bottom: 1px solid var(--border);">
                     <canvas id="revenueBarChart" style="width: 100%; max-height: 250px;"></canvas>
                     <p id="best-day-text" style="font-size:14px; font-weight:800; color:var(--success); margin-top:15px; margin-bottom:0;"></p>
                 </div>
-
-                <div class="history-date-header">
-                    <span>Order History</span>
-                    <button class="btn-view-all" onclick="loadAllPastOrders()">View All Past</button>
-                </div>
-                <div class="menu-list" id="history-body">
-                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div>
-                </div>
             </div>
 
             <div class="section-card view-section" id="section-settings">
                 <div class="section-header">
-                    <h3>App Settings ⚙️</h3>
+                    <h3><i class="ph-fill ph-gear"></i> App Settings</h3>
                 </div>
                 <div class="setting-row">
                     <div class="setting-label">
-                        🔊 Sound Alerts
-                        <span class="setting-desc">Play sound for new orders & alerts</span>
+                        <i class="ph-fill ph-bell-ringing"></i>
+                        <div>
+                            Sound Alerts
+                            <span class="setting-desc">Play sound for new orders & alerts</span>
+                        </div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="soundToggle" checked>
@@ -1129,22 +486,25 @@
                 </div>
                 <div class="setting-row">
                     <div class="setting-label">
-                        🌙 Dark Mode
-                        <span class="setting-desc">Switch dashboard theme</span>
+                        <i class="ph-fill ph-moon-stars"></i>
+                        <div>
+                            Dark Mode
+                            <span class="setting-desc">Switch dashboard theme</span>
+                        </div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
                         <span class="slider"></span>
                     </label>
                 </div>
-                <div class="section-header" style="border-top: 1px solid var(--border);">
-                    <h3>Table QR Code 📱</h3>
+                <div class="section-header" style="border-top: 1px solid var(--border); margin-top:10px;">
+                    <h3><i class="ph-fill ph-qr-code"></i> Table QR Code</h3>
                 </div>
                 <div class="qr-container">
                     <p style="color: var(--text-sub); font-size: 14px; margin: 0; font-weight: 600;">Scan this to open Smart Menu</p>
                     <div id="qrcode-box"></div>
                     <input type="text" id="menu-link" class="link-input" value="https://itxarun.github.io/Smart-Menu/index.html" readonly>
-                    <button class="btn-download" onclick="downloadQR()">Download Print Version</button>
+                    <button class="btn-download" onclick="downloadQR()"><i class="ph-bold ph-download-simple"></i> Download Print Version</button>
                 </div>
             </div>
 
@@ -1152,26 +512,26 @@
     </div>
 
     <div class="bottom-nav">
-        <a class="nav-tab active" onclick="switchTab('menu', this)"><span>🍽️</span><label>MENU</label></a>
-        <a class="nav-tab" onclick="switchTab('orders', this)"><span>🔔</span><label>ORDERS</label></a>
-        <a class="nav-tab" onclick="switchTab('crm', this)"><span>📢</span><label>CRM</label></a>
-        <a class="nav-tab" onclick="switchTab('stats', this)"><span>📈</span><label>STATS</label></a>
-        <a class="nav-tab" onclick="switchTab('settings', this)"><span>⚙️</span><label>SETTINGS</label></a>
+        <a class="nav-tab active" onclick="switchTab('menu', this)"><i class="ph-fill ph-book-open"></i><label>MENU</label></a>
+        <a class="nav-tab" onclick="switchTab('orders', this)"><i class="ph-fill ph-receipt"></i><label>ORDERS</label></a>
+        <a class="nav-tab" onclick="switchTab('crm', this)"><i class="ph-fill ph-users"></i><label>CRM</label></a>
+        <a class="nav-tab" onclick="switchTab('stats', this)"><i class="ph-fill ph-chart-line-up"></i><label>STATS</label></a>
+        <a class="nav-tab" onclick="switchTab('settings', this)"><i class="ph-fill ph-gear"></i><label>SETTINGS</label></a>
     </div>
 
     <div class="modal-overlay" id="addModal">
         <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 id="modalTitle" style="margin: 0; font-size: 20px; font-weight: 800; color: var(--primary);">Add New Dish</h3>
-                <button onclick="closeModal()" style="background: var(--input-bg); border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; color: var(--text-sub); cursor: pointer;">✕</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 id="modalTitle" style="margin: 0; font-size: 22px; font-weight: 800; color: var(--text-main);">Add New Dish</h3>
+                <button onclick="closeModal()" style="background: var(--input-bg); border: none; width: 36px; height: 36px; border-radius: 50%; font-weight: bold; color: var(--text-sub); cursor: pointer; display:flex; align-items:center; justify-content:center;"><i class="ph-bold ph-x"></i></button>
             </div>
             
             <input type="hidden" id="dishId">
             
             <div style="display: flex; gap: 15px;">
                 <div class="form-group" style="width: 80px;">
-                    <label>Emoji</label>
-                    <input type="text" id="dishEmoji" placeholder="🍕" style="font-size: 20px; text-align: center;" required>
+                    <label>Icon</label>
+                    <input type="text" id="dishEmoji" placeholder="🍲" style="font-size: 20px; text-align: center;" required>
                 </div>
                 <div class="form-group" style="flex: 1;">
                     <label>Dish Name</label>
@@ -1191,18 +551,18 @@
                 </select>
             </div>
             
-            <div style="display: flex; gap: 15px;">
+            <div style="display: flex; gap: 12px;">
                 <div class="form-group" style="flex: 1;">
-                    <label>Full Price (₹)</label>
+                    <label>Full (₹)</label>
                     <input type="number" id="dishPrice" placeholder="0" required>
                 </div>
                 <div class="form-group" style="flex: 1;">
-                    <label>Half Price (₹)</label>
-                    <input type="number" id="dishPriceHalf" placeholder="Optional">
+                    <label>Half (₹)</label>
+                    <input type="number" id="dishPriceHalf" placeholder="Opt">
                 </div>
                 <div class="form-group" style="flex: 1;">
-                    <label>Per Piece (₹)</label>
-                    <input type="number" id="dishPricePiece" placeholder="Optional">
+                    <label>Piece (₹)</label>
+                    <input type="number" id="dishPricePiece" placeholder="Opt">
                 </div>
             </div>
 
@@ -1211,17 +571,17 @@
                 <input type="url" id="dishModel" class="input-field" placeholder="https://raw.githubusercontent.com/..." required>
             </div>
 
-            <div class="form-group" style="background: var(--input-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--border);">
-                <label style="color: var(--primary);">📸 Dish Photos (Up to 4)</label>
-                <p style="font-size: 11px; color: var(--text-sub); margin-top: -5px; margin-bottom: 10px;">Provide image URLs. Customers can swipe these photos.</p>
+            <div class="form-group" style="background: var(--input-bg); padding: 20px; border-radius: 16px; border: 1px dashed var(--border);">
+                <label style="color: var(--primary); display:flex; align-items:center; gap:6px;"><i class="ph-fill ph-image"></i> Dish Photos</label>
+                <p style="font-size: 11px; color: var(--text-sub); margin-top: -5px; margin-bottom: 15px; font-weight:500;">Provide image URLs. Customers can swipe these photos.</p>
                 
-                <input type="url" id="dishPhoto1" class="input-field" placeholder="1. Main Photo URL (Required)" style="margin-bottom: 10px; background: var(--bg-card);" required>
-                <input type="url" id="dishPhoto2" class="input-field" placeholder="2. Extra Photo URL (Optional)" style="margin-bottom: 10px; background: var(--bg-card);">
-                <input type="url" id="dishPhoto3" class="input-field" placeholder="3. Extra Photo URL (Optional)" style="margin-bottom: 10px; background: var(--bg-card);">
+                <input type="url" id="dishPhoto1" class="input-field" placeholder="1. Main Photo URL (Required)" style="margin-bottom: 12px; background: var(--bg-card);" required>
+                <input type="url" id="dishPhoto2" class="input-field" placeholder="2. Extra Photo URL (Optional)" style="margin-bottom: 12px; background: var(--bg-card);">
+                <input type="url" id="dishPhoto3" class="input-field" placeholder="3. Extra Photo URL (Optional)" style="margin-bottom: 12px; background: var(--bg-card);">
                 <input type="url" id="dishPhoto4" class="input-field" placeholder="4. Extra Photo URL (Optional)" style="background: var(--bg-card);">
             </div>
 
-            <button class="btn-save" id="saveBtn" onclick="saveDish()">Save & Publish</button>
+            <button class="btn-save" id="saveBtn" onclick="saveDish()"><i class="ph-bold ph-floppy-disk"></i> Save & Publish</button>
         </div>
     </div>
 
@@ -1249,30 +609,28 @@
         let revenueChartInstance = null;
         window.allCompletedOrdersForChart = []; 
 
-        // Sound Interaction Setup
+        // 🔥 AUDIO AUTHORIZATION FIX 🔥
         let soundActivated = false;
-        window.addEventListener('click', () => {
-            if(!soundActivated) {
-                const audio = document.getElementById('orderSound');
-                audio.play().then(() => {
-                    audio.pause(); 
-                    audio.currentTime = 0; 
-                    soundActivated = true;
-                }).catch(e => console.log("Sound activation pending user click"));
-            }
-        }, { once: true });
+        window.enableAudioContext = () => {
+            const orderAud = document.getElementById('orderSound');
+            const waiterAud = document.getElementById('waiterSound');
+            orderAud.play().then(() => { orderAud.pause(); orderAud.currentTime = 0; }).catch(e=>{});
+            waiterAud.play().then(() => { waiterAud.pause(); waiterAud.currentTime = 0; }).catch(e=>{});
+            
+            soundActivated = true;
+            const btn = document.getElementById('soundAuthBtn');
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="ph-bold ph-speaker-high"></i> Sound ON';
+        };
 
-        // Timer Logic for Live Orders
         setInterval(() => {
             document.querySelectorAll('.time-ago-tracker').forEach(el => {
                 const orderTime = parseInt(el.getAttribute('data-time'));
                 const diffMins = Math.floor((Date.now() - orderTime) / 60000);
-                
                 let text = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
                 let color = 'var(--success)';
                 if(diffMins >= 15 && diffMins < 30) color = 'var(--warning)';
                 else if(diffMins >= 30) color = 'var(--danger)';
-                
                 el.innerText = `(${text})`;
                 el.style.color = color;
             });
@@ -1280,25 +638,16 @@
 
         function calculateTopSeller(orders) {
             let itemCounts = {};
-            orders.forEach(o => {
-                o.items.forEach(i => {
-                    itemCounts[i.name] = (itemCounts[i.name] || 0) + i.qty;
-                });
-            });
+            orders.forEach(o => { o.items.forEach(i => { itemCounts[i.name] = (itemCounts[i.name] || 0) + i.qty; }); });
             let topDish = null; let max = 0;
-            for(let name in itemCounts) {
-                if(itemCounts[name] > max) { max = itemCounts[name]; topDish = name; }
-            }
+            for(let name in itemCounts) { if(itemCounts[name] > max) { max = itemCounts[name]; topDish = name; } }
             return topDish ? { name: topDish, count: max } : null;
         }
 
         window.updateRevenueChart = (completedOrders) => {
             const filterType = document.getElementById('chartFilter').value;
-            let labels = [];
-            let revenueData = [];
-            
-            const now = new Date();
-            const currentYear = now.getFullYear();
+            let labels = []; let revenueData = [];
+            const now = new Date(); const currentYear = now.getFullYear();
 
             if (filterType === 'weekly') {
                 labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -1310,17 +659,13 @@
                         revenueData[dayIdx] += o.totalAmount;
                     }
                 });
-            } 
-            else if (filterType === 'monthly') {
+            } else if (filterType === 'monthly') {
                 labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 revenueData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 completedOrders.forEach(o => {
-                    if(o.timestamp && o.timestamp.toDate().getFullYear() === currentYear) {
-                        revenueData[o.timestamp.toDate().getMonth()] += o.totalAmount;
-                    }
+                    if(o.timestamp && o.timestamp.toDate().getFullYear() === currentYear) revenueData[o.timestamp.toDate().getMonth()] += o.totalAmount;
                 });
-            }
-            else if (filterType === 'yearly') {
+            } else if (filterType === 'yearly') {
                 labels = [currentYear-4, currentYear-3, currentYear-2, currentYear-1, currentYear];
                 revenueData = [0, 0, 0, 0, 0];
                 completedOrders.forEach(o => {
@@ -1332,84 +677,29 @@
             }
 
             let maxRev = 0; let bestLabel = "";
-            revenueData.forEach((rev, idx) => {
-                if(rev > maxRev) { maxRev = rev; bestLabel = labels[idx]; }
-            });
+            revenueData.forEach((rev, idx) => { if(rev > maxRev) { maxRev = rev; bestLabel = labels[idx]; } });
 
             const bestDayText = document.getElementById('best-day-text');
-            if(maxRev > 0) {
-                bestDayText.innerText = `🔥 Highest: ${bestLabel} (₹${maxRev})`;
-            } else {
-                bestDayText.innerText = `Waiting for sales...`;
-            }
+            if(maxRev > 0) bestDayText.innerText = `🔥 Highest: ${bestLabel} (₹${maxRev})`;
+            else bestDayText.innerText = `Waiting for sales...`;
 
             const ctx = document.getElementById('revenueBarChart');
             if(!ctx) return;
-            
             if(revenueChartInstance) revenueChartInstance.destroy();
             
             const isDark = document.body.getAttribute('data-theme') === 'dark';
-            const textColor = isDark ? '#F5F5F5' : '#282C3F';
+            const textColor = isDark ? '#F5F5F5' : '#1C1C1E';
 
             revenueChartInstance = new Chart(ctx, {
                 type: 'bar', 
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Revenue (₹)',
-                        data: revenueData,
-                        backgroundColor: '#E23744',
-                        borderRadius: 6,
-                        borderWidth: 0
-                    }]
-                },
+                data: { labels: labels, datasets: [{ label: 'Revenue (₹)', data: revenueData, backgroundColor: '#E53935', borderRadius: 6, borderWidth: 0 }] },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { display: false, grid: { display: false } },
-                        x: { grid: { display: false }, ticks: { color: textColor, font: { family: 'Poppins', size: 10 } } }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        datalabels: {
-                            anchor: 'end',
-                            align: 'top',
-                            color: textColor,
-                            font: { family: 'Poppins', weight: 'bold', size: 10 },
-                            formatter: (value) => value > 0 ? `₹${value}` : ''
-                        }
-                    },
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { display: false, grid: { display: false } }, x: { grid: { display: false }, ticks: { color: textColor, font: { family: 'Poppins', size: 10 } } } },
+                    plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'top', color: textColor, font: { family: 'Poppins', weight: 'bold', size: 10 }, formatter: (value) => value > 0 ? `₹${value}` : '' } },
                     layout: { padding: { top: 20 } } 
                 }
             });
-        };
-
-        window.loadAllPastOrders = () => {
-            const historyList = document.getElementById('history-body');
-            historyList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-sub);">Loading all history...</div>';
-            
-            let html = '';
-            window.allCompletedOrdersForChart.forEach(data => {
-                const date = data.timestamp ? data.timestamp.toDate() : new Date();
-                const timeFormat = date.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true});
-                const displayTimeStr = `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}, ${timeFormat}`;
-                
-                const tableDisplay = data.orderType === 'Takeaway' ? '<span style="color:#FF9500;">🎒 Takeaway</span>' : `Table ${data.tableNumber}`;
-
-                html += `
-                    <div class="history-item">
-                        <div class="history-item-left">
-                            <span class="history-item-table">${tableDisplay} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "Cash"})</span></span>
-                            <span class="history-item-time">${displayTimeStr} • ${data.items.length} items</span>
-                        </div>
-                        <span class="history-item-amount">+₹${data.totalAmount}</span>
-                    </div>
-                `;
-            });
-
-            if(html === '') historyList.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No past orders found.</div>';
-            else historyList.innerHTML = html;
         };
 
         window.downloadQR = () => {
@@ -1418,44 +708,29 @@
 
             const printCanvas = document.createElement('canvas');
             const ctx = printCanvas.getContext('2d');
-            printCanvas.width = 800;
-            printCanvas.height = 1100;
+            printCanvas.width = 800; printCanvas.height = 1100;
 
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
+            ctx.fillStyle = '#E53935'; ctx.fillRect(0, 0, printCanvas.width, 250);
 
-            ctx.fillStyle = '#E23744';
-            ctx.fillRect(0, 0, printCanvas.width, 250);
-
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 80px Arial';
-            ctx.textAlign = 'center';
+            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 80px Arial'; ctx.textAlign = 'center';
             ctx.fillText('NextPlate', 400, 110);
-            ctx.font = 'bold 45px Arial';
-            ctx.fillText('Scan to View Menu & Order', 400, 190);
+            ctx.font = 'bold 45px Arial'; ctx.fillText('Scan to View Menu & Order', 400, 190);
 
             ctx.drawImage(qrCanvas, 200, 300, 400, 400);
 
-            ctx.fillStyle = '#282C3F';
-            ctx.font = 'bold 40px Arial';
-            ctx.fillText('How to scan?', 400, 800);
-
-            ctx.fillStyle = '#686B78';
-            ctx.font = '32px Arial';
+            ctx.fillStyle = '#1C1C1E'; ctx.font = 'bold 40px Arial'; ctx.fillText('How to scan?', 400, 800);
+            ctx.fillStyle = '#757575'; ctx.font = '32px Arial';
             ctx.fillText('📷 1. Open Phone Camera / Google Lens', 400, 880);
             ctx.fillText('👉 2. Point at the QR Code', 400, 940);
             ctx.fillText('💳 3. You can also use Paytm / PhonePe', 400, 1000);
 
             const url = printCanvas.toDataURL("image/png");
-            const a = document.createElement('a');
-            a.href = url; 
-            a.download = "Table_QR_Standee.png";
-            document.body.appendChild(a); 
-            a.click(); 
-            document.body.removeChild(a);
+            const a = document.createElement('a'); a.href = url; a.download = "Table_QR_Standee.png";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         };
 
-        new QRCode(document.getElementById("qrcode-box"), { text: document.getElementById("menu-link").value, width: 220, height: 220, colorDark: "#282C3F", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+        new QRCode(document.getElementById("qrcode-box"), { text: document.getElementById("menu-link").value, width: 220, height: 220, colorDark: "#1C1C1E", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
 
         onAuthStateChanged(auth, (user) => {
             const loginScreen = document.getElementById('loginScreen');
@@ -1467,22 +742,19 @@
             const email = document.getElementById('adminEmail').value;
             const pass = document.getElementById('adminPass').value;
             const btn = document.getElementById('loginBtn');
-            btn.innerText = "Loading..."; btn.disabled = true;
+            btn.innerHTML = 'Loading <i class="ph-bold ph-spinner ph-spin"></i>'; btn.disabled = true;
             signInWithEmailAndPassword(auth, email, pass).catch(error => {
                 alert("Login Failed: " + error.message);
-                btn.innerText = "Login"; btn.disabled = false;
+                btn.innerHTML = 'Login <i class="ph-bold ph-arrow-right"></i>'; btn.disabled = false;
             });
         };
 
         window.logoutAdmin = () => { signOut(auth); };
 
-        // 🔥 FIX: Waiter and Jukebox Resolution 🔥
         window.resolveAction = async (collectionName, id) => {
-            try { await updateDoc(doc(db, collectionName, id), { status: "Resolved" }); } 
-            catch(e) { console.error("Resolution Failed: ", e); }
+            try { await updateDoc(doc(db, collectionName, id), { status: "Resolved" }); } catch(e) { console.error("Resolution Failed: ", e); }
         };
 
-        // 🔥 FIX: Send Promo Code Function 🔥
         window.sendPromoWhatsApp = (phone) => {
             const msg = encodeURIComponent(document.getElementById('promoMessage').value || "Hello! Here is a special offer from NextPlate for you. Visit us again soon!");
             window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
@@ -1493,10 +765,20 @@
         let isInitialLoad = true;
         window.adminActiveCat = 'All';
 
+        // 🔥 Order Tab Switch Logic 🔥
+        window.switchAdminOrderTab = (tab) => {
+            document.getElementById('tab-admin-live').classList.remove('active');
+            document.getElementById('tab-admin-past').classList.remove('active');
+            document.getElementById('admin-live-orders').style.display = 'none';
+            document.getElementById('admin-past-orders').style.display = 'none';
+            
+            document.getElementById(`tab-admin-${tab}`).classList.add('active');
+            document.getElementById(`admin-${tab}-orders`).style.display = 'flex';
+        };
+
         window.initAdminData = function() {
             const selectedDate = document.getElementById('reportDate').value;
 
-            // Fetch Menu Items
             onSnapshot(collection(db, "menu_items"), (snap) => {
                 document.getElementById('total-dishes').innerText = snap.size;
                 allMenuData = [];
@@ -1504,89 +786,63 @@
                 window.filterAdminMenu(); 
             });
 
-            // 🔥 FIX: Unified Action Center (Waiter & Music) 🔥
+            // Alerts (Waiter / Music)
             onSnapshot(collection(db, "waiter_calls"), (waiterSnap) => {
                 onSnapshot(collection(db, "jukebox_requests"), (jukeSnap) => {
                     const actionContainer = document.getElementById('action-center-container');
                     const actionList = document.getElementById('action-alerts-list');
-                    actionList.innerHTML = ''; 
-                    let hasActions = false;
+                    actionList.innerHTML = ''; let hasActions = false;
 
-                    // Add Waiter Calls
                     waiterSnap.forEach(doc => {
                         const d = doc.data();
                         if(d.status === 'New') {
                             hasActions = true;
                             actionList.innerHTML += `
                                 <div class="action-alert">
-                                    <div><span style="font-size:20px; margin-right:10px;">🛎️</span><strong style="color:var(--danger);">Table ${d.tableNumber}</strong> needs Waiter!</div>
-                                    <button onclick="resolveAction('waiter_calls', '${doc.id}')" style="background:var(--danger); color:white; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer;">Done ✓</button>
+                                    <div><span style="font-size:20px; margin-right:10px;">🛎️</span><strong style="color:var(--danger);">Table ${d.tableNumber}</strong> needs Waiter! <br><span style="font-size:11px; color:var(--text-sub); margin-left:30px;">Remark: ${d.remark || 'None'}</span></div>
+                                    <button onclick="resolveAction('waiter_calls', '${doc.id}')" style="background:var(--danger); color:white; border:none; padding:8px 16px; border-radius:12px; font-weight:bold; cursor:pointer;">Done ✓</button>
                                 </div>
                             `;
+                            // Play waiter music safely
+                            if(document.getElementById('soundToggle').checked && !isInitialLoad && soundActivated) {
+                                const now = new Date(); const callTime = d.timestamp ? d.timestamp.toDate() : now;
+                                if((now - callTime) < 120000) document.getElementById('waiterSound').play().catch(e=>{});
+                            }
                         }
                     });
 
-                    // Add Jukebox Requests
-                    jukeSnap.forEach(doc => {
-                        const d = doc.data();
-                        if(d.status === 'New') {
-                            hasActions = true;
-                            actionList.innerHTML += `
-                                <div class="action-alert music">
-                                    <div><span style="font-size:20px; margin-right:10px;">🎵</span><strong style="color:#007AFF;">Table ${d.tableNumber}</strong> requested: <i>${d.songName}</i></div>
-                                    <button onclick="resolveAction('jukebox_requests', '${doc.id}')" style="background:#007AFF; color:white; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer;">Played ✓</button>
-                                </div>
-                            `;
-                        }
-                    });
-
-                    // Show/Hide Container and Play Sound
                     actionContainer.style.display = hasActions ? 'block' : 'none';
-                    if(hasActions && document.getElementById('soundToggle').checked && !isInitialLoad) {
-                        const audio = document.getElementById('orderSound');
-                        audio.currentTime = 0; 
-                        audio.play().catch(e => console.log(e));
-                    }
                 });
             });
 
-            // Fetch Live Orders & Generate CRM Data
+            // Orders & CRM Logic
             const qLive = query(collection(db, "orders"), orderBy("timestamp", "asc"));
             onSnapshot(qLive, (snap) => {
-                const ordersList = document.getElementById('orders-body');
-                const historyList = document.getElementById('history-body');
-                ordersList.innerHTML = ''; historyList.innerHTML = '';
+                const liveList = document.getElementById('admin-live-orders');
+                const pastList = document.getElementById('admin-past-orders');
+                liveList.innerHTML = ''; pastList.innerHTML = '';
                 
                 let activeCount = 0; let totalRev = 0;
-                let crmCustomers = new Map(); // Store unique phone numbers
+                let crmCustomers = new Map(); 
                 window.allCompletedOrdersForChart = []; 
                 let todaysCompletedOrdersForTopSeller = [];
-
-                snap.docChanges().forEach((change) => {
-                    if (change.type === "added" && !isInitialLoad && change.doc.data().status === 'New') {
-                        if(document.getElementById('soundToggle').checked) {
-                            const audio = document.getElementById('orderSound');
-                            audio.currentTime = 0; audio.play().catch(e => {});
-                        }
-                    }
-                });
-                isInitialLoad = false;
 
                 snap.forEach((doc) => {
                     const data = doc.data();
                     const date = data.timestamp ? data.timestamp.toDate() : new Date();
-                    
                     const todayDate = new Date();
                     const isToday = date.getDate() === todayDate.getDate() && date.getMonth() === todayDate.getMonth() && date.getFullYear() === todayDate.getFullYear();
                     const timeFormat = date.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true});
                     const displayTimeStr = isToday ? timeFormat : `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short'})}, ${timeFormat}`;
                     const orderDateStr = date.toISOString().split('T')[0];
 
-                    // CRM Map Extraction
-                    if(data.customerPhone && data.customerPhone !== "N/A" && data.customerPhone.length >= 10) {
-                        let formattedPhone = data.customerPhone.replace(/\D/g, '');
-                        if(formattedPhone.length === 10) formattedPhone = '91' + formattedPhone;
-                        crmCustomers.set(formattedPhone, { name: data.customerName || "Customer", phone: formattedPhone });
+                    // CRM Map Extraction (🔥 BUG FIXED: Safely parsing string 🔥)
+                    if(data.customerPhone && data.customerPhone !== "N/A") {
+                        let phoneStr = String(data.customerPhone).replace(/\D/g, '');
+                        if(phoneStr.length >= 10) {
+                            if(phoneStr.length === 10) phoneStr = '91' + phoneStr;
+                            crmCustomers.set(phoneStr, { name: data.customerName || "Customer", phone: phoneStr });
+                        }
                     }
 
                     if(data.status === 'Completed') {
@@ -1594,113 +850,117 @@
                         if(orderDateStr === selectedDate) {
                             todaysCompletedOrdersForTopSeller.push(data);
                             totalRev += data.totalAmount;
-                            
-                            const tableHistDisplay = data.orderType === 'Takeaway' ? '<span style="color:#FF9500;">🎒 Takeaway</span>' : `Table ${data.tableNumber}`;
-
-                            const histHTML = `
-                                <div class="history-item">
-                                    <div class="history-item-left">
-                                        <span class="history-item-table">${tableHistDisplay} <span style="font-size:10px; color:var(--text-sub); font-weight:500;">(${data.paymentMethod || "Cash"})</span></span>
-                                        <span class="history-item-time">${displayTimeStr} • ${data.items.length} items</span>
-                                    </div>
-                                    <span class="history-item-amount">+₹${data.totalAmount}</span>
-                                </div>
-                            `;
-                            historyList.insertAdjacentHTML('afterbegin', histHTML);
                         }
                     }
 
-                    if(data.status === 'New' || data.status === 'Preparing') {
-                        if(orderDateStr === selectedDate || data.status === 'New' || data.status === 'Preparing') {
+                    // Order Card HTML Generation
+                    if(orderDateStr === selectedDate || data.status === 'New' || data.status === 'Preparing') {
+                        let itemsHTML = '';
+                        data.items.forEach(item => {
+                            itemsHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid var(--border); padding-bottom:6px;">
+                                <span><b>${item.qty}x</b> ${item.name} <span style="color:var(--text-sub); font-size:11px;">${item.variant || ""}</span></span>
+                                <span>₹${item.price * item.qty}</span>
+                            </div>`;
+                        });
+
+                        const notesHtml = (data.chefNotes && data.chefNotes !== "None" && data.chefNotes.trim() !== "") 
+                            ? `<div style="background:rgba(255, 59, 48, 0.08); color:var(--danger); padding:10px 15px; border-radius:12px; font-size:12px; font-weight:700; margin-top:10px; border:1px dashed var(--danger);"><i class="ph-bold ph-warning"></i> Note: ${data.chefNotes}</div>` 
+                            : '';
+
+                        const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span style="background:var(--warning); font-weight:800; padding:6px 12px; border-radius:10px; color:white; font-size:12px;"><i class="ph-fill ph-shopping-bag"></i> Takeaway</span>' : `<span style="background:var(--input-bg); color:var(--text-main); font-weight:800; padding:6px 12px; border-radius:10px; font-size:12px; border:1px solid var(--border);"><i class="ph-fill ph-map-pin"></i> Table ${data.tableNumber}</span>`;
+                        
+                        let statusBadge = '';
+                        if(data.status === 'New') statusBadge = `<span class="status-badge status-new">New</span>`;
+                        else if(data.status === 'Preparing') statusBadge = `<span class="status-badge status-prep">Preparing...</span>`;
+                        else if(data.status === 'Completed') statusBadge = `<span class="status-badge status-done">Delivered</span>`;
+                        else statusBadge = `<span class="status-badge status-canc">Cancelled</span>`;
+
+                        const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
+                        let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
+                        let waitColor = diffMins >= 30 ? 'var(--danger)' : (diffMins >= 15 ? 'var(--warning)' : 'var(--success)');
+                        
+                        const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--info); font-weight:700; text-decoration:none;"><i class="ph-fill ph-phone"></i> ${data.customerPhone}</a>` : "N/A";
+
+                        let actionButtons = '';
+                        if(data.status === 'New') {
                             activeCount++;
-                            let itemsHTML = '';
-                            data.items.forEach(item => {
-                                itemsHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                                    <span>${item.qty}x ${item.name} <span style="color:var(--text-sub); font-size:11px;">${item.variant || ""}</span></span>
-                                    <span>₹${item.price * item.qty}</span>
-                                </div>`;
-                            });
+                            actionButtons = `
+                                <button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${doc.id}', 'Preparing')"><i class="ph-fill ph-cooking-pot"></i> Cook</button>
+                                <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${doc.id}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>
+                            `;
+                        } else if(data.status === 'Preparing') {
+                            activeCount++;
+                            actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${doc.id}', 'Completed')"><i class="ph-fill ph-bell-ringing"></i> Serve Order</button>`;
+                        }
 
-                            // 🔥 FIX: CHEF NOTES HTML 🔥
-                            const notesHtml = (data.chefNotes && data.chefNotes !== "None" && data.chefNotes.trim() !== "") 
-                                ? `<div style="background:#FFF0F0; color:var(--danger); padding:8px 12px; border-radius:8px; font-size:12px; font-weight:700; margin-top:10px; border:1px dashed var(--danger);">👨‍🍳 Note: ${data.chefNotes}</div>` 
-                                : '';
-
-                            const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span class="table-badge" style="background:#FF9500; font-weight:800; padding:4px 8px; border-radius:8px; color:white;">🎒 Takeaway</span>' : `<span class="table-badge" style="background:var(--edit-bg); color:var(--edit-text); font-weight:800; padding:4px 8px; border-radius:8px;">Table ${data.tableNumber}</span>`;
-                            
-                            const statusBadge = data.status === 'New' ? `<span class="status-badge status-new">New</span>` : `<span class="status-badge status-prep">Preparing...</span>`;
-
-                            const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
-                            let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
-                            let waitColor = diffMins >= 30 ? 'var(--danger)' : (diffMins >= 15 ? 'var(--warning)' : 'var(--success)');
-                            
-                            const phoneLink = data.customerPhone && data.customerPhone !== "N/A" 
-                                ? `<a href="tel:${data.customerPhone}" style="color:var(--edit-text); font-weight:bold; text-decoration:none;">📞 ${data.customerPhone}</a>` 
-                                : "N/A";
-
-                            ordersList.innerHTML += `
-                                <div class="order-card" style="background:var(--bg-card); border-radius:16px; border:1px solid var(--border); margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-                                    <div class="order-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--border); padding-bottom:10px;">
-                                        <div style="display:flex; align-items:center; gap:10px;">
-                                            ${tableDisplayBadge}
-                                            ${statusBadge}
-                                        </div>
-                                        <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                                            <span class="order-time" style="font-size:12px; font-weight:700;">${displayTimeStr}</span>
-                                            <span class="time-ago-tracker" data-time="${date.getTime()}" style="font-size:11px; font-weight:800; color:${waitColor};">(${waitText})</span>
-                                        </div>
+                        let cardHtml = `
+                            <div class="order-card" style="border-radius:24px; border:1px solid var(--border); margin-bottom:20px; box-shadow:var(--shadow-soft);">
+                                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--border); padding-bottom:15px; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        ${tableDisplayBadge}
+                                        ${statusBadge}
                                     </div>
-                                    <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:10px; background:var(--input-bg); padding:8px; border-radius:8px;">
-                                        👤 Cust: ${data.customerName || "N/A"} &nbsp;|&nbsp; ${phoneLink}
-                                    </div>
-                                    <div class="order-items" style="margin-top:10px; font-size:13px; font-weight:600;">
-                                        ${itemsHTML}
-                                        ${notesHtml}
-                                    </div>
-                                    <div class="order-footer" style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:10px; border-top:1px dashed var(--border);">
-                                        <span class="order-total" style="font-size:16px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</span>
-                                        <div class="order-actions-row">
-                                            ${data.status === 'New' ? `<button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${doc.id}', 'Preparing')">Cook 👨‍🍳</button>` : ''}
-                                            ${data.status === 'Preparing' ? `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${doc.id}', 'Completed')">Serve ✅</button>` : ''}
-                                            <button class="btn-action-new" style="background:var(--del-bg); color:var(--danger); max-width:45px;" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">✕</button>
-                                        </div>
+                                    <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                                        <span style="font-size:12px; font-weight:700;">${displayTimeStr}</span>
+                                        ${(data.status === 'New' || data.status === 'Preparing') ? `<span class="time-ago-tracker" data-time="${date.getTime()}" style="font-size:11px; font-weight:800; color:${waitColor};">(${waitText})</span>` : ''}
                                     </div>
                                 </div>
-                            `;
+                                <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:5px; background:var(--input-bg); padding:10px 15px; border-radius:12px; display:flex; justify-content:space-between;">
+                                    <span><i class="ph-fill ph-user"></i> ${data.customerName || "N/A"}</span>
+                                    <span>${phoneLink}</span>
+                                </div>
+                                <div style="margin-top:15px; font-size:13px; font-weight:500;">
+                                    ${itemsHTML}
+                                    ${notesHtml}
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:15px; border-top:1px dashed var(--border);">
+                                    <span style="font-size:18px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</span>
+                                    <div class="order-actions-row" style="width:60%; justify-content:flex-end;">
+                                        ${actionButtons}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        if (data.status === 'New' || data.status === 'Preparing') {
+                            liveList.innerHTML += cardHtml;
+                            // Play order music safely
+                            if(data.status === 'New' && document.getElementById('soundToggle').checked && !isInitialLoad && soundActivated) {
+                                const now = new Date(); if((now - date) < 120000) document.getElementById('orderSound').play().catch(e=>{});
+                            }
+                        } else {
+                            pastList.innerHTML = cardHtml + pastList.innerHTML;
                         }
                     }
                 });
 
+                isInitialLoad = false;
                 document.getElementById('total-orders').innerText = activeCount;
                 document.getElementById('total-revenue').innerText = '₹' + totalRev;
                 
                 if(activeCount > 0) document.getElementById('live-order-card').classList.add('pulse-live');
                 else document.getElementById('live-order-card').classList.remove('pulse-live');
 
-                // Render Top Seller
-                const topItem = calculateTopSeller(todaysCompletedOrdersForTopSeller);
-                document.getElementById('top-seller-name').innerText = topItem ? `${topItem.name}` : "--";
-
                 if(window.updateRevenueChart) window.updateRevenueChart(window.allCompletedOrdersForChart);
                 
-                if(activeCount === 0) ordersList.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No active orders. Kitchen is clear! 🎉</div>';
-                if(totalRev === 0) historyList.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No completed orders yet.</div>';
+                if(liveList.innerHTML === '') liveList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-check-circle" style="font-size:40px; color:var(--success); opacity:0.5; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No active orders. Kitchen is clear! 🎉</span></div>';
+                if(pastList.innerHTML === '') pastList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No past orders for today.</span></div>';
 
-                // 🔥 FIX: Render CRM Data 🔥
+                // 🔥 FIXED: Render CRM Data Correctly 🔥
                 document.getElementById('total-customers').innerText = crmCustomers.size;
                 const crmBody = document.getElementById('crm-body');
                 crmBody.innerHTML = '';
                 if(crmCustomers.size === 0) { 
-                    crmBody.innerHTML = '<div style="padding:30px; text-align:center; color:var(--text-sub); font-size:13px;">No customer phone numbers collected yet.</div>'; 
+                    crmBody.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--text-sub);"><i class="ph-fill ph-users-slash" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size:13px; font-weight:600;">No customer phone numbers collected yet.</span></div>'; 
                 } else {
                     crmCustomers.forEach(c => {
                         crmBody.innerHTML += `
                             <div class="crm-customer-row">
                                 <div>
-                                    <div style="font-weight:700; font-size:14px; color:var(--text-main);">${c.name}</div>
-                                    <div style="font-size:12px; font-weight:600; color:var(--text-sub);">📞 +${c.phone}</div>
+                                    <div style="font-weight:700; font-size:15px; color:var(--text-main); margin-bottom:4px;">${c.name}</div>
+                                    <div style="font-size:12px; font-weight:600; color:var(--text-sub);"><i class="ph-fill ph-phone" style="color:var(--info);"></i> +${c.phone}</div>
                                 </div>
-                                <button class="btn-wa" onclick="sendPromoWhatsApp('${c.phone}')">Send Promo</button>
+                                <button class="btn-wa" onclick="sendPromoWhatsApp('${c.phone}')"><i class="ph-bold ph-paper-plane-right"></i> Send Promo</button>
                             </div>
                         `;
                     });
@@ -1718,36 +978,46 @@
         window.filterAdminMenu = () => {
             const q = document.getElementById('adminSearchInput').value.toLowerCase();
             let filtered = allMenuData;
-            
-            if (window.adminActiveCat !== 'All') {
-                filtered = filtered.filter(d => d.category === window.adminActiveCat);
-            }
-            if (q) {
-                filtered = filtered.filter(d => d.name.toLowerCase().includes(q));
-            }
+            if (window.adminActiveCat !== 'All') filtered = filtered.filter(d => d.category === window.adminActiveCat);
+            if (q) filtered = filtered.filter(d => d.name.toLowerCase().includes(q));
             renderAdminMenu(filtered);
         };
+
+        function getPremiumIcon(category) {
+            let cat = (category || '').toLowerCase();
+            if (cat.includes('veg') && !cat.includes('non')) return '<i class="ph-fill ph-leaf" style="color: var(--success);"></i>';
+            if (cat.includes('non')) return '<i class="ph-fill ph-bone" style="color: var(--danger);"></i>';
+            if (cat.includes('starter')) return '<i class="ph-fill ph-bowl-food" style="color: var(--warning);"></i>';
+            if (cat.includes('main')) return '<i class="ph-fill ph-cooking-pot" style="color: var(--primary);"></i>';
+            if (cat.includes('bread')) return '<i class="ph-fill ph-bread"></i>';
+            if (cat.includes('rice')) return '<i class="ph-fill ph-bowl-steam"></i>';
+            if (cat.includes('drink')) return '<i class="ph-fill ph-martini"></i>';
+            if (cat.includes('dessert')) return '<i class="ph-fill ph-ice-cream"></i>';
+            return '<i class="ph-fill ph-fork-knife"></i>';
+        }
 
         window.renderAdminMenu = (data) => {
             const list = document.getElementById('menu-body');
             list.innerHTML = '';
             data.forEach(item => {
                 let catBadgeClass = ''; let icon = '';
-                if(item.category === 'Veg' || item.category === 'Starters') { catBadgeClass = 'color:#28A745; background:rgba(40,167,69,0.1)'; icon='🟢';}
-                else if(item.category === 'Non-Veg' || item.category === 'Main Course') { catBadgeClass = 'color:#E23744; background:rgba(226,55,68,0.1)'; icon='🔴';}
-                else if(item.category === 'Breads' || item.category === 'Rice') { catBadgeClass = 'color:#FF9500; background:rgba(255,149,0,0.1)'; icon='🌾';}
-                else { catBadgeClass = 'color:#007AFF; background:rgba(0,122,255,0.1)'; icon='🥤';}
+                if(item.category === 'Veg' || item.category === 'Starters') { catBadgeClass = 'color:var(--success); background:rgba(36,150,63,0.1)'; icon='<i class="ph-fill ph-leaf"></i>';}
+                else if(item.category === 'Non-Veg' || item.category === 'Main Course') { catBadgeClass = 'color:var(--danger); background:rgba(229,57,53,0.1)'; icon='<i class="ph-fill ph-bone"></i>';}
+                else if(item.category === 'Breads' || item.category === 'Rice') { catBadgeClass = 'color:var(--warning); background:rgba(255,159,0,0.1)'; icon='<i class="ph-fill ph-bowl-steam"></i>';}
+                else { catBadgeClass = 'color:var(--info); background:rgba(0,122,255,0.1)'; icon='<i class="ph-fill ph-brandy"></i>';}
                 
                 const inStock = item.inStock !== false;
                 const opacity = inStock ? '1' : '0.5';
-                const stockIcon = inStock ? '🚫' : '✅';
+                const stockIcon = inStock ? '<i class="ph-bold ph-prohibit"></i>' : '<i class="ph-bold ph-check-circle"></i>';
                 const stockText = inStock ? 'Mark Out of Stock' : 'Mark In Stock';
-                const stockBadge = !inStock ? '<span style="color:#FF3B30; font-size:10px; background:#FFE5E5; padding:2px 6px; border-radius:4px; margin-left:5px;">Out of Stock</span>' : '';
+                const stockBadge = !inStock ? '<span style="color:var(--danger); font-size:10px; background:rgba(255,59,48,0.1); padding:2px 6px; border-radius:6px; margin-left:5px; border:1px solid rgba(255,59,48,0.2);">Out of Stock</span>' : '';
+                
+                let displayIcon = item.emoji && item.emoji.length < 5 && !item.emoji.includes('http') && item.emoji !== '🍲' ? item.emoji : getPremiumIcon(item.category);
 
                 list.innerHTML += `
                     <div class="menu-item-row" style="opacity: ${opacity}">
                         <div class="menu-item-info" onclick="editDish('${item.id}')">
-                            <div class="dish-icon">${item.emoji || "🍲"}</div>
+                            <div class="dish-icon" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${displayIcon}</div>
                             <div class="dish-details">
                                 <span class="dish-name">${item.name} ${stockBadge}</span>
                                 <span class="dish-price">₹${item.price} <span class="cat-badge" style="${catBadgeClass}">${icon} ${item.category}</span></span>
@@ -1760,14 +1030,14 @@
                                     ${stockIcon} ${stockText}
                                 </div>
                                 <div class="dropdown-item del-opt" onclick="event.stopPropagation(); triggerDeleteModal('${item.id}'); toggleItemMenu('${item.id}')">
-                                    🗑️ Delete Dish
+                                    <i class="ph-bold ph-trash"></i> Delete Dish
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
             });
-            if(data.length === 0) list.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">No items found.</div>';
+            if(data.length === 0) list.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-fill ph-magnifying-glass" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br>No items found.</div>';
         };
 
         window.toggleItemMenu = (id) => {
@@ -1790,7 +1060,7 @@
         };
 
         window.openModal = () => {
-            document.getElementById('modalTitle').innerText = "Add New Dish";
+            document.getElementById('modalTitle').innerHTML = '<i class="ph-fill ph-plus-circle text-primary"></i> Add New Dish';
             document.getElementById('dishId').value = "";
             document.getElementById('dishEmoji').value = "";
             document.getElementById('dishName').value = "";
@@ -1811,7 +1081,7 @@
         window.editDish = (id) => {
             const dish = allMenuData.find(d => d.id === id);
             if(dish) {
-                document.getElementById('modalTitle').innerText = "Edit Dish";
+                document.getElementById('modalTitle').innerHTML = '<i class="ph-fill ph-pencil-simple text-primary"></i> Edit Dish';
                 document.getElementById('dishId').value = dish.id;
                 document.getElementById('dishEmoji').value = dish.emoji || "🍲";
                 document.getElementById('dishName').value = dish.name;
@@ -1830,7 +1100,7 @@
 
         window.saveDish = async () => {
             const btn = document.getElementById('saveBtn');
-            btn.innerText = "Saving..."; btn.disabled = true;
+            btn.innerHTML = 'Saving <i class="ph-bold ph-spinner ph-spin"></i>'; btn.disabled = true;
             const id = document.getElementById('dishId').value;
             const imagesArray = [document.getElementById('dishPhoto1').value, document.getElementById('dishPhoto2').value, document.getElementById('dishPhoto3').value, document.getElementById('dishPhoto4').value].filter(url => url.trim() !== "");
 
@@ -1852,7 +1122,7 @@
                 else await addDoc(collection(db, "menu_items"), data);
                 closeModal();
             } catch(e) { alert("Error: " + e.message); }
-            btn.innerText = "Save & Publish"; btn.disabled = false;
+            btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Save & Publish'; btn.disabled = false;
         };
 
         let deleteIdTemp = null;
