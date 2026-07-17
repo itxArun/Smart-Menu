@@ -1,4 +1,3 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
@@ -23,16 +22,10 @@ let trendingIds = [];
 let currentOrderType = 'Dine-in';
 let favorites = JSON.parse(localStorage.getItem('nextplate_favs')) || [];
 
-window.addEventListener('load', function() {
-    setTimeout(function() {
-        let loader = document.getElementById("premium-loader");
-        if (loader) { loader.style.opacity = "0"; setTimeout(function() { loader.style.display = "none"; }, 500); }
-    }, 1200); 
-});
-setTimeout(function() {
-    let loader = document.getElementById("premium-loader");
-    if (loader && loader.style.display !== "none") { loader.style.opacity = "0"; setTimeout(function() { loader.style.display = "none"; }, 500); }
-}, 3000); 
+// Close Modal function mapping for HTML
+window.closeCoinModal = () => {
+    document.getElementById('coinModal').classList.remove('show');
+};
 
 const viewer = document.querySelector('#ar-viewer');
 const updateBar = document.querySelector('#update-bar');
@@ -70,7 +63,7 @@ window.createFlyingDot = (e) => {
 };
 
 window.toggleFavIcon = (e) => {
-    e.stopPropagation(); triggerHapticPop();
+    e.stopPropagation(); window.triggerHapticPop();
     const btn = e.currentTarget; if(!currentDish) return; const dishId = currentDish.id;
     if (favorites.includes(dishId)) {
         favorites = favorites.filter(id => id !== dishId);
@@ -114,7 +107,7 @@ window.quickAddFav = (id) => {
         if(cart[key]) cart[key].qty++; else cart[key] = { id: dish.id, name: dish.name, price: dish.price, variant: '', qty: 1 };
         window.triggerHapticPop(); document.getElementById('toast').innerHTML = "<i class='ph-fill ph-check-circle'></i> <span>Added to Cart!</span>";
         document.getElementById('toast').classList.add('show'); setTimeout(() => document.getElementById('toast').classList.remove('show'), 2000);
-        updateGlobalCartUI(); if(currentDish && currentDish.id === id) window.checkCartForCurrentDish();
+        window.updateGlobalCartUI(); if(currentDish && currentDish.id === id) window.checkCartForCurrentDish();
     }
 };
 
@@ -134,7 +127,7 @@ window.setLanguage = (l) => {
     document.getElementById('tracker-title-text').innerHTML = `<i class="ph-fill ph-receipt"></i> ${i18n[l].trackTitle}`; document.getElementById('track-btn-text').innerText = i18n[l].trackBtn;
     document.getElementById('waiterTitleText').innerText = i18n[l].waiterTitle; document.getElementById('waiterCancelBtn').innerText = i18n[l].waiterCancel;
     document.getElementById('waiterCallBtn').innerText = i18n[l].waiterCall; document.getElementById('waiterTableInput').placeholder = i18n[l].waiterInput;
-    window.setOrderType(currentOrderType); updateGlobalCartUI();
+    window.setOrderType(currentOrderType); window.updateGlobalCartUI();
 };
 
 try { window.setLanguage(currentLang); } catch(e) { console.log(e); }
@@ -388,7 +381,6 @@ window.selectVariant = (type) => {
 
 function getCartKey() { return `${currentDish.id}_${currentVariant}`; }
 
-// 🚀 BUG-FREE STEPPER LOGIC 🚀
 window.checkCartForCurrentDish = () => {
     const key = getCartKey(); 
     const btnAdd = document.getElementById('btn-add-new');
@@ -412,17 +404,17 @@ window.addCurrentToCart = (e) => {
     cart[key] = { id: currentDish.id, name: currentDish.name, price: price, variant: variantText, qty: 1 };
     window.triggerHapticPop(); window.createFlyingDot(e); document.getElementById('toast').innerHTML = currentLang === 'hi' ? "<i class='ph-fill ph-check-circle'></i> <span>कार्ट में जुड़ गया!</span>" : "<i class='ph-fill ph-check-circle'></i> <span>Added to Cart!</span>";
     document.getElementById('toast').classList.add('show'); setTimeout(() => document.getElementById('toast').classList.remove('show'), 2000);
-    updateGlobalCartUI(); window.checkCartForCurrentDish();
+    window.updateGlobalCartUI(); window.checkCartForCurrentDish();
 }
 
 window.changeCurrentQty = (delta) => { const key = getCartKey(); window.changeCartQty(key, delta); };
 
 window.changeCartQty = (key, delta) => { 
     if (cart[key]) { cart[key].qty += delta; if (cart[key].qty <= 0) delete cart[key]; } 
-    window.triggerHapticPop(); updateGlobalCartUI(); window.checkCartForCurrentDish(); renderCartModal(); 
+    window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
 };
 
-function updateGlobalCartUI() {
+window.updateGlobalCartUI = () => {
     const floatingBar = document.getElementById('floating-checkout'); 
     const cartSpacer = document.getElementById('cart-spacer');
     let totalItems = 0; let totalPrice = 0;
@@ -447,9 +439,9 @@ function updateGlobalCartUI() {
     }
 }
 
-window.toggleCart = () => { const modal = document.getElementById('cart-modal'); if (!modal.classList.contains('show')) renderCartModal(); modal.classList.toggle('show'); };
+window.toggleCart = () => { const modal = document.getElementById('cart-modal'); if (!modal.classList.contains('show')) window.renderCartModal(); modal.classList.toggle('show'); };
 
-function renderCartModal() {
+window.renderCartModal = () => {
     const list = document.getElementById('cart-items-list'); list.innerHTML = ''; let totalPrice = 0; let isEmpty = true;
     for (let key in cart) {
         isEmpty = false; const item = cart[key]; totalPrice += (item.price * item.qty);
@@ -474,7 +466,7 @@ function renderCartModal() {
     document.getElementById('bill-final').innerText = '₹' + totalPrice;
 }
 
-window.deleteCartItem = (key) => { delete cart[key]; window.triggerHapticPop(); updateGlobalCartUI(); window.checkCartForCurrentDish(); renderCartModal(); };
+window.deleteCartItem = (key) => { delete cart[key]; window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); };
 
 function showToast(msg) { const toast = document.getElementById('toast'); toast.querySelector('span').innerText = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2000); }
 
@@ -510,7 +502,7 @@ window.placeOrder = async () => {
         let activeOrdersList = []; try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
         activeOrdersList.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); listenToLiveOrder(docRef.id); 
 
-        cart = {}; document.getElementById('cookingNotes').value = ''; updateGlobalCartUI(); window.checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1"; launchConfetti(); 
+        cart = {}; document.getElementById('cookingNotes').value = ''; window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1"; launchConfetti(); 
         
         setTimeout(() => { let earnedCoins = Math.floor(grandTotal / 10); document.getElementById('earnedCoins').innerText = earnedCoins; document.getElementById('coinModal').classList.add('show'); window.triggerHapticPop(); }, 1000);
         setTimeout(() => { window.switchOrderTab('live'); window.toggleTracker(); }, 3500); 
