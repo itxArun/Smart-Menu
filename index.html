@@ -254,6 +254,30 @@
     </div>
 
     <div class="toast" id="toast"><i class="ph-fill ph-check-circle"></i> <span>Added to Cart!</span></div>
+    <!-- 🚀 FEATURE: SAFE LOADER HIDE LOGIC 🚀 -->
+    <script>
+        // यह कोड सुनिश्चित करेगा कि पेज लोड होते ही लोडर गायब हो जाए
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                let loader = document.getElementById("premium-loader");
+                if (loader) { loader.style.opacity = "0"; setTimeout(() => loader.style.display = "none", 500); }
+            }, 800); 
+        });
+
+        // अगर इंटरनेट स्लो हो तो 2.5 सेकंड बाद आटोमेटिक हटा देगा (Fallback)
+        setTimeout(function() {
+            let loader = document.getElementById("premium-loader");
+            if (loader && loader.style.display !== "none") { 
+                loader.style.opacity = "0"; 
+                setTimeout(() => loader.style.display = "none", 500); 
+            }
+        }, 2500); 
+    </script>
+
+    <!-- 🚀 LINKING YOUR JS FILE 🚀 -->
+    <script type="module" src="index.js"></script>
+</body>
+</html>
 
     <!-- 🚀 LINKING YOUR JS FILE 🚀 -->
     <script type="module" src="index.js"></script>
