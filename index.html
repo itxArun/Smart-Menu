@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NextPlate - Premium Smart Menu</title>
     
-    <!-- 🚀 EXTERNAL LIBRARIES 🚀 -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
@@ -13,30 +12,26 @@
     
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
-    
-    <!-- 🚀 LINKING YOUR CSS FILE 🚀 -->
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
 
-    <!-- 🚀 LOADER 🚀 -->
     <div id="premium-loader">
         <div class="loader-spinner"></div>
         <p>NextPlate</p>
         <span>Premium Dining Experience</span>
     </div>
 
-    <!-- 🚀 AUDIO & CONFETTI 🚀 -->
     <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3" preload="auto"></audio>
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- 🚀 MODALS (REWARDS, TRACKER, FAV, FULLSCREEN, WAITER, ALERT) 🚀 -->
+    <!-- Modals -->
     <div class="custom-alert" id="coinModal">
         <div class="alert-box">
             <div class="alert-icon" style="font-size: 60px;">🪙</div>
             <h3 style="color:var(--warning);">Reward Unlocked!</h3>
             <p style="color:var(--text-sub); font-size:14px; margin-bottom:20px;">You earned <strong id="earnedCoins" style="color:var(--text-main); font-size:16px;">0</strong> NextCoins!</p>
-            <button class="alert-btn-primary" style="background:var(--warning); box-shadow: 0 8px 20px rgba(255,159,0,0.3);" onclick="closeCoinModal()">Awesome!</button>
+            <button class="alert-btn-primary" style="background:var(--warning);" onclick="closeCoinModal()">Awesome!</button>
         </div>
     </div>
 
@@ -98,14 +93,13 @@
         </div>
     </div>
 
-    <!-- 🚀 TOP HEADER 🚀 -->
+    <!-- Header -->
     <div class="header">
         <div class="brand-name">
             NextPlate
             <span class="greeting-text" id="greeting-display">Good Morning <i class="ph-fill ph-coffee"></i></span>
         </div>
         <div class="header-actions">
-            <!-- 🔥 ORDERS BUTTON RESTORED 🔥 -->
             <div class="track-icon" id="btn-track-order" onclick="toggleTracker()">
                 <i class="ph-fill ph-package"></i> <span id="track-btn-text">Orders</span>
                 <div class="track-pulse" id="track-badge-pulse" style="display: none;"></div>
@@ -121,7 +115,7 @@
         </div>
     </div>
 
-    <!-- 🚀 CATEGORY SCROLLER 🚀 -->
+    <!-- Category -->
     <div class="category-scroll" id="category-scroll">
         <div class="cat-pill active" onclick="filterCategory('All', this)"><i class="ph-fill ph-squares-four"></i> All</div>
         <div class="cat-pill" onclick="filterCategory('Trending', this)"><i class="ph-fill ph-fire" style="color: var(--warning);"></i> Trending</div>
@@ -135,7 +129,7 @@
         <div class="cat-pill" onclick="filterCategory('Desserts', this)"><i class="ph-fill ph-ice-cream"></i> Desserts</div>
     </div>
 
-    <!-- 🚀 APP LAYOUT (SIDEBAR + MAIN) 🚀 -->
+    <!-- App Layout -->
     <div class="app-layout">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -162,17 +156,17 @@
                     <span class="badge-chip time"><i class="ph-fill ph-clock"></i> 15 Min</span>
                 </div>
 
-                <div id="photo-slider" class="photo-slider hide"></div>
+                <div id="photo-slider" class="photo-slider"></div>
                 <div class="image-gradient-overlay"></div>
                 
                 <button class="media-toggle hide" id="media-toggle" onclick="toggleMedia()"><i class="ph-fill ph-cube"></i> View 3D</button>
 
-                <model-viewer id="ar-viewer" src="" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral">
+                <model-viewer id="ar-viewer" src="" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral" style="display: none;">
                     <div slot="progress-bar" class="progress-bar"><div class="update-bar" id="update-bar"></div></div>
                 </model-viewer>
             </div>
 
-            <!-- BOTTOM UI -->
+            <!-- Bottom UI -->
             <div class="bottom-ui" id="bottom-ui-card">
                 <div class="dish-header-row">
                     <h2 class="dish-title" id="display-name">Loading Menu...</h2>
@@ -180,16 +174,11 @@
                 </div>
 
                 <div class="rating-type-row">
-                    <div class="card-rating-badge">
-                        <span class="star"><i class="ph-fill ph-star"></i> 4.8</span>
-                        <span class="reviews">(245 Reviews)</span>
-                    </div>
+                    <div class="card-rating-badge"><span class="star"><i class="ph-fill ph-star"></i> 4.8</span><span class="reviews">(245 Reviews)</span></div>
                     <span class="type-icon" id="display-type-icon"><i class="ph-fill ph-circle" style="color:var(--green)"></i></span>
                 </div>
                 
-                <div class="price-section">
-                    <p class="price" id="display-price">₹0</p>
-                </div>
+                <div class="price-section"><p class="price" id="display-price">₹0</p></div>
                 
                 <div class="variant-selector hide" id="variant-box">
                     <button class="var-btn" id="btn-half" onclick="selectVariant('half')">Half</button>
@@ -197,12 +186,9 @@
                     <button class="var-btn" id="btn-piece" onclick="selectVariant('piece')">Per Piece</button>
                 </div>
                 
-                <!-- ACTION ROW: ADD & AR BUTTONS -->
                 <div class="action-row">
                     <div class="add-action-wrapper" id="add-action-wrapper">
-                        <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">
-                            ADD <i class="ph-bold ph-plus"></i>
-                        </button>
+                        <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">ADD <i class="ph-bold ph-plus"></i></button>
                         <div class="stepper-control" id="btn-stepper">
                             <button onclick="changeCurrentQty(-1)"><i class="ph-bold ph-minus"></i></button>
                             <span id="current-qty-display">1</span>
@@ -217,7 +203,7 @@
         </div>
     </div>
 
-    <!-- 🚀 CHECKOUT BAR & CART MODAL 🚀 -->
+    <!-- Floating Cart Bar -->
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
             <span class="checkout-items" id="float-items">1 Item</span>
@@ -226,6 +212,7 @@
         <div class="checkout-action" id="float-btn-view">Continue <i class="ph-bold ph-arrow-right"></i></div>
     </div>
 
+    <!-- Cart Modal -->
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <div class="cart-header">
@@ -254,7 +241,6 @@
 
     <div class="toast" id="toast"><i class="ph-fill ph-check-circle"></i> <span>Added to Cart!</span></div>
 
-    <!-- 🚀 SAFE LOADER HIDE LOGIC 🚀 -->
     <script>
         window.addEventListener('load', function() {
             setTimeout(function() {
@@ -267,8 +253,6 @@
             if (loader && loader.style.display !== "none") { loader.style.opacity = "0"; setTimeout(() => loader.style.display = "none", 500); }
         }, 2500); 
     </script>
-
-    <!-- 🚀 LINKING YOUR JS FILE 🚀 -->
     <script type="module" src="index.js"></script>
 </body>
 </html>
