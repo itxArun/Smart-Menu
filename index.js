@@ -23,28 +23,7 @@ window.trendingIds = [];
 window.currentOrderType = 'Dine-in';
 window.favorites = JSON.parse(localStorage.getItem('nextplate_favs')) || [];
 
-// UTILITY FUNCTIONS
-window.triggerHapticPop = () => {
-    try { if(navigator.vibrate) navigator.vibrate(40); const audio = document.getElementById('popSound'); audio.currentTime = 0; audio.play().catch(()=>{}); } catch(err) {}
-};
-
-window.createFlyingDot = (e) => {
-    if (!e || !e.clientX) return;
-    const target = document.getElementById('cart-icon-target');
-    const targetRect = target.getBoundingClientRect();
-    const dot = document.createElement('div');
-    dot.className = 'flying-dot'; dot.style.left = `${e.clientX - 10}px`; dot.style.top = `${e.clientY - 10}px`;
-    document.body.appendChild(dot);
-    setTimeout(() => { dot.style.opacity = '1'; dot.style.transform = `translate(${targetRect.left - e.clientX + 20}px, ${targetRect.top - e.clientY + 10}px) scale(0.5)`; }, 10);
-    setTimeout(() => { dot.remove(); target.style.transform = 'scale(1.2)'; setTimeout(() => target.style.transform = 'scale(1)', 200); }, 600);
-};
-
-window.showToast = (msg) => {
-    const toast = document.getElementById('toast'); toast.querySelector('span').innerText = msg; toast.classList.add('show'); 
-    setTimeout(() => toast.classList.remove('show'), 2000);
-};
-
-// EXPOSED WINDOW FUNCTIONS FOR HTML
+// EXPOSED WINDOW FUNCTIONS FOR HTML TO PREVENT CRASHES
 window.closeCoinModal = () => document.getElementById('coinModal').classList.remove('show');
 window.toggleTracker = () => document.getElementById('tracker-modal').classList.toggle('show');
 window.switchOrderTab = (tab) => {
@@ -64,6 +43,26 @@ window.confirmCallWaiter = async () => {
         await addDoc(collection(db, "waiter_calls"), { tableNumber: tableNo, remark: remark, status: "New", timestamp: new Date() });
         window.closeWaiterPrompt(); window.showToast("Waiter is on the way!"); window.triggerHapticPop();
     } catch(e) { alert("Failed to call waiter."); }
+};
+
+window.triggerHapticPop = () => {
+    try { if(navigator.vibrate) navigator.vibrate(40); const audio = document.getElementById('popSound'); audio.currentTime = 0; audio.play().catch(()=>{}); } catch(err) {}
+};
+
+window.createFlyingDot = (e) => {
+    if (!e || !e.clientX) return;
+    const target = document.getElementById('cart-icon-target');
+    const targetRect = target.getBoundingClientRect();
+    const dot = document.createElement('div');
+    dot.className = 'flying-dot'; dot.style.left = `${e.clientX - 10}px`; dot.style.top = `${e.clientY - 10}px`;
+    document.body.appendChild(dot);
+    setTimeout(() => { dot.style.opacity = '1'; dot.style.transform = `translate(${targetRect.left - e.clientX + 20}px, ${targetRect.top - e.clientY + 10}px) scale(0.5)`; }, 10);
+    setTimeout(() => { dot.remove(); target.style.transform = 'scale(1.2)'; setTimeout(() => target.style.transform = 'scale(1)', 200); }, 600);
+};
+
+window.showToast = (msg) => {
+    const toast = document.getElementById('toast'); toast.querySelector('span').innerText = msg; toast.classList.add('show'); 
+    setTimeout(() => toast.classList.remove('show'), 2000);
 };
 
 window.toggleFavIcon = (e) => {
@@ -170,8 +169,20 @@ fsViewer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].scr
 
 window.toggleMedia = () => {
     const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle');
-    if (slider.classList.contains('hide')) { slider.classList.remove('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D'; } 
-    else { slider.classList.add('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-image"></i> View Photos'; }
+    const viewer = document.querySelector('#ar-viewer'); const progressBar = document.querySelector('.progress-bar');
+    
+    if (slider.classList.contains('hide')) { 
+        slider.classList.remove('hide'); 
+        if(viewer) viewer.style.display = 'none';
+        if(progressBar) progressBar.classList.add('hide');
+        toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D'; 
+    } 
+    else { 
+        slider.classList.add('hide'); 
+        if(viewer) viewer.style.display = 'block';
+        if(progressBar && !viewer.modelIsVisible) progressBar.classList.remove('hide');
+        toggleBtn.innerHTML = '<i class="ph-fill ph-image"></i> View Photos'; 
+    }
 };
 
 window.viewOnTable = async () => { document.querySelector('#ar-viewer').activateAR(); if (window.currentDish) { try { await addDoc(collection(db, "ar_views"), { dishName: window.currentDish.name, timestamp: new Date() }); } catch(e) {} } };
@@ -256,6 +267,19 @@ window.applyFilters = function() {
     window.renderSidebar(filtered);
 };
 
+function getPremiumIcon(category) {
+    let cat = (category || '').toLowerCase();
+    if (cat.includes('veg') && !cat.includes('non')) return '<i class="ph-fill ph-leaf" style="color: var(--green);"></i>';
+    if (cat.includes('non')) return '<i class="ph-fill ph-bone" style="color: var(--danger);"></i>';
+    if (cat.includes('starter')) return '<i class="ph-fill ph-bowl-food" style="color: var(--warning);"></i>';
+    if (cat.includes('main')) return '<i class="ph-fill ph-cooking-pot" style="color: var(--primary);"></i>';
+    if (cat.includes('bread')) return '<i class="ph-fill ph-bread"></i>';
+    if (cat.includes('rice')) return '<i class="ph-fill ph-bowl-steam"></i>';
+    if (cat.includes('drink')) return '<i class="ph-fill ph-martini"></i>';
+    if (cat.includes('dessert')) return '<i class="ph-fill ph-ice-cream"></i>';
+    return '<i class="ph-fill ph-fork-knife"></i>';
+}
+
 window.renderSidebar = function(dishesToRender) {
     const sidebar = document.getElementById('sidebar-menu'); sidebar.innerHTML = '';
     if (dishesToRender.length === 0) { sidebar.innerHTML = '<div style="padding:40px 10px; font-size:12px; color:var(--text-sub); text-align:center;"><i class="ph-fill ph-magnifying-glass" style="font-size:30px; opacity:0.5; margin-bottom:10px;"></i><br>No match</div>'; return; }
@@ -271,16 +295,7 @@ window.renderSidebar = function(dishesToRender) {
             
             let displayIcon = data.emoji;
             if(!data.emoji || data.emoji.length >= 5 || data.emoji === '🍲'){
-                let c = (data.category || '').toLowerCase();
-                if (c.includes('veg') && !c.includes('non')) displayIcon = '<i class="ph-fill ph-leaf" style="color: var(--green);"></i>';
-                else if (c.includes('non')) displayIcon = '<i class="ph-fill ph-bone" style="color: var(--danger);"></i>';
-                else if (c.includes('starter')) displayIcon = '<i class="ph-fill ph-bowl-food" style="color: var(--warning);"></i>';
-                else if (c.includes('main')) displayIcon = '<i class="ph-fill ph-cooking-pot" style="color: var(--primary);"></i>';
-                else if (c.includes('bread')) displayIcon = '<i class="ph-fill ph-bread"></i>';
-                else if (c.includes('rice')) displayIcon = '<i class="ph-fill ph-bowl-steam"></i>';
-                else if (c.includes('drink')) displayIcon = '<i class="ph-fill ph-martini"></i>';
-                else if (c.includes('dessert')) displayIcon = '<i class="ph-fill ph-ice-cream"></i>';
-                else displayIcon = '<i class="ph-fill ph-fork-knife"></i>';
+                displayIcon = getPremiumIcon(data.category);
             }
 
             itemDiv.innerHTML = `<div class="side-icon-wrapper" style="font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${displayIcon}</div><div class="side-name">${data.name}<br>${trendTag}</div>`;
@@ -305,13 +320,30 @@ window.loadDish = function(data) {
     btnHalf.style.display = data.priceHalf ? 'block' : 'none'; btnPiece.style.display = data.pricePiece ? 'block' : 'none';
     if (data.priceHalf || data.pricePiece) { variantBox.classList.remove('hide'); btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active'); } else { variantBox.classList.add('hide'); }
 
-    document.querySelector('.progress-bar').classList.remove('hide'); if(updateBar) updateBar.style.width = '0%'; if(viewer) viewer.src = data.modelUrl;
+    // 🚀 FIXED GREY SCREEN BUG 🚀
+    const slider = document.getElementById('photo-slider'); 
+    const toggleBtn = document.getElementById('media-toggle'); 
+    const viewer = document.querySelector('#ar-viewer');
+    const progressBar = document.querySelector('.progress-bar');
+    
+    slider.innerHTML = '';
+    slider.classList.remove('hide'); // Hamesha photo pehle dikhao
+    if(viewer) viewer.style.display = 'none'; // 3D viewer shuru me hide karo
+    if(progressBar) progressBar.classList.add('hide');
 
-    const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle'); slider.innerHTML = '';
     if (data.images && data.images.length > 0) {
         data.images.forEach((imgUrl, idx) => { const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.onclick = () => window.openFullscreen(idx); slider.appendChild(img); });
-        slider.classList.remove('hide'); toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D';
-    } else { slider.classList.add('hide'); toggleBtn.classList.add('hide'); }
+    } else {
+        slider.innerHTML = `<img src="https://via.placeholder.com/400x300?text=NextPlate" class="slide-img" style="opacity: 0.5;">`;
+    }
+
+    if (data.modelUrl && data.modelUrl.trim() !== "") {
+        toggleBtn.classList.remove('hide'); 
+        toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D';
+        if(viewer) viewer.src = data.modelUrl;
+    } else {
+        toggleBtn.classList.add('hide');
+    }
     
     const favBtn = document.querySelector('.card-fav-btn');
     if(window.favorites.includes(data.id)) favBtn.style.color = 'var(--danger)'; else favBtn.style.color = '#BDBDBD';
@@ -328,6 +360,7 @@ window.selectVariant = (type) => {
 
 window.getCartKey = function() { return `${window.currentDish.id}_${window.currentVariant}`; }
 
+// 🚀 BUG-FREE SLIDE ANIMATION LOGIC 🚀
 window.checkCartForCurrentDish = () => {
     const key = window.getCartKey(); 
     const wrapper = document.getElementById('add-action-wrapper');
