@@ -13,7 +13,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// GLOBAL STATE
 window.allDishes = [];
 window.currentDish = null;
 window.currentVariant = 'full'; 
@@ -23,7 +22,6 @@ window.trendingIds = [];
 window.currentOrderType = 'Dine-in';
 window.favorites = JSON.parse(localStorage.getItem('nextplate_favs')) || [];
 
-// 🚀 EXPOSED WINDOW FUNCTIONS FOR HTML TO PREVENT CRASHES
 window.closeCoinModal = () => document.getElementById('coinModal').classList.remove('show');
 window.toggleTracker = () => document.getElementById('tracker-modal').classList.toggle('show');
 window.switchOrderTab = (tab) => {
@@ -45,9 +43,7 @@ window.confirmCallWaiter = async () => {
     } catch(e) { alert("Failed to call waiter."); }
 };
 
-window.triggerHapticPop = () => {
-    try { if(navigator.vibrate) navigator.vibrate(40); const audio = document.getElementById('popSound'); audio.currentTime = 0; audio.play().catch(()=>{}); } catch(err) {}
-};
+window.triggerHapticPop = () => { try { if(navigator.vibrate) navigator.vibrate(40); const audio = document.getElementById('popSound'); audio.currentTime = 0; audio.play().catch(()=>{}); } catch(err) {} };
 
 window.createFlyingDot = (e) => {
     if (!e || !e.clientX) return;
@@ -60,10 +56,7 @@ window.createFlyingDot = (e) => {
     setTimeout(() => { dot.remove(); target.style.transform = 'scale(1.2)'; setTimeout(() => target.style.transform = 'scale(1)', 200); }, 600);
 };
 
-window.showToast = (msg) => {
-    const toast = document.getElementById('toast'); toast.querySelector('span').innerText = msg; toast.classList.add('show'); 
-    setTimeout(() => toast.classList.remove('show'), 2000);
-};
+window.showToast = (msg) => { const toast = document.getElementById('toast'); toast.querySelector('span').innerText = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2000); };
 
 window.toggleFavIcon = (e) => {
     e.stopPropagation(); window.triggerHapticPop();
@@ -167,22 +160,17 @@ let touchStartX = 0; let touchEndX = 0; const fsViewer = document.getElementById
 fsViewer.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
 fsViewer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; if (fsImages.length > 1) { let currentScale = pzInstance ? pzInstance.getTransform().scale : 1; if (currentScale <= 1.1) { const threshold = 50; if (touchEndX < touchStartX - threshold) window.navigateFs(1); if (touchEndX > touchStartX + threshold) window.navigateFs(-1); } } }, {passive: true});
 
-// 🚀 BUG 2 FIX: 3D MODEL HIDING (SOLVES GREY SCREEN) 🚀
 window.toggleMedia = () => {
     const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle');
     const viewer = document.querySelector('#ar-viewer');
     
     if (slider.classList.contains('hide')) { 
         slider.classList.remove('hide'); 
-        if(viewer) viewer.style.display = 'none'; // 3D Chupa do
+        if(viewer) viewer.style.display = 'none'; 
         toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D'; 
-    } 
-    else { 
+    } else { 
         slider.classList.add('hide'); 
-        if(viewer) {
-            viewer.style.display = 'block'; // 3D Dikhao
-            viewer.src = viewer.getAttribute('data-src'); // Model ab load hoga
-        }
+        if(viewer) { viewer.style.display = 'block'; viewer.src = viewer.getAttribute('data-src'); }
         toggleBtn.innerHTML = '<i class="ph-fill ph-image"></i> View Photos'; 
     }
 };
@@ -296,9 +284,7 @@ window.renderSidebar = function(dishesToRender) {
             let trendTag = window.trendingIds.includes(data.id) ? '<div class="best-seller-tag"><i class="ph-fill ph-star"></i> Best Seller</div>' : '';
             
             let displayIcon = data.emoji;
-            if(!data.emoji || data.emoji.length >= 5 || data.emoji === '🍲'){
-                displayIcon = getPremiumIcon(data.category);
-            }
+            if(!data.emoji || data.emoji.length >= 5 || data.emoji === '🍲') displayIcon = getPremiumIcon(data.category);
 
             itemDiv.innerHTML = `<div class="side-icon-wrapper" style="font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${displayIcon}</div><div class="side-name">${data.name}<br>${trendTag}</div>`;
             itemDiv.onclick = () => { document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active')); itemDiv.classList.add('active'); window.loadDish(data); };
@@ -322,42 +308,29 @@ window.loadDish = function(data) {
     btnHalf.style.display = data.priceHalf ? 'block' : 'none'; btnPiece.style.display = data.pricePiece ? 'block' : 'none';
     if (data.priceHalf || data.pricePiece) { variantBox.classList.remove('hide'); btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active'); } else { variantBox.classList.add('hide'); }
 
-    // 🚀 BUG 1 FIX: GREY SCREEN / IMAGE LOADING 🚀
+    // 🚀 PHOTO / GREY SCREEN FIX 🚀
     const slider = document.getElementById('photo-slider'); 
     const toggleBtn = document.getElementById('media-toggle'); 
     const viewer = document.querySelector('#ar-viewer');
     const progressBar = document.querySelector('.progress-bar');
     
     slider.innerHTML = '';
-    slider.classList.remove('hide'); // Default photo dikhao
-    
-    // 3D Viewer ko totally off kar diya shuruwat me
-    if(viewer) {
-        viewer.style.display = 'none'; 
-        viewer.removeAttribute('src'); // Stop infinite loading
-    }
+    slider.classList.remove('hide'); 
+    if(viewer) { viewer.style.display = 'none'; viewer.removeAttribute('src'); }
     if(progressBar) progressBar.classList.add('hide');
 
-    // Sirf wahi image dikhao jo URL sach me ho
     let validImages = (data.images || []).filter(url => url && url.trim() !== "");
-    
     if (validImages.length > 0) {
         validImages.forEach((imgUrl, idx) => { 
-            const img = document.createElement('img'); 
-            img.src = imgUrl; 
-            img.className = 'slide-img'; 
-            img.onclick = () => window.openFullscreen(idx); 
-            slider.appendChild(img); 
+            const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.onclick = () => window.openFullscreen(idx); slider.appendChild(img); 
         });
     } else {
-        // Agar image nahi hai, toh ek premium placeholder dikhega
         slider.innerHTML = `<img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="slide-img" style="opacity: 0.8; object-fit: cover;">`;
     }
 
     if (data.modelUrl && data.modelUrl.trim() !== "") {
-        toggleBtn.classList.remove('hide'); 
-        toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D';
-        if(viewer) viewer.setAttribute('data-src', data.modelUrl); // URL save karke rakho
+        toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D';
+        if(viewer) viewer.setAttribute('data-src', data.modelUrl); 
     } else {
         toggleBtn.classList.add('hide');
     }
@@ -377,7 +350,7 @@ window.selectVariant = (type) => {
 
 window.getCartKey = function() { return `${window.currentDish.id}_${window.currentVariant}`; }
 
-// 🚀 STEPPER ANIMATION CSS TRIGGER 🚀
+// 🚀 ADD BUTTON SLIDE STEPPER FIX 🚀
 window.checkCartForCurrentDish = () => {
     const key = window.getCartKey(); 
     const wrapper = document.getElementById('add-action-wrapper');
@@ -406,10 +379,10 @@ window.changeCartQty = (key, delta) => {
     window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
 };
 
-// 🚀 BUG 2 FIX: OVERLAP FIX (PROPER SCROLL & PADDING) 🚀
+// 🚀 OVERLAP & SCROLL FIX 🚀
 window.updateGlobalCartUI = () => {
     const floatingBar = document.getElementById('floating-checkout'); 
-    const bottomUi = document.getElementById('bottom-ui-card'); // MAGIC FIX HIAN SE HOGA
+    const bottomUi = document.getElementById('bottom-ui-card');
     let totalItems = 0; let totalPrice = 0;
     
     for (let key in window.cart) { totalItems += window.cart[key].qty; totalPrice += (window.cart[key].price * window.cart[key].qty); }
@@ -421,11 +394,11 @@ window.updateGlobalCartUI = () => {
         document.getElementById('float-total').innerText = '₹' + totalPrice;
         
         floatingBar.classList.add('show'); 
-        if(bottomUi) bottomUi.classList.add('with-cart'); // White card lamba ho jayega 
+        if(bottomUi) bottomUi.classList.add('with-cart');
         
         setTimeout(() => { 
             const actionRow = document.querySelector('.action-row'); 
-            if(actionRow) actionRow.scrollIntoView({ behavior: "smooth", block: "center" }); 
+            if(actionRow) actionRow.scrollIntoView({ behavior: "smooth", block: "end" }); 
         }, 150);
     } else {
         floatingBar.classList.remove('show'); 
@@ -503,7 +476,6 @@ window.placeOrder = async () => {
     finally { btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; btn.style.background = "var(--primary-gradient)"; btn.style.boxShadow = "0 8px 25px rgba(226, 55, 68, 0.3)"; btn.disabled = false; }
 };
 
-// Start Fetching Data
 async function fetchTrendingDishes() {
     try {
         const q = query(collection(db, "orders"), orderBy("timestamp", "desc"), limit(20)); const snap = await getDocs(q); let counts = {};
@@ -524,4 +496,4 @@ onSnapshot(collection(db, "menu_items"), (snapshot) => {
         if (d.inStock !== false) { window.allDishes.push({ id: doc.id, name: d.name || "Special Dish", emoji: d.emoji || "🍲", category: d.category || "Veg", price: d.price || 0, priceHalf: d.priceHalf || null, pricePiece: d.pricePiece || null, modelUrl: d.modelUrl || "", images: d.images || [] }); }
     });
     window.applyFilters(); if (window.allDishes.length > 0 && !window.currentDish) window.loadDish(window.allDishes[0]);
-}, (error) => { console.error("Firebase Snapshot Error:", error); });
+}, (error) => {});
