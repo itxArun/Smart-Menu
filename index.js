@@ -23,7 +23,7 @@ window.trendingIds = [];
 window.currentOrderType = 'Dine-in';
 window.favorites = JSON.parse(localStorage.getItem('nextplate_favs')) || [];
 
-// EXPOSED WINDOW FUNCTIONS FOR HTML TO PREVENT CRASHES
+// 🚀 EXPOSED WINDOW FUNCTIONS FOR HTML TO PREVENT CRASHES
 window.closeCoinModal = () => document.getElementById('coinModal').classList.remove('show');
 window.toggleTracker = () => document.getElementById('tracker-modal').classList.toggle('show');
 window.switchOrderTab = (tab) => {
@@ -167,20 +167,22 @@ let touchStartX = 0; let touchEndX = 0; const fsViewer = document.getElementById
 fsViewer.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
 fsViewer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; if (fsImages.length > 1) { let currentScale = pzInstance ? pzInstance.getTransform().scale : 1; if (currentScale <= 1.1) { const threshold = 50; if (touchEndX < touchStartX - threshold) window.navigateFs(1); if (touchEndX > touchStartX + threshold) window.navigateFs(-1); } } }, {passive: true});
 
+// 🚀 BUG 2 FIX: 3D MODEL HIDING (SOLVES GREY SCREEN) 🚀
 window.toggleMedia = () => {
     const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle');
-    const viewer = document.querySelector('#ar-viewer'); const progressBar = document.querySelector('.progress-bar');
+    const viewer = document.querySelector('#ar-viewer');
     
     if (slider.classList.contains('hide')) { 
         slider.classList.remove('hide'); 
-        if(viewer) viewer.style.display = 'none';
-        if(progressBar) progressBar.classList.add('hide');
+        if(viewer) viewer.style.display = 'none'; // 3D Chupa do
         toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D'; 
     } 
     else { 
         slider.classList.add('hide'); 
-        if(viewer) viewer.style.display = 'block';
-        if(progressBar && !viewer.modelIsVisible) progressBar.classList.remove('hide');
+        if(viewer) {
+            viewer.style.display = 'block'; // 3D Dikhao
+            viewer.src = viewer.getAttribute('data-src'); // Model ab load hoga
+        }
         toggleBtn.innerHTML = '<i class="ph-fill ph-image"></i> View Photos'; 
     }
 };
@@ -320,27 +322,42 @@ window.loadDish = function(data) {
     btnHalf.style.display = data.priceHalf ? 'block' : 'none'; btnPiece.style.display = data.pricePiece ? 'block' : 'none';
     if (data.priceHalf || data.pricePiece) { variantBox.classList.remove('hide'); btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active'); } else { variantBox.classList.add('hide'); }
 
-    // 🚀 FIXED GREY SCREEN BUG 🚀
+    // 🚀 BUG 1 FIX: GREY SCREEN / IMAGE LOADING 🚀
     const slider = document.getElementById('photo-slider'); 
     const toggleBtn = document.getElementById('media-toggle'); 
     const viewer = document.querySelector('#ar-viewer');
     const progressBar = document.querySelector('.progress-bar');
     
     slider.innerHTML = '';
-    slider.classList.remove('hide'); // Hamesha photo pehle dikhao
-    if(viewer) viewer.style.display = 'none'; // 3D viewer shuru me hide karo
+    slider.classList.remove('hide'); // Default photo dikhao
+    
+    // 3D Viewer ko totally off kar diya shuruwat me
+    if(viewer) {
+        viewer.style.display = 'none'; 
+        viewer.removeAttribute('src'); // Stop infinite loading
+    }
     if(progressBar) progressBar.classList.add('hide');
 
-    if (data.images && data.images.length > 0) {
-        data.images.forEach((imgUrl, idx) => { const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.onclick = () => window.openFullscreen(idx); slider.appendChild(img); });
+    // Sirf wahi image dikhao jo URL sach me ho
+    let validImages = (data.images || []).filter(url => url && url.trim() !== "");
+    
+    if (validImages.length > 0) {
+        validImages.forEach((imgUrl, idx) => { 
+            const img = document.createElement('img'); 
+            img.src = imgUrl; 
+            img.className = 'slide-img'; 
+            img.onclick = () => window.openFullscreen(idx); 
+            slider.appendChild(img); 
+        });
     } else {
-        slider.innerHTML = `<img src="https://via.placeholder.com/400x300?text=NextPlate" class="slide-img" style="opacity: 0.5;">`;
+        // Agar image nahi hai, toh ek premium placeholder dikhega
+        slider.innerHTML = `<img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="slide-img" style="opacity: 0.8; object-fit: cover;">`;
     }
 
     if (data.modelUrl && data.modelUrl.trim() !== "") {
         toggleBtn.classList.remove('hide'); 
         toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D';
-        if(viewer) viewer.src = data.modelUrl;
+        if(viewer) viewer.setAttribute('data-src', data.modelUrl); // URL save karke rakho
     } else {
         toggleBtn.classList.add('hide');
     }
@@ -360,7 +377,7 @@ window.selectVariant = (type) => {
 
 window.getCartKey = function() { return `${window.currentDish.id}_${window.currentVariant}`; }
 
-// 🚀 BUG-FREE SLIDE ANIMATION LOGIC 🚀
+// 🚀 STEPPER ANIMATION CSS TRIGGER 🚀
 window.checkCartForCurrentDish = () => {
     const key = window.getCartKey(); 
     const wrapper = document.getElementById('add-action-wrapper');
@@ -389,8 +406,10 @@ window.changeCartQty = (key, delta) => {
     window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
 };
 
+// 🚀 BUG 2 FIX: OVERLAP FIX (PROPER SCROLL & PADDING) 🚀
 window.updateGlobalCartUI = () => {
-    const floatingBar = document.getElementById('floating-checkout'); const cartSpacer = document.getElementById('cart-spacer');
+    const floatingBar = document.getElementById('floating-checkout'); 
+    const bottomUi = document.getElementById('bottom-ui-card'); // MAGIC FIX HIAN SE HOGA
     let totalItems = 0; let totalPrice = 0;
     
     for (let key in window.cart) { totalItems += window.cart[key].qty; totalPrice += (window.cart[key].price * window.cart[key].qty); }
@@ -400,10 +419,17 @@ window.updateGlobalCartUI = () => {
         let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
         document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
         document.getElementById('float-total').innerText = '₹' + totalPrice;
-        floatingBar.classList.add('show'); cartSpacer.style.height = '100px'; 
-        setTimeout(() => { const actionRow = document.querySelector('.action-row'); if(actionRow) actionRow.scrollIntoView({ behavior: "smooth", block: "center" }); }, 100);
+        
+        floatingBar.classList.add('show'); 
+        if(bottomUi) bottomUi.classList.add('with-cart'); // White card lamba ho jayega 
+        
+        setTimeout(() => { 
+            const actionRow = document.querySelector('.action-row'); 
+            if(actionRow) actionRow.scrollIntoView({ behavior: "smooth", block: "center" }); 
+        }, 150);
     } else {
-        floatingBar.classList.remove('show'); cartSpacer.style.height = '0px'; 
+        floatingBar.classList.remove('show'); 
+        if(bottomUi) bottomUi.classList.remove('with-cart');
     }
 };
 
