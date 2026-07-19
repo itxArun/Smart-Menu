@@ -308,7 +308,7 @@ window.loadDish = function(data) {
     btnHalf.style.display = data.priceHalf ? 'block' : 'none'; btnPiece.style.display = data.pricePiece ? 'block' : 'none';
     if (data.priceHalf || data.pricePiece) { variantBox.classList.remove('hide'); btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active'); } else { variantBox.classList.add('hide'); }
 
-    // 🚀 PHOTO / GREY SCREEN FIX 🚀
+    // 🚀 PHOTO MISSING BUG FIX 🚀
     const slider = document.getElementById('photo-slider'); 
     const toggleBtn = document.getElementById('media-toggle'); 
     const viewer = document.querySelector('#ar-viewer');
@@ -319,7 +319,12 @@ window.loadDish = function(data) {
     if(viewer) { viewer.style.display = 'none'; viewer.removeAttribute('src'); }
     if(progressBar) progressBar.classList.add('hide');
 
-    let validImages = (data.images || []).filter(url => url && url.trim() !== "");
+    // Firebase ki field chahe 'images' (array) ho ya 'image' (string), sabko handle karega
+    let validImages = [];
+    if (data.images && Array.isArray(data.images) && data.images.length > 0) validImages = data.images.filter(url => url && url.trim() !== "");
+    else if (data.image && typeof data.image === 'string' && data.image.trim() !== "") validImages = [data.image];
+    else if (data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.trim() !== "") validImages = [data.imageUrl];
+
     if (validImages.length > 0) {
         validImages.forEach((imgUrl, idx) => { 
             const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.onclick = () => window.openFullscreen(idx); slider.appendChild(img); 
@@ -350,7 +355,6 @@ window.selectVariant = (type) => {
 
 window.getCartKey = function() { return `${window.currentDish.id}_${window.currentVariant}`; }
 
-// 🚀 ADD BUTTON SLIDE STEPPER FIX 🚀
 window.checkCartForCurrentDish = () => {
     const key = window.getCartKey(); 
     const wrapper = document.getElementById('add-action-wrapper');
@@ -379,7 +383,7 @@ window.changeCartQty = (key, delta) => {
     window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
 };
 
-// 🚀 OVERLAP & SCROLL FIX 🚀
+// 🚀 OVERLAP BUG FIX (FORCE JAVASCRIPT PADDING & SCROLL) 🚀
 window.updateGlobalCartUI = () => {
     const floatingBar = document.getElementById('floating-checkout'); 
     const bottomUi = document.getElementById('bottom-ui-card');
@@ -394,15 +398,20 @@ window.updateGlobalCartUI = () => {
         document.getElementById('float-total').innerText = '₹' + totalPrice;
         
         floatingBar.classList.add('show'); 
-        if(bottomUi) bottomUi.classList.add('with-cart');
         
+        // CSS pe bharosa chhod kar seedha JS se card lamba kar diya hai
+        if(bottomUi) bottomUi.style.paddingBottom = "140px";
+        
+        // Page ko automatically bottom tak scroll karega taaki buttons chupen nahi
         setTimeout(() => { 
-            const actionRow = document.querySelector('.action-row'); 
-            if(actionRow) actionRow.scrollIntoView({ behavior: "smooth", block: "end" }); 
-        }, 150);
+            const mainContent = document.querySelector('.main-content');
+            if(mainContent) {
+                mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: "smooth" });
+            }
+        }, 100);
     } else {
         floatingBar.classList.remove('show'); 
-        if(bottomUi) bottomUi.classList.remove('with-cart');
+        if(bottomUi) bottomUi.style.paddingBottom = "20px";
     }
 };
 
@@ -489,11 +498,23 @@ savedOrdersList.forEach(id => window.listenToLiveOrder(id));
 
 fetchTrendingDishes();
 
+// 🚀 FIREBASE PHOTO MAPPING FIX 🚀
 onSnapshot(collection(db, "menu_items"), (snapshot) => {
     window.allDishes = [];
     snapshot.forEach((doc) => { 
         let d = doc.data();
-        if (d.inStock !== false) { window.allDishes.push({ id: doc.id, name: d.name || "Special Dish", emoji: d.emoji || "🍲", category: d.category || "Veg", price: d.price || 0, priceHalf: d.priceHalf || null, pricePiece: d.pricePiece || null, modelUrl: d.modelUrl || "", images: d.images || [] }); }
+        if (d.inStock !== false) { 
+            let parsedImages = [];
+            if (d.images && Array.isArray(d.images)) parsedImages = d.images;
+            else if (d.image && typeof d.image === 'string') parsedImages = [d.image];
+            else if (d.imageUrl && typeof d.imageUrl === 'string') parsedImages = [d.imageUrl];
+
+            window.allDishes.push({ 
+                id: doc.id, name: d.name || "Special Dish", emoji: d.emoji || "🍲", category: d.category || "Veg", 
+                price: d.price || 0, priceHalf: d.priceHalf || null, pricePiece: d.pricePiece || null, 
+                modelUrl: d.modelUrl || "", images: parsedImages 
+            }); 
+        }
     });
     window.applyFilters(); if (window.allDishes.length > 0 && !window.currentDish) window.loadDish(window.allDishes[0]);
-}, (error) => {});
+}, (error) => { console.error("Firebase Snapshot Error:", error); });
