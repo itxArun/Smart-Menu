@@ -230,3 +230,13 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 #premium-loader p { font-size: 24px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
 #premium-loader span { font-size: 13px; color: var(--text-sub); margin-top: 5px; font-weight: 500;}
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+/* 🔥 ORDERS SCROLL FIX 🔥 */
+#multi-tracker-body {
+    overflow-y: auto;
+    flex: 1;
+    padding-bottom: 40px;
+}
+
+#multi-tracker-body::-webkit-scrollbar {
+    display: none;
+}
