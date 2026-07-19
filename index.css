@@ -230,17 +230,13 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 #premium-loader p { font-size: 24px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
 #premium-loader span { font-size: 13px; color: var(--text-sub); margin-top: 5px; font-weight: 500;}
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-/* 🔥 100% WORKING SCROLL FIX FOR ORDERS 🔥 */
-.cart-content {
-    overflow: hidden !important; /* Ye background ko lock karega */
-}
-
+/* 🔥 100% GUARANTEED ORDERS SCROLL FIX 🔥 */
 #multi-tracker-body {
-    flex: 1 1 auto !important;
+    display: block !important;
+    max-height: calc(85vh - 150px) !important; /* Parent ki height me se header aur tabs minus kar diye */
     overflow-y: auto !important;
-    min-height: 0 !important; /* Yahi wo magic line hai jo scroll on karti hai */
-    padding-bottom: 40px !important;
-    width: 100%;
+    overflow-x: hidden !important;
+    padding-bottom: 20px !important;
 }
 
 #multi-tracker-body::-webkit-scrollbar {
