@@ -518,48 +518,54 @@ onSnapshot(collection(db, "menu_items"), (snapshot) => {
     });
     window.applyFilters(); if (window.allDishes.length > 0 && !window.currentDish) window.loadDish(window.allDishes[0]);
 }, (error) => { console.error("Firebase Snapshot Error:", error); });
-// 🚀 SPLIT BILL LOGIC 🚀
-window.calculateSplitBill = () => {
+// 🚀 NEW CUSTOM SPLIT BILL LOGIC 🚀
+window.openSplitPrompt = function() {
     let total = 0;
-    // Cart ka total amount nikal rahe hain
-    for (let key in window.cart) {
-        total += (window.cart[key].price * window.cart[key].qty);
-    }
+    for (let key in window.cart) { total += (window.cart[key].price * window.cart[key].qty); }
+    if (total === 0) { window.showToast("Your cart is empty!"); return; }
     
-    // Agar cart khali hai toh button kaam nahi karega
-    if (total === 0) {
-        window.showToast("Your cart is empty!");
-        return;
-    }
+    // Default 2 logo ki value set karte hain
+    document.getElementById('splitPeopleInput').value = '2'; 
+    document.getElementById('splitPromptModal').classList.add('show');
+    window.triggerHapticPop();
+};
+
+window.closeSplitPrompt = function() {
+    document.getElementById('splitPromptModal').classList.remove('show');
+};
+
+window.confirmSplitBill = function() {
+    let total = 0;
+    for (let key in window.cart) { total += (window.cart[key].price * window.cart[key].qty); }
     
-    // User se prompt me puchenge
-    let people = prompt("Kitne doston mein bill split karna hai?", "2");
+    let people = document.getElementById('splitPeopleInput').value;
     
     if (people && !isNaN(people) && parseInt(people) > 1) {
         let perPerson = (total / parseInt(people)).toFixed(2);
         
-        // Premium Custom Alert set kar rahe hain
-        document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-users" style="color: var(--primary); font-size: 55px;"></i>';
-        document.getElementById('alertMessage').innerText = 'Bill Split Successful!';
+        // Modal band karo
+        window.closeSplitPrompt();
+        
+        // Final calculation alert UI
+        document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-users" style="color: var(--green); font-size: 50px;"></i>';
+        document.getElementById('alertMessage').innerText = 'Bill Split Done!';
         
         let alertBox = document.querySelector('#customAlert .alert-box');
         let existingP = alertBox.querySelector('.split-desc');
-        
         if(!existingP) {
-            existingP = document.createElement('p');
-            existingP.className = 'split-desc';
-            existingP.style.color = 'var(--text-sub)';
-            existingP.style.marginBottom = '25px';
-            existingP.style.fontSize = '14px';
+            existingP = document.createElement('p'); existingP.className = 'split-desc';
+            existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px';
             document.getElementById('alertMessage').after(existingP);
         }
+        existingP.innerHTML = `Total Bill: ₹${total} <br><br> Har dost ko dene honge:<br> <strong style="font-size: 28px; color: var(--green);">₹${perPerson}</strong>`;
         
-        existingP.innerHTML = `Total Bill: ₹${total} <br><br> Har person ko dene honge:<br> <strong style="font-size: 28px; color: var(--green);">₹${perPerson}</strong>`;
+        // Thoda delay taaki smooth animation aaye
+        setTimeout(() => {
+            document.getElementById('customAlert').classList.add('show');
+            if(navigator.vibrate) navigator.vibrate(50);
+        }, 300);
         
-        document.getElementById('customAlert').classList.add('show');
-        window.triggerHapticPop();
-    } else if (people !== null) {
-        window.showToast("Kam se kam 2 log chahiye split karne ke liye!");
+    } else {
+        window.showToast("Kam se kam 2 log chahiye bro!");
     }
 };
-            
