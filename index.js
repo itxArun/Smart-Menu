@@ -308,18 +308,15 @@ window.loadDish = function(data) {
     btnHalf.style.display = data.priceHalf ? 'block' : 'none'; btnPiece.style.display = data.pricePiece ? 'block' : 'none';
     if (data.priceHalf || data.pricePiece) { variantBox.classList.remove('hide'); btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active'); } else { variantBox.classList.add('hide'); }
 
-    // 🚀 PHOTO MISSING BUG FIX 🚀
     const slider = document.getElementById('photo-slider'); 
     const toggleBtn = document.getElementById('media-toggle'); 
     const viewer = document.querySelector('#ar-viewer');
     const progressBar = document.querySelector('.progress-bar');
     
-    slider.innerHTML = '';
-    slider.classList.remove('hide'); 
+    slider.innerHTML = ''; slider.classList.remove('hide'); 
     if(viewer) { viewer.style.display = 'none'; viewer.removeAttribute('src'); }
     if(progressBar) progressBar.classList.add('hide');
 
-    // Firebase ki field chahe 'images' (array) ho ya 'image' (string), sabko handle karega
     let validImages = [];
     if (data.images && Array.isArray(data.images) && data.images.length > 0) validImages = data.images.filter(url => url && url.trim() !== "");
     else if (data.image && typeof data.image === 'string' && data.image.trim() !== "") validImages = [data.image];
@@ -359,11 +356,8 @@ window.checkCartForCurrentDish = () => {
     const key = window.getCartKey(); 
     const wrapper = document.getElementById('add-action-wrapper');
     if (window.cart[key] && window.cart[key].qty > 0) { 
-        wrapper.classList.add('show-stepper');
-        document.getElementById('current-qty-display').innerText = window.cart[key].qty; 
-    } else { 
-        wrapper.classList.remove('show-stepper');
-    }
+        wrapper.classList.add('show-stepper'); document.getElementById('current-qty-display').innerText = window.cart[key].qty; 
+    } else { wrapper.classList.remove('show-stepper'); }
 };
 
 window.addCurrentToCart = (e) => {
@@ -383,12 +377,9 @@ window.changeCartQty = (key, delta) => {
     window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
 };
 
-// 🚀 OVERLAP BUG FIX (FORCE JAVASCRIPT PADDING & SCROLL) 🚀
 window.updateGlobalCartUI = () => {
-    const floatingBar = document.getElementById('floating-checkout'); 
-    const bottomUi = document.getElementById('bottom-ui-card');
+    const floatingBar = document.getElementById('floating-checkout'); const bottomUi = document.getElementById('bottom-ui-card');
     let totalItems = 0; let totalPrice = 0;
-    
     for (let key in window.cart) { totalItems += window.cart[key].qty; totalPrice += (window.cart[key].price * window.cart[key].qty); }
     document.getElementById('cart-count').innerText = totalItems;
     
@@ -396,19 +387,8 @@ window.updateGlobalCartUI = () => {
         let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
         document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
         document.getElementById('float-total').innerText = '₹' + totalPrice;
-        
         floatingBar.classList.add('show'); 
-        
-        // CSS pe bharosa chhod kar seedha JS se card lamba kar diya hai
         if(bottomUi) bottomUi.style.paddingBottom = "140px";
-        
-        // Page ko automatically bottom tak scroll karega taaki buttons chupen nahi
-        setTimeout(() => { 
-            const mainContent = document.querySelector('.main-content');
-            if(mainContent) {
-                mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: "smooth" });
-            }
-        }, 100);
     } else {
         floatingBar.classList.remove('show'); 
         if(bottomUi) bottomUi.style.paddingBottom = "20px";
@@ -498,7 +478,6 @@ savedOrdersList.forEach(id => window.listenToLiveOrder(id));
 
 fetchTrendingDishes();
 
-// 🚀 FIREBASE PHOTO MAPPING FIX 🚀
 onSnapshot(collection(db, "menu_items"), (snapshot) => {
     window.allDishes = [];
     snapshot.forEach((doc) => { 
@@ -518,20 +497,70 @@ onSnapshot(collection(db, "menu_items"), (snapshot) => {
     });
     window.applyFilters(); if (window.allDishes.length > 0 && !window.currentDish) window.loadDish(window.allDishes[0]);
 }, (error) => { console.error("Firebase Snapshot Error:", error); });
-// 🚀 NEW CUSTOM SPLIT BILL LOGIC 🚀
-window.openSplitPrompt = function() {
+
+
+// 🚀 DARK MODE TOGGLE LOGIC 🚀
+window.toggleDarkMode = () => {
+    const body = document.body;
+    const themeIcon = document.getElementById('theme-icon');
+    if(!themeIcon) return;
+    
+    body.classList.toggle('dark-mode');
+    if (body.classList.contains('dark-mode')) {
+        themeIcon.classList.replace('ph-moon', 'ph-sun');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        themeIcon.classList.replace('ph-sun', 'ph-moon');
+        localStorage.setItem('theme', 'light');
+    }
+};
+
+window.addEventListener('load', () => {
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        const themeIcon = document.getElementById('theme-icon');
+        if(themeIcon) themeIcon.classList.replace('ph-moon', 'ph-sun');
+    }
+});
+
+
+// 🚀 100% BULLETPROOF SPLIT BILL LOGIC 🚀
+window.calculateSplitBill = window.openSplitPrompt = function(e) {
+    if(e) e.preventDefault();
+    
     let total = 0;
     for (let key in window.cart) { total += (window.cart[key].price * window.cart[key].qty); }
     if (total === 0) { window.showToast("Your cart is empty!"); return; }
     
-    // Default 2 logo ki value set karte hain
+    // Yahan main dynamically html popup inject kar raha hu taaki HTML missing hone par bhi koi error na aaye!
+    let splitModal = document.getElementById('splitPromptModal');
+    if (!splitModal) {
+        splitModal = document.createElement('div');
+        splitModal.className = 'custom-alert';
+        splitModal.id = 'splitPromptModal';
+        splitModal.innerHTML = `
+            <div class="alert-box">
+                <div class="alert-icon"><i class="ph-fill ph-users" style="color: var(--green);"></i></div>
+                <h3>Split Bill</h3>
+                <p style="margin-bottom: 15px;">Kitne doston mein bill split karna hai?</p>
+                <input type="number" id="splitPeopleInput" class="input-field" placeholder="E.g., 2" value="2" min="2" style="margin-bottom: 25px; text-align: center; font-size: 20px; font-weight: 800; width: 100%; box-sizing: border-box;">
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn-cancel" style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer;" onclick="closeSplitPrompt()">Cancel</button>
+                    <button class="alert-btn-primary" style="flex:1; margin:0; background: var(--green); box-shadow: 0 8px 20px rgba(36, 150, 63, 0.3);" onclick="confirmSplitBill()">Split Now</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(splitModal);
+    }
+    
     document.getElementById('splitPeopleInput').value = '2'; 
-    document.getElementById('splitPromptModal').classList.add('show');
-    window.triggerHapticPop();
+    splitModal.classList.add('show');
+    if (typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
 };
 
 window.closeSplitPrompt = function() {
-    document.getElementById('splitPromptModal').classList.remove('show');
+    let m = document.getElementById('splitPromptModal');
+    if(m) m.classList.remove('show');
 };
 
 window.confirmSplitBill = function() {
@@ -543,10 +572,8 @@ window.confirmSplitBill = function() {
     if (people && !isNaN(people) && parseInt(people) > 1) {
         let perPerson = (total / parseInt(people)).toFixed(2);
         
-        // Modal band karo
         window.closeSplitPrompt();
         
-        // Final calculation alert UI
         document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-users" style="color: var(--green); font-size: 50px;"></i>';
         document.getElementById('alertMessage').innerText = 'Bill Split Done!';
         
@@ -559,7 +586,6 @@ window.confirmSplitBill = function() {
         }
         existingP.innerHTML = `Total Bill: ₹${total} <br><br> Har dost ko dene honge:<br> <strong style="font-size: 28px; color: var(--green);">₹${perPerson}</strong>`;
         
-        // Thoda delay taaki smooth animation aaye
         setTimeout(() => {
             document.getElementById('customAlert').classList.add('show');
             if(navigator.vibrate) navigator.vibrate(50);
