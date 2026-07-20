@@ -214,7 +214,7 @@
         <div class="checkout-action" id="float-btn-view">Continue <i class="ph-bold ph-arrow-right"></i></div>
     </div>
 
-    <!-- Cart Modal -->
+        <!-- Cart Modal -->
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <div class="cart-header">
@@ -223,9 +223,20 @@
             </div>
             <div class="cart-scroll-body">
                 <div class="cart-items-container" id="cart-items-list"></div>
-                <div class="bill-details" style="background: var(--bg-light); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1);">
-                    <div class="bill-total" style="font-size: 20px; color: var(--text-main); font-weight:800; display:flex; justify-content:space-between;"><span id="bill-total-text">Total to Pay</span><span id="bill-final">₹0</span></div>
+                
+                <!-- 🚀 BILL DETAILS W/ SPLIT BUTTON 🚀 -->
+                <div class="bill-details" style="background: #FAFAFA; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1);">
+                    <div class="bill-total" style="display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 15px;">
+                        <span id="bill-total-text">Total to Pay</span>
+                        <span id="bill-final">₹0</span>
+                    </div>
+                    
+                    <!-- Split Bill Button -->
+                    <button onclick="calculateSplitBill()" style="background: var(--white); color: var(--primary); border: 2px solid var(--primary); padding: 12px; border-radius: 12px; width: 100%; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(229,57,53,0.1);">
+                        <i class="ph-bold ph-users"></i> Split this Bill
+                    </button>
                 </div>
+
                 <div style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 12px;">
                     <div class="order-type-selector">
                         <button id="btn-dinein" class="type-btn active" onclick="setOrderType('Dine-in')"><i class="ph-fill ph-fork-knife"></i> Dine-in</button>
