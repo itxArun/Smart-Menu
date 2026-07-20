@@ -542,7 +542,7 @@ window.calculateSplitBill = window.openSplitPrompt = function(e) {
             <div class="alert-box">
                 <div class="alert-icon"><i class="ph-fill ph-users" style="color: var(--green);"></i></div>
                 <h3>Split Bill</h3>
-                <p style="margin-bottom: 15px;">No. of People</p>
+                <p style="margin-bottom: 15px;">Kitne doston mein bill split karna hai?</p>
                 <input type="number" id="splitPeopleInput" class="input-field" placeholder="E.g., 2" value="2" min="2" style="margin-bottom: 25px; text-align: center; font-size: 20px; font-weight: 800; width: 100%; box-sizing: border-box;">
                 <div style="display: flex; gap: 12px;">
                     <button class="btn-cancel" style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer;" onclick="closeSplitPrompt()">Cancel</button>
