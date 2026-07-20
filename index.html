@@ -45,12 +45,10 @@
                 <button id="tab-live-orders" class="tracker-tab-btn active" onclick="switchOrderTab('live')">Live Orders</button>
                 <button id="tab-past-orders" class="tracker-tab-btn" onclick="switchOrderTab('past')">Past Orders</button>
             </div>
-            <!-- 🚀 CLASS ADD KI GAYI HAI 🚀 -->
-<div id="multi-tracker-body" class="cart-scroll-body">
-    <div id="live-orders-container"></div>
-    <div id="past-orders-container" style="display: none;"></div>
-</div>
-
+            <div id="multi-tracker-body" class="cart-scroll-body">
+                <div id="live-orders-container"></div>
+                <div id="past-orders-container" style="display: none;"></div>
+            </div>
         </div>
     </div>
 
@@ -61,6 +59,20 @@
                 <button class="btn-close" onclick="toggleFavList()"><i class="ph ph-x"></i></button>
             </div>
             <div class="cart-scroll-body" id="fav-items-list"></div>
+        </div>
+    </div>
+
+    <!-- 🚀 NEW CUSTOM SPLIT PROMPT MODAL 🚀 -->
+    <div class="custom-alert" id="splitPromptModal">
+        <div class="alert-box">
+            <div class="alert-icon"><i class="ph-fill ph-users" style="color: var(--green);"></i></div>
+            <h3>Split Bill</h3>
+            <p style="margin-bottom: 15px;">Kitne doston mein bill split karna hai?</p>
+            <input type="number" id="splitPeopleInput" class="input-field" placeholder="E.g., 2" value="2" min="2" style="margin-bottom: 25px; text-align: center; font-size: 20px; font-weight: 800;">
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-cancel" style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer;" onclick="closeSplitPrompt()">Cancel</button>
+                <button class="alert-btn-primary" style="flex:1; margin:0; background: var(--green); box-shadow: 0 8px 20px rgba(36, 150, 63, 0.3);" onclick="confirmSplitBill()">Split Now</button>
+            </div>
         </div>
     </div>
 
@@ -214,7 +226,7 @@
         <div class="checkout-action" id="float-btn-view">Continue <i class="ph-bold ph-arrow-right"></i></div>
     </div>
 
-        <!-- Cart Modal -->
+    <!-- Cart Modal -->
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <div class="cart-header">
@@ -225,25 +237,18 @@
                 <div class="cart-items-container" id="cart-items-list"></div>
                 
                 <!-- 🚀 BILL DETAILS W/ SMALL SPLIT BUTTON 🚀 -->
-<div class="bill-details" style="background: #FAFAFA; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1);">
-    <div class="bill-total" style="display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: 800; color: var(--text-main);">
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-            <span id="bill-total-text" style="line-height: 1;">Total to Pay</span>
-            
-            <!-- Chhota aur Premium Split Button -->
-            <button onclick="calculateSplitBill()" style="background: rgba(36, 150, 63, 0.1); color: var(--green); border: 1px dashed var(--green); padding: 5px 12px; border-radius: 50px; font-weight: 700; font-size: 11px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 4px; width: fit-content; transition: 0.2s;">
-                <i class="ph-bold ph-users"></i> Split Bill
-            </button>
-        </div>
-        <span id="bill-final">₹0</span>
-    </div>
-</div>
-
-                    
-                    <!-- Split Bill Button -->
-                    <button onclick="calculateSplitBill()" style="background: var(--white); color: var(--primary); border: 2px solid var(--primary); padding: 12px; border-radius: 12px; width: 100%; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(229,57,53,0.1);">
-                        <i class="ph-bold ph-users"></i> Split this Bill
-                    </button>
+                <div class="bill-details" style="background: #FAFAFA; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1);">
+                    <div class="bill-total" style="display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: 800; color: var(--text-main);">
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <span id="bill-total-text" style="line-height: 1;">Total to Pay</span>
+                            
+                            <!-- Chhota aur Premium Split Button (Ye custom popup kholega) -->
+                            <button onclick="openSplitPrompt()" style="background: rgba(36, 150, 63, 0.1); color: var(--green); border: 1px dashed var(--green); padding: 5px 12px; border-radius: 50px; font-weight: 700; font-size: 11px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 4px; width: fit-content; transition: 0.2s;">
+                                <i class="ph-bold ph-users"></i> Split Bill
+                            </button>
+                        </div>
+                        <span id="bill-final">₹0</span>
+                    </div>
                 </div>
 
                 <div style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 12px;">
