@@ -201,7 +201,14 @@ window.renderMultiTracker = function() {
         if (data.timestamp) { const d = data.timestamp.toDate(); const t = new Date(); isToday = d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear(); } else { isToday = true; }
 
         let itemsList = data.items.map(i => `<span style="display:block; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.02);"><b>${i.qty}x</b> ${i.name}</span>`).join('');
-        let orderTime = data.timestamp ? data.timestamp.toDate().toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'}) : '';
+        // 🔥 DATE AND TIME FIX 🔥
+let orderTime = '';
+if (data.timestamp) {
+    const d = data.timestamp.toDate();
+    const dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    orderTime = `${dateStr} • ${timeStr}`; // Result: "21 Jul 2026 • 09:45 PM"
+}
 
         let actionHtml = '';
         if (isNew) actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 16px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:10px; transition:0.2s;">Cancel ❌</button>`;
