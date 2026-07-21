@@ -637,3 +637,74 @@ window.confirmSplitBill = function() {
         window.showToast("Kam se kam 2 log chahiye bro!");
     }
 };
+// ==========================================
+// 🚀 2-HOUR SESSION SECURITY LOGIC (SPAM PROTECTION) 🚀
+// ==========================================
+
+const SESSION_LIMIT_HOURS = 2; // 2 ghante ka timer (isko 0.01 karke test kar sakte ho)
+
+window.initDiningSession = () => {
+    // Check agar customer ne sach me naya QR scan kiya hai (?scan=true)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('scan') === 'true') {
+        localStorage.setItem('dining_session_start', new Date().getTime());
+        // URL clean kar do taaki page refresh par timer wapas reset na ho
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } 
+    // Agar pehli baar aaya hai bina kisi timer ke
+    else if (!localStorage.getItem('dining_session_start')) {
+        localStorage.setItem('dining_session_start', new Date().getTime());
+    }
+};
+
+window.checkSessionValid = () => {
+    const startTime = localStorage.getItem('dining_session_start');
+    if (!startTime) return true; 
+    
+    const now = new Date().getTime();
+    const diffHours = (now - parseInt(startTime)) / (1000 * 60 * 60);
+    
+    // Agar time limit cross ho gayi
+    if (diffHours > SESSION_LIMIT_HOURS) {
+        // Custom Premium Alert dikhao
+        document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-clock" style="color: var(--danger); font-size: 55px;"></i>';
+        document.getElementById('alertMessage').innerText = 'Session Expired!';
+        
+        let alertBox = document.querySelector('#customAlert .alert-box');
+        let existingP = alertBox.querySelector('.split-desc');
+        if(!existingP) {
+            existingP = document.createElement('p'); existingP.className = 'split-desc';
+            existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px';
+            document.getElementById('alertMessage').after(existingP);
+        }
+        existingP.innerHTML = `Your dining session of ${SESSION_LIMIT_HOURS} hours has ended.<br><br><strong style="color:var(--danger); font-size:15px;">Please scan the table QR code again to continue.</strong>`;
+        
+        document.getElementById('customAlert').classList.add('show');
+        if(navigator.vibrate) navigator.vibrate([50, 100, 50]); // Warning vibration
+        return false;
+    }
+    return true;
+};
+
+// App load hote hi timer start kar do
+window.initDiningSession();
+
+// 🔒 Purane Waiter Function par Security Guard lagao
+const originalCallWaiter = window.confirmCallWaiter;
+window.confirmCallWaiter = async () => {
+    if (!window.checkSessionValid()) {
+        window.closeWaiterPrompt(); // Prompt band kardo aur error dikhao
+        return;
+    }
+    await originalCallWaiter();
+};
+
+// 🔒 Purane Order Function par Security Guard lagao
+const originalPlaceOrder = window.placeOrder;
+window.placeOrder = async () => {
+    if (!window.checkSessionValid()) {
+        window.toggleCart(); // Cart band kardo aur error dikhao
+        return;
+    }
+    await originalPlaceOrder();
+};
