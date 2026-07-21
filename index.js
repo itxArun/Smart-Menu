@@ -378,22 +378,39 @@ window.changeCartQty = (key, delta) => {
 };
 
 window.updateGlobalCartUI = () => {
-    const floatingBar = document.getElementById('floating-checkout'); const bottomUi = document.getElementById('bottom-ui-card');
+    const floatingBar = document.getElementById('floating-checkout'); 
+    const bottomUi = document.getElementById('bottom-ui-card');
     let totalItems = 0; let totalPrice = 0;
-    for (let key in window.cart) { totalItems += window.cart[key].qty; totalPrice += (window.cart[key].price * window.cart[key].qty); }
+    
+    for (let key in window.cart) { 
+        totalItems += window.cart[key].qty; 
+        totalPrice += (window.cart[key].price * window.cart[key].qty); 
+    }
+    
     document.getElementById('cart-count').innerText = totalItems;
     
     if (totalItems > 0) {
         let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
         document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
         document.getElementById('float-total').innerText = '₹' + totalPrice;
+        
         floatingBar.classList.add('show'); 
         if(bottomUi) bottomUi.style.paddingBottom = "140px";
+
+        // 🔥 YAHI AUTO-SCROLL CODE MISSING THA 🔥
+        setTimeout(() => { 
+            const mainContent = document.querySelector('.main-content');
+            if(mainContent) {
+                mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: "smooth" });
+            }
+        }, 100);
+
     } else {
         floatingBar.classList.remove('show'); 
         if(bottomUi) bottomUi.style.paddingBottom = "20px";
     }
 };
+
 
 window.toggleCart = () => { const modal = document.getElementById('cart-modal'); if (!modal.classList.contains('show')) window.renderCartModal(); modal.classList.toggle('show'); };
 
