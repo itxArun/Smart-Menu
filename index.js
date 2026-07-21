@@ -16,11 +16,22 @@ const db = getFirestore(app);
 window.allDishes = [];
 window.currentDish = null;
 window.currentVariant = 'full'; 
-window.cart = {}; 
 window.activeCategory = 'All'; 
 window.trendingIds = []; 
 window.currentOrderType = 'Dine-in';
 window.favorites = JSON.parse(localStorage.getItem('nextplate_favs')) || [];
+
+// 🔥 FIX 1: CART PERSISTENCE (App load hote hi memory se cart nikalna) 🔥
+window.cart = JSON.parse(localStorage.getItem('nextplate_cart')) || {};
+
+window.saveCart = () => {
+    localStorage.setItem('nextplate_cart', JSON.stringify(window.cart));
+};
+
+setTimeout(() => {
+    window.updateGlobalCartUI();
+}, 500);
+
 
 window.closeCoinModal = () => document.getElementById('coinModal').classList.remove('show');
 window.toggleTracker = () => document.getElementById('tracker-modal').classList.toggle('show');
@@ -98,6 +109,7 @@ window.quickAddFav = (id) => {
     if(dish) {
         const key = `${dish.id}_full`;
         if(window.cart[key]) window.cart[key].qty++; else window.cart[key] = { id: dish.id, name: dish.name, price: dish.price, variant: '', qty: 1 };
+        window.saveCart(); // 🔥 Cart save
         window.triggerHapticPop(); window.showToast("Added to Cart!");
         window.updateGlobalCartUI(); if(window.currentDish && window.currentDish.id === id) window.checkCartForCurrentDish();
     }
@@ -201,32 +213,23 @@ window.renderMultiTracker = function() {
         if (data.timestamp) { const d = data.timestamp.toDate(); const t = new Date(); isToday = d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear(); } else { isToday = true; }
 
         let itemsList = data.items.map(i => `<span style="display:block; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.02);"><b>${i.qty}x</b> ${i.name}</span>`).join('');
-        // 🔥 PROFESSIONAL DATE AND TIME FIX 🔥
-let orderTime = '';
-if (data.timestamp) {
-    const d = data.timestamp.toDate();
-    const now = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(now.getDate() - 1);
-    
-    let dateStr = "";
-    // Check if order is from Today
-    if (d.toDateString() === now.toDateString()) {
-        dateStr = "Today";
-    } 
-    // Check if order is from Yesterday
-    else if (d.toDateString() === yesterday.toDateString()) {
-        dateStr = "Yesterday";
-    } 
-    // If older, show proper date
-    else {
-        dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-    }
-    
-    const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    orderTime = `<span style="font-weight: 700;">${dateStr}</span>, ${timeStr}`;
-}
-
+        
+        // 🔥 DATE AND TIME FIX 🔥
+        let orderTime = '';
+        if (data.timestamp) {
+            const d = data.timestamp.toDate();
+            const now = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(now.getDate() - 1);
+            
+            let dateStr = "";
+            if (d.toDateString() === now.toDateString()) { dateStr = "Today"; } 
+            else if (d.toDateString() === yesterday.toDateString()) { dateStr = "Yesterday"; } 
+            else { dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+            
+            const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            orderTime = `<span style="font-weight: 700;">${dateStr}</span>, ${timeStr}`;
+        }
 
         let actionHtml = '';
         if (isNew) actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 16px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:10px; transition:0.2s;">Cancel ❌</button>`;
@@ -385,20 +388,31 @@ window.checkCartForCurrentDish = () => {
     } else { wrapper.classList.remove('show-stepper'); }
 };
 
+// 🔥 CART PERSISTENCE ADD LOGIC 🔥
 window.addCurrentToCart = (e) => {
     const key = window.getCartKey(); let price = window.currentDish.price; let variantText = '';
     if (window.currentVariant === 'half') { price = window.currentDish.priceHalf; variantText = '(Half)'; }
     if (window.currentVariant === 'piece') { price = window.currentDish.pricePiece; variantText = '(Per Piece)'; }
 
     window.cart[key] = { id: window.currentDish.id, name: window.currentDish.name, price: price, variant: variantText, qty: 1 };
+    
+    window.saveCart(); // Save cart to memory
+    
     window.triggerHapticPop(); window.createFlyingDot(e); window.showToast("Added to Cart!");
     window.updateGlobalCartUI(); window.checkCartForCurrentDish();
 };
 
 window.changeCurrentQty = (delta) => { const key = window.getCartKey(); window.changeCartQty(key, delta); };
 
+// 🔥 CART PERSISTENCE CHANGE LOGIC 🔥
 window.changeCartQty = (key, delta) => { 
-    if (window.cart[key]) { window.cart[key].qty += delta; if (window.cart[key].qty <= 0) delete window.cart[key]; } 
+    if (window.cart[key]) { 
+        window.cart[key].qty += delta; 
+        if (window.cart[key].qty <= 0) delete window.cart[key]; 
+    } 
+    
+    window.saveCart(); // Save cart to memory
+    
     window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
 };
 
@@ -422,7 +436,7 @@ window.updateGlobalCartUI = () => {
         floatingBar.classList.add('show'); 
         if(bottomUi) bottomUi.style.paddingBottom = "140px";
 
-        // 🔥 YAHI AUTO-SCROLL CODE MISSING THA 🔥
+        // Scroll fix 
         setTimeout(() => { 
             const mainContent = document.querySelector('.main-content');
             if(mainContent) {
@@ -435,7 +449,6 @@ window.updateGlobalCartUI = () => {
         if(bottomUi) bottomUi.style.paddingBottom = "20px";
     }
 };
-
 
 window.toggleCart = () => { const modal = document.getElementById('cart-modal'); if (!modal.classList.contains('show')) window.renderCartModal(); modal.classList.toggle('show'); };
 
@@ -464,7 +477,12 @@ window.renderCartModal = () => {
     document.getElementById('bill-final').innerText = '₹' + totalPrice;
 };
 
-window.deleteCartItem = (key) => { delete window.cart[key]; window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); };
+// 🔥 CART PERSISTENCE DELETE LOGIC 🔥
+window.deleteCartItem = (key) => { 
+    delete window.cart[key]; 
+    window.saveCart(); // Save cart to memory
+    window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
+};
 
 window.launchConfetti = function() {
     const canvas = document.getElementById('confetti-canvas'); const ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -478,7 +496,56 @@ window.launchConfetti = function() {
     animate(); window.triggerHapticPop();
 }
 
+// 🚀 SPAM PROTECTION: 2-HOUR SESSION SECURITY LOGIC 🚀
+const SESSION_LIMIT_HOURS = 2; 
+
+window.initDiningSession = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('scan') === 'true') {
+        localStorage.setItem('dining_session_start', new Date().getTime());
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } 
+    else if (!localStorage.getItem('dining_session_start')) {
+        localStorage.setItem('dining_session_start', new Date().getTime());
+    }
+};
+
+window.checkSessionValid = () => {
+    const startTime = localStorage.getItem('dining_session_start');
+    if (!startTime) return true; 
+    
+    const now = new Date().getTime();
+    const diffHours = (now - parseInt(startTime)) / (1000 * 60 * 60);
+    
+    if (diffHours > SESSION_LIMIT_HOURS) {
+        document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-clock" style="color: var(--danger); font-size: 55px;"></i>';
+        document.getElementById('alertMessage').innerText = 'Session Expired!';
+        
+        let alertBox = document.querySelector('#customAlert .alert-box');
+        let existingP = alertBox.querySelector('.split-desc');
+        if(!existingP) {
+            existingP = document.createElement('p'); existingP.className = 'split-desc';
+            existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px';
+            document.getElementById('alertMessage').after(existingP);
+        }
+        existingP.innerHTML = `Your dining session of ${SESSION_LIMIT_HOURS} hours has ended.<br><br><strong style="color:var(--danger); font-size:15px;">Please scan the table QR code again to continue.</strong>`;
+        
+        document.getElementById('customAlert').classList.add('show');
+        if(navigator.vibrate) navigator.vibrate([50, 100, 50]);
+        return false;
+    }
+    return true;
+};
+
+window.initDiningSession();
+
 window.placeOrder = async () => {
+    // Session Guard check
+    if (!window.checkSessionValid()) {
+        window.toggleCart(); 
+        return;
+    }
+
     if (Object.keys(window.cart).length === 0) { alert("Please add items to your cart first!"); return; }
     
     const tableNo = document.getElementById('tableNumber').value; const custName = document.getElementById('customerName').value;
@@ -498,7 +565,11 @@ window.placeOrder = async () => {
         let activeOrdersList = []; try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
         activeOrdersList.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); window.listenToLiveOrder(docRef.id); 
 
-        window.cart = {}; document.getElementById('cookingNotes').value = ''; window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1"; window.launchConfetti(); 
+        // 🔥 CART CLEAR HONA CHAHIYE ORDER KE BAAD 🔥
+        window.cart = {}; 
+        localStorage.removeItem('nextplate_cart'); // Memory se remove
+        
+        document.getElementById('cookingNotes').value = ''; window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1"; window.launchConfetti(); 
         
         setTimeout(() => { let earnedCoins = Math.floor(grandTotal / 10); document.getElementById('earnedCoins').innerText = earnedCoins; document.getElementById('coinModal').classList.add('show'); window.triggerHapticPop(); }, 1000);
         setTimeout(() => { window.switchOrderTab('live'); window.toggleTracker(); }, 3500); 
@@ -541,7 +612,6 @@ onSnapshot(collection(db, "menu_items"), (snapshot) => {
 }, (error) => { console.error("Firebase Snapshot Error:", error); });
 
 
-// 🚀 DARK MODE TOGGLE LOGIC 🚀
 window.toggleDarkMode = () => {
     const body = document.body;
     const themeIcon = document.getElementById('theme-icon');
@@ -574,7 +644,6 @@ window.calculateSplitBill = window.openSplitPrompt = function(e) {
     for (let key in window.cart) { total += (window.cart[key].price * window.cart[key].qty); }
     if (total === 0) { window.showToast("Your cart is empty!"); return; }
     
-    // Yahan main dynamically html popup inject kar raha hu taaki HTML missing hone par bhi koi error na aaye!
     let splitModal = document.getElementById('splitPromptModal');
     if (!splitModal) {
         splitModal = document.createElement('div');
@@ -636,75 +705,4 @@ window.confirmSplitBill = function() {
     } else {
         window.showToast("Kam se kam 2 log chahiye bro!");
     }
-};
-// ==========================================
-// 🚀 2-HOUR SESSION SECURITY LOGIC (SPAM PROTECTION) 🚀
-// ==========================================
-
-const SESSION_LIMIT_HOURS = 2; // 2 ghante ka timer (isko 0.01 karke test kar sakte ho)
-
-window.initDiningSession = () => {
-    // Check agar customer ne sach me naya QR scan kiya hai (?scan=true)
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('scan') === 'true') {
-        localStorage.setItem('dining_session_start', new Date().getTime());
-        // URL clean kar do taaki page refresh par timer wapas reset na ho
-        window.history.replaceState({}, document.title, window.location.pathname);
-    } 
-    // Agar pehli baar aaya hai bina kisi timer ke
-    else if (!localStorage.getItem('dining_session_start')) {
-        localStorage.setItem('dining_session_start', new Date().getTime());
-    }
-};
-
-window.checkSessionValid = () => {
-    const startTime = localStorage.getItem('dining_session_start');
-    if (!startTime) return true; 
-    
-    const now = new Date().getTime();
-    const diffHours = (now - parseInt(startTime)) / (1000 * 60 * 60);
-    
-    // Agar time limit cross ho gayi
-    if (diffHours > SESSION_LIMIT_HOURS) {
-        // Custom Premium Alert dikhao
-        document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-clock" style="color: var(--danger); font-size: 55px;"></i>';
-        document.getElementById('alertMessage').innerText = 'Session Expired!';
-        
-        let alertBox = document.querySelector('#customAlert .alert-box');
-        let existingP = alertBox.querySelector('.split-desc');
-        if(!existingP) {
-            existingP = document.createElement('p'); existingP.className = 'split-desc';
-            existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px';
-            document.getElementById('alertMessage').after(existingP);
-        }
-        existingP.innerHTML = `Your dining session of ${SESSION_LIMIT_HOURS} hours has ended.<br><br><strong style="color:var(--danger); font-size:15px;">Please scan the table QR code again to continue.</strong>`;
-        
-        document.getElementById('customAlert').classList.add('show');
-        if(navigator.vibrate) navigator.vibrate([50, 100, 50]); // Warning vibration
-        return false;
-    }
-    return true;
-};
-
-// App load hote hi timer start kar do
-window.initDiningSession();
-
-// 🔒 Purane Waiter Function par Security Guard lagao
-const originalCallWaiter = window.confirmCallWaiter;
-window.confirmCallWaiter = async () => {
-    if (!window.checkSessionValid()) {
-        window.closeWaiterPrompt(); // Prompt band kardo aur error dikhao
-        return;
-    }
-    await originalCallWaiter();
-};
-
-// 🔒 Purane Order Function par Security Guard lagao
-const originalPlaceOrder = window.placeOrder;
-window.placeOrder = async () => {
-    if (!window.checkSessionValid()) {
-        window.toggleCart(); // Cart band kardo aur error dikhao
-        return;
-    }
-    await originalPlaceOrder();
 };
