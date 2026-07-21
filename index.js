@@ -201,14 +201,32 @@ window.renderMultiTracker = function() {
         if (data.timestamp) { const d = data.timestamp.toDate(); const t = new Date(); isToday = d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear(); } else { isToday = true; }
 
         let itemsList = data.items.map(i => `<span style="display:block; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.02);"><b>${i.qty}x</b> ${i.name}</span>`).join('');
-        // 🔥 DATE AND TIME FIX 🔥
+        // 🔥 PROFESSIONAL DATE AND TIME FIX 🔥
 let orderTime = '';
 if (data.timestamp) {
     const d = data.timestamp.toDate();
-    const dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    const now = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    
+    let dateStr = "";
+    // Check if order is from Today
+    if (d.toDateString() === now.toDateString()) {
+        dateStr = "Today";
+    } 
+    // Check if order is from Yesterday
+    else if (d.toDateString() === yesterday.toDateString()) {
+        dateStr = "Yesterday";
+    } 
+    // If older, show proper date
+    else {
+        dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    
     const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    orderTime = `${dateStr} • ${timeStr}`; // Result: "21 Jul 2026 • 09:45 PM"
+    orderTime = `<span style="font-weight: 700;">${dateStr}</span>, ${timeStr}`;
 }
+
 
         let actionHtml = '';
         if (isNew) actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 16px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:10px; transition:0.2s;">Cancel ❌</button>`;
