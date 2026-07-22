@@ -267,11 +267,37 @@ window.renderMultiTracker = function() {
     if (pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
 }
 
-window.cancelCustomerOrder = async (orderId) => {
-    if (confirm(currentLang === 'hi' ? "क्या आप सच में ऑर्डर रद्द करना चाहते हैं?" : "Are you sure you want to cancel this order?")) {
-        try { await updateDoc(doc(db, "orders", orderId), { status: 'Cancelled' }); window.showToast("Order Cancelled."); } catch(e) {}
+// 🔥 CUSTOM CANCEL ORDER LOGIC 🔥
+window.orderToCancelId = null;
+
+window.cancelCustomerOrder = (orderId) => {
+    window.orderToCancelId = orderId;
+    document.getElementById('cancelConfirmModal').classList.add('show');
+    window.triggerHapticPop();
+};
+
+window.closeCancelModal = () => {
+    window.orderToCancelId = null;
+    document.getElementById('cancelConfirmModal').classList.remove('show');
+};
+
+window.confirmCancelOrder = async () => {
+    if (!window.orderToCancelId) return;
+    
+    // Modal band karo aur processing dikhao
+    window.closeCancelModal();
+    window.showToast("Cancelling...");
+    
+    try { 
+        await updateDoc(doc(db, "orders", window.orderToCancelId), { status: 'Cancelled' }); 
+        window.showToast("Order Cancelled Successfully!"); 
+        window.triggerHapticPop();
+    } catch(e) {
+        console.error("Cancel Error:", e);
+        window.showToast("Failed to cancel order.");
     }
 };
+
 
 window.filterCategory = function(cat, element) { window.activeCategory = cat; document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); element.classList.add('active'); window.applyFilters(); };
 
@@ -592,7 +618,25 @@ savedOrdersList.forEach(id => window.listenToLiveOrder(id));
 fetchTrendingDishes();
 
 onSnapshot(collection(db, "menu_items"), (snapshot) => {
-    window.allDishes = [];
+// 🔥 SUPER FAST MENU LOADING (CACHE LOGIC) 🔥
+
+// Step 1: Pehle Local Memory (Cache) se menu load karo (0.1 Second load time)
+try {
+    const cachedMenu = localStorage.getItem('nextplate_menu_cache');
+    if (cachedMenu) {
+        window.allDishes = JSON.parse(cachedMenu);
+        if (window.allDishes.length > 0) {
+            window.applyFilters(); 
+            if (!window.currentDish) window.loadDish(window.allDishes[0]);
+        }
+    }
+} catch(e) {
+    console.error("Cache load failed", e);
+}
+
+// Step 2: Background me Firebase se live data sync karo
+onSnapshot(collection(db, "menu_items"), (snapshot) => {
+    let tempDishes = [];
     snapshot.forEach((doc) => { 
         let d = doc.data();
         if (d.inStock !== false) { 
@@ -601,13 +645,28 @@ onSnapshot(collection(db, "menu_items"), (snapshot) => {
             else if (d.image && typeof d.image === 'string') parsedImages = [d.image];
             else if (d.imageUrl && typeof d.imageUrl === 'string') parsedImages = [d.imageUrl];
 
-            window.allDishes.push({ 
+            tempDishes.push({ 
                 id: doc.id, name: d.name || "Special Dish", emoji: d.emoji || "🍲", category: d.category || "Veg", 
                 price: d.price || 0, priceHalf: d.priceHalf || null, pricePiece: d.pricePiece || null, 
                 modelUrl: d.modelUrl || "", images: parsedImages 
             }); 
         }
     });
+    
+    window.allDishes = tempDishes;
+    
+    // Naya data cache me save kar do future ke liye
+    localStorage.setItem('nextplate_menu_cache', JSON.stringify(window.allDishes));
+    
+    window.applyFilters(); 
+    // Sirf tab load karo agar pehle se load nahi hua hai (UI refresh glitch rokne ke liye)
+    if (window.allDishes.length > 0 && !window.currentDish) {
+        window.loadDish(window.allDishes[0]);
+    }
+}, (error) => { 
+    console.error("Firebase Snapshot Error:", error); 
+});
+
     window.applyFilters(); if (window.allDishes.length > 0 && !window.currentDish) window.loadDish(window.allDishes[0]);
 }, (error) => { console.error("Firebase Snapshot Error:", error); });
 
