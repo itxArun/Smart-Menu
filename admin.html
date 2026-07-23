@@ -79,7 +79,6 @@
                 <i class="ph-bold ph-speaker-slash"></i> Enable Sound
             </button>
             <input type="date" id="reportDate" class="date-filter-box" onchange="initAdminData()">
-            <!-- Refresh button subtly placed -->
             <button class="btn-logout" onclick="location.reload()" style="background:var(--input-bg); border:1px solid var(--border); color:var(--text-main);"><i class="ph-bold ph-arrows-clockwise"></i></button>
         </div>
     </div>
@@ -203,13 +202,12 @@
                 </div>
             </div>
 
-            <!-- ⚙️ SETTINGS SECTION (FIXED & CLEANED) -->
+            <!-- ⚙️ SETTINGS SECTION -->
             <div class="section-card view-section" id="section-settings">
                 <div class="section-header">
-                    <h3><i class="ph-fill ph-gear text-primary"></i> App Settings</h3>
+                    <h3><i class="ph-fill ph-gear"></i> App Settings</h3>
                 </div>
                 
-                <!-- Sound Alerts -->
                 <div class="setting-item" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
                     <div style="display:flex; align-items:center; gap:15px;">
                         <i class="ph-fill ph-bell-ringing" style="font-size:24px; color:var(--danger);"></i>
@@ -224,7 +222,6 @@
                     </label>
                 </div>
 
-                <!-- Dark Mode -->
                 <div class="setting-item" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
                     <div style="display:flex; align-items:center; gap:15px;">
                         <i class="ph-fill ph-moon" style="font-size:24px; color:var(--text-main);"></i>
@@ -239,24 +236,25 @@
                     </label>
                 </div>
 
-                <!-- QR Code -->
-                <div class="section-header" style="border-top: none; margin-top:10px;">
-                    <h3><i class="ph-fill ph-qr-code text-primary"></i> Table QR Code</h3>
+                <div class="section-header" style="border-top: 1px solid var(--border); margin-top:10px;">
+                    <h3><i class="ph-fill ph-qr-code"></i> Table QR Code</h3>
                 </div>
+                
                 <div class="qr-container" style="padding: 20px; text-align: center;">
                     <p style="color: var(--text-sub); font-size: 14px; margin: 0 0 15px 0; font-weight: 600;">Scan this to open Smart Menu</p>
-                    <div id="qrcode-box" style="background:white; padding:15px; border-radius:20px; display:inline-block; box-shadow:var(--shadow-soft);"></div>
                     
-                    <!-- Original Input layout restored -->
-                    <input type="text" id="menu-link" class="link-input" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-top: 15px; text-align: center; color: var(--text-sub); font-family: 'Poppins', sans-serif;" value="https://itxarun.github.io/Smart-Menu/index.html?scan=true" readonly>
+                    <!-- Original QR Code Logic Restored -->
+                    <div id="qrcode-box" style="display:inline-block; background:white; padding:10px; border-radius:12px; box-shadow:var(--shadow-soft);"></div>
                     
-                    <button class="btn-download" style="width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; background: var(--primary-gradient, linear-gradient(135deg, #E53935, #FF5252)); color: white; border: none; margin-top: 15px; box-shadow: 0 8px 20px rgba(226, 55, 68, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif;" onclick="downloadQR()">
+                    <input type="text" id="menu-link" class="link-input" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); margin-top: 15px; text-align: center; color: var(--text-sub); font-family: 'Poppins', sans-serif;" value="https://itxarun.github.io/Smart-Menu/index.html?scan=true" readonly>
+                    
+                    <button class="btn-download" style="width: 100%; padding: 12px; border-radius: 12px; font-weight: 700; background: var(--primary-gradient, linear-gradient(135deg, #E53935, #FF5252)); color: white; border: none; margin-top: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif;" onclick="downloadQR()">
                         <i class="ph-bold ph-download-simple"></i> Download Print Version
                     </button>
                 </div>
 
                 <!-- 🔥 CLEAN LOGOUT BUTTON AT THE VERY BOTTOM 🔥 -->
-                <div onclick="triggerLogout()" style="cursor: pointer; margin: 20px; text-align: center; background: rgba(229, 57, 53, 0.05); border-radius: 16px; padding: 15px; border: 1px solid rgba(229,57,53,0.15); transition: 0.2s;">
+                <div onclick="triggerLogout()" style="cursor: pointer; margin: 20px; text-align: center; background: rgba(229, 57, 53, 0.1); border-radius: 16px; padding: 15px; border: 1px solid rgba(229,57,53,0.2); transition: 0.2s;">
                     <div style="color: var(--danger, #E53935); font-weight: 700; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 8px;">
                         <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout
                     </div>
@@ -265,7 +263,7 @@
                 <!-- Mobile bottom nav ke liye extra space -->
                 <div style="height: 100px;"></div>
             </div>
-
+            
         </div>
     </div>
 
