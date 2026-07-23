@@ -219,7 +219,13 @@
 
         </div>
     </div>
-
+        <!-- 🚪 Safe Logout Button -->
+        <div onclick="triggerLogout()" style="cursor: pointer; margin: 20px 20px 40px 20px; text-align: center; background: rgba(229, 57, 53, 0.1); border-radius: 16px; padding: 15px; border: 1px solid rgba(229,57,53,0.2);">
+            <div style="color: #E53935; font-weight: 700; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout
+            </div>
+        </div>
+    
     <div class="bottom-nav">
         <a class="nav-tab active" onclick="switchTab('menu', this)"><i class="ph-fill ph-book-open"></i><label>MENU</label></a>
         <a class="nav-tab" onclick="switchTab('orders', this)"><i class="ph-fill ph-receipt"></i><label>ORDERS</label></a>
@@ -295,5 +301,20 @@
     </div>
 
     <script type="module" src="admin.js"></script>
+    <!-- 🚪 LOGOUT MODAL -->
+    <div class="modal-overlay" id="logoutConfirmModal">
+        <div class="modal-content" style="background: var(--bg-card); max-width: 320px; text-align: center; padding: 30px 20px; border-radius: 32px; margin: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+            <div style="background: rgba(229,57,53,0.1); width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;">
+                <i class="ph-bold ph-sign-out" style="font-size: 32px; color: var(--danger, #E53935);"></i>
+            </div>
+            <h3 style="margin-bottom: 10px; color: var(--text-main, #1C1C1E); font-family: 'Okra', sans-serif;">Are you sure?</h3>
+            <p style="font-size: 13px; color: var(--text-sub, #757575); margin-bottom: 25px;">Do you really want to logout from the admin panel?</p>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closeLogoutModal()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: var(--input-bg); color: var(--text-main);">No</button>
+                <button onclick="executeLogout()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: var(--danger, #E53935); color: white; box-shadow: 0 8px 20px rgba(229,57,53,0.3);">Yes, Logout</button>
+            </div>
+        </div>
+    </div>
+    
 </body>
 </html>
