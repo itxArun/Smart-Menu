@@ -785,3 +785,113 @@ window.confirmSplitBill = function() {
         window.showToast("Kam se kam 2 log chahiye bro!");
     }
 };
+// =========================================================
+// 🗣️ VOICE TO TEXT FOR CHEF NOTES
+// =========================================================
+window.startChefVoice = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) { window.showToast("Voice typing not supported on this browser."); return; }
+    
+    const recognition = new SpeechRecognition();
+    recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
+    
+    const micBtn = document.getElementById('chefMicBtn');
+    micBtn.style.color = 'white';
+    micBtn.style.background = 'var(--danger)';
+    micBtn.classList.add('bounce-pop');
+    if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+    
+    recognition.start();
+    
+    recognition.onresult = (e) => { 
+        const noteInput = document.getElementById('cookingNotes');
+        // Agar pehle se kuch likha hai, toh uske aage append karega
+        noteInput.value += (noteInput.value ? ' ' : '') + e.results[0][0].transcript; 
+    };
+    
+    recognition.onspeechend = () => { 
+        micBtn.style.color = 'var(--primary)'; 
+        micBtn.style.background = 'var(--bg-light)';
+        micBtn.classList.remove('bounce-pop'); 
+    };
+    recognition.onerror = () => { 
+        micBtn.style.color = 'var(--primary)'; 
+        micBtn.style.background = 'var(--bg-light)';
+        micBtn.classList.remove('bounce-pop'); 
+    };
+};
+
+// =========================================================
+// ⭐ DISH RATING & REVIEW SYSTEM
+// =========================================================
+window.currentRatingVal = 0;
+window.dishToRateId = null;
+
+// Is function ko dish view me kisi button par laga sakte ho
+window.openRatingModal = () => {
+    if(!window.currentDish) return;
+    window.dishToRateId = window.currentDish.id;
+    document.getElementById('ratingDishName').innerText = window.currentDish.name;
+    window.setRating(0); // Reset stars
+    document.getElementById('reviewText').value = '';
+    document.getElementById('ratingModal').classList.add('show');
+};
+
+window.closeRatingModal = () => {
+    document.getElementById('ratingModal').classList.remove('show');
+    window.dishToRateId = null;
+};
+
+window.setRating = (val) => {
+    window.currentRatingVal = val;
+    const stars = document.getElementById('starContainer').querySelectorAll('i');
+    stars.forEach((star, index) => {
+        if (index < val) {
+            star.classList.add('active');
+            star.classList.add('bounce-pop');
+            setTimeout(() => star.classList.remove('bounce-pop'), 400); // Remove animation class
+        } else {
+            star.classList.remove('active');
+        }
+    });
+    if(val > 0 && typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+};
+
+window.submitRating = async () => {
+    if (window.currentRatingVal === 0) {
+        window.showToast("Please select a star rating!");
+        return;
+    }
+    
+    const review = document.getElementById('reviewText').value;
+    window.showToast("Submitting...");
+    
+    try {
+        // Firebase me rating save karna
+        await addDoc(collection(db, "dish_ratings"), { 
+            dishId: window.dishToRateId, 
+            dishName: window.currentDish.name,
+            rating: window.currentRatingVal, 
+            review: review || "No review text",
+            timestamp: new Date() 
+        });
+        
+        window.closeRatingModal();
+        window.showToast("Thank you for your review! ⭐");
+        window.launchConfetti(); // Confetti chalegi mast lagta hai
+    } catch(e) {
+        window.showToast("Failed to submit rating.");
+    }
+};
+
+// 🔥 Tweak: Bounce cart icon when item added
+const originalAddCurrentToCart = window.addCurrentToCart;
+window.addCurrentToCart = (e) => {
+    originalAddCurrentToCart(e);
+    const cartIcon = document.getElementById('float-btn-view');
+    if(cartIcon) {
+        cartIcon.classList.remove('bounce-pop');
+        void cartIcon.offsetWidth; // Trigger reflow
+        cartIcon.classList.add('bounce-pop');
+    }
+};
