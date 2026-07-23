@@ -68,10 +68,6 @@
         
     </div>
 </div>
-<button onclick="logoutAdmin()" class="btn-logout">
-    <i class="ph-bold ph-sign-out"></i> Logout
-</button>
-    
     <div class="top-nav">
         <div style="display: flex; flex-direction: column;">
             <h1 class="brand-logo">NextPlate</h1>
@@ -213,6 +209,16 @@
                     <div class="setting-label">
                         <i class="ph-fill ph-bell-ringing"></i>
                         <div>
+                            <!-- Settings Section ke andar paste karna hai -->
+<div style="background: white; padding: 20px; border-radius: 20px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border-light, #eee);">
+    <h3 style="margin-bottom: 15px; color: var(--text-main, #1C1C1E); font-size: 16px;">Account Management</h3>
+    <p style="font-size: 13px; color: var(--text-sub, #757575); margin-bottom: 20px;">Manage your current admin session securely.</p>
+    
+    <button onclick="logoutAdmin()" class="btn-logout" style="width: 100%; justify-content: center; padding: 15px; font-size: 15px; border-radius: 14px;">
+        <i class="ph-bold ph-sign-out" style="font-size: 18px;"></i> Logout from Admin
+    </button>
+</div>
+                            
                             Sound Alerts
                             <span class="setting-desc">Play sound for new orders & alerts</span>
                         </div>
