@@ -14,8 +14,7 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     
-    <!-- 🔥 CACHE BUSTER LAGAYA HAI YAHAN (?v=2) -->
-    <link rel="stylesheet" href="admin.css?v=2">
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
     
@@ -34,32 +33,13 @@
         </div>
     </div>
 
-    <!-- 🔐 LOGIN SCREEN -->
-    <div id="loginScreen" class="premium-login-overlay">
-        <div class="premium-login-card">
-            <div class="login-logo-box">
-                <i class="ph-bold ph-lock-key"></i>
-            </div>
-            <h2 class="login-title">NextPlate Admin</h2>
-            <p class="login-subtitle">Welcome back! Please login to your dashboard.</p>
-            
-            <div class="input-group">
-                <input type="email" id="adminEmail" placeholder="Email Address">
-                <i class="ph-fill ph-envelope input-icon"></i>
-            </div>
-            
-            <div class="input-group">
-                <input type="password" id="adminPass" placeholder="Password">
-                <i class="ph-fill ph-lock-key input-icon"></i>
-            </div>
-            
-            <button id="loginBtn" class="premium-login-btn" onclick="loginAdmin()">
-                Login to Dashboard <i class="ph-bold ph-arrow-right"></i>
-            </button>
-            
-            <div class="login-footer">
-                Powered by <strong>NextPlate SaaS</strong>
-            </div>
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <h2>NextPlate</h2>
+            <p>Merchant Panel Login</p>
+            <input type="email" id="adminEmail" class="login-input" placeholder="Email Address" required>
+            <input type="password" id="adminPass" class="login-input" placeholder="Password" required>
+            <button class="btn-login" id="loginBtn" onclick="loginAdmin()">Login <i class="ph-bold ph-arrow-right"></i></button>
         </div>
     </div>
 
@@ -73,7 +53,7 @@
                 <i class="ph-bold ph-speaker-slash"></i> Enable Sound
             </button>
             <input type="date" id="reportDate" class="date-filter-box" onchange="initAdminData()">
-            <button class="btn-logout" onclick="location.reload()" style="background:var(--input-bg); border:1px solid var(--border); color:var(--text-main);"><i class="ph-bold ph-arrows-clockwise"></i></button>
+            <button class="btn-logout" onclick="location.reload()"><i class="ph-bold ph-arrows-clockwise"></i></button>
         </div>
     </div>
 
@@ -116,12 +96,14 @@
                     <h3><i class="ph-fill ph-book-open text-primary"></i> Menu Management</h3>
                     <button class="btn-add" onclick="openModal()"><i class="ph-bold ph-plus"></i> Add Dish</button>
                 </div>
+                
                 <div class="search-container">
                     <div class="search-input-wrapper">
                         <input type="text" class="search-input" id="adminSearchInput" placeholder="Search dishes..." onkeyup="filterAdminMenu()">
                         <i class="ph-bold ph-magnifying-glass" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:var(--text-sub);"></i>
                     </div>
                 </div>
+                
                 <div class="admin-cat-scroll" id="admin-category-filter">
                     <div class="admin-cat-pill active" onclick="filterAdminCat('All', this)">All</div>
                     <div class="admin-cat-pill" onclick="filterAdminCat('Starters', this)"><i class="ph-fill ph-fire"></i> Starters</div>
@@ -131,6 +113,7 @@
                     <div class="admin-cat-pill" onclick="filterAdminCat('Drinks', this)"><i class="ph-fill ph-brandy"></i> Drinks</div>
                     <div class="admin-cat-pill" onclick="filterAdminCat('Desserts', this)"><i class="ph-fill ph-ice-cream"></i> Desserts</div>
                 </div>
+
                 <div class="menu-list" id="menu-body">
                     <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Loading Menu...</div>
                 </div>
@@ -140,17 +123,21 @@
                 <div class="section-header">
                     <h3><i class="ph-fill ph-receipt text-primary"></i> Kitchen Orders</h3>
                 </div>
+
                 <div id="action-center-container" style="padding: 20px 20px 0 20px; display: none; background: var(--bg-main); border-bottom: 1px solid var(--border);">
                     <h4 style="margin: 0 0 12px 0; font-size: 14px; font-weight:800; display: flex; align-items: center; gap: 6px;"><i class="ph-fill ph-warning-circle" style="color:var(--danger);"></i> Action Center</h4>
                     <div id="action-alerts-list"></div>
                 </div>
+
                 <div class="admin-tracker-tabs">
                     <button id="tab-admin-live" class="admin-tab-btn active" onclick="switchAdminOrderTab('live')">Live Orders</button>
                     <button id="tab-admin-past" class="admin-tab-btn" onclick="switchAdminOrderTab('past')">Order History</button>
                 </div>
+
                 <div class="menu-list" id="admin-live-orders">
                     <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for new orders...</div>
                 </div>
+                
                 <div class="menu-list" id="admin-past-orders" style="display: none;">
                     <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No past orders for today.</div>
                 </div>
@@ -174,6 +161,7 @@
                 <div class="section-header" style="background: rgba(36,150,63,0.05);">
                     <h3><i class="ph-fill ph-chart-line-up" style="color:var(--success);"></i> Business Analytics</h3>
                 </div>
+                
                 <div class="history-date-header" style="background: var(--bg-card);">
                     <span>Revenue Insights 📊</span>
                     <select id="chartFilter" class="chart-filter-select" onchange="if(window.allCompletedOrdersForChart) updateRevenueChart(window.allCompletedOrdersForChart)">
@@ -188,66 +176,47 @@
                 </div>
             </div>
 
-            <!-- ⚙️ APP SETTINGS SECTION -->
             <div class="section-card view-section" id="section-settings">
                 <div class="section-header">
-                    <h3><i class="ph-fill ph-gear text-primary"></i> App Settings</h3>
+                    <h3><i class="ph-fill ph-gear"></i> App Settings</h3>
                 </div>
-                
-                <div style="padding: 20px;">
-                    <!-- Sound Alerts -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 15px;">
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            <i class="ph-fill ph-bell-ringing" style="font-size:24px; color:var(--danger);"></i>
-                            <div>
-                                <div style="font-weight:700; color:var(--text-main);">Sound Alerts</div>
-                                <div style="font-size:12px; color:var(--text-sub);">Play sound for new orders & alerts</div>
-                            </div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="soundToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <!-- Dark Mode -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 25px;">
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            <i class="ph-fill ph-moon" style="font-size:24px; color:var(--text-main);"></i>
-                            <div>
-                                <div style="font-weight:700; color:var(--text-main);">Dark Mode</div>
-                                <div style="font-size:12px; color:var(--text-sub);">Switch dashboard theme</div>
-                            </div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <!-- QR Code Block -->
-                    <div style="background: var(--input-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; text-align: center;">
-                        <h4 style="margin: 0 0 5px 0; color: var(--text-main); font-size: 16px;"><i class="ph-fill ph-qr-code"></i> Table QR Code</h4>
-                        <p style="color: var(--text-sub); font-size: 12px; margin-bottom: 15px;">Scan this to open Smart Menu</p>
-                        
-                        <div id="qrcode-box" style="display:inline-block; background:white; padding:10px; border-radius:12px; box-shadow:var(--shadow-soft);"></div>
-                        
-                        <input type="text" id="menu-link" value="https://itxarun.github.io/Smart-Menu/index.html?scan=true" readonly style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 15px; text-align: center; color: var(--text-sub); font-family: 'Poppins', sans-serif; background: var(--bg-card);">
-                        
-                        <button onclick="downloadQR()" style="width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; background: var(--primary-gradient, #E53935); color: white; border: none; margin-top: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;">
-                            <i class="ph-bold ph-download-simple"></i> Download Print
-                        </button>
-                    </div>
-
-                    <!-- Logout Button -->
-                    <div onclick="triggerLogout()" style="cursor: pointer; margin-top: 30px; text-align: center; background: rgba(229, 57, 53, 0.1); border-radius: 16px; padding: 15px; border: 1px solid rgba(229,57,53,0.2);">
-                        <div style="color: #E53935; font-weight: 700; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 8px;">
-                            <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout from Admin
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="ph-fill ph-bell-ringing"></i>
+                        <div>
+                            Sound Alerts
+                            <span class="setting-desc">Play sound for new orders & alerts</span>
                         </div>
                     </div>
+                    <label class="switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="ph-fill ph-moon-stars"></i>
+                        <div>
+                            Dark Mode
+                            <span class="setting-desc">Switch dashboard theme</span>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="section-header" style="border-top: 1px solid var(--border); margin-top:10px;">
+                    <h3><i class="ph-fill ph-qr-code"></i> Table QR Code</h3>
+                </div>
+                <div class="qr-container">
+                    <p style="color: var(--text-sub); font-size: 14px; margin: 0; font-weight: 600;">Scan this to open Smart Menu</p>
+                    <div id="qrcode-box"></div>
+                    <input type="text" id="menu-link" class="link-input" value="https://itxarun.github.io/Smart-Menu/index.html" readonly>
+                    <button class="btn-download" onclick="downloadQR()"><i class="ph-bold ph-download-simple"></i> Download Print Version</button>
                 </div>
             </div>
-            
+
         </div>
     </div>
 
@@ -325,23 +294,6 @@
         </div>
     </div>
 
-    <!-- 🔥 CACHE BUSTER LAGAYA HAI YAHAN (?v=2) -->
-    <script type="module" src="admin.js?v=2"></script>
-
-    <!-- 🚪 LOGOUT MODAL -->
-    <div class="modal-overlay" id="logoutConfirmModal">
-        <div class="modal-content" style="max-width: 320px; text-align: center; padding: 30px 20px;">
-            <div style="background: rgba(229,57,53,0.1); width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;">
-                <i class="ph-bold ph-sign-out" style="font-size: 32px; color: var(--danger, #E53935);"></i>
-            </div>
-            <h3 style="margin-bottom: 10px; color: var(--text-main, #1C1C1E);">Are you sure?</h3>
-            <p style="font-size: 13px; color: var(--text-sub, #757575); margin-bottom: 25px;">Do you really want to logout from the admin panel?</p>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-cancel" onclick="closeLogoutModal()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer;">No</button>
-                <button onclick="executeLogout()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: var(--danger, #E53935); color: white; box-shadow: 0 8px 20px rgba(229,57,53,0.3);">Yes, Logout</button>
-            </div>
-        </div>
-    </div>
-    
+    <script type="module" src="admin.js"></script>
 </body>
 </html>
