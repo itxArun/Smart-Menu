@@ -280,17 +280,25 @@ window.closeCancelModal = () => {
 
 window.confirmCancelOrder = async () => {
     if (!window.orderToCancelId) return;
+    
+    // 🔥 FIX: Modal band hone se pehle Order ID ko ek safe variable me save kar liya
+    const safeOrderId = window.orderToCancelId;
+    
+    // Ab modal band karo
     window.closeCancelModal();
     window.showToast("Cancelling...");
+    
     try { 
-        await updateDoc(doc(db, "orders", window.orderToCancelId), { status: 'Cancelled' }); 
-        window.showToast("Order Cancelled Successfully!"); 
-        window.triggerHapticPop();
+        // Safe ID ka use karke database me status update karo
+        await updateDoc(doc(db, "orders", safeOrderId), { status: 'Cancelled' }); 
+        window.showToast("Order Cancelled Successfully! ❌"); 
+        if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
     } catch(e) {
         console.error("Cancel Error:", e);
         window.showToast("Failed to cancel order.");
     }
 };
+
 
 window.filterCategory = function(cat, element) { window.activeCategory = cat; document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); element.classList.add('active'); window.applyFilters(); };
 
