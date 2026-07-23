@@ -210,14 +210,13 @@
                         <i class="ph-fill ph-bell-ringing"></i>
                         <div>
                             <!-- Settings Section ke andar paste karna hai -->
-<div style="background: white; padding: 20px; border-radius: 20px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border-light, #eee);">
-    <h3 style="margin-bottom: 15px; color: var(--text-main, #1C1C1E); font-size: 16px;">Account Management</h3>
-    <p style="font-size: 13px; color: var(--text-sub, #757575); margin-bottom: 20px;">Manage your current admin session securely.</p>
-    
-    <button onclick="logoutAdmin()" class="btn-logout" style="width: 100%; justify-content: center; padding: 15px; font-size: 15px; border-radius: 14px;">
-        <i class="ph-bold ph-sign-out" style="font-size: 18px;"></i> Logout from Admin
-    </button>
+<!-- Clean Minimal Logout Row -->
+<div class="setting-item" onclick="triggerLogout()" style="cursor: pointer; border-bottom: none; margin-top: 30px; justify-content: center; background: rgba(229, 57, 53, 0.05); border-radius: 16px; padding: 15px;">
+    <div style="color: var(--danger, #E53935); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+        <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout
+    </div>
 </div>
+
                             
                             Sound Alerts
                             <span class="setting-desc">Play sound for new orders & alerts</span>
