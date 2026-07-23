@@ -320,3 +320,25 @@ input:checked + .slider:before { transform: translateX(22px); }
 .crm-customer-row:hover { background: var(--input-bg); }
 .btn-wa { background: #25D366; color: white; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 13px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3); display: flex; align-items: center; gap: 6px; transition: var(--transition);}
 .btn-wa:active { transform: scale(0.95); }
+/* 🚪 LOGOUT BUTTON */
+.btn-logout {
+    background: rgba(229, 57, 53, 0.1);
+    color: var(--danger, #E53935);
+    border: 1px solid rgba(229, 57, 53, 0.2);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s ease;
+}
+
+.btn-logout:hover {
+    background: var(--danger, #E53935);
+    color: white;
+    box-shadow: 0 4px 10px rgba(229, 57, 53, 0.3);
+}
