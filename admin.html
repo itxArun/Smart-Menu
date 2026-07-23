@@ -35,39 +35,40 @@
     </div>
 
     <!-- 🔐 PREMIUM SAAS ADMIN LOGIN SCREEN -->
-<div id="loginScreen" class="premium-login-overlay">
-    <div class="premium-login-card">
-        
-        <div class="login-logo-box">
-            <i class="ph-bold ph-lock-key"></i>
+    <div id="loginScreen" class="premium-login-overlay">
+        <div class="premium-login-card">
+            
+            <div class="login-logo-box">
+                <i class="ph-bold ph-lock-key"></i>
+            </div>
+            
+            <h2 class="login-title">NextPlate Admin</h2>
+            <p class="login-subtitle">Welcome back! Please login to your dashboard.</p>
+            
+            <!-- Email Input -->
+            <div class="input-group">
+                <input type="email" id="adminEmail" placeholder="Email Address">
+                <i class="ph-fill ph-envelope input-icon"></i>
+            </div>
+            
+            <!-- Password Input -->
+            <div class="input-group">
+                <input type="password" id="adminPass" placeholder="Password">
+                <i class="ph-fill ph-lock-key input-icon"></i>
+            </div>
+            
+            <!-- Login Button -->
+            <button id="loginBtn" class="premium-login-btn" onclick="loginAdmin()">
+                Login to Dashboard <i class="ph-bold ph-arrow-right"></i>
+            </button>
+            
+            <div class="login-footer">
+                Powered by <strong>NextPlate SaaS</strong>
+            </div>
+            
         </div>
-        
-        <h2 class="login-title">NextPlate Admin</h2>
-        <p class="login-subtitle">Welcome back! Please login to your dashboard.</p>
-        
-        <!-- Email Input -->
-        <div class="input-group">
-            <input type="email" id="adminEmail" placeholder="Email Address">
-            <i class="ph-fill ph-envelope input-icon"></i>
-        </div>
-        
-        <!-- Password Input -->
-        <div class="input-group">
-            <input type="password" id="adminPass" placeholder="Password">
-            <i class="ph-fill ph-lock-key input-icon"></i>
-        </div>
-        
-        <!-- Login Button -->
-        <button id="loginBtn" class="premium-login-btn" onclick="loginAdmin()">
-            Login to Dashboard <i class="ph-bold ph-arrow-right"></i>
-        </button>
-        
-        <div class="login-footer">
-            Powered by <strong>NextPlate SaaS</strong>
-        </div>
-        
     </div>
-</div>
+
     <div class="top-nav">
         <div style="display: flex; flex-direction: column;">
             <h1 class="brand-logo">NextPlate</h1>
@@ -78,7 +79,8 @@
                 <i class="ph-bold ph-speaker-slash"></i> Enable Sound
             </button>
             <input type="date" id="reportDate" class="date-filter-box" onchange="initAdminData()">
-            <button class="btn-logout" onclick="location.reload()"><i class="ph-bold ph-arrows-clockwise"></i></button>
+            <!-- Refresh button subtly placed -->
+            <button class="btn-logout" onclick="location.reload()" style="background:var(--input-bg); border:1px solid var(--border); color:var(--text-main);"><i class="ph-bold ph-arrows-clockwise"></i></button>
         </div>
     </div>
 
@@ -201,83 +203,67 @@
                 </div>
             </div>
 
+            <!-- ⚙️ SETTINGS SECTION (FIXED & CLEANED) -->
             <div class="section-card view-section" id="section-settings">
                 <div class="section-header">
-                    <h3><i class="ph-fill ph-gear"></i> App Settings</h3>
+                    <h3><i class="ph-fill ph-gear text-primary"></i> App Settings</h3>
                 </div>
-                <!-- ⚙️ SETTINGS SECTION -->
-<div id="section-settings" class="view-section">
-    <h2 style="margin-bottom: 20px; color: var(--text-main); font-weight: 800; font-size: 22px;">
-        <i class="ph-bold ph-gear"></i> App Settings
-    </h2>
-    
-    <!-- Sound Alerts -->
-    <div class="setting-item">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <i class="ph-fill ph-bell-ringing" style="font-size:24px; color:var(--danger);"></i>
-            <div>
-                <div style="font-weight:700; color:var(--text-main);">Sound Alerts</div>
-                <div style="font-size:12px; color:var(--text-sub);">Play sound for new orders & alerts</div>
-            </div>
-        </div>
-        <label class="toggle-switch">
-            <input type="checkbox" id="soundToggle" checked>
-            <span class="slider"></span>
-        </label>
-    </div>
-
-    <!-- Dark Mode -->
-    <div class="setting-item">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <i class="ph-fill ph-moon" style="font-size:24px; color:var(--danger);"></i>
-            <div>
-                <div style="font-weight:700; color:var(--text-main);">Dark Mode</div>
-                <div style="font-size:12px; color:var(--text-sub);">Switch dashboard theme</div>
-            </div>
-        </div>
-        <label class="toggle-switch">
-            <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
-            <span class="slider"></span>
-        </label>
-    </div>
-
-    <!-- QR Code -->
-    <div class="setting-item" style="border-bottom:none; flex-direction:column; align-items:flex-start;">
-        <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px; width:100%;">
-            <i class="ph-fill ph-qr-code" style="font-size:24px; color:var(--text-main);"></i>
-            <div style="font-weight:700; color:var(--text-main);">Table QR Code</div>
-        </div>
-        <div style="width:100%; text-align:center; padding:20px 0;">
-            <div style="font-size:13px; color:var(--text-sub); margin-bottom:15px; font-weight:600;">Scan this to open Smart Menu</div>
-            <div id="qrcode-box" style="background:white; padding:15px; border-radius:20px; display:inline-block; box-shadow:var(--shadow-soft);"></div>
-            <input type="hidden" id="menu-link" value="https://itxarun.github.io/Smart-Menu/?scan=true">
-            <button class="btn-action-new" style="background:var(--primary-gradient); margin-top:20px; width:100%; justify-content:center;" onclick="downloadQR()">
-                <i class="ph-bold ph-download-simple"></i> Download Standee
-            </button>
-        </div>
-    </div>
-
-    <!-- 🔥 EKDAM NICHE: CLEAN LOGOUT BUTTON 🔥 -->
-    <div class="setting-item" onclick="triggerLogout()" style="cursor: pointer; border-bottom: none; margin-top: 20px; justify-content: center; background: rgba(229, 57, 53, 0.05); border-radius: 16px; padding: 15px;">
-        <div style="color: var(--danger, #E53935); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-            <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout
-        </div>
-    </div>
-    
-    <!-- Mobile bottom nav ke liye extra space -->
-    <div style="height: 100px;"></div>
-</div>
-
-                <div class="section-header" style="border-top: 1px solid var(--border); margin-top:10px;">
-                    <h3><i class="ph-fill ph-qr-code"></i> Table QR Code</h3>
+                
+                <!-- Sound Alerts -->
+                <div class="setting-item" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <i class="ph-fill ph-bell-ringing" style="font-size:24px; color:var(--danger);"></i>
+                        <div>
+                            <div style="font-weight:700; color:var(--text-main);">Sound Alerts</div>
+                            <div style="font-size:12px; color:var(--text-sub);">Play sound for new orders & alerts</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider"></span>
+                    </label>
                 </div>
-                <div class="qr-container">
-                    <p style="color: var(--text-sub); font-size: 14px; margin: 0; font-weight: 600;">Scan this to open Smart Menu</p>
-                    <div id="qrcode-box"></div>
-                    <input type="text" id="menu-link" class="link-input" value="https://itxarun.github.io/Smart-Menu/index.html?scan=true" readonly>
 
-                    <button class="btn-download" onclick="downloadQR()"><i class="ph-bold ph-download-simple"></i> Download Print Version</button>
+                <!-- Dark Mode -->
+                <div class="setting-item" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <i class="ph-fill ph-moon" style="font-size:24px; color:var(--text-main);"></i>
+                        <div>
+                            <div style="font-weight:700; color:var(--text-main);">Dark Mode</div>
+                            <div style="font-size:12px; color:var(--text-sub);">Switch dashboard theme</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
                 </div>
+
+                <!-- QR Code -->
+                <div class="section-header" style="border-top: none; margin-top:10px;">
+                    <h3><i class="ph-fill ph-qr-code text-primary"></i> Table QR Code</h3>
+                </div>
+                <div class="qr-container" style="padding: 20px; text-align: center;">
+                    <p style="color: var(--text-sub); font-size: 14px; margin: 0 0 15px 0; font-weight: 600;">Scan this to open Smart Menu</p>
+                    <div id="qrcode-box" style="background:white; padding:15px; border-radius:20px; display:inline-block; box-shadow:var(--shadow-soft);"></div>
+                    
+                    <!-- Original Input layout restored -->
+                    <input type="text" id="menu-link" class="link-input" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-top: 15px; text-align: center; color: var(--text-sub); font-family: 'Poppins', sans-serif;" value="https://itxarun.github.io/Smart-Menu/index.html?scan=true" readonly>
+                    
+                    <button class="btn-download" style="width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; background: var(--primary-gradient, linear-gradient(135deg, #E53935, #FF5252)); color: white; border: none; margin-top: 15px; box-shadow: 0 8px 20px rgba(226, 55, 68, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif;" onclick="downloadQR()">
+                        <i class="ph-bold ph-download-simple"></i> Download Print Version
+                    </button>
+                </div>
+
+                <!-- 🔥 CLEAN LOGOUT BUTTON AT THE VERY BOTTOM 🔥 -->
+                <div onclick="triggerLogout()" style="cursor: pointer; margin: 20px; text-align: center; background: rgba(229, 57, 53, 0.05); border-radius: 16px; padding: 15px; border: 1px solid rgba(229,57,53,0.15); transition: 0.2s;">
+                    <div style="color: var(--danger, #E53935); font-weight: 700; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                        <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout
+                    </div>
+                </div>
+                
+                <!-- Mobile bottom nav ke liye extra space -->
+                <div style="height: 100px;"></div>
             </div>
 
         </div>
@@ -359,23 +345,24 @@
 
     <!-- Link to external JS -->
     <script type="module" src="admin.js"></script>
-<!-- 🚪 LOGOUT CONFIRMATION MODAL -->
-<div class="modal-overlay" id="logoutConfirmModal">
-    <div class="modal-content" style="max-width: 320px; text-align: center; padding: 30px 20px;">
-        
-        <div style="background: rgba(229,57,53,0.1); width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;">
-            <i class="ph-bold ph-sign-out" style="font-size: 32px; color: var(--danger, #E53935);"></i>
-        </div>
-        
-        <h3 style="margin-bottom: 10px; color: var(--text-main, #1C1C1E);">Are you sure?</h3>
-        <p style="font-size: 13px; color: var(--text-sub, #757575); margin-bottom: 25px;">Do you really want to logout from the admin panel?</p>
-        
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-cancel" onclick="closeLogoutModal()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer;">No</button>
-            <button onclick="executeLogout()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: var(--danger, #E53935); color: white; box-shadow: 0 8px 20px rgba(229,57,53,0.3);">Yes, Logout</button>
+
+    <!-- 🚪 LOGOUT CONFIRMATION MODAL -->
+    <div class="modal-overlay" id="logoutConfirmModal">
+        <div class="modal-content" style="max-width: 320px; text-align: center; padding: 30px 20px;">
+            
+            <div style="background: rgba(229,57,53,0.1); width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;">
+                <i class="ph-bold ph-sign-out" style="font-size: 32px; color: var(--danger, #E53935);"></i>
+            </div>
+            
+            <h3 style="margin-bottom: 10px; color: var(--text-main, #1C1C1E);">Are you sure?</h3>
+            <p style="font-size: 13px; color: var(--text-sub, #757575); margin-bottom: 25px;">Do you really want to logout from the admin panel?</p>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-cancel" onclick="closeLogoutModal()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer;">No</button>
+                <button onclick="executeLogout()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: var(--danger, #E53935); color: white; box-shadow: 0 8px 20px rgba(229,57,53,0.3);">Yes, Logout</button>
+            </div>
         </div>
     </div>
-</div>
     
 </body>
 </html>
