@@ -32,7 +32,6 @@ setTimeout(() => {
     window.updateGlobalCartUI();
 }, 500);
 
-
 window.closeCoinModal = () => document.getElementById('coinModal').classList.remove('show');
 window.toggleTracker = () => document.getElementById('tracker-modal').classList.toggle('show');
 window.switchOrderTab = (tab) => {
@@ -109,7 +108,7 @@ window.quickAddFav = (id) => {
     if(dish) {
         const key = `${dish.id}_full`;
         if(window.cart[key]) window.cart[key].qty++; else window.cart[key] = { id: dish.id, name: dish.name, price: dish.price, variant: '', qty: 1 };
-        window.saveCart(); // 🔥 Cart save
+        window.saveCart(); 
         window.triggerHapticPop(); window.showToast("Added to Cart!");
         window.updateGlobalCartUI(); if(window.currentDish && window.currentDish.id === id) window.checkCartForCurrentDish();
     }
@@ -214,7 +213,6 @@ window.renderMultiTracker = function() {
 
         let itemsList = data.items.map(i => `<span style="display:block; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.02);"><b>${i.qty}x</b> ${i.name}</span>`).join('');
         
-        // 🔥 DATE AND TIME FIX 🔥
         let orderTime = '';
         if (data.timestamp) {
             const d = data.timestamp.toDate();
@@ -267,7 +265,6 @@ window.renderMultiTracker = function() {
     if (pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
 }
 
-// 🔥 CUSTOM CANCEL ORDER LOGIC 🔥
 window.orderToCancelId = null;
 
 window.cancelCustomerOrder = (orderId) => {
@@ -283,11 +280,8 @@ window.closeCancelModal = () => {
 
 window.confirmCancelOrder = async () => {
     if (!window.orderToCancelId) return;
-    
-    // Modal band karo aur processing dikhao
     window.closeCancelModal();
     window.showToast("Cancelling...");
-    
     try { 
         await updateDoc(doc(db, "orders", window.orderToCancelId), { status: 'Cancelled' }); 
         window.showToast("Order Cancelled Successfully!"); 
@@ -297,7 +291,6 @@ window.confirmCancelOrder = async () => {
         window.showToast("Failed to cancel order.");
     }
 };
-
 
 window.filterCategory = function(cat, element) { window.activeCategory = cat; document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); element.classList.add('active'); window.applyFilters(); };
 
@@ -414,7 +407,6 @@ window.checkCartForCurrentDish = () => {
     } else { wrapper.classList.remove('show-stepper'); }
 };
 
-// 🔥 CART PERSISTENCE ADD LOGIC 🔥
 window.addCurrentToCart = (e) => {
     const key = window.getCartKey(); let price = window.currentDish.price; let variantText = '';
     if (window.currentVariant === 'half') { price = window.currentDish.priceHalf; variantText = '(Half)'; }
@@ -422,23 +414,19 @@ window.addCurrentToCart = (e) => {
 
     window.cart[key] = { id: window.currentDish.id, name: window.currentDish.name, price: price, variant: variantText, qty: 1 };
     
-    window.saveCart(); // Save cart to memory
-    
+    window.saveCart(); 
     window.triggerHapticPop(); window.createFlyingDot(e); window.showToast("Added to Cart!");
     window.updateGlobalCartUI(); window.checkCartForCurrentDish();
 };
 
 window.changeCurrentQty = (delta) => { const key = window.getCartKey(); window.changeCartQty(key, delta); };
 
-// 🔥 CART PERSISTENCE CHANGE LOGIC 🔥
 window.changeCartQty = (key, delta) => { 
     if (window.cart[key]) { 
         window.cart[key].qty += delta; 
         if (window.cart[key].qty <= 0) delete window.cart[key]; 
     } 
-    
-    window.saveCart(); // Save cart to memory
-    
+    window.saveCart(); 
     window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
 };
 
@@ -462,7 +450,6 @@ window.updateGlobalCartUI = () => {
         floatingBar.classList.add('show'); 
         if(bottomUi) bottomUi.style.paddingBottom = "140px";
 
-        // Scroll fix 
         setTimeout(() => { 
             const mainContent = document.querySelector('.main-content');
             if(mainContent) {
@@ -503,10 +490,9 @@ window.renderCartModal = () => {
     document.getElementById('bill-final').innerText = '₹' + totalPrice;
 };
 
-// 🔥 CART PERSISTENCE DELETE LOGIC 🔥
 window.deleteCartItem = (key) => { 
     delete window.cart[key]; 
-    window.saveCart(); // Save cart to memory
+    window.saveCart(); 
     window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
 };
 
@@ -532,7 +518,6 @@ window.initDiningSession = () => {
     
     if (urlParams.get('scan') === 'true') {
         localStorage.setItem('dining_session_start', new Date().getTime());
-        // URL se ?scan=true hata do taaki link clean rahe
         urlParams.delete('scan');
         let newUrl = window.location.pathname;
         if(urlParams.toString().length > 0) newUrl += '?' + urlParams.toString();
@@ -551,18 +536,14 @@ window.openInAppScanner = () => {
     
     window.html5QrcodeScanner = new Html5Qrcode("reader");
     window.html5QrcodeScanner.start(
-        { facingMode: "environment" }, // Back Camera use karega
+        { facingMode: "environment" }, 
         { fps: 10, qrbox: { width: 250, height: 250 } },
         (decodedText, decodedResult) => {
-            // Check karega ki URL me scan=true hai ya nahi
             if(decodedText.includes('scan=true')) {
                 window.html5QrcodeScanner.stop().then(() => {
                     document.getElementById('qrScannerModal').classList.remove('show');
-                    
-                    // Time reset kardo
                     localStorage.setItem('dining_session_start', new Date().getTime());
                     document.getElementById('customAlert').classList.remove('show');
-                    
                     if(typeof window.showToast === 'function') window.showToast("Table Verified! Menu Unlocked. 🔓");
                     if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
                 });
@@ -570,7 +551,7 @@ window.openInAppScanner = () => {
                 if(typeof window.showToast === 'function') window.showToast("Invalid QR! Please scan the table QR.");
             }
         },
-        (errorMessage) => { /* Background errors ignore karega */ }
+        (errorMessage) => { /* Ignore errors */ }
     ).catch((err) => {
         alert("Camera permission is required to scan the QR code.");
         window.closeScanner();
@@ -604,7 +585,6 @@ window.checkSessionValid = () => {
             document.getElementById('alertMessage').after(existingP);
         }
         
-        // 🔥 Naya Camera Scan Button 🔥
         existingP.innerHTML = `Your dining session of ${SESSION_LIMIT_HOURS} hours has ended.<br><br>
         <button onclick="openInAppScanner()" style="background:var(--primary-gradient); color:white; border:none; padding:15px; border-radius:50px; font-weight:800; cursor:pointer; margin-top:10px; width: 100%; box-shadow: 0 4px 15px rgba(229,57,53,0.3); display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 15px;">
             <i class="ph-bold ph-camera" style="font-size: 22px;"></i> Scan QR to Unlock
@@ -617,41 +597,9 @@ window.checkSessionValid = () => {
     return true;
 };
 
-// App load hote hi session check start kardo
-window.initDiningSession();
-
-
-window.checkSessionValid = () => {
-    const startTime = localStorage.getItem('dining_session_start');
-    if (!startTime) return true; 
-    
-    const now = new Date().getTime();
-    const diffHours = (now - parseInt(startTime)) / (1000 * 60 * 60);
-    
-    if (diffHours > SESSION_LIMIT_HOURS) {
-        document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-clock" style="color: var(--danger); font-size: 55px;"></i>';
-        document.getElementById('alertMessage').innerText = 'Session Expired!';
-        
-        let alertBox = document.querySelector('#customAlert .alert-box');
-        let existingP = alertBox.querySelector('.split-desc');
-        if(!existingP) {
-            existingP = document.createElement('p'); existingP.className = 'split-desc';
-            existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px';
-            document.getElementById('alertMessage').after(existingP);
-        }
-        existingP.innerHTML = `Your dining session of ${SESSION_LIMIT_HOURS} hours has ended.<br><br><strong style="color:var(--danger); font-size:15px;">Please scan the table QR code again to continue.</strong>`;
-        
-        document.getElementById('customAlert').classList.add('show');
-        if(navigator.vibrate) navigator.vibrate([50, 100, 50]);
-        return false;
-    }
-    return true;
-};
-
 window.initDiningSession();
 
 window.placeOrder = async () => {
-    // Session Guard check
     if (!window.checkSessionValid()) {
         window.toggleCart(); 
         return;
@@ -676,9 +624,8 @@ window.placeOrder = async () => {
         let activeOrdersList = []; try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
         activeOrdersList.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); window.listenToLiveOrder(docRef.id); 
 
-        // 🔥 CART CLEAR HONA CHAHIYE ORDER KE BAAD 🔥
         window.cart = {}; 
-        localStorage.removeItem('nextplate_cart'); // Memory se remove
+        localStorage.removeItem('nextplate_cart'); 
         
         document.getElementById('cookingNotes').value = ''; window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1"; window.launchConfetti(); 
         
@@ -702,10 +649,7 @@ savedOrdersList.forEach(id => window.listenToLiveOrder(id));
 
 fetchTrendingDishes();
 
-onSnapshot(collection(db, "menu_items"), (snapshot) => {
 // 🔥 SUPER FAST MENU LOADING (CACHE LOGIC) 🔥
-
-// Step 1: Pehle Local Memory (Cache) se menu load karo (0.1 Second load time)
 try {
     const cachedMenu = localStorage.getItem('nextplate_menu_cache');
     if (cachedMenu) {
@@ -719,7 +663,6 @@ try {
     console.error("Cache load failed", e);
 }
 
-// Step 2: Background me Firebase se live data sync karo
 onSnapshot(collection(db, "menu_items"), (snapshot) => {
     let tempDishes = [];
     snapshot.forEach((doc) => { 
@@ -739,22 +682,15 @@ onSnapshot(collection(db, "menu_items"), (snapshot) => {
     });
     
     window.allDishes = tempDishes;
-    
-    // Naya data cache me save kar do future ke liye
     localStorage.setItem('nextplate_menu_cache', JSON.stringify(window.allDishes));
     
     window.applyFilters(); 
-    // Sirf tab load karo agar pehle se load nahi hua hai (UI refresh glitch rokne ke liye)
     if (window.allDishes.length > 0 && !window.currentDish) {
         window.loadDish(window.allDishes[0]);
     }
 }, (error) => { 
     console.error("Firebase Snapshot Error:", error); 
 });
-
-    window.applyFilters(); if (window.allDishes.length > 0 && !window.currentDish) window.loadDish(window.allDishes[0]);
-}, (error) => { console.error("Firebase Snapshot Error:", error); });
-
 
 window.toggleDarkMode = () => {
     const body = document.body;
@@ -778,7 +714,6 @@ window.addEventListener('load', () => {
         if(themeIcon) themeIcon.classList.replace('ph-moon', 'ph-sun');
     }
 });
-
 
 // 🚀 100% BULLETPROOF SPLIT BILL LOGIC 🚀
 window.calculateSplitBill = window.openSplitPrompt = function(e) {
