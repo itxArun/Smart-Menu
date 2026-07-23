@@ -34,15 +34,40 @@
         </div>
     </div>
 
-    <div class="login-screen" id="loginScreen">
-        <div class="login-card">
-            <h2>NextPlate</h2>
-            <p>Merchant Panel Login</p>
-            <input type="email" id="adminEmail" class="login-input" placeholder="Email Address" required>
-            <input type="password" id="adminPass" class="login-input" placeholder="Password" required>
-            <button class="btn-login" id="loginBtn" onclick="loginAdmin()">Login <i class="ph-bold ph-arrow-right"></i></button>
+    <!-- 🔐 PREMIUM SAAS ADMIN LOGIN SCREEN -->
+<div id="loginScreen" class="premium-login-overlay">
+    <div class="premium-login-card">
+        
+        <div class="login-logo-box">
+            <i class="ph-bold ph-lock-key"></i>
         </div>
+        
+        <h2 class="login-title">NextPlate Admin</h2>
+        <p class="login-subtitle">Welcome back! Please login to your dashboard.</p>
+        
+        <!-- Email Input -->
+        <div class="input-group">
+            <input type="email" id="adminEmail" placeholder="Email Address">
+            <i class="ph-fill ph-envelope input-icon"></i>
+        </div>
+        
+        <!-- Password Input -->
+        <div class="input-group">
+            <input type="password" id="adminPass" placeholder="Password">
+            <i class="ph-fill ph-lock-key input-icon"></i>
+        </div>
+        
+        <!-- Login Button -->
+        <button id="loginBtn" class="premium-login-btn" onclick="loginAdmin()">
+            Login to Dashboard <i class="ph-bold ph-arrow-right"></i>
+        </button>
+        
+        <div class="login-footer">
+            Powered by <strong>NextPlate SaaS</strong>
+        </div>
+        
     </div>
+</div>
 
     <div class="top-nav">
         <div style="display: flex; flex-direction: column;">
