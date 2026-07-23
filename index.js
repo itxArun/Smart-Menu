@@ -916,3 +916,7 @@ window.addCurrentToCart = (e) => {
         cartIcon.classList.add('bounce-pop');
     }
 };
+// App load hote hi session initialize karna
+window.addEventListener('DOMContentLoaded', () => {
+    initSession();
+});
