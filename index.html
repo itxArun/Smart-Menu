@@ -293,17 +293,18 @@
             if (loader && loader.style.display !== "none") { loader.style.opacity = "0"; setTimeout(() => loader.style.display = "none", 500); }
         }, 2500); 
     </script>
-        <!-- 🚀 IN-APP QR SCANNER MODAL 🚀 -->
-    <div class="custom-confirm" id="qrScannerModal" style="z-index: 9999;">
-        <div class="confirm-box" style="padding: 20px; max-width: 350px;">
+            <!-- 🚀 IN-APP QR SCANNER MODAL (UI FIXED) 🚀 -->
+    <div class="custom-alert" id="qrScannerModal" style="z-index: 9999;">
+        <div class="alert-box" style="padding: 20px; max-width: 350px;">
             <h3 style="margin-bottom: 5px; font-size: 18px; color: var(--text-main);">Scan Table QR</h3>
             <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 15px;">Point your camera at the table QR code to unlock menu.</p>
             
             <div id="reader" style="width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary);"></div>
             
-            <button class="btn-cancel" style="width: 100%; margin-top: 15px; background: var(--input-bg); color: var(--text-main); font-weight: 700; border: none; padding: 15px; border-radius: 12px; cursor: pointer;" onclick="closeScanner()">Cancel</button>
+            <button class="btn-cancel" style="width: 100%; margin-top: 15px; background: var(--bg-light, #eee); color: var(--text-main); font-weight: 700; border: none; padding: 15px; border-radius: 12px; cursor: pointer;" onclick="closeScanner()">Cancel</button>
         </div>
     </div>
+
 
     <script type="module" src="index.js"></script>
 </body>
