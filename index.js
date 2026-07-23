@@ -685,35 +685,6 @@ try {
     console.error("Cache load failed", e);
 }
 
-onSnapshot(collection(db, "menu_items"), (snapshot) => {
-    let tempDishes = [];
-    snapshot.forEach((doc) => { 
-        let d = doc.data();
-        if (d.inStock !== false) { 
-            let parsedImages = [];
-            if (d.images && Array.isArray(d.images)) parsedImages = d.images;
-            else if (d.image && typeof d.image === 'string') parsedImages = [d.image];
-            else if (d.imageUrl && typeof d.imageUrl === 'string') parsedImages = [d.imageUrl];
-
-            tempDishes.push({ 
-                id: doc.id, name: d.name || "Special Dish", emoji: d.emoji || "🍲", category: d.category || "Veg", 
-                price: d.price || 0, priceHalf: d.priceHalf || null, pricePiece: d.pricePiece || null, 
-                modelUrl: d.modelUrl || "", images: parsedImages 
-            }); 
-        }
-    });
-    
-    window.allDishes = tempDishes;
-    localStorage.setItem('nextplate_menu_cache', JSON.stringify(window.allDishes));
-    
-    window.applyFilters(); 
-    if (window.allDishes.length > 0 && !window.currentDish) {
-        window.loadDish(window.allDishes[0]);
-    }
-}, (error) => { 
-    console.error("Firebase Snapshot Error:", error); 
-});
-
 window.toggleDarkMode = () => {
     const body = document.body;
     const themeIcon = document.getElementById('theme-icon');
@@ -807,6 +778,7 @@ window.confirmSplitBill = function() {
         window.showToast("Kam se kam 2 log chahiye bro!");
     }
 };
+
 // =========================================================
 // 🗣️ VOICE TO TEXT FOR CHEF NOTES
 // =========================================================
@@ -917,6 +889,7 @@ window.addCurrentToCart = (e) => {
         cartIcon.classList.add('bounce-pop');
     }
 };
+
 // Database Se Data Laane Ka Naya Function
 async function loadDynamicMenu() {
     try {
@@ -927,19 +900,28 @@ async function loadDynamicMenu() {
         const categories = await APIService.getCategories();
         const dishes = await APIService.getDishes();
 
-        // 2. Console me print karke check kar rahe hain
-        console.log("🏢 Restaurant Data:", restaurant);
-        console.log("📂 Categories:", categories);
-        console.log("🍲 Dishes:", dishes);
-
         if (!restaurant) {
             console.error("❌ Restaurant not found! Default ID use ho rahi hai.");
             return;
         }
 
-        // 3. App ka Title dynamic kar rahe hain
+        // 2. App ka Title set karna
         document.title = `${restaurant.name} - Smart Menu`;
-        console.log("✅ Data Load Successful!");
+
+        // 🔥 3. ASLI MAGIC: Naye data ko Screen Par Bhejna 🔥
+        window.allDishes = dishes;
+        
+        // Isse left side ka menu/sidebar update hoga
+        if (typeof window.applyFilters === 'function') {
+            window.applyFilters();
+        }
+        
+        // Isse pehli dish automatically screen par center me load ho jayegi
+        if (window.allDishes.length > 0) {
+            window.loadDish(window.allDishes[0]);
+        }
+        
+        console.log("✅ Data Load & Render Successful!");
         
     } catch(e) {
         console.error("❌ Data load error:", e);
