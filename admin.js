@@ -165,11 +165,25 @@ window.loginAdmin = () => {
     }); //[span_108](start_span)[span_108](end_span)
 }; //[span_109](start_span)[span_109](end_span)
 
-window.logoutAdmin = () => { signOut(auth); }; //[span_110](start_span)[span_110](end_span)
+// 🔥 Naya Smart Logout System
+window.triggerLogout = () => {
+    document.getElementById('logoutConfirmModal').classList.add('show');
+};
 
-window.resolveAction = async (collectionName, id) => {
-    try { await updateDoc(doc(db, collectionName, id), { status: "Resolved" }); } catch(e) { console.error("Resolution Failed: ", e); } //[span_111](start_span)[span_111](end_span)
-}; //[span_112](start_span)[span_112](end_span)
+window.closeLogoutModal = () => {
+    document.getElementById('logoutConfirmModal').classList.remove('show');
+};
+
+window.executeLogout = () => {
+    const btn = document.querySelector('#logoutConfirmModal button:last-child');
+    btn.innerHTML = 'Wait <i class="ph-bold ph-spinner ph-spin"></i>'; 
+    btn.disabled = true;
+    
+    signOut(auth).then(() => {
+        window.closeLogoutModal();
+        // Firebase Auth apne aap login screen dikha dega
+    });
+};
 
 window.sendPromoWhatsApp = (phone) => {
     const msg = encodeURIComponent(document.getElementById('promoMessage').value || "Hello! Here is a special offer from NextPlate for you. Visit us again soon!"); //[span_113](start_span)[span_113](end_span)
