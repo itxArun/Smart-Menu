@@ -623,3 +623,23 @@ window.toggleTheme = () => {
        window.updateRevenueChart(window.allCompletedOrdersForChart); 
     }
 }; 
+import { signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"; // (Agar file ke upar pehle se hai toh ise hata dena)
+
+window.triggerLogout = () => {
+    document.getElementById('logoutConfirmModal').classList.add('show');
+};
+
+window.closeLogoutModal = () => {
+    document.getElementById('logoutConfirmModal').classList.remove('show');
+};
+
+window.executeLogout = () => {
+    const btn = document.querySelector('#logoutConfirmModal button:last-child');
+    btn.innerHTML = 'Wait <i class="ph-bold ph-spinner ph-spin"></i>'; 
+    btn.disabled = true;
+    
+    signOut(auth).then(() => {
+        window.closeLogoutModal();
+        // Tumhara 'onAuthStateChanged' function automatic login screen dikha dega
+    });
+};
