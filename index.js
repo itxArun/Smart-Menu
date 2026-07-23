@@ -917,7 +917,40 @@ window.addCurrentToCart = (e) => {
         cartIcon.classList.add('bounce-pop');
     }
 };
-// App load hote hi session initialize karna
+// Database Se Data Laane Ka Naya Function
+async function loadDynamicMenu() {
+    try {
+        console.log("⏳ Fetching data from Database...");
+        
+        // 1. Adapter se data manga rahe hain
+        const restaurant = await APIService.getRestaurant();
+        const categories = await APIService.getCategories();
+        const dishes = await APIService.getDishes();
+
+        // 2. Console me print karke check kar rahe hain
+        console.log("🏢 Restaurant Data:", restaurant);
+        console.log("📂 Categories:", categories);
+        console.log("🍲 Dishes:", dishes);
+
+        if (!restaurant) {
+            console.error("❌ Restaurant not found! Default ID use ho rahi hai.");
+            return;
+        }
+
+        // 3. App ka Title dynamic kar rahe hain
+        document.title = `${restaurant.name} - Smart Menu`;
+        console.log("✅ Data Load Successful!");
+        
+    } catch(e) {
+        console.error("❌ Data load error:", e);
+    }
+}
+
+// App load hote hi Session aur Data dono start karna
 window.addEventListener('DOMContentLoaded', () => {
-    initSession();
+    // Ye line ensure karegi ki memory me restaurant ki ID set ho
+    if(typeof initSession === 'function') initSession();
+    
+    // Naya data load karo
+    loadDynamicMenu();
 });
