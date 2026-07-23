@@ -1,1 +1,25 @@
+{
+  "restaurants": {
+    "rest_001": {
+      "name": "Thanos Kitchen",
+      "currency": "₹",
+      "isOpen": true
+    },
+    "rest_002": {
+      "name": "NextPlate Cafe",
+      "currency": "₹",
+      "isOpen": true
+    }
+  },
+  "categories": [
+    { "id": "cat_1", "restaurantId": "rest_001", "name": "Starters", "emoji": "🍲" },
+    { "id": "cat_2", "restaurantId": "rest_001", "name": "Main Course", "emoji": "🍛" },
+    { "id": "cat_3", "restaurantId": "rest_002", "name": "Pizzas", "emoji": "🍕" }
+  ],
+  "dishes": [
+    { "id": "d_1", "restaurantId": "rest_001", "categoryId": "cat_1", "name": "Paneer Tikka", "price": 199, "type": "veg" },
+    { "id": "d_2", "restaurantId": "rest_001", "categoryId": "cat_2", "name": "Butter Chicken", "price": 299, "type": "non-veg" },
+    { "id": "d_3", "restaurantId": "rest_002", "categoryId": "cat_3", "name": "Margherita Pizza", "price": 149, "type": "veg" }
+  ]
+}
 
