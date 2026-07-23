@@ -205,41 +205,69 @@
                 <div class="section-header">
                     <h3><i class="ph-fill ph-gear"></i> App Settings</h3>
                 </div>
-                <div class="setting-row">
-                    <div class="setting-label">
-                        <i class="ph-fill ph-bell-ringing"></i>
-                        <div>
-                            <!-- Settings Section ke andar paste karna hai -->
-<!-- Clean Minimal Logout Row -->
-<div class="setting-item" onclick="triggerLogout()" style="cursor: pointer; border-bottom: none; margin-top: 30px; justify-content: center; background: rgba(229, 57, 53, 0.05); border-radius: 16px; padding: 15px;">
-    <div style="color: var(--danger, #E53935); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-        <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout
+                <!-- ⚙️ SETTINGS SECTION -->
+<div id="section-settings" class="view-section">
+    <h2 style="margin-bottom: 20px; color: var(--text-main); font-weight: 800; font-size: 22px;">
+        <i class="ph-bold ph-gear"></i> App Settings
+    </h2>
+    
+    <!-- Sound Alerts -->
+    <div class="setting-item">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <i class="ph-fill ph-bell-ringing" style="font-size:24px; color:var(--danger);"></i>
+            <div>
+                <div style="font-weight:700; color:var(--text-main);">Sound Alerts</div>
+                <div style="font-size:12px; color:var(--text-sub);">Play sound for new orders & alerts</div>
+            </div>
+        </div>
+        <label class="toggle-switch">
+            <input type="checkbox" id="soundToggle" checked>
+            <span class="slider"></span>
+        </label>
     </div>
+
+    <!-- Dark Mode -->
+    <div class="setting-item">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <i class="ph-fill ph-moon" style="font-size:24px; color:var(--danger);"></i>
+            <div>
+                <div style="font-weight:700; color:var(--text-main);">Dark Mode</div>
+                <div style="font-size:12px; color:var(--text-sub);">Switch dashboard theme</div>
+            </div>
+        </div>
+        <label class="toggle-switch">
+            <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- QR Code -->
+    <div class="setting-item" style="border-bottom:none; flex-direction:column; align-items:flex-start;">
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px; width:100%;">
+            <i class="ph-fill ph-qr-code" style="font-size:24px; color:var(--text-main);"></i>
+            <div style="font-weight:700; color:var(--text-main);">Table QR Code</div>
+        </div>
+        <div style="width:100%; text-align:center; padding:20px 0;">
+            <div style="font-size:13px; color:var(--text-sub); margin-bottom:15px; font-weight:600;">Scan this to open Smart Menu</div>
+            <div id="qrcode-box" style="background:white; padding:15px; border-radius:20px; display:inline-block; box-shadow:var(--shadow-soft);"></div>
+            <input type="hidden" id="menu-link" value="https://itxarun.github.io/Smart-Menu/?scan=true">
+            <button class="btn-action-new" style="background:var(--primary-gradient); margin-top:20px; width:100%; justify-content:center;" onclick="downloadQR()">
+                <i class="ph-bold ph-download-simple"></i> Download Standee
+            </button>
+        </div>
+    </div>
+
+    <!-- 🔥 EKDAM NICHE: CLEAN LOGOUT BUTTON 🔥 -->
+    <div class="setting-item" onclick="triggerLogout()" style="cursor: pointer; border-bottom: none; margin-top: 20px; justify-content: center; background: rgba(229, 57, 53, 0.05); border-radius: 16px; padding: 15px;">
+        <div style="color: var(--danger, #E53935); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+            <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout
+        </div>
+    </div>
+    
+    <!-- Mobile bottom nav ke liye extra space -->
+    <div style="height: 100px;"></div>
 </div>
 
-                            
-                            Sound Alerts
-                            <span class="setting-desc">Play sound for new orders & alerts</span>
-                        </div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="soundToggle" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="setting-row">
-                    <div class="setting-label">
-                        <i class="ph-fill ph-moon-stars"></i>
-                        <div>
-                            Dark Mode
-                            <span class="setting-desc">Switch dashboard theme</span>
-                        </div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
-                        <span class="slider"></span>
-                    </label>
-                </div>
                 <div class="section-header" style="border-top: 1px solid var(--border); margin-top:10px;">
                     <h3><i class="ph-fill ph-qr-code"></i> Table QR Code</h3>
                 </div>
