@@ -522,19 +522,104 @@ window.launchConfetti = function() {
     animate(); window.triggerHapticPop();
 }
 
-// 🚀 SPAM PROTECTION: 2-HOUR SESSION SECURITY LOGIC 🚀
-const SESSION_LIMIT_HOURS = 2; 
+// =========================================================
+// 🚀 2-HOUR SESSION SECURITY & IN-APP SCANNER LOGIC 🚀
+// =========================================================
+const SESSION_LIMIT_HOURS = 2; // (Check karne ke liye ise 0.001 kar sakte ho)
 
 window.initDiningSession = () => {
     const urlParams = new URLSearchParams(window.location.search);
+    
     if (urlParams.get('scan') === 'true') {
         localStorage.setItem('dining_session_start', new Date().getTime());
-        window.history.replaceState({}, document.title, window.location.pathname);
+        // URL se ?scan=true hata do taaki link clean rahe
+        urlParams.delete('scan');
+        let newUrl = window.location.pathname;
+        if(urlParams.toString().length > 0) newUrl += '?' + urlParams.toString();
+        window.history.replaceState({}, document.title, newUrl);
     } 
     else if (!localStorage.getItem('dining_session_start')) {
         localStorage.setItem('dining_session_start', new Date().getTime());
     }
 };
+
+window.html5QrcodeScanner = null;
+
+window.openInAppScanner = () => {
+    document.getElementById('qrScannerModal').classList.add('show');
+    if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+    
+    window.html5QrcodeScanner = new Html5Qrcode("reader");
+    window.html5QrcodeScanner.start(
+        { facingMode: "environment" }, // Back Camera use karega
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText, decodedResult) => {
+            // Check karega ki URL me scan=true hai ya nahi
+            if(decodedText.includes('scan=true')) {
+                window.html5QrcodeScanner.stop().then(() => {
+                    document.getElementById('qrScannerModal').classList.remove('show');
+                    
+                    // Time reset kardo
+                    localStorage.setItem('dining_session_start', new Date().getTime());
+                    document.getElementById('customAlert').classList.remove('show');
+                    
+                    if(typeof window.showToast === 'function') window.showToast("Table Verified! Menu Unlocked. 🔓");
+                    if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+                });
+            } else {
+                if(typeof window.showToast === 'function') window.showToast("Invalid QR! Please scan the table QR.");
+            }
+        },
+        (errorMessage) => { /* Background errors ignore karega */ }
+    ).catch((err) => {
+        alert("Camera permission is required to scan the QR code.");
+        window.closeScanner();
+    });
+};
+
+window.closeScanner = () => {
+    if(window.html5QrcodeScanner) {
+        window.html5QrcodeScanner.stop().catch(e => console.log(e));
+    }
+    document.getElementById('qrScannerModal').classList.remove('show');
+};
+
+window.checkSessionValid = () => {
+    const startTime = localStorage.getItem('dining_session_start');
+    if (!startTime) return true; 
+    
+    const now = new Date().getTime();
+    const diffHours = (now - parseInt(startTime)) / (1000 * 60 * 60);
+    
+    if (diffHours > SESSION_LIMIT_HOURS) {
+        document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-clock" style="color: var(--danger); font-size: 55px;"></i>';
+        document.getElementById('alertMessage').innerText = 'Session Expired!';
+        
+        let alertBox = document.querySelector('#customAlert .alert-box');
+        let existingP = alertBox.querySelector('.split-desc');
+        
+        if(!existingP) {
+            existingP = document.createElement('p'); existingP.className = 'split-desc';
+            existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px';
+            document.getElementById('alertMessage').after(existingP);
+        }
+        
+        // 🔥 Naya Camera Scan Button 🔥
+        existingP.innerHTML = `Your dining session of ${SESSION_LIMIT_HOURS} hours has ended.<br><br>
+        <button onclick="openInAppScanner()" style="background:var(--primary-gradient); color:white; border:none; padding:15px; border-radius:50px; font-weight:800; cursor:pointer; margin-top:10px; width: 100%; box-shadow: 0 4px 15px rgba(229,57,53,0.3); display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 15px;">
+            <i class="ph-bold ph-camera" style="font-size: 22px;"></i> Scan QR to Unlock
+        </button>`;
+        
+        document.getElementById('customAlert').classList.add('show');
+        if(navigator.vibrate) navigator.vibrate([50, 100, 50]);
+        return false;
+    }
+    return true;
+};
+
+// App load hote hi session check start kardo
+window.initDiningSession();
+
 
 window.checkSessionValid = () => {
     const startTime = localStorage.getItem('dining_session_start');
