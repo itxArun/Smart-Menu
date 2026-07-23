@@ -629,34 +629,79 @@ window.placeOrder = async () => {
 
     if (Object.keys(window.cart).length === 0) { alert("Please add items to your cart first!"); return; }
     
-    const tableNo = document.getElementById('tableNumber').value; const custName = document.getElementById('customerName').value;
-    const custPhone = document.getElementById('customerPhone').value; const notes = document.getElementById('cookingNotes').value; 
+    const tableNo = document.getElementById('tableNumber').value; 
+    const custName = document.getElementById('customerName').value;
+    const custPhone = document.getElementById('customerPhone').value; 
+    const notes = document.getElementById('cookingNotes').value; 
 
     if (window.currentOrderType === 'Dine-in' && !tableNo) { alert("Please enter your Table Number!"); return; }
     if (window.currentOrderType === 'Takeaway' && !custName) { alert("Please enter your name for takeaway!"); return; }
 
-    const btn = document.getElementById('checkoutBtn'); btn.innerHTML = 'Processing...'; btn.style.background = "#FF9F00"; btn.style.boxShadow = "none"; btn.disabled = true;
+    const btn = document.getElementById('checkoutBtn'); 
+    btn.innerHTML = 'Processing...'; btn.style.background = "#FF9F00"; btn.style.boxShadow = "none"; btn.disabled = true;
     const modalContent = document.querySelector('.cart-content'); modalContent.style.opacity = "0.5";
 
     let orderItems = []; let grandTotal = 0;
-    for (let k in window.cart) { orderItems.push({ id: window.cart[k].id || "", name: window.cart[k].name || "", price: window.cart[k].price || 0, variant: window.cart[k].variant || "", qty: window.cart[k].qty || 1 }); grandTotal += (window.cart[k].price * window.cart[k].qty); }
+    for (let k in window.cart) { 
+        orderItems.push({ 
+            id: window.cart[k].id || "", 
+            name: window.cart[k].name || "", 
+            price: window.cart[k].price || 0, 
+            variant: window.cart[k].variant || "", 
+            qty: window.cart[k].qty || 1 
+        }); 
+        grandTotal += (window.cart[k].price * window.cart[k].qty); 
+    }
+
+    // 🔥 SAAS UPDATE: Session se ID nikal rahe hain 🔥
+    const session = getSessionData();
 
     try {
-        const docRef = await addDoc(collection(db, "orders"), { orderType: window.currentOrderType || "Dine-in", tableNumber: String(tableNo || "N/A"), customerName: String(custName || "N/A"), customerPhone: String(custPhone || "N/A"), chefNotes: String(notes || "None"), items: orderItems, totalAmount: Number(grandTotal), status: 'New', paymentMethod: 'Cash', timestamp: new Date() });
-        let activeOrdersList = []; try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
-        activeOrdersList.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); window.listenToLiveOrder(docRef.id); 
+        const docRef = await addDoc(collection(db, "orders"), { 
+            restaurantId: session.rid, // 🚀 YAHAN MAIN TAG AAYA HAI 🚀
+            orderType: window.currentOrderType || "Dine-in", 
+            tableNumber: String(tableNo || "N/A"), 
+            customerName: String(custName || "N/A"), 
+            customerPhone: String(custPhone || "N/A"), 
+            chefNotes: String(notes || "None"), 
+            items: orderItems, 
+            totalAmount: Number(grandTotal), 
+            status: 'New', 
+            paymentMethod: 'Cash', 
+            timestamp: new Date() 
+        });
+        
+        let activeOrdersList = []; 
+        try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
+        activeOrdersList.push(docRef.id); 
+        localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); 
+        window.listenToLiveOrder(docRef.id); 
 
         window.cart = {}; 
         localStorage.removeItem('nextplate_cart'); 
         
-        document.getElementById('cookingNotes').value = ''; window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1"; window.launchConfetti(); 
+        document.getElementById('cookingNotes').value = ''; 
+        window.updateGlobalCartUI(); 
+        window.checkCartForCurrentDish(); 
+        window.toggleCart(); 
+        modalContent.style.opacity = "1"; 
+        window.launchConfetti(); 
         
         setTimeout(() => { let earnedCoins = Math.floor(grandTotal / 10); document.getElementById('earnedCoins').innerText = earnedCoins; document.getElementById('coinModal').classList.add('show'); window.triggerHapticPop(); }, 1000);
         setTimeout(() => { window.switchOrderTab('live'); window.toggleTracker(); }, 3500); 
 
-    } catch (e) { console.error("FIREBASE ERROR: ", e); modalContent.style.opacity = "1"; alert("Order Failed. Check connection."); } 
-    finally { btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; btn.style.background = "var(--primary-gradient)"; btn.style.boxShadow = "0 8px 25px rgba(226, 55, 68, 0.3)"; btn.disabled = false; }
+    } catch (e) { 
+        console.error("FIREBASE ERROR: ", e); 
+        modalContent.style.opacity = "1"; 
+        alert("Order Failed. Check connection."); 
+    } finally { 
+        btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; 
+        btn.style.background = "var(--primary-gradient)"; 
+        btn.style.boxShadow = "0 8px 25px rgba(226, 55, 68, 0.3)"; 
+        btn.disabled = false; 
+    }
 };
+
 
 async function fetchTrendingDishes() {
     try {
