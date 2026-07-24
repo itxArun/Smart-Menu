@@ -111,11 +111,72 @@
                 </div>
             </div>
 
-            <div class="section-card view-section active" id="section-menu">
-                <div class="section-header">
-                    <h3><i class="ph-fill ph-book-open text-primary"></i> Menu Management</h3>
-                    <button class="btn-add" onclick="openModal()"><i class="ph-bold ph-plus"></i> Add Dish</button>
+                        <!-- 📊 PREMIUM SAAS STATS DASHBOARD -->
+            <div class="section-card view-section" id="section-stats">
+                <div class="section-header" style="background: rgba(36,150,63,0.05);">
+                    <h3><i class="ph-fill ph-chart-pie-slice" style="color:var(--success);"></i> Business Analytics</h3>
                 </div>
+                
+                <!-- Revenue Overview -->
+                <div class="advanced-stats-grid" style="border-bottom: 1px solid var(--border);">
+                    <div class="mini-stat-card premium-hover">
+                        <span class="mini-stat-title">Revenue Today</span>
+                        <span class="mini-stat-val skeleton" id="rev-today">₹0</span>
+                    </div>
+                    <div class="mini-stat-card premium-hover">
+                        <span class="mini-stat-title">This Week</span>
+                        <span class="mini-stat-val skeleton" id="rev-week" style="color: var(--info);">₹0</span>
+                    </div>
+                    <div class="mini-stat-card premium-hover" style="grid-column: span 2; align-items: center;">
+                        <span class="mini-stat-title">Monthly Revenue</span>
+                        <span class="mini-stat-val skeleton" id="rev-month" style="font-size: 28px; color: var(--success);">₹0</span>
+                    </div>
+                </div>
+
+                <!-- Order Funnel -->
+                <div class="history-date-header" style="background: var(--bg-card);">Order Funnel Today</div>
+                <div class="advanced-stats-grid" style="padding-top: 10px;">
+                    <div class="mini-stat-card"><span class="mini-stat-title">Today's Orders</span><span class="mini-stat-val skeleton counter" id="saas-total-orders">0</span></div>
+                    <div class="mini-stat-card"><span class="mini-stat-title" style="color:var(--info);">Pending (New)</span><span class="mini-stat-val skeleton counter" id="saas-pending">0</span></div>
+                    <div class="mini-stat-card"><span class="mini-stat-title" style="color:var(--warning);">Preparing</span><span class="mini-stat-val skeleton counter" id="saas-preparing">0</span></div>
+                    <div class="mini-stat-card"><span class="mini-stat-title" style="color:var(--success);">Served</span><span class="mini-stat-val skeleton counter" id="saas-served">0</span></div>
+                    <div class="mini-stat-card"><span class="mini-stat-title" style="color:var(--danger);">Cancelled</span><span class="mini-stat-val skeleton counter" id="saas-cancelled">0</span></div>
+                </div>
+
+                <!-- Trending Insights -->
+                <div class="history-date-header" style="background: var(--bg-card); border-top: 1px solid var(--border);">Trending Insights</div>
+                <div style="padding: 20px; background: var(--bg-main);">
+                    <div class="mini-stat-card premium-hover" style="margin-bottom: 15px; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span class="mini-stat-title">Top Selling Dish</span>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--text-main);" class="skeleton" id="top-dish-name">Loading...</div>
+                        </div>
+                        <i class="ph-fill ph-fire" style="font-size: 32px; color: var(--primary);"></i>
+                    </div>
+                    <div class="mini-stat-card premium-hover" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span class="mini-stat-title">Popular Category</span>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--text-main);" class="skeleton" id="top-cat-name">Loading...</div>
+                        </div>
+                        <i class="ph-fill ph-chart-bar" style="font-size: 32px; color: var(--info);"></i>
+                    </div>
+                </div>
+
+                <!-- Interactive Chart -->
+                <div class="history-date-header" style="background: var(--bg-card); border-top: 1px solid var(--border);">
+                    <span>Revenue Trend 📊</span>
+                    <select id="chartFilter" class="chart-filter-select" onchange="if(window.allCompletedOrdersForChart) updateRevenueChart(window.allCompletedOrdersForChart)">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <div style="padding: 20px; text-align: center; background: var(--bg-card); display:flex; flex-direction:column; align-items:center;">
+                    <canvas id="revenueBarChart" style="width: 100%; max-height: 250px;"></canvas>
+                    <p id="best-day-text" style="font-size:14px; font-weight:800; color:var(--success); margin-top:15px; margin-bottom:0;"></p>
+                </div>
+            </div>
+
                 
                 <div class="search-container">
                     <div class="search-input-wrapper">
