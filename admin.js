@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+// 🔥 ADDED getDocs FOR DYNAMIC LOGIN 🔥
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 // 🔥 FIREBASE CONFIGURATION 🔥
@@ -16,9 +17,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-window.currentRestaurantId = 'rest_001';
+// ❌ Purani fixed ID hata di hai. Ab ID login ke baad automatically set hogi!
+window.currentRestaurantId = null; 
 
-// 🛡️ SAFE UI INIT (Bina delay ke direct load hoga)
+// 🛡️ SAFE UI INIT 
 if(typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
     Chart.register(ChartDataLabels);
 }
@@ -26,7 +28,7 @@ const dateInput = document.getElementById('reportDate');
 if(dateInput) dateInput.valueAsDate = new Date();
 
 // ==========================================
-// 🔐 AUTHENTICATION & LOGOUT LOGIC
+// 🔐 AUTHENTICATION & DYNAMIC SAAS LOGIN LOGIC
 // ==========================================
 window.loginAdmin = () => {
     const email = document.getElementById('adminEmail').value.trim();
@@ -43,26 +45,16 @@ window.loginAdmin = () => {
         btn.disabled = true;
     }
     
-    signInWithEmailAndPassword(auth, email, pass)
-        .then((userCredential) => {
-            const loginScreen = document.getElementById('loginScreen');
-            if(loginScreen) loginScreen.style.display = 'none';
-            if(btn) {
-                btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
-                btn.disabled = false;
-            }
-            if(typeof window.initAdminData === 'function') window.initAdminData();
-        })
-        .catch(error => {
-            alert("Login Failed: " + error.message);
-            if(btn) {
-                btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
-                btn.disabled = false;
-            }
-        });
+    signInWithEmailAndPassword(auth, email, pass).catch(error => {
+        alert("Login Failed: " + error.message);
+        if(btn) {
+            btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
+            btn.disabled = false;
+        }
+    });
 };
 
-// 🔥 100% GUARANTEED CLICK & ENTER KEY LOGIC 🔥
+// 100% GUARANTEED CLICK & ENTER KEY LOGIC
 const loginBtn = document.getElementById('loginBtn');
 if(loginBtn) {
     loginBtn.onclick = window.loginAdmin;
@@ -70,21 +62,42 @@ if(loginBtn) {
 const passInput = document.getElementById('adminPass');
 if(passInput) {
     passInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            window.loginAdmin();
-        }
+        if (e.key === 'Enter') window.loginAdmin();
     });
 }
 
-onAuthStateChanged(auth, (user) => {
+// 🚀 ASLI SAAS JADOO: FETCH MERCHANT DATA ON LOGIN 🚀
+onAuthStateChanged(auth, async (user) => {
     const loginScreen = document.getElementById('loginScreen');
-    if(loginScreen) {
-        if (user) { 
-            loginScreen.style.display = 'none'; 
+    if (user) { 
+        try {
+            // Firebase se check karo ki ye email kis hotel ka hai
+            const q = query(collection(db, "merchants"), where("email", "==", user.email));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                const merchantData = querySnapshot.docs[0].data();
+                window.currentRestaurantId = merchantData.restaurantId; 
+                
+                // 🔥 Dashboard par Hotel ka naam dynamic kar diya 🔥
+                const brandLogo = document.querySelector('.brand-logo');
+                if(brandLogo) brandLogo.innerText = merchantData.restaurantName || "NextPlate";
+            } else {
+                // Agar Firebase me entry nahi mili, toh default chalega
+                window.currentRestaurantId = 'rest_001';
+            }
+
+            if(loginScreen) loginScreen.style.display = 'none'; 
             if(typeof window.initAdminData === 'function') window.initAdminData(); 
-        } else { 
-            loginScreen.style.display = 'flex'; 
+
+        } catch (error) {
+            console.error("Error fetching merchant data:", error);
+            window.currentRestaurantId = 'rest_001'; // Fallback
+            if(loginScreen) loginScreen.style.display = 'none'; 
+            if(typeof window.initAdminData === 'function') window.initAdminData();
         }
+    } else { 
+        if(loginScreen) loginScreen.style.display = 'flex'; 
     }
 });
 
