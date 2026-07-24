@@ -18,13 +18,19 @@ const auth = getAuth(app);
 
 window.currentRestaurantId = 'rest_001';
 
-// 🛡️ SAFE UI INIT (Taki koi chiz crash na ho)
+// 🛡️ SAFE UI INIT (Taki button 100% click ho)
 document.addEventListener('DOMContentLoaded', () => {
     if(typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
         Chart.register(ChartDataLabels);
     }
     const dateInput = document.getElementById('reportDate');
     if(dateInput) dateInput.valueAsDate = new Date();
+    
+    // 🚀 100% Guaranteed Click Listener
+    const loginBtn = document.getElementById('loginBtn');
+    if(loginBtn) {
+        loginBtn.addEventListener('click', window.loginAdmin);
+    }
 });
 
 // ==========================================
@@ -43,8 +49,8 @@ onAuthStateChanged(auth, (user) => {
 });
 
 window.loginAdmin = () => {
-    const email = document.getElementById('adminEmail').value;
-    const pass = document.getElementById('adminPass').value;
+    const email = document.getElementById('adminEmail').value.trim();
+    const pass = document.getElementById('adminPass').value.trim();
     const btn = document.getElementById('loginBtn');
     
     if(!email || !pass) {
@@ -52,14 +58,29 @@ window.loginAdmin = () => {
         return;
     }
 
-    btn.innerHTML = 'Loading <i class="ph-bold ph-spinner ph-spin"></i>'; 
-    btn.disabled = true;
+    if(btn) {
+        btn.innerHTML = 'Loading <i class="ph-bold ph-spinner ph-spin"></i>'; 
+        btn.disabled = true;
+    }
     
-    signInWithEmailAndPassword(auth, email, pass).catch(error => {
-        alert("Login Failed: " + error.message);
-        btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
-        btn.disabled = false;
-    });
+    signInWithEmailAndPassword(auth, email, pass)
+        .then((userCredential) => {
+            // 🔥 Login Successful, Force Hide Screen
+            const loginScreen = document.getElementById('loginScreen');
+            if(loginScreen) loginScreen.style.display = 'none';
+            if(btn) {
+                btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
+                btn.disabled = false;
+            }
+            if(typeof window.initAdminData === 'function') window.initAdminData();
+        })
+        .catch(error => {
+            alert("Login Failed: " + error.message);
+            if(btn) {
+                btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
+                btn.disabled = false;
+            }
+        });
 };
 
 window.triggerLogout = () => {
@@ -412,6 +433,7 @@ window.initAdminData = function() {
     });
 }
 
+// Remaining Utility Functions 
 window.filterAdminCat = (cat, element) => {
     document.querySelectorAll('.admin-cat-pill').forEach(p => p.classList.remove('active'));
     element.classList.add('active');
