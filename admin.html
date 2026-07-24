@@ -14,7 +14,7 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     
-    <link rel="stylesheet" href="admin.css?v=6">
+    <link rel="stylesheet" href="admin.css?v=7">
     
     <!-- 🔥 SAAS PREMIUM ANIMATIONS 🔥 -->
     <style>
@@ -131,10 +131,11 @@
                     <button class="btn-add" onclick="openModal()"><i class="ph-bold ph-plus"></i> Add Dish</button>
                 </div>
                 
+                <!-- 🔥 SEARCH BOX FIX 🔥 -->
                 <div class="search-container">
-                    <div class="search-input-wrapper">
-                        <input type="text" class="search-input" id="adminSearchInput" placeholder="Search dishes..." onkeyup="filterAdminMenu()">
-                        <i class="ph-bold ph-magnifying-glass" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:var(--text-sub);"></i>
+                    <div class="search-input-wrapper" style="position: relative; width: 100%;">
+                        <input type="text" class="search-input" id="adminSearchInput" placeholder="Search dishes..." onkeyup="filterAdminMenu()" style="width: 100%; box-sizing: border-box; padding-right: 45px;">
+                        <i class="ph-bold ph-magnifying-glass" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-sub); font-size: 18px; pointer-events: none;"></i>
                     </div>
                 </div>
                 
@@ -375,9 +376,9 @@
                 <p style="font-size: 11px; color: var(--text-sub); margin-top: -5px; margin-bottom: 15px; font-weight:500;">Provide image URLs. Customers can swipe these photos.</p>
                 
                 <input type="url" id="dishPhoto1" class="input-field" placeholder="1. Main Photo URL (Required)" style="margin-bottom: 12px; background: var(--bg-card);" required>
-                <input type="url" id="dishPhoto2" class="input-field" placeholder="2. Extra Photo URL (Optional)" style="margin-bottom: 12px; background: var(--bg-card);">
-                <input type="url" id="dishPhoto3" class="input-field" placeholder="3. Extra Photo URL (Optional)" style="margin-bottom: 12px; background: var(--bg-card);">
-                <input type="url" id="dishPhoto4" class="input-field" placeholder="4. Extra Photo URL (Optional)" style="background: var(--bg-card);">
+                <input type="url" id="dishPhoto2" class="input-field" placeholder="2. Extra Photo URL (Optional)" style="margin-bottom: 12px; background: var(--bg-card);" required>
+                <input type="url" id="dishPhoto3" class="input-field" placeholder="3. Extra Photo URL (Optional)" style="margin-bottom: 12px; background: var(--bg-card);" required>
+                <input type="url" id="dishPhoto4" class="input-field" placeholder="4. Extra Photo URL (Optional)" style="background: var(--bg-card);" required>
             </div>
 
             <button class="btn-save" id="saveBtn" onclick="saveDish()"><i class="ph-bold ph-floppy-disk"></i> Save & Publish</button>
@@ -399,6 +400,6 @@
         </div>
     </div>
 
-    <script type="module" src="admin.js?v=6"></script>
+    <script type="module" src="admin.js?v=7"></script>
 </body>
 </html>
