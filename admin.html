@@ -14,8 +14,22 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     
-    <!-- 🔥 CACHE BUSTER v3 -->
-    <link rel="stylesheet" href="admin.css?v=3">
+    <link rel="stylesheet" href="admin.css?v=6">
+    
+    <!-- 🔥 SAAS PREMIUM ANIMATIONS 🔥 -->
+    <style>
+        .premium-hover { transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .premium-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(229, 57, 53, 0.15); border-color: rgba(229, 57, 53, 0.3); z-index: 10;}
+        
+        .skeleton { background: linear-gradient(90deg, var(--input-bg) 25%, var(--bg-card) 50%, var(--input-bg) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 8px; color: transparent !important; pointer-events: none; user-select: none; }
+        .skeleton * { visibility: hidden; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        .advanced-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; background: var(--bg-main); }
+        .mini-stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
+        .mini-stat-title { font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+        .mini-stat-val { font-size: 20px; font-weight: 800; color: var(--text-main); }
+    </style>
 </head>
 <body>
     
@@ -34,7 +48,7 @@
         </div>
     </div>
 
-    <!-- 🔐 PREMIUM LOGIN SCREEN (FIXED) -->
+    <!-- 🔐 PREMIUM LOGIN SCREEN -->
     <div id="loginScreen" class="premium-login-overlay">
         <div class="premium-login-card">
             <div class="login-logo-box">
@@ -111,7 +125,73 @@
                 </div>
             </div>
 
-                        <!-- 📊 PREMIUM SAAS STATS DASHBOARD -->
+            <div class="section-card view-section active" id="section-menu">
+                <div class="section-header">
+                    <h3><i class="ph-fill ph-book-open text-primary"></i> Menu Management</h3>
+                    <button class="btn-add" onclick="openModal()"><i class="ph-bold ph-plus"></i> Add Dish</button>
+                </div>
+                
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" class="search-input" id="adminSearchInput" placeholder="Search dishes..." onkeyup="filterAdminMenu()">
+                        <i class="ph-bold ph-magnifying-glass" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:var(--text-sub);"></i>
+                    </div>
+                </div>
+                
+                <div class="admin-cat-scroll" id="admin-category-filter">
+                    <div class="admin-cat-pill active" onclick="filterAdminCat('All', this)">All</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Starters', this)"><i class="ph-fill ph-fire"></i> Starters</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Main Course', this)"><i class="ph-fill ph-cooking-pot"></i> Main Course</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Breads', this)"><i class="ph-fill ph-bread"></i> Breads</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Rice', this)"><i class="ph-fill ph-bowl-steam"></i> Rice</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Drinks', this)"><i class="ph-fill ph-brandy"></i> Drinks</div>
+                    <div class="admin-cat-pill" onclick="filterAdminCat('Desserts', this)"><i class="ph-fill ph-ice-cream"></i> Desserts</div>
+                </div>
+
+                <div class="menu-list" id="menu-body">
+                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Loading Menu...</div>
+                </div>
+            </div>
+
+            <div class="section-card view-section" id="section-orders">
+                <div class="section-header">
+                    <h3><i class="ph-fill ph-receipt text-primary"></i> Kitchen Orders</h3>
+                </div>
+
+                <div id="action-center-container" style="padding: 20px 20px 0 20px; display: none; background: var(--bg-main); border-bottom: 1px solid var(--border);">
+                    <h4 style="margin: 0 0 12px 0; font-size: 14px; font-weight:800; display: flex; align-items: center; gap: 6px;"><i class="ph-fill ph-warning-circle" style="color:var(--danger);"></i> Action Center</h4>
+                    <div id="action-alerts-list"></div>
+                </div>
+
+                <div class="admin-tracker-tabs">
+                    <button id="tab-admin-live" class="admin-tab-btn active" onclick="switchAdminOrderTab('live')">Live Orders</button>
+                    <button id="tab-admin-past" class="admin-tab-btn" onclick="switchAdminOrderTab('past')">Order History</button>
+                </div>
+
+                <div class="menu-list" id="admin-live-orders">
+                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for new orders...</div>
+                </div>
+                
+                <div class="menu-list" id="admin-past-orders" style="display: none;">
+                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No past orders for today.</div>
+                </div>
+            </div>
+
+            <div class="section-card view-section" id="section-crm">
+                <div class="section-header">
+                    <h3><i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i> WhatsApp CRM</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <p style="font-size: 13px; color: var(--text-sub); margin-top: 0; font-weight:500;">Send promotional offers directly to your past customers via WhatsApp.</p>
+                    <textarea id="promoMessage" class="input-field" placeholder="Type your discount offer here... (e.g. Get 20% OFF this weekend! Use code: WEEKEND20)" style="height: 100px; resize: none; margin-bottom: 15px;"></textarea>
+                </div>
+                <div class="history-date-header">Customer Database</div>
+                <div class="menu-list" id="crm-body">
+                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-bold ph-spinner ph-spin" style="font-size:24px;"></i><br>Loading customers...</div>
+                </div>
+            </div>
+
+            <!-- 📊 PREMIUM SAAS STATS DASHBOARD -->
             <div class="section-card view-section" id="section-stats">
                 <div class="section-header" style="background: rgba(36,150,63,0.05);">
                     <h3><i class="ph-fill ph-chart-pie-slice" style="color:var(--success);"></i> Business Analytics</h3>
@@ -177,90 +257,12 @@
                 </div>
             </div>
 
-                
-                <div class="search-container">
-                    <div class="search-input-wrapper">
-                        <input type="text" class="search-input" id="adminSearchInput" placeholder="Search dishes..." onkeyup="filterAdminMenu()">
-                        <i class="ph-bold ph-magnifying-glass" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:var(--text-sub);"></i>
-                    </div>
-                </div>
-                
-                <div class="admin-cat-scroll" id="admin-category-filter">
-                    <div class="admin-cat-pill active" onclick="filterAdminCat('All', this)">All</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Starters', this)"><i class="ph-fill ph-fire"></i> Starters</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Main Course', this)"><i class="ph-fill ph-cooking-pot"></i> Main Course</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Breads', this)"><i class="ph-fill ph-bread"></i> Breads</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Rice', this)"><i class="ph-fill ph-bowl-steam"></i> Rice</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Drinks', this)"><i class="ph-fill ph-brandy"></i> Drinks</div>
-                    <div class="admin-cat-pill" onclick="filterAdminCat('Desserts', this)"><i class="ph-fill ph-ice-cream"></i> Desserts</div>
-                </div>
-
-                <div class="menu-list" id="menu-body">
-                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Loading Menu...</div>
-                </div>
-            </div>
-
-            <div class="section-card view-section" id="section-orders">
-                <div class="section-header">
-                    <h3><i class="ph-fill ph-receipt text-primary"></i> Kitchen Orders</h3>
-                </div>
-
-                <div id="action-center-container" style="padding: 20px 20px 0 20px; display: none; background: var(--bg-main); border-bottom: 1px solid var(--border);">
-                    <h4 style="margin: 0 0 12px 0; font-size: 14px; font-weight:800; display: flex; align-items: center; gap: 6px;"><i class="ph-fill ph-warning-circle" style="color:var(--danger);"></i> Action Center</h4>
-                    <div id="action-alerts-list"></div>
-                </div>
-
-                <div class="admin-tracker-tabs">
-                    <button id="tab-admin-live" class="admin-tab-btn active" onclick="switchAdminOrderTab('live')">Live Orders</button>
-                    <button id="tab-admin-past" class="admin-tab-btn" onclick="switchAdminOrderTab('past')">Order History</button>
-                </div>
-
-                <div class="menu-list" id="admin-live-orders">
-                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for new orders...</div>
-                </div>
-                
-                <div class="menu-list" id="admin-past-orders" style="display: none;">
-                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No past orders for today.</div>
-                </div>
-            </div>
-
-            <div class="section-card view-section" id="section-crm">
-                <div class="section-header">
-                    <h3><i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i> WhatsApp CRM</h3>
-                </div>
-                <div style="padding: 20px;">
-                    <p style="font-size: 13px; color: var(--text-sub); margin-top: 0; font-weight:500;">Send promotional offers directly to your past customers via WhatsApp.</p>
-                    <textarea id="promoMessage" class="input-field" placeholder="Type your discount offer here... (e.g. Get 20% OFF this weekend! Use code: WEEKEND20)" style="height: 100px; resize: none; margin-bottom: 15px;"></textarea>
-                </div>
-                <div class="history-date-header">Customer Database</div>
-                <div class="menu-list" id="crm-body">
-                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-bold ph-spinner ph-spin" style="font-size:24px;"></i><br>Loading customers...</div>
-                </div>
-            </div>
-
-            <div class="section-card view-section" id="section-stats">
-                <div class="section-header" style="background: rgba(36,150,63,0.05);">
-                    <h3><i class="ph-fill ph-chart-line-up" style="color:var(--success);"></i> Business Analytics</h3>
-                </div>
-                
-                <div class="history-date-header" style="background: var(--bg-card);">
-                    <span>Revenue Insights 📊</span>
-                    <select id="chartFilter" class="chart-filter-select" onchange="if(window.allCompletedOrdersForChart) updateRevenueChart(window.allCompletedOrdersForChart)">
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="yearly">Yearly</option>
-                    </select>
-                </div>
-                <div style="padding: 20px; text-align: center; background: var(--bg-card); display:flex; flex-direction:column; align-items:center; border-bottom: 1px solid var(--border);">
-                    <canvas id="revenueBarChart" style="width: 100%; max-height: 250px;"></canvas>
-                    <p id="best-day-text" style="font-size:14px; font-weight:800; color:var(--success); margin-top:15px; margin-bottom:0;"></p>
-                </div>
-            </div>
-
+            <!-- ⚙️ APP SETTINGS SECTION -->
             <div class="section-card view-section" id="section-settings">
                 <div class="section-header">
-                    <h3><i class="ph-fill ph-gear"></i> App Settings</h3>
+                    <h3><i class="ph-fill ph-gear text-primary"></i> App Settings</h3>
                 </div>
+                
                 <div class="setting-row">
                     <div class="setting-label">
                         <i class="ph-fill ph-bell-ringing"></i>
@@ -297,7 +299,7 @@
                     <button class="btn-download" onclick="downloadQR()"><i class="ph-bold ph-download-simple"></i> Download Print Version</button>
                 </div>
                 
-                <!-- 🚪 Safe Logout Button (FIXED) -->
+                <!-- 🚪 Safe Logout Button -->
                 <div onclick="triggerLogout()" style="cursor: pointer; margin: 20px 20px 40px 20px; text-align: center; background: rgba(229, 57, 53, 0.1); border-radius: 16px; padding: 15px; border: 1px solid rgba(229,57,53,0.2);">
                     <div style="color: #E53935; font-weight: 700; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 8px;">
                         <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout
@@ -305,7 +307,7 @@
                 </div>
             </div>
 
-        </div>
+        </div> <!-- End Main Content -->
     </div>
 
     <div class="bottom-nav">
@@ -397,6 +399,6 @@
         </div>
     </div>
 
-    <script type="module" src="admin.js?v=3"></script>
+    <script type="module" src="admin.js?v=6"></script>
 </body>
 </html>
