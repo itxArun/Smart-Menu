@@ -14,7 +14,8 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     
-    <link rel="stylesheet" href="admin.css">
+    <!-- 🔥 CACHE BUSTER v3 -->
+    <link rel="stylesheet" href="admin.css?v=3">
 </head>
 <body>
     
@@ -33,13 +34,32 @@
         </div>
     </div>
 
-    <div class="login-screen" id="loginScreen">
-        <div class="login-card">
-            <h2>NextPlate</h2>
-            <p>Merchant Panel Login</p>
-            <input type="email" id="adminEmail" class="login-input" placeholder="Email Address" required>
-            <input type="password" id="adminPass" class="login-input" placeholder="Password" required>
-            <button class="btn-login" id="loginBtn" onclick="loginAdmin()">Login <i class="ph-bold ph-arrow-right"></i></button>
+    <!-- 🔐 PREMIUM LOGIN SCREEN (FIXED) -->
+    <div id="loginScreen" class="premium-login-overlay">
+        <div class="premium-login-card">
+            <div class="login-logo-box">
+                <i class="ph-bold ph-lock-key"></i>
+            </div>
+            <h2 class="login-title">NextPlate Admin</h2>
+            <p class="login-subtitle">Welcome back! Please login to your dashboard.</p>
+            
+            <div class="input-group">
+                <input type="email" id="adminEmail" placeholder="Email Address">
+                <i class="ph-fill ph-envelope input-icon"></i>
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="adminPass" placeholder="Password">
+                <i class="ph-fill ph-lock-key input-icon"></i>
+            </div>
+            
+            <button id="loginBtn" class="premium-login-btn" onclick="loginAdmin()">
+                Login to Dashboard <i class="ph-bold ph-arrow-right"></i>
+            </button>
+            
+            <div class="login-footer">
+                Powered by <strong>NextPlate SaaS</strong>
+            </div>
         </div>
     </div>
 
@@ -53,7 +73,7 @@
                 <i class="ph-bold ph-speaker-slash"></i> Enable Sound
             </button>
             <input type="date" id="reportDate" class="date-filter-box" onchange="initAdminData()">
-            <button class="btn-logout" onclick="location.reload()"><i class="ph-bold ph-arrows-clockwise"></i></button>
+            <button class="btn-logout" onclick="location.reload()" style="background:var(--input-bg); border:1px solid var(--border); color:var(--text-main);"><i class="ph-bold ph-arrows-clockwise"></i></button>
         </div>
     </div>
 
@@ -215,6 +235,13 @@
                     <input type="text" id="menu-link" class="link-input" value="https://itxarun.github.io/Smart-Menu/index.html" readonly>
                     <button class="btn-download" onclick="downloadQR()"><i class="ph-bold ph-download-simple"></i> Download Print Version</button>
                 </div>
+                
+                <!-- 🚪 Safe Logout Button (FIXED) -->
+                <div onclick="triggerLogout()" style="cursor: pointer; margin: 20px 20px 40px 20px; text-align: center; background: rgba(229, 57, 53, 0.1); border-radius: 16px; padding: 15px; border: 1px solid rgba(229,57,53,0.2);">
+                    <div style="color: #E53935; font-weight: 700; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                        <i class="ph-bold ph-sign-out" style="font-size: 20px;"></i> Logout
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -294,6 +321,21 @@
         </div>
     </div>
 
-    <script type="module" src="admin.js"></script>
+    <!-- 🚪 LOGOUT MODAL -->
+    <div class="modal-overlay" id="logoutConfirmModal">
+        <div class="modal-content" style="background: var(--bg-card); max-width: 320px; text-align: center; padding: 30px 20px; border-radius: 32px; margin: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+            <div style="background: rgba(229,57,53,0.1); width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;">
+                <i class="ph-bold ph-sign-out" style="font-size: 32px; color: var(--danger, #E53935);"></i>
+            </div>
+            <h3 style="margin-bottom: 10px; color: var(--text-main, #1C1C1E); font-family: 'Okra', sans-serif;">Are you sure?</h3>
+            <p style="font-size: 13px; color: var(--text-sub, #757575); margin-bottom: 25px;">Do you really want to logout from the admin panel?</p>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closeLogoutModal()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: var(--input-bg); color: var(--text-main);">No</button>
+                <button onclick="executeLogout()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: var(--danger, #E53935); color: white; box-shadow: 0 8px 20px rgba(229,57,53,0.3);">Yes, Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="admin.js?v=3"></script>
 </body>
 </html>
