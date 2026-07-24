@@ -1,6 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"; 
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"; 
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"; 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 // 🔥 FIREBASE CONFIGURATION 🔥
 const firebaseConfig = {
@@ -10,251 +10,249 @@ const firebaseConfig = {
     storageBucket: "itx-arun-bdf24.firebasestorage.app",
     messagingSenderId: "442083262265",
     appId: "1:442083262265:web:3e023b1211f752cb3132e8"
-}; 
+};
 
-const app = initializeApp(firebaseConfig); 
-const db = getFirestore(app); 
-const auth = getAuth(app); 
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-// 🚀 SAAS MULTI-TENANT TAG 🚀
 window.currentRestaurantId = 'rest_001';
 
-Chart.register(ChartDataLabels); 
-
-let revenueChartInstance = null; 
-window.allCompletedOrdersForChart = []; 
-
-// 🔥 AUDIO AUTHORIZATION FIX 🔥
-let soundActivated = false; 
-window.enableAudioContext = () => {
-    const orderAud = document.getElementById('orderSound'); 
-    const waiterAud = document.getElementById('waiterSound'); 
-    orderAud.play().then(() => { orderAud.pause(); orderAud.currentTime = 0; }).catch(e=>{}); 
-    waiterAud.play().then(() => { waiterAud.pause(); waiterAud.currentTime = 0; }).catch(e=>{}); 
-    
-    soundActivated = true; 
-    const btn = document.getElementById('soundAuthBtn'); 
-    btn.classList.add('active'); 
-    btn.innerHTML = '<i class="ph-bold ph-speaker-high"></i> Sound ON'; 
-}; 
-
-setInterval(() => {
-    document.querySelectorAll('.time-ago-tracker').forEach(el => {
-        const orderTime = parseInt(el.getAttribute('data-time')); 
-        const diffMins = Math.floor((Date.now() - orderTime) / 60000); 
-        let text = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`; 
-        let color = 'var(--success)'; 
-        if(diffMins >= 15 && diffMins < 30) color = 'var(--warning)'; 
-        else if(diffMins >= 30) color = 'var(--danger)'; 
-        el.innerText = `(${text})`; 
-        el.style.color = color; 
-    }); 
-}, 60000); 
-
-function calculateTopSeller(orders) {
-    let itemCounts = {}; 
-    orders.forEach(o => { o.items.forEach(i => { itemCounts[i.name] = (itemCounts[i.name] || 0) + i.qty; }); }); 
-    let topDish = null; let max = 0; 
-    for(let name in itemCounts) { if(itemCounts[name] > max) { max = itemCounts[name]; topDish = name; } } 
-    return topDish ? { name: topDish, count: max } : null; 
-} 
-
-window.updateRevenueChart = (completedOrders) => {
-    const filterType = document.getElementById('chartFilter').value; 
-    let labels = []; let revenueData = []; 
-    const now = new Date(); const currentYear = now.getFullYear(); 
-
-    if (filterType === 'weekly') {
-        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; 
-        revenueData = [0, 0, 0, 0, 0, 0, 0]; 
-        completedOrders.forEach(o => {
-            if(o.timestamp) {
-                let dayIdx = o.timestamp.toDate().getDay() - 1;  
-                if(dayIdx === -1) dayIdx = 6; 
-                revenueData[dayIdx] += o.totalAmount; 
-            }
-        }); 
-    } else if (filterType === 'monthly') {
-        labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; 
-        revenueData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; 
-        completedOrders.forEach(o => {
-            if(o.timestamp && o.timestamp.toDate().getFullYear() === currentYear) revenueData[o.timestamp.toDate().getMonth()] += o.totalAmount; 
-        }); 
-    } else if (filterType === 'yearly') {
-        labels = [currentYear-4, currentYear-3, currentYear-2, currentYear-1, currentYear]; 
-        revenueData = [0, 0, 0, 0, 0]; 
-        completedOrders.forEach(o => {
-            if(o.timestamp) {
-                const idx = labels.indexOf(o.timestamp.toDate().getFullYear()); 
-                if(idx !== -1) revenueData[idx] += o.totalAmount; 
-            }
-        }); 
+// 🛡️ SAFE UI INIT (Taki koi chiz crash na ho)
+document.addEventListener('DOMContentLoaded', () => {
+    if(typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+        Chart.register(ChartDataLabels);
     }
+    const dateInput = document.getElementById('reportDate');
+    if(dateInput) dateInput.valueAsDate = new Date();
+});
 
-    let maxRev = 0; let bestLabel = ""; 
-    revenueData.forEach((rev, idx) => { if(rev > maxRev) { maxRev = rev; bestLabel = labels[idx]; } }); 
-
-    const bestDayText = document.getElementById('best-day-text'); 
-    if(maxRev > 0) bestDayText.innerText = `🔥 Highest: ${bestLabel} (₹${maxRev})`; 
-    else bestDayText.innerText = `Waiting for sales...`; 
-
-    const ctx = document.getElementById('revenueBarChart'); 
-    if(!ctx) return; 
-    if(revenueChartInstance) revenueChartInstance.destroy(); 
-    
-    const isDark = document.body.getAttribute('data-theme') === 'dark'; 
-    const textColor = isDark ? '#F5F5F5' : '#1C1C1E'; 
-
-    revenueChartInstance = new Chart(ctx, {
-        type: 'bar',  
-        data: { labels: labels, datasets: [{ label: 'Revenue (₹)', data: revenueData, backgroundColor: '#E53935', borderRadius: 6, borderWidth: 0 }] }, 
-        options: {
-            responsive: true, maintainAspectRatio: false, 
-            scales: { y: { display: false, grid: { display: false } }, x: { grid: { display: false }, ticks: { color: textColor, font: { family: 'Poppins', size: 10 } } } }, 
-            plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'top', color: textColor, font: { family: 'Poppins', weight: 'bold', size: 10 }, formatter: (value) => value > 0 ? `₹${value}` : '' } }, 
-            layout: { padding: { top: 20 } }  
-        }
-    }); 
-}; 
-
-window.downloadQR = () => {
-    const qrCanvas = document.querySelector("#qrcode-box canvas"); 
-    if(!qrCanvas) { alert("QR Code not generated yet!"); return; } 
-
-    const printCanvas = document.createElement('canvas'); 
-    const ctx = printCanvas.getContext('2d'); 
-    printCanvas.width = 800; printCanvas.height = 1100; 
-
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, printCanvas.width, printCanvas.height); 
-    ctx.fillStyle = '#E53935'; ctx.fillRect(0, 0, printCanvas.width, 250); 
-
-    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 80px Arial'; ctx.textAlign = 'center'; 
-    ctx.fillText('NextPlate', 400, 110); 
-    ctx.font = 'bold 45px Arial'; ctx.fillText('Scan to View Menu & Order', 400, 190); 
-
-    ctx.drawImage(qrCanvas, 200, 300, 400, 400); 
-
-    ctx.fillStyle = '#1C1C1E'; ctx.font = 'bold 40px Arial'; ctx.fillText('How to scan?', 400, 800); 
-    ctx.fillStyle = '#757575'; ctx.font = '32px Arial'; 
-    ctx.fillText('📷 1. Open Phone Camera / Google Lens', 400, 880); 
-    ctx.fillText('👉 2. Point at the QR Code', 400, 940); 
-    ctx.fillText('💳 3. You can also use Paytm / PhonePe', 400, 1000); 
-
-    const url = printCanvas.toDataURL("image/png"); 
-    const a = document.createElement('a'); a.href = url; a.download = "Table_QR_Standee.png"; 
-    document.body.appendChild(a); a.click(); document.body.removeChild(a); 
-}; 
-
+// ==========================================
+// 🔐 AUTHENTICATION & LOGOUT LOGIC
+// ==========================================
 onAuthStateChanged(auth, (user) => {
-    const loginScreen = document.getElementById('loginScreen'); 
-    if (user) { loginScreen.style.display = 'none'; initAdminData(); }  
-    else { loginScreen.style.display = 'flex'; } 
-}); 
+    const loginScreen = document.getElementById('loginScreen');
+    if(loginScreen) {
+        if (user) { 
+            loginScreen.style.display = 'none'; 
+            if(typeof window.initAdminData === 'function') window.initAdminData(); 
+        } else { 
+            loginScreen.style.display = 'flex'; 
+        }
+    }
+});
 
 window.loginAdmin = () => {
-    const email = document.getElementById('adminEmail').value; 
-    const pass = document.getElementById('adminPass').value; 
-    const btn = document.getElementById('loginBtn'); 
-    btn.innerHTML = 'Loading <i class="ph-bold ph-spinner ph-spin"></i>'; btn.disabled = true; 
-    signInWithEmailAndPassword(auth, email, pass).catch(error => {
-        alert("Login Failed: " + error.message); 
-        btn.innerHTML = 'Login <i class="ph-bold ph-arrow-right"></i>'; btn.disabled = false; 
-    }); 
-}; 
+    const email = document.getElementById('adminEmail').value;
+    const pass = document.getElementById('adminPass').value;
+    const btn = document.getElementById('loginBtn');
+    
+    if(!email || !pass) {
+        alert("Bhai, Email aur Password dono daalna zaroori hai! 😅");
+        return;
+    }
 
-// 🔥 Naya Smart Logout System
+    btn.innerHTML = 'Loading <i class="ph-bold ph-spinner ph-spin"></i>'; 
+    btn.disabled = true;
+    
+    signInWithEmailAndPassword(auth, email, pass).catch(error => {
+        alert("Login Failed: " + error.message);
+        btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
+        btn.disabled = false;
+    });
+};
+
 window.triggerLogout = () => {
-    document.getElementById('logoutConfirmModal').classList.add('show');
+    const modal = document.getElementById('logoutConfirmModal');
+    if(modal) modal.classList.add('show');
 };
 
 window.closeLogoutModal = () => {
-    document.getElementById('logoutConfirmModal').classList.remove('show');
+    const modal = document.getElementById('logoutConfirmModal');
+    if(modal) modal.classList.remove('show');
 };
 
 window.executeLogout = () => {
     const btn = document.querySelector('#logoutConfirmModal button:last-child');
-    btn.innerHTML = 'Wait <i class="ph-bold ph-spinner ph-spin"></i>'; 
-    btn.disabled = true;
-    
+    if(btn) {
+        btn.innerHTML = 'Wait <i class="ph-bold ph-spinner ph-spin"></i>';
+        btn.disabled = true;
+    }
     signOut(auth).then(() => {
         window.closeLogoutModal();
+        if(btn) {
+            btn.innerHTML = 'Yes, Logout';
+            btn.disabled = false;
+        }
+    });
+};
+
+// ==========================================
+// 🔊 SOUND & UTILS
+// ==========================================
+let soundActivated = false;
+window.enableAudioContext = () => {
+    const orderAud = document.getElementById('orderSound');
+    const waiterAud = document.getElementById('waiterSound');
+    if(orderAud) orderAud.play().then(() => { orderAud.pause(); orderAud.currentTime = 0; }).catch(e=>{});
+    if(waiterAud) waiterAud.play().then(() => { waiterAud.pause(); waiterAud.currentTime = 0; }).catch(e=>{});
+    
+    soundActivated = true;
+    const btn = document.getElementById('soundAuthBtn');
+    if(btn) {
+        btn.classList.add('active');
+        btn.innerHTML = '<i class="ph-bold ph-speaker-high"></i> Sound ON';
+    }
+};
+
+setInterval(() => {
+    document.querySelectorAll('.time-ago-tracker').forEach(el => {
+        const orderTime = parseInt(el.getAttribute('data-time'));
+        const diffMins = Math.floor((Date.now() - orderTime) / 60000);
+        let text = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
+        let color = 'var(--success)';
+        if(diffMins >= 15 && diffMins < 30) color = 'var(--warning)';
+        else if(diffMins >= 30) color = 'var(--danger)';
+        el.innerText = `(${text})`;
+        el.style.color = color;
+    });
+}, 60000);
+
+// ==========================================
+// 📊 CHARTS & CRM
+// ==========================================
+let revenueChartInstance = null;
+window.allCompletedOrdersForChart = [];
+
+window.updateRevenueChart = (completedOrders) => {
+    const filterType = document.getElementById('chartFilter').value;
+    let labels = []; let revenueData = [];
+    const now = new Date(); const currentYear = now.getFullYear();
+
+    if (filterType === 'weekly') {
+        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        revenueData = [0, 0, 0, 0, 0, 0, 0];
+        completedOrders.forEach(o => {
+            if(o.timestamp) {
+                let dayIdx = o.timestamp.toDate().getDay() - 1; 
+                if(dayIdx === -1) dayIdx = 6;
+                revenueData[dayIdx] += o.totalAmount;
+            }
+        });
+    } else if (filterType === 'monthly') {
+        labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        revenueData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        completedOrders.forEach(o => {
+            if(o.timestamp && o.timestamp.toDate().getFullYear() === currentYear) revenueData[o.timestamp.toDate().getMonth()] += o.totalAmount;
+        });
+    } else if (filterType === 'yearly') {
+        labels = [currentYear-4, currentYear-3, currentYear-2, currentYear-1, currentYear];
+        revenueData = [0, 0, 0, 0, 0];
+        completedOrders.forEach(o => {
+            if(o.timestamp) {
+                const idx = labels.indexOf(o.timestamp.toDate().getFullYear());
+                if(idx !== -1) revenueData[idx] += o.totalAmount;
+            }
+        });
+    }
+
+    let maxRev = 0; let bestLabel = "";
+    revenueData.forEach((rev, idx) => { if(rev > maxRev) { maxRev = rev; bestLabel = labels[idx]; } });
+
+    const bestDayText = document.getElementById('best-day-text');
+    if(bestDayText) {
+        if(maxRev > 0) bestDayText.innerText = `🔥 Highest: ${bestLabel} (₹${maxRev})`;
+        else bestDayText.innerText = `Waiting for sales...`;
+    }
+
+    const ctx = document.getElementById('revenueBarChart');
+    if(!ctx) return;
+    if(revenueChartInstance) revenueChartInstance.destroy();
+    
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    const textColor = isDark ? '#F5F5F5' : '#1C1C1E';
+
+    revenueChartInstance = new Chart(ctx, {
+        type: 'bar', 
+        data: { labels: labels, datasets: [{ label: 'Revenue (₹)', data: revenueData, backgroundColor: '#E53935', borderRadius: 6, borderWidth: 0 }] },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { y: { display: false, grid: { display: false } }, x: { grid: { display: false }, ticks: { color: textColor, font: { family: 'Poppins', size: 10 } } } },
+            plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'top', color: textColor, font: { family: 'Poppins', weight: 'bold', size: 10 }, formatter: (value) => value > 0 ? `₹${value}` : '' } },
+            layout: { padding: { top: 20 } } 
+        }
     });
 };
 
 window.sendPromoWhatsApp = (phone) => {
-    const msg = encodeURIComponent(document.getElementById('promoMessage').value || "Hello! Here is a special offer from NextPlate for you. Visit us again soon!"); 
-    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank'); 
-}; 
+    const msgInput = document.getElementById('promoMessage');
+    const msg = encodeURIComponent(msgInput ? msgInput.value : "Hello! Visit us again soon!");
+    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+};
 
-document.getElementById('reportDate').valueAsDate = new Date(); 
-let allMenuData = []; 
-let isInitialLoad = true; 
-window.adminActiveCat = 'All'; 
-
-// 🔥 Order Tab Switch Logic 🔥
-window.switchAdminOrderTab = (tab) => {
-    document.getElementById('tab-admin-live').classList.remove('active'); 
-    document.getElementById('tab-admin-past').classList.remove('active'); 
-    document.getElementById('admin-live-orders').style.display = 'none'; 
-    document.getElementById('admin-past-orders').style.display = 'none'; 
-    
-    document.getElementById(`tab-admin-${tab}`).classList.add('active'); 
-    document.getElementById(`admin-${tab}-orders`).style.display = 'flex'; 
-}; 
+// ==========================================
+// 🍔 MENU & INVENTORY
+// ==========================================
+let allMenuData = [];
+let isInitialLoad = true;
+window.adminActiveCat = 'All';
 
 window.initAdminData = function() {
-    const selectedDate = document.getElementById('reportDate').value; 
+    const reportDateEl = document.getElementById('reportDate');
+    const selectedDate = reportDateEl ? reportDateEl.value : new Date().toISOString().split('T')[0];
 
-    // 🔥 Filtered Menu Fetch
+    // Filtered Menu Fetch
     const qMenu = query(collection(db, "menu_items"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qMenu, (snap) => {
-        document.getElementById('total-dishes').innerText = snap.size; 
-        allMenuData = []; 
-        snap.forEach(doc => { let d = doc.data(); d.id = doc.id; allMenuData.push(d); }); 
-        window.filterAdminMenu();  
-    }); 
+        const totalDishes = document.getElementById('total-dishes');
+        if(totalDishes) totalDishes.innerText = snap.size;
+        
+        allMenuData = [];
+        snap.forEach(doc => { let d = doc.data(); d.id = doc.id; allMenuData.push(d); });
+        window.filterAdminMenu(); 
+    });
 
-    // 🔥 Filtered Alerts (Waiter / Music)
+    // Alerts (Waiter / Music)
     const qWaiter = query(collection(db, "waiter_calls"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qWaiter, (waiterSnap) => {
-        const qJuke = query(collection(db, "jukebox_requests"), where("restaurantId", "==", window.currentRestaurantId));
-        onSnapshot(qJuke, (jukeSnap) => {
-            const actionContainer = document.getElementById('action-center-container'); 
-            const actionList = document.getElementById('action-alerts-list'); 
-            actionList.innerHTML = ''; let hasActions = false; 
+        const actionContainer = document.getElementById('action-center-container');
+        const actionList = document.getElementById('action-alerts-list');
+        if(!actionContainer || !actionList) return;
 
-            waiterSnap.forEach(doc => {
-                const d = doc.data(); 
-                if(d.status === 'New') {
-                    hasActions = true; 
-                    actionList.innerHTML += `
-                        <div class="action-alert">
-                            <div><span style="font-size:20px; margin-right:10px;">🛎️</span><strong style="color:var(--danger);">Table ${d.tableNumber}</strong> needs Waiter! <br><span style="font-size:11px; color:var(--text-sub); margin-left:30px;">Remark: ${d.remark || 'None'}</span></div>
-                            <button onclick="resolveAction('waiter_calls', '${doc.id}')" style="background:var(--danger); color:white; border:none; padding:8px 16px; border-radius:12px; font-weight:bold; cursor:pointer;">Done ✓</button>
-                        </div>
-                    `; 
-                    if(document.getElementById('soundToggle').checked && !isInitialLoad && soundActivated) {
-                        const now = new Date(); const callTime = d.timestamp ? d.timestamp.toDate() : now; 
-                        if((now - callTime) < 120000) document.getElementById('waiterSound').play().catch(e=>{}); 
-                    }
+        actionList.innerHTML = ''; let hasActions = false;
+
+        waiterSnap.forEach(doc => {
+            const d = doc.data();
+            if(d.status === 'New') {
+                hasActions = true;
+                actionList.innerHTML += `
+                    <div class="action-alert">
+                        <div><span style="font-size:20px; margin-right:10px;">🛎️</span><strong style="color:var(--danger);">Table ${d.tableNumber}</strong> needs Waiter! <br><span style="font-size:11px; color:var(--text-sub); margin-left:30px;">Remark: ${d.remark || 'None'}</span></div>
+                        <button onclick="resolveAction('waiter_calls', '${doc.id}')" style="background:var(--danger); color:white; border:none; padding:8px 16px; border-radius:12px; font-weight:bold; cursor:pointer;">Done ✓</button>
+                    </div>
+                `;
+                const soundToggle = document.getElementById('soundToggle');
+                if(soundToggle && soundToggle.checked && !isInitialLoad && soundActivated) {
+                    const now = new Date(); const callTime = d.timestamp ? d.timestamp.toDate() : now;
+                    if((now - callTime) < 120000) document.getElementById('waiterSound').play().catch(e=>{});
                 }
-            }); 
+            }
+        });
+        actionContainer.style.display = hasActions ? 'block' : 'none';
+    });
 
-            actionContainer.style.display = hasActions ? 'block' : 'none'; 
-        }); 
-    }); 
-
-    // 🔥 Filtered Orders & CRM Logic
+    // Orders & CRM Logic
     const qLive = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qLive, (snap) => {
-        const liveList = document.getElementById('admin-live-orders'); 
-        const pastList = document.getElementById('admin-past-orders'); 
-        liveList.innerHTML = ''; pastList.innerHTML = ''; 
+        const liveList = document.getElementById('admin-live-orders');
+        const pastList = document.getElementById('admin-past-orders');
+        if(!liveList || !pastList) return;
+
+        liveList.innerHTML = ''; pastList.innerHTML = '';
         
-        let activeCount = 0; let totalRev = 0; 
-        let crmCustomers = new Map();  
-        window.allCompletedOrdersForChart = [];  
-        let todaysCompletedOrdersForTopSeller = []; 
+        let activeCount = 0; let totalRev = 0;
+        let crmCustomers = new Map(); 
+        window.allCompletedOrdersForChart = []; 
 
         let allOrders = [];
         snap.forEach((doc) => {
@@ -270,67 +268,66 @@ window.initAdminData = function() {
         });
 
         allOrders.forEach((data) => {
-            const date = data.timestamp ? data.timestamp.toDate() : new Date(); 
-            const todayDate = new Date(); 
-            const isToday = date.getDate() === todayDate.getDate() && date.getMonth() === todayDate.getMonth() && date.getFullYear() === todayDate.getFullYear(); 
-            const timeFormat = date.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true}); 
-            const displayTimeStr = isToday ? timeFormat : `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short'})}, ${timeFormat}`; 
-            const orderDateStr = date.toISOString().split('T')[0]; 
+            const date = data.timestamp ? data.timestamp.toDate() : new Date();
+            const todayDate = new Date();
+            const isToday = date.getDate() === todayDate.getDate() && date.getMonth() === todayDate.getMonth() && date.getFullYear() === todayDate.getFullYear();
+            const timeFormat = date.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true});
+            const displayTimeStr = isToday ? timeFormat : `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short'})}, ${timeFormat}`;
+            const orderDateStr = date.toISOString().split('T')[0];
 
             if(data.customerPhone && data.customerPhone !== "N/A") {
-                let phoneStr = String(data.customerPhone).replace(/\D/g, ''); 
+                let phoneStr = String(data.customerPhone).replace(/\D/g, '');
                 if(phoneStr.length >= 10) {
-                    if(phoneStr.length === 10) phoneStr = '91' + phoneStr; 
-                    crmCustomers.set(phoneStr, { name: data.customerName || "Customer", phone: phoneStr }); 
+                    if(phoneStr.length === 10) phoneStr = '91' + phoneStr;
+                    crmCustomers.set(phoneStr, { name: data.customerName || "Customer", phone: phoneStr });
                 }
-            } 
+            }
 
             if(data.status === 'Completed') {
-                window.allCompletedOrdersForChart.unshift(data);  
+                window.allCompletedOrdersForChart.unshift(data); 
                 if(orderDateStr === selectedDate) {
-                    todaysCompletedOrdersForTopSeller.push(data); 
-                    totalRev += data.totalAmount; 
+                    totalRev += data.totalAmount;
                 }
-            } 
+            }
 
             if(orderDateStr === selectedDate || data.status === 'New' || data.status === 'Preparing') {
-                let itemsHTML = ''; 
+                let itemsHTML = '';
                 data.items.forEach(item => {
                     itemsHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid var(--border); padding-bottom:6px;">
                         <span><b>${item.qty}x</b> ${item.name} <span style="color:var(--text-sub); font-size:11px;">${item.variant || ""}</span></span>
                         <span>₹${item.price * item.qty}</span>
-                    </div>`; 
-                }); 
+                    </div>`;
+                });
 
                 const notesHtml = (data.chefNotes && data.chefNotes !== "None" && data.chefNotes.trim() !== "") 
                     ? `<div style="background:rgba(255, 59, 48, 0.08); color:var(--danger); padding:10px 15px; border-radius:12px; font-size:12px; font-weight:700; margin-top:10px; border:1px dashed var(--danger);"><i class="ph-bold ph-warning"></i> Note: ${data.chefNotes}</div>` 
-                    : ''; 
+                    : '';
 
-                const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span style="background:var(--warning); font-weight:800; padding:6px 12px; border-radius:10px; color:white; font-size:12px;"><i class="ph-fill ph-shopping-bag"></i> Takeaway</span>' : `<span style="background:var(--input-bg); color:var(--text-main); font-weight:800; padding:6px 12px; border-radius:10px; font-size:12px; border:1px solid var(--border);"><i class="ph-fill ph-map-pin"></i> Table ${data.tableNumber}</span>`; 
+                const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span style="background:var(--warning); font-weight:800; padding:6px 12px; border-radius:10px; color:white; font-size:12px;"><i class="ph-fill ph-shopping-bag"></i> Takeaway</span>' : `<span style="background:var(--input-bg); color:var(--text-main); font-weight:800; padding:6px 12px; border-radius:10px; font-size:12px; border:1px solid var(--border);"><i class="ph-fill ph-map-pin"></i> Table ${data.tableNumber}</span>`;
                 
-                let statusBadge = ''; 
-                if(data.status === 'New') statusBadge = `<span class="status-badge status-new">New</span>`; 
-                else if(data.status === 'Preparing') statusBadge = `<span class="status-badge status-prep">Preparing...</span>`; 
-                else if(data.status === 'Completed') statusBadge = `<span class="status-badge status-done">Delivered</span>`; 
-                else statusBadge = `<span class="status-badge status-canc">Cancelled</span>`; 
+                let statusBadge = '';
+                if(data.status === 'New') statusBadge = `<span class="status-badge status-new">New</span>`;
+                else if(data.status === 'Preparing') statusBadge = `<span class="status-badge status-prep">Preparing...</span>`;
+                else if(data.status === 'Completed') statusBadge = `<span class="status-badge status-done">Delivered</span>`;
+                else statusBadge = `<span class="status-badge status-canc">Cancelled</span>`;
 
-                const diffMins = Math.floor((Date.now() - date.getTime()) / 60000); 
-                let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`; 
-                let waitColor = diffMins >= 30 ? 'var(--danger)' : (diffMins >= 15 ? 'var(--warning)' : 'var(--success)'); 
+                const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
+                let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
+                let waitColor = diffMins >= 30 ? 'var(--danger)' : (diffMins >= 15 ? 'var(--warning)' : 'var(--success)');
                 
-                const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--info); font-weight:700; text-decoration:none;"><i class="ph-fill ph-phone"></i> ${data.customerPhone}</a>` : "N/A"; 
+                const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--info); font-weight:700; text-decoration:none;"><i class="ph-fill ph-phone"></i> ${data.customerPhone}</a>` : "N/A";
 
-                let actionButtons = ''; 
+                let actionButtons = '';
                 if(data.status === 'New') {
-                    activeCount++; 
+                    activeCount++;
                     actionButtons = `
                         <button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${data.docId}', 'Preparing')"><i class="ph-fill ph-cooking-pot"></i> Cook</button>
                         <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>
-                    `; 
+                    `;
                 } else if(data.status === 'Preparing') {
-                    activeCount++; 
-                    actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Completed')"><i class="ph-fill ph-bell-ringing"></i> Serve Order</button>`; 
-                } 
+                    activeCount++;
+                    actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Completed')"><i class="ph-fill ph-bell-ringing"></i> Serve Order</button>`;
+                }
 
                 let cardHtml = `
                     <div class="order-card" style="border-radius:24px; border:1px solid var(--border); margin-bottom:20px; box-shadow:var(--shadow-soft);">
@@ -359,97 +356,109 @@ window.initAdminData = function() {
                             </div>
                         </div>
                     </div>
-                `; 
+                `;
 
                 if (data.status === 'New' || data.status === 'Preparing') {
-                    liveList.innerHTML += cardHtml; 
-                    if(data.status === 'New' && document.getElementById('soundToggle').checked && !isInitialLoad && soundActivated) {
-                        const now = new Date(); if((now - date) < 120000) document.getElementById('orderSound').play().catch(e=>{}); 
+                    liveList.innerHTML += cardHtml;
+                    const soundToggle = document.getElementById('soundToggle');
+                    if(data.status === 'New' && soundToggle && soundToggle.checked && !isInitialLoad && soundActivated) {
+                        const now = new Date(); if((now - date) < 120000) document.getElementById('orderSound').play().catch(e=>{});
                     }
                 } else {
-                    pastList.innerHTML = cardHtml + pastList.innerHTML; 
-                } 
+                    pastList.innerHTML = cardHtml + pastList.innerHTML;
+                }
             }
-        }); 
+        });
 
-        isInitialLoad = false; 
-        document.getElementById('total-orders').innerText = activeCount; 
-        document.getElementById('total-revenue').innerText = '₹' + totalRev; 
+        isInitialLoad = false;
+        const totOrders = document.getElementById('total-orders');
+        const totRev = document.getElementById('total-revenue');
+        if(totOrders) totOrders.innerText = activeCount;
+        if(totRev) totRev.innerText = '₹' + totalRev;
         
-        if(activeCount > 0) document.getElementById('live-order-card').classList.add('pulse-live'); 
-        else document.getElementById('live-order-card').classList.remove('pulse-live'); 
-
-        if(window.updateRevenueChart) window.updateRevenueChart(window.allCompletedOrdersForChart); 
-        
-        if(liveList.innerHTML === '') liveList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-check-circle" style="font-size:40px; color:var(--success); opacity:0.5; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No active orders. Kitchen is clear! 🎉</span></div>'; 
-        if(pastList.innerHTML === '') pastList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No past orders for today.</span></div>'; 
-
-        document.getElementById('total-customers').innerText = crmCustomers.size; 
-        const crmBody = document.getElementById('crm-body'); 
-        crmBody.innerHTML = ''; 
-        if(crmCustomers.size === 0) { 
-            crmBody.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--text-sub);"><i class="ph-fill ph-users-slash" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size:13px; font-weight:600;">No customer phone numbers collected yet.</span></div>';  
-        } else {
-            crmCustomers.forEach(c => {
-                crmBody.innerHTML += `
-                    <div class="crm-customer-row">
-                        <div>
-                            <div style="font-weight:700; font-size:15px; color:var(--text-main); margin-bottom:4px;">${c.name}</div>
-                            <div style="font-size:12px; font-weight:600; color:var(--text-sub);"><i class="ph-fill ph-phone" style="color:var(--info);"></i> +${c.phone}</div>
-                        </div>
-                        <button class="btn-wa" onclick="sendPromoWhatsApp('${c.phone}')"><i class="ph-bold ph-paper-plane-right"></i> Send Promo</button>
-                    </div>
-                `; 
-            }); 
+        const liveCard = document.getElementById('live-order-card');
+        if(liveCard) {
+            if(activeCount > 0) liveCard.classList.add('pulse-live');
+            else liveCard.classList.remove('pulse-live');
         }
-    }); 
-} 
+
+        if(window.updateRevenueChart) window.updateRevenueChart(window.allCompletedOrdersForChart);
+        
+        if(liveList.innerHTML === '') liveList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-check-circle" style="font-size:40px; color:var(--success); opacity:0.5; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No active orders. Kitchen is clear! 🎉</span></div>';
+        if(pastList.innerHTML === '') pastList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No past orders for today.</span></div>';
+
+        const totCustomers = document.getElementById('total-customers');
+        if(totCustomers) totCustomers.innerText = crmCustomers.size;
+        
+        const crmBody = document.getElementById('crm-body');
+        if(crmBody) {
+            crmBody.innerHTML = '';
+            if(crmCustomers.size === 0) { 
+                crmBody.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--text-sub);"><i class="ph-fill ph-users-slash" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size:13px; font-weight:600;">No customer phone numbers collected yet.</span></div>'; 
+            } else {
+                crmCustomers.forEach(c => {
+                    crmBody.innerHTML += `
+                        <div class="crm-customer-row">
+                            <div>
+                                <div style="font-weight:700; font-size:15px; color:var(--text-main); margin-bottom:4px;">${c.name}</div>
+                                <div style="font-size:12px; font-weight:600; color:var(--text-sub);"><i class="ph-fill ph-phone" style="color:var(--info);"></i> +${c.phone}</div>
+                            </div>
+                            <button class="btn-wa" onclick="sendPromoWhatsApp('${c.phone}')"><i class="ph-bold ph-paper-plane-right"></i> Send Promo</button>
+                        </div>
+                    `;
+                });
+            }
+        }
+    });
+}
 
 window.filterAdminCat = (cat, element) => {
-    document.querySelectorAll('.admin-cat-pill').forEach(p => p.classList.remove('active')); 
-    element.classList.add('active'); 
-    window.adminActiveCat = cat; 
-    window.filterAdminMenu(); 
-}; 
+    document.querySelectorAll('.admin-cat-pill').forEach(p => p.classList.remove('active'));
+    element.classList.add('active');
+    window.adminActiveCat = cat;
+    window.filterAdminMenu();
+};
 
 window.filterAdminMenu = () => {
-    const q = document.getElementById('adminSearchInput').value.toLowerCase(); 
-    let filtered = allMenuData; 
-    if (window.adminActiveCat !== 'All') filtered = filtered.filter(d => d.category === window.adminActiveCat); 
-    if (q) filtered = filtered.filter(d => d.name.toLowerCase().includes(q)); 
-    renderAdminMenu(filtered); 
-}; 
+    const searchInput = document.getElementById('adminSearchInput');
+    const q = searchInput ? searchInput.value.toLowerCase() : '';
+    let filtered = allMenuData;
+    if (window.adminActiveCat !== 'All') filtered = filtered.filter(d => d.category === window.adminActiveCat);
+    if (q) filtered = filtered.filter(d => d.name.toLowerCase().includes(q));
+    renderAdminMenu(filtered);
+};
 
 function getPremiumIcon(category) {
-    let cat = (category || '').toLowerCase(); 
-    if (cat.includes('veg') && !cat.includes('non')) return '<i class="ph-fill ph-leaf" style="color: var(--success);"></i>'; 
-    if (cat.includes('non')) return '<i class="ph-fill ph-bone" style="color: var(--danger);"></i>'; 
-    if (cat.includes('starter')) return '<i class="ph-fill ph-bowl-food" style="color: var(--warning);"></i>'; 
-    if (cat.includes('main')) return '<i class="ph-fill ph-cooking-pot" style="color: var(--primary);"></i>'; 
-    if (cat.includes('bread')) return '<i class="ph-fill ph-bread"></i>'; 
-    if (cat.includes('rice')) return '<i class="ph-fill ph-bowl-steam"></i>'; 
-    if (cat.includes('drink')) return '<i class="ph-fill ph-martini"></i>'; 
-    if (cat.includes('dessert')) return '<i class="ph-fill ph-ice-cream"></i>'; 
-    return '<i class="ph-fill ph-fork-knife"></i>'; 
-} 
+    let cat = (category || '').toLowerCase();
+    if (cat.includes('veg') && !cat.includes('non')) return '<i class="ph-fill ph-leaf" style="color: var(--success);"></i>';
+    if (cat.includes('non')) return '<i class="ph-fill ph-bone" style="color: var(--danger);"></i>';
+    if (cat.includes('starter')) return '<i class="ph-fill ph-bowl-food" style="color: var(--warning);"></i>';
+    if (cat.includes('main')) return '<i class="ph-fill ph-cooking-pot" style="color: var(--primary);"></i>';
+    if (cat.includes('bread')) return '<i class="ph-fill ph-bread"></i>';
+    if (cat.includes('rice')) return '<i class="ph-fill ph-bowl-steam"></i>';
+    if (cat.includes('drink')) return '<i class="ph-fill ph-martini"></i>';
+    if (cat.includes('dessert')) return '<i class="ph-fill ph-ice-cream"></i>';
+    return '<i class="ph-fill ph-fork-knife"></i>';
+}
 
 window.renderAdminMenu = (data) => {
-    const list = document.getElementById('menu-body'); 
-    list.innerHTML = ''; 
+    const list = document.getElementById('menu-body');
+    if(!list) return;
+    list.innerHTML = '';
     data.forEach(item => {
-        let catBadgeClass = ''; let icon = ''; 
-        if(item.category === 'Veg' || item.category === 'Starters') { catBadgeClass = 'color:var(--success); background:rgba(36,150,63,0.1)'; icon='<i class="ph-fill ph-leaf"></i>';} 
-        else if(item.category === 'Non-Veg' || item.category === 'Main Course') { catBadgeClass = 'color:var(--danger); background:rgba(229,57,53,0.1)'; icon='<i class="ph-fill ph-bone"></i>';} 
-        else if(item.category === 'Breads' || item.category === 'Rice') { catBadgeClass = 'color:var(--warning); background:rgba(255,159,0,0.1)'; icon='<i class="ph-fill ph-bowl-steam"></i>';} 
-        else { catBadgeClass = 'color:var(--info); background:rgba(0,122,255,0.1)'; icon='<i class="ph-fill ph-brandy"></i>';} 
+        let catBadgeClass = ''; let icon = '';
+        if(item.category === 'Veg' || item.category === 'Starters') { catBadgeClass = 'color:var(--success); background:rgba(36,150,63,0.1)'; icon='<i class="ph-fill ph-leaf"></i>';}
+        else if(item.category === 'Non-Veg' || item.category === 'Main Course') { catBadgeClass = 'color:var(--danger); background:rgba(229,57,53,0.1)'; icon='<i class="ph-fill ph-bone"></i>';}
+        else if(item.category === 'Breads' || item.category === 'Rice') { catBadgeClass = 'color:var(--warning); background:rgba(255,159,0,0.1)'; icon='<i class="ph-fill ph-bowl-steam"></i>';}
+        else { catBadgeClass = 'color:var(--info); background:rgba(0,122,255,0.1)'; icon='<i class="ph-fill ph-brandy"></i>';}
         
-        const inStock = item.inStock !== false; 
-        const opacity = inStock ? '1' : '0.5'; 
-        const stockIcon = inStock ? '<i class="ph-bold ph-prohibit"></i>' : '<i class="ph-bold ph-check-circle"></i>'; 
-        const stockText = inStock ? 'Mark Out of Stock' : 'Mark In Stock'; 
-        const stockBadge = !inStock ? '<span style="color:var(--danger); font-size:10px; background:rgba(255,59,48,0.1); padding:2px 6px; border-radius:6px; margin-left:5px; border:1px solid rgba(255,59,48,0.2);">Out of Stock</span>' : ''; 
+        const inStock = item.inStock !== false;
+        const opacity = inStock ? '1' : '0.5';
+        const stockIcon = inStock ? '<i class="ph-bold ph-prohibit"></i>' : '<i class="ph-bold ph-check-circle"></i>';
+        const stockText = inStock ? 'Mark Out of Stock' : 'Mark In Stock';
+        const stockBadge = !inStock ? '<span style="color:var(--danger); font-size:10px; background:rgba(255,59,48,0.1); padding:2px 6px; border-radius:6px; margin-left:5px; border:1px solid rgba(255,59,48,0.2);">Out of Stock</span>' : '';
         
-        let displayIcon = item.emoji && item.emoji.length < 5 && !item.emoji.includes('http') && item.emoji !== '🍲' ? item.emoji : getPremiumIcon(item.category); 
+        let displayIcon = item.emoji && item.emoji.length < 5 && !item.emoji.includes('http') && item.emoji !== '🍲' ? item.emoji : getPremiumIcon(item.category);
 
         list.innerHTML += `
             <div class="menu-item-row" style="opacity: ${opacity}">
@@ -472,135 +481,138 @@ window.renderAdminMenu = (data) => {
                     </div>
                 </div>
             </div>
-        `; 
-    }); 
-    if(data.length === 0) list.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-fill ph-magnifying-glass" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br>No items found.</div>'; 
-}; 
+        `;
+    });
+    if(data.length === 0) list.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-fill ph-magnifying-glass" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br>No items found.</div>';
+};
 
 window.toggleItemMenu = (id) => {
     document.querySelectorAll('.dropdown-menu').forEach(menu => {
-        if(menu.id !== `drop-${id}`) menu.classList.remove('show'); 
-    }); 
-    const drop = document.getElementById(`drop-${id}`); 
-    if(drop) drop.classList.toggle('show'); 
-}; 
+        if(menu.id !== `drop-${id}`) menu.classList.remove('show');
+    });
+    const drop = document.getElementById(`drop-${id}`);
+    if(drop) drop.classList.toggle('show');
+};
 
 window.addEventListener('click', (e) => {
     if(!e.target.matches('.btn-dots')) {
-        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show')); 
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
     }
-}); 
+});
 
 window.toggleStock = async (id, currentState) => {
-    try { await updateDoc(doc(db, "menu_items", id), { inStock: !currentState }); }  
-    catch(e) { alert("Failed to update stock status: " + e.message); } 
-}; 
+    try { await updateDoc(doc(db, "menu_items", id), { inStock: !currentState }); } 
+    catch(e) { alert("Failed to update stock status: " + e.message); }
+};
 
 window.openModal = () => {
-    document.getElementById('modalTitle').innerHTML = '<i class="ph-fill ph-plus-circle text-primary"></i> Add New Dish'; 
-    document.getElementById('dishId').value = ""; 
-    document.getElementById('dishEmoji').value = ""; 
-    document.getElementById('dishName').value = ""; 
-    document.getElementById('dishCategory').value = "Starters"; 
-    document.getElementById('dishPrice').value = ""; 
-    document.getElementById('dishPriceHalf').value = ""; 
-    document.getElementById('dishPricePiece').value = ""; 
-    document.getElementById('dishModel').value = ""; 
-    document.getElementById('dishPhoto1').value = ""; 
-    document.getElementById('dishPhoto2').value = ""; 
-    document.getElementById('dishPhoto3').value = ""; 
-    document.getElementById('dishPhoto4').value = ""; 
-    document.getElementById('addModal').classList.add('show'); 
-}; 
+    document.getElementById('modalTitle').innerHTML = '<i class="ph-fill ph-plus-circle text-primary"></i> Add New Dish';
+    document.getElementById('dishId').value = "";
+    document.getElementById('dishEmoji').value = "";
+    document.getElementById('dishName').value = "";
+    document.getElementById('dishCategory').value = "Starters";
+    document.getElementById('dishPrice').value = "";
+    document.getElementById('dishPriceHalf').value = "";
+    document.getElementById('dishPricePiece').value = "";
+    document.getElementById('dishModel').value = "";
+    document.getElementById('dishPhoto1').value = "";
+    document.getElementById('dishPhoto2').value = "";
+    document.getElementById('dishPhoto3').value = "";
+    document.getElementById('dishPhoto4').value = "";
+    document.getElementById('addModal').classList.add('show');
+};
 
-window.closeModal = () => { document.getElementById('addModal').classList.remove('show'); }; 
+window.closeModal = () => { document.getElementById('addModal').classList.remove('show'); };
 
 window.editDish = (id) => {
-    const dish = allMenuData.find(d => d.id === id); 
+    const dish = allMenuData.find(d => d.id === id);
     if(dish) {
-        document.getElementById('modalTitle').innerHTML = '<i class="ph-fill ph-pencil-simple text-primary"></i> Edit Dish'; 
-        document.getElementById('dishId').value = dish.id; 
-        document.getElementById('dishEmoji').value = dish.emoji || "🍲"; 
-        document.getElementById('dishName').value = dish.name; 
-        document.getElementById('dishCategory').value = dish.category; 
-        document.getElementById('dishPrice').value = dish.price; 
-        document.getElementById('dishPriceHalf').value = dish.priceHalf || ""; 
-        document.getElementById('dishPricePiece').value = dish.pricePiece || ""; 
-        document.getElementById('dishModel').value = dish.modelUrl || ""; 
-        document.getElementById('dishPhoto1').value = (dish.images && dish.images[0]) ? dish.images[0] : ""; 
-        document.getElementById('dishPhoto2').value = (dish.images && dish.images[1]) ? dish.images[1] : ""; 
-        document.getElementById('dishPhoto3').value = (dish.images && dish.images[2]) ? dish.images[2] : ""; 
-        document.getElementById('dishPhoto4').value = (dish.images && dish.images[3]) ? dish.images[3] : ""; 
-        document.getElementById('addModal').classList.add('show'); 
+        document.getElementById('modalTitle').innerHTML = '<i class="ph-fill ph-pencil-simple text-primary"></i> Edit Dish';
+        document.getElementById('dishId').value = dish.id;
+        document.getElementById('dishEmoji').value = dish.emoji || "🍲";
+        document.getElementById('dishName').value = dish.name;
+        document.getElementById('dishCategory').value = dish.category;
+        document.getElementById('dishPrice').value = dish.price;
+        document.getElementById('dishPriceHalf').value = dish.priceHalf || "";
+        document.getElementById('dishPricePiece').value = dish.pricePiece || "";
+        document.getElementById('dishModel').value = dish.modelUrl || "";
+        document.getElementById('dishPhoto1').value = (dish.images && dish.images[0]) ? dish.images[0] : "";
+        document.getElementById('dishPhoto2').value = (dish.images && dish.images[1]) ? dish.images[1] : "";
+        document.getElementById('dishPhoto3').value = (dish.images && dish.images[2]) ? dish.images[2] : "";
+        document.getElementById('dishPhoto4').value = (dish.images && dish.images[3]) ? dish.images[3] : "";
+        document.getElementById('addModal').classList.add('show');
     }
-}; 
+};
 
 window.saveDish = async () => {
-    const btn = document.getElementById('saveBtn'); 
-    btn.innerHTML = 'Saving <i class="ph-bold ph-spinner ph-spin"></i>'; btn.disabled = true; 
-    const id = document.getElementById('dishId').value; 
-    const imagesArray = [document.getElementById('dishPhoto1').value, document.getElementById('dishPhoto2').value, document.getElementById('dishPhoto3').value, document.getElementById('dishPhoto4').value].filter(url => url.trim() !== ""); 
+    const btn = document.getElementById('saveBtn');
+    btn.innerHTML = 'Saving <i class="ph-bold ph-spinner ph-spin"></i>'; btn.disabled = true;
+    const id = document.getElementById('dishId').value;
+    const imagesArray = [document.getElementById('dishPhoto1').value, document.getElementById('dishPhoto2').value, document.getElementById('dishPhoto3').value, document.getElementById('dishPhoto4').value].filter(url => url.trim() !== "");
 
     const data = {
-        emoji: document.getElementById('dishEmoji').value, 
-        name: document.getElementById('dishName').value, 
-        category: document.getElementById('dishCategory').value, 
-        price: parseFloat(document.getElementById('dishPrice').value), 
-        priceHalf: parseFloat(document.getElementById('dishPriceHalf').value) || null, 
-        pricePiece: parseFloat(document.getElementById('dishPricePiece').value) || null, 
-        modelUrl: document.getElementById('dishModel').value, 
-        images: imagesArray, 
-        restaurantId: window.currentRestaurantId 
+        emoji: document.getElementById('dishEmoji').value,
+        name: document.getElementById('dishName').value,
+        category: document.getElementById('dishCategory').value,
+        price: parseFloat(document.getElementById('dishPrice').value),
+        priceHalf: parseFloat(document.getElementById('dishPriceHalf').value) || null,
+        pricePiece: parseFloat(document.getElementById('dishPricePiece').value) || null,
+        modelUrl: document.getElementById('dishModel').value,
+        images: imagesArray,
+        restaurantId: window.currentRestaurantId
     };
 
-    if(!id) data.inStock = true; 
+    if(!id) data.inStock = true;
 
     try {
-        if(id) await updateDoc(doc(db, "menu_items", id), data); 
-        else await addDoc(collection(db, "menu_items"), data); 
-        closeModal(); 
-    } catch(e) { alert("Error: " + e.message); } 
-    btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Save & Publish'; btn.disabled = false; 
-}; 
+        if(id) await updateDoc(doc(db, "menu_items", id), data);
+        else await addDoc(collection(db, "menu_items"), data);
+        closeModal();
+    } catch(e) { alert("Error: " + e.message); }
+    btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Save & Publish'; btn.disabled = false;
+};
 
-let deleteIdTemp = null; 
-window.triggerDeleteModal = (id) => { deleteIdTemp = id; document.getElementById('deleteConfirmModal').classList.add('show'); }; 
-window.closeDeleteModal = () => { deleteIdTemp = null; document.getElementById('deleteConfirmModal').classList.remove('show'); }; 
+let deleteIdTemp = null;
+window.triggerDeleteModal = (id) => { deleteIdTemp = id; document.getElementById('deleteConfirmModal').classList.add('show'); };
+window.closeDeleteModal = () => { deleteIdTemp = null; document.getElementById('deleteConfirmModal').classList.remove('show'); };
 
 document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
     if(deleteIdTemp) {
-        const btn = document.getElementById('confirmDeleteBtn'); 
-        btn.innerText = "Deleting..."; btn.disabled = true; 
+        const btn = document.getElementById('confirmDeleteBtn');
+        btn.innerText = "Deleting..."; btn.disabled = true;
         try {
-            await deleteDoc(doc(db, "menu_items", deleteIdTemp)); 
-            closeDeleteModal(); 
-        } catch(e) { alert("Delete failed: " + e.message); } 
-        btn.innerText = "Yes, Delete"; btn.disabled = false; 
+            await deleteDoc(doc(db, "menu_items", deleteIdTemp));
+            closeDeleteModal();
+        } catch(e) { alert("Delete failed: " + e.message); }
+        btn.innerText = "Yes, Delete"; btn.disabled = false;
     }
-}); 
+});
 
 window.updateOrderStatus = async (orderId, newStatus) => {
-    try { await updateDoc(doc(db, "orders", orderId), { status: newStatus }); }  
-    catch(e) { alert("Error updating order: " + e.message); } 
-}; 
+    try { await updateDoc(doc(db, "orders", orderId), { status: newStatus }); } 
+    catch(e) { alert("Error updating order: " + e.message); }
+};
 
-// 🔥 EKDAM FIXED TAB SWITCHER (Android Canvas Bug Preventer) 🔥
+window.resolveAction = async (collectionName, id) => {
+    try { await updateDoc(doc(db, collectionName, id), { status: "Resolved" }); } catch(e) { console.error("Resolution Failed: ", e); }
+};
+
 let isQrGenerated = false;
 window.switchTab = (tabId, element = null) => {
-    document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active')); 
-    document.getElementById('section-' + tabId).classList.add('active'); 
+    document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+    const activeSec = document.getElementById('section-' + tabId);
+    if(activeSec) activeSec.classList.add('active');
     
     if(element) {
-        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); 
-        element.classList.add('active'); 
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        element.classList.add('active');
     }
 
-    // 🚀 QR Code ab tabhi draw hoga jab screen visible hogi! (No more Grey screen crash)
     if (tabId === 'settings' && !isQrGenerated) {
         setTimeout(() => {
             const qrBox = document.getElementById("qrcode-box");
             if (qrBox) {
-                qrBox.innerHTML = ""; // Purana kachra saaf
+                qrBox.innerHTML = ""; 
                 new QRCode(qrBox, { 
                     text: document.getElementById("menu-link").value, 
                     width: 220, 
@@ -613,33 +625,52 @@ window.switchTab = (tabId, element = null) => {
             }
         }, 100);
     }
-}; 
+};
+
+window.switchAdminOrderTab = (tab) => {
+    document.getElementById('tab-admin-live').classList.remove('active');
+    document.getElementById('tab-admin-past').classList.remove('active');
+    document.getElementById('admin-live-orders').style.display = 'none';
+    document.getElementById('admin-past-orders').style.display = 'none';
+    
+    document.getElementById(`tab-admin-${tab}`).classList.add('active');
+    document.getElementById(`admin-${tab}-orders`).style.display = 'flex';
+};
+
+window.downloadQR = () => {
+    const qrCanvas = document.querySelector("#qrcode-box canvas");
+    if(!qrCanvas) { alert("QR Code not generated yet!"); return; }
+
+    const printCanvas = document.createElement('canvas');
+    const ctx = printCanvas.getContext('2d');
+    printCanvas.width = 800; printCanvas.height = 1100;
+
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
+    ctx.fillStyle = '#E53935'; ctx.fillRect(0, 0, printCanvas.width, 250);
+
+    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 80px Arial'; ctx.textAlign = 'center';
+    ctx.fillText('NextPlate', 400, 110);
+    ctx.font = 'bold 45px Arial'; ctx.fillText('Scan to View Menu & Order', 400, 190);
+
+    ctx.drawImage(qrCanvas, 200, 300, 400, 400);
+
+    ctx.fillStyle = '#1C1C1E'; ctx.font = 'bold 40px Arial'; ctx.fillText('How to scan?', 400, 800);
+    ctx.fillStyle = '#757575'; ctx.font = '32px Arial';
+    ctx.fillText('📷 1. Open Phone Camera / Google Lens', 400, 880);
+    ctx.fillText('👉 2. Point at the QR Code', 400, 940);
+    ctx.fillText('💳 3. You can also use Paytm / PhonePe', 400, 1000);
+
+    const url = printCanvas.toDataURL("image/png");
+    const a = document.createElement('a'); a.href = url; a.download = "Table_QR_Standee.png";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+};
 
 window.toggleTheme = () => {
-    if(document.getElementById('themeToggle').checked) document.body.setAttribute('data-theme', 'dark'); 
-    else document.body.removeAttribute('data-theme'); 
+    const tgl = document.getElementById('themeToggle');
+    if(tgl && tgl.checked) document.body.setAttribute('data-theme', 'dark');
+    else document.body.removeAttribute('data-theme');
     
     if(window.updateRevenueChart && window.allCompletedOrdersForChart.length > 0) {
-       window.updateRevenueChart(window.allCompletedOrdersForChart); 
+       window.updateRevenueChart(window.allCompletedOrdersForChart);
     }
-}; 
-import { signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"; // (Agar file ke upar pehle se hai toh ise hata dena)
-
-window.triggerLogout = () => {
-    document.getElementById('logoutConfirmModal').classList.add('show');
-};
-
-window.closeLogoutModal = () => {
-    document.getElementById('logoutConfirmModal').classList.remove('show');
-};
-
-window.executeLogout = () => {
-    const btn = document.querySelector('#logoutConfirmModal button:last-child');
-    btn.innerHTML = 'Wait <i class="ph-bold ph-spinner ph-spin"></i>'; 
-    btn.disabled = true;
-    
-    signOut(auth).then(() => {
-        window.closeLogoutModal();
-        // Tumhara 'onAuthStateChanged' function automatic login screen dikha dega
-    });
 };
