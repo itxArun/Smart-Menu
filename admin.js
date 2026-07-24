@@ -690,6 +690,7 @@ window.resolveAction = async (collectionName, id) => {
 };
 
 let isQrGenerated = false;
+let isQrGenerated = false;
 window.switchTab = (tabId, element = null) => {
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
     const activeSec = document.getElementById('section-' + tabId);
@@ -700,13 +701,21 @@ window.switchTab = (tabId, element = null) => {
         element.classList.add('active');
     }
 
+    // 🚀 DYNAMIC SAAS QR CODE LOGIC
     if (tabId === 'settings' && !isQrGenerated) {
         setTimeout(() => {
             const qrBox = document.getElementById("qrcode-box");
-            if (qrBox) {
+            const linkInput = document.getElementById("menu-link");
+            
+            if (qrBox && linkInput) {
                 qrBox.innerHTML = ""; 
+                
+                // Har hotel ka apna personal link banega yahan
+                const dynamicLink = `https://itxarun.github.io/Smart-Menu/index.html?rest=${window.currentRestaurantId}`;
+                linkInput.value = dynamicLink; // Input box me bhi wahi link dikhega
+                
                 new QRCode(qrBox, { 
-                    text: document.getElementById("menu-link").value, 
+                    text: dynamicLink, 
                     width: 220, 
                     height: 220, 
                     colorDark: "#1C1C1E", 
