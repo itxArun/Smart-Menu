@@ -1,7 +1,8 @@
 import { APIService } from './core/db-adapter.js';
 import { initSession, getSessionData } from './core/session.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+// 🔥 ADDED 'where' IN THE IMPORT FOR SAAS FILTERING 🔥
+import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc, updateDoc, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
@@ -15,6 +16,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ==========================================
+// 🚀 SMART SAAS URL READER (STEP 2)
+// ==========================================
+const urlParams = new URLSearchParams(window.location.search);
+const scannedRestaurantId = urlParams.get('rest');
+// URL se ID capture karega, nahi toh fallback use karega
+window.currentRestaurantId = scannedRestaurantId ? scannedRestaurantId : 'rest_001';
+console.log("Customer is viewing Menu for Hotel ID: ", window.currentRestaurantId);
+
 window.allDishes = [];
 window.currentDish = null;
 window.currentVariant = 'full'; 
@@ -23,7 +33,6 @@ window.trendingIds = [];
 window.currentOrderType = 'Dine-in';
 window.favorites = JSON.parse(localStorage.getItem('nextplate_favs')) || [];
 
-// 🔥 FIX 1: CART PERSISTENCE (App load hote hi memory se cart nikalna) 🔥
 window.cart = JSON.parse(localStorage.getItem('nextplate_cart')) || {};
 
 window.saveCart = () => {
@@ -50,7 +59,14 @@ window.confirmCallWaiter = async () => {
     const tableNo = document.getElementById('waiterTableInput').value; const remark = document.getElementById('waiterRemarkInput').value || "No remark";
     if (!tableNo) { alert("Please enter a table number!"); return; }
     try {
-        await addDoc(collection(db, "waiter_calls"), { tableNumber: tableNo, remark: remark, status: "New", timestamp: new Date() });
+        // 🔥 ADDED restaurantId FOR SAAS 🔥
+        await addDoc(collection(db, "waiter_calls"), { 
+            tableNumber: tableNo, 
+            remark: remark, 
+            status: "New", 
+            timestamp: new Date(),
+            restaurantId: window.currentRestaurantId 
+        });
         window.closeWaiterPrompt(); window.showToast("Waiter is on the way!"); window.triggerHapticPop();
     } catch(e) { alert("Failed to call waiter."); }
 };
@@ -92,13 +108,13 @@ window.renderFavList = () => {
         if(dish) {
             let imgBg = dish.images && dish.images.length > 0 ? dish.images[0] : '';
             list.innerHTML += `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid var(--border-light); border-radius:16px; margin-bottom:10px; background:var(--white); box-shadow:var(--shadow-soft);">
-                    <div style="display:flex; align-items:center; gap:12px; flex:1; cursor:pointer;" onclick="loadDishFromFav('${dish.id}')">
-                        <div style="width:50px; height:50px; border-radius:10px; background:url('${imgBg}') center/cover; background-color:#eee;"></div>
-                        <div><b style="font-size:14px; color:var(--text-main);">${dish.name}</b><div style="font-size:13px; color:var(--primary); font-weight:700;">₹${dish.price}</div></div>
-                    </div>
-                    <button onclick="quickAddFav('${dish.id}')" style="background:rgba(226, 55, 68, 0.1); color:var(--danger); border:none; padding:8px 16px; border-radius:12px; font-weight:700; cursor:pointer; font-size:12px; display:flex; align-items:center; gap:4px;"><i class="ph-bold ph-plus"></i> ADD</button>
-                </div>`;
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid var(--border-light); border-radius:16px; margin-bottom:10px; background:var(--white); box-shadow:var(--shadow-soft);">
+                <div style="display:flex; align-items:center; gap:12px; flex:1; cursor:pointer;" onclick="loadDishFromFav('${dish.id}')">
+                    <div style="width:50px; height:50px; border-radius:10px; background:url('${imgBg}') center/cover; background-color:#eee;"></div>
+                    <div><b style="font-size:14px; color:var(--text-main);">${dish.name}</b><div style="font-size:13px; color:var(--primary); font-weight:700;">₹${dish.price}</div></div>
+                </div>
+                <button onclick="quickAddFav('${dish.id}')" style="background:rgba(226, 55, 68, 0.1); color:var(--danger); border:none; padding:8px 16px; border-radius:12px; font-weight:700; cursor:pointer; font-size:12px; display:flex; align-items:center; gap:4px;"><i class="ph-bold ph-plus"></i> ADD</button>
+            </div>`;
         }
     });
 };
@@ -188,7 +204,19 @@ window.toggleMedia = () => {
     }
 };
 
-window.viewOnTable = async () => { document.querySelector('#ar-viewer').activateAR(); if (window.currentDish) { try { await addDoc(collection(db, "ar_views"), { dishName: window.currentDish.name, timestamp: new Date() }); } catch(e) {} } };
+window.viewOnTable = async () => { 
+    document.querySelector('#ar-viewer').activateAR(); 
+    if (window.currentDish) { 
+        try { 
+            // 🔥 ADDED restaurantId FOR SAAS 🔥
+            await addDoc(collection(db, "ar_views"), { 
+                dishName: window.currentDish.name, 
+                timestamp: new Date(),
+                restaurantId: window.currentRestaurantId 
+            }); 
+        } catch(e) {} 
+    } 
+};
 
 let activeOrderListeners = {}; let activeOrderData = {};
 
@@ -240,23 +268,23 @@ window.renderMultiTracker = function() {
         let cardBg = isDone ? 'var(--light-green)' : '#fff'; let cardBorder = isDone ? '1px solid #24963F' : '1px solid var(--border-light)';
 
         let cardHtml = `
-            <div style="background:${cardBg}; border:${cardBorder}; border-radius: 20px; padding: 20px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft); transition:0.3s;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom: 1px solid #eee; padding-bottom:10px;">
-                    <div style="font-weight:800; color:var(--text-main); font-size:16px;">#${id.slice(-4)}</div>
-                    <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                        <div style="font-size:16px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</div>
-                        <div style="font-size:11px; color:var(--text-sub); font-weight:500;">${orderTime}</div>
-                    </div>
+        <div style="background:${cardBg}; border:${cardBorder}; border-radius: 20px; padding: 20px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft); transition:0.3s;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom: 1px solid #eee; padding-bottom:10px;">
+                <div style="font-weight:800; color:var(--text-main); font-size:16px;">#${id.slice(-4)}</div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                    <div style="font-size:16px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</div>
+                    <div style="font-size:11px; color:var(--text-sub); font-weight:500;">${orderTime}</div>
                 </div>
-                <div style="font-size: 13px; color: var(--text-main); font-weight: 500; margin-bottom: 20px;">${itemsList}</div>
-                ${!isCanc ? `
-                <div class="visual-tracker">
-                    <div class="tracker-step ${statusRaw !== 'Cancelled' ? 'done' : ''}"><div class="step-icon"><i class="ph-bold ph-check"></i></div><div class="step-text">Placed</div></div>
-                    <div class="tracker-step ${isPrep || isDone ? 'done' : (isNew ? 'active' : '')}"><div class="step-icon"><i class="ph-fill ph-cooking-pot"></i></div><div class="step-text">Preparing</div></div>
-                    <div class="tracker-step ${isDone ? 'done' : (isPrep ? 'active' : '')}"><div class="step-icon"><i class="ph-fill ph-bell-ringing"></i></div><div class="step-text">Ready</div></div>
-                </div>` : ''}
-                ${actionHtml}
-            </div>`;
+            </div>
+            <div style="font-size: 13px; color: var(--text-main); font-weight: 500; margin-bottom: 20px;">${itemsList}</div>
+            ${!isCanc ? `
+            <div class="visual-tracker">
+                <div class="tracker-step ${statusRaw !== 'Cancelled' ? 'done' : ''}"><div class="step-icon"><i class="ph-bold ph-check"></i></div><div class="step-text">Placed</div></div>
+                <div class="tracker-step ${isPrep || isDone ? 'done' : (isNew ? 'active' : '')}"><div class="step-icon"><i class="ph-fill ph-cooking-pot"></i></div><div class="step-text">Preparing</div></div>
+                <div class="tracker-step ${isDone ? 'done' : (isPrep ? 'active' : '')}"><div class="step-icon"><i class="ph-fill ph-bell-ringing"></i></div><div class="step-text">Ready</div></div>
+            </div>` : ''}
+            ${actionHtml}
+        </div>`;
 
         if (isToday || (!isCanc && !isDone)) liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; else pastContainer.innerHTML = cardHtml + pastContainer.innerHTML; 
     });
@@ -283,7 +311,6 @@ window.closeCancelModal = () => {
 window.confirmCancelOrder = async () => {
     const orderId = window.orderToCancelId;
     
-    // Agar ID hi nahi mili, toh yahi rok dega
     if (!orderId) {
         alert("System Error: Order ID is missing!");
         return;
@@ -292,27 +319,17 @@ window.confirmCancelOrder = async () => {
     window.showToast("Cancelling...");
     
     try { 
-        // 1. Pura focus pehle Database update karne par
         await updateDoc(doc(db, "orders", orderId), { status: 'Cancelled' }); 
-        
-        // 2. Agar success hua, tabhi modal band karo
         window.closeCancelModal();
         window.showToast("Order Cancelled Successfully! ❌"); 
-        
         if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
-        
     } catch(e) {
-        // 🚨 FIREBASE ERROR ALERT 🚨
-        // Ye line phone screen par directly error dikhayegi!
         alert("Firebase Error: " + e.message);
-        
         console.error("Cancel Error:", e);
         window.showToast("Failed to cancel order.");
         window.closeCancelModal();
     }
 };
-
-
 
 window.filterCategory = function(cat, element) { window.activeCategory = cat; document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); element.classList.add('active'); window.applyFilters(); };
 
@@ -369,7 +386,7 @@ window.loadDish = function(data) {
 
     document.getElementById('display-type-icon').innerHTML = `<i class="ph-fill ${iconClass}" style="color:${iconColor}"></i>`;
     document.getElementById('display-name').innerText = data.name; 
-    
+
     let currentPrice = data.price; let fakeOldPrice = currentPrice + Math.floor(currentPrice * 0.2);
     document.getElementById('display-price').innerHTML = `<span style="font-size: 16px; color: #BDBDBD; text-decoration: line-through; margin-right: 8px; font-weight: 500;">₹${fakeOldPrice}</span>₹${currentPrice}`;
     
@@ -492,21 +509,21 @@ window.renderCartModal = () => {
     for (let key in window.cart) {
         isEmpty = false; const item = window.cart[key]; totalPrice += (item.price * item.qty);
         list.innerHTML += `
-            <div class="swipe-wrap">
-                <div class="swipe-content">
-                    <div class="cart-item-info">
-                        <b style="color:var(--text-main); font-size:14px; font-weight:700; letter-spacing:-0.3px;">${item.name}</b> 
-                        <span style="font-size:12px; color:var(--text-sub);">${item.variant}</span>
-                        <div style="font-weight:600; color:var(--text-sub); margin-top:5px;">₹${item.price} x ${item.qty} = <strong style="color:var(--text-main);">₹${item.price * item.qty}</strong></div>
-                    </div>
-                    <div class="cart-item-qty">
-                        <button onclick="changeCartQty('${key}', -1)"><i class="ph-bold ph-minus"></i></button>
-                        <span style="min-width:15px; text-align:center;">${item.qty}</span>
-                        <button onclick="changeCartQty('${key}', 1)"><i class="ph-bold ph-plus"></i></button>
-                    </div>
+        <div class="swipe-wrap">
+            <div class="swipe-content">
+                <div class="cart-item-info">
+                    <b style="color:var(--text-main); font-size:14px; font-weight:700; letter-spacing:-0.3px;">${item.name}</b> 
+                    <span style="font-size:12px; color:var(--text-sub);">${item.variant}</span>
+                    <div style="font-weight:600; color:var(--text-sub); margin-top:5px;">₹${item.price} x ${item.qty} = <strong style="color:var(--text-main);">₹${item.price * item.qty}</strong></div>
                 </div>
-                <div class="swipe-action" onclick="deleteCartItem('${key}')"><i class="ph-bold ph-trash"></i></div>
-            </div>`;
+                <div class="cart-item-qty">
+                    <button onclick="changeCartQty('${key}', -1)"><i class="ph-bold ph-minus"></i></button>
+                    <span style="min-width:15px; text-align:center;">${item.qty}</span>
+                    <button onclick="changeCartQty('${key}', 1)"><i class="ph-bold ph-plus"></i></button>
+                </div>
+            </div>
+            <div class="swipe-action" onclick="deleteCartItem('${key}')"><i class="ph-bold ph-trash"></i></div>
+        </div>`;
     }
     if (isEmpty) list.innerHTML = '<div style="text-align:center; padding:30px 0;"><i class="ph-fill ph-shopping-cart" style="font-size:40px; color:var(--text-sub); opacity:0.3; margin-bottom:10px;"></i><p style="color:var(--text-sub); font-weight:600; margin:0;">Your cart is empty!</p></div>';
     document.getElementById('bill-final').innerText = '₹' + totalPrice;
@@ -533,7 +550,7 @@ window.launchConfetti = function() {
 // =========================================================
 // 🚀 2-HOUR SESSION SECURITY & IN-APP SCANNER LOGIC 🚀
 // =========================================================
-const SESSION_LIMIT_HOURS = 2; // (Check karne ke liye ise 0.001 kar sakte ho)
+const SESSION_LIMIT_HOURS = 2;
 
 window.initDiningSession = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -590,7 +607,7 @@ window.closeScanner = () => {
 window.checkSessionValid = () => {
     const startTime = localStorage.getItem('dining_session_start');
     if (!startTime) return true; 
-    
+
     const now = new Date().getTime();
     const diffHours = (now - parseInt(startTime)) / (1000 * 60 * 60);
     
@@ -609,7 +626,7 @@ window.checkSessionValid = () => {
         
         existingP.innerHTML = `Your dining session of ${SESSION_LIMIT_HOURS} hours has ended.<br><br>
         <button onclick="openInAppScanner()" style="background:var(--primary-gradient); color:white; border:none; padding:15px; border-radius:50px; font-weight:800; cursor:pointer; margin-top:10px; width: 100%; box-shadow: 0 4px 15px rgba(229,57,53,0.3); display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 15px;">
-            <i class="ph-bold ph-camera" style="font-size: 22px;"></i> Scan QR to Unlock
+        <i class="ph-bold ph-camera" style="font-size: 22px;"></i> Scan QR to Unlock
         </button>`;
         
         document.getElementById('customAlert').classList.add('show');
@@ -653,12 +670,10 @@ window.placeOrder = async () => {
         grandTotal += (window.cart[k].price * window.cart[k].qty); 
     }
 
-    // 🔥 SAAS UPDATE: Session se ID nikal rahe hain 🔥
-    const session = getSessionData();
-
     try {
         const docRef = await addDoc(collection(db, "orders"), { 
-            restaurantId: session.rid, // 🚀 YAHAN MAIN TAG AAYA HAI 🚀
+            // 🔥 URL SAAS ID ATTACHED 🔥
+            restaurantId: window.currentRestaurantId,
             orderType: window.currentOrderType || "Dine-in", 
             tableNumber: String(tableNo || "N/A"), 
             customerName: String(custName || "N/A"), 
@@ -679,14 +694,14 @@ window.placeOrder = async () => {
 
         window.cart = {}; 
         localStorage.removeItem('nextplate_cart'); 
-        
+
         document.getElementById('cookingNotes').value = ''; 
         window.updateGlobalCartUI(); 
         window.checkCartForCurrentDish(); 
         window.toggleCart(); 
         modalContent.style.opacity = "1"; 
         window.launchConfetti(); 
-        
+
         setTimeout(() => { let earnedCoins = Math.floor(grandTotal / 10); document.getElementById('earnedCoins').innerText = earnedCoins; document.getElementById('coinModal').classList.add('show'); window.triggerHapticPop(); }, 1000);
         setTimeout(() => { window.switchOrderTab('live'); window.toggleTracker(); }, 3500); 
 
@@ -702,10 +717,11 @@ window.placeOrder = async () => {
     }
 };
 
-
+// 🔥 SAAS TRENDING FILTER 🔥
 async function fetchTrendingDishes() {
     try {
-        const q = query(collection(db, "orders"), orderBy("timestamp", "desc"), limit(20)); const snap = await getDocs(q); let counts = {};
+        const q = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId)); 
+        const snap = await getDocs(q); let counts = {};
         snap.forEach(d => { if(d.data().items) { d.data().items.forEach(i => { counts[i.id] = (counts[i.id] || 0) + i.qty; }); } });
         window.trendingIds = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 5);
     } catch(e) {}
@@ -767,16 +783,16 @@ window.calculateSplitBill = window.openSplitPrompt = function(e) {
         splitModal.className = 'custom-alert';
         splitModal.id = 'splitPromptModal';
         splitModal.innerHTML = `
-            <div class="alert-box">
-                <div class="alert-icon"><i class="ph-fill ph-users" style="color: var(--green);"></i></div>
-                <h3>Split Bill</h3>
-                <p style="margin-bottom: 15px;">Kitne doston mein bill split karna hai?</p>
-                <input type="number" id="splitPeopleInput" class="input-field" placeholder="E.g., 2" value="2" min="2" style="margin-bottom: 25px; text-align: center; font-size: 20px; font-weight: 800; width: 100%; box-sizing: border-box;">
-                <div style="display: flex; gap: 12px;">
-                    <button class="btn-cancel" style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer;" onclick="closeSplitPrompt()">Cancel</button>
-                    <button class="alert-btn-primary" style="flex:1; margin:0; background: var(--green); box-shadow: 0 8px 20px rgba(36, 150, 63, 0.3);" onclick="confirmSplitBill()">Split Now</button>
-                </div>
+        <div class="alert-box">
+            <div class="alert-icon"><i class="ph-fill ph-users" style="color: var(--green);"></i></div>
+            <h3>Split Bill</h3>
+            <p style="margin-bottom: 15px;">Kitne doston mein bill split karna hai?</p>
+            <input type="number" id="splitPeopleInput" class="input-field" placeholder="E.g., 2" value="2" min="2" style="margin-bottom: 25px; text-align: center; font-size: 20px; font-weight: 800; width: 100%; box-sizing: border-box;">
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-cancel" style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer;" onclick="closeSplitPrompt()">Cancel</button>
+                <button class="alert-btn-primary" style="flex:1; margin:0; background: var(--green); box-shadow: 0 8px 20px rgba(36, 150, 63, 0.3);" onclick="confirmSplitBill()">Split Now</button>
             </div>
+        </div>
         `;
         document.body.appendChild(splitModal);
     }
@@ -844,7 +860,6 @@ window.startChefVoice = () => {
     
     recognition.onresult = (e) => { 
         const noteInput = document.getElementById('cookingNotes');
-        // Agar pehle se kuch likha hai, toh uske aage append karega
         noteInput.value += (noteInput.value ? ' ' : '') + e.results[0][0].transcript; 
     };
     
@@ -866,12 +881,11 @@ window.startChefVoice = () => {
 window.currentRatingVal = 0;
 window.dishToRateId = null;
 
-// Is function ko dish view me kisi button par laga sakte ho
 window.openRatingModal = () => {
     if(!window.currentDish) return;
     window.dishToRateId = window.currentDish.id;
     document.getElementById('ratingDishName').innerText = window.currentDish.name;
-    window.setRating(0); // Reset stars
+    window.setRating(0); 
     document.getElementById('reviewText').value = '';
     document.getElementById('ratingModal').classList.add('show');
 };
@@ -888,7 +902,7 @@ window.setRating = (val) => {
         if (index < val) {
             star.classList.add('active');
             star.classList.add('bounce-pop');
-            setTimeout(() => star.classList.remove('bounce-pop'), 400); // Remove animation class
+            setTimeout(() => star.classList.remove('bounce-pop'), 400); 
         } else {
             star.classList.remove('active');
         }
@@ -906,41 +920,39 @@ window.submitRating = async () => {
     window.showToast("Submitting...");
     
     try {
-        // Firebase me rating save karna
+        // 🔥 ADDED restaurantId FOR SAAS 🔥
         await addDoc(collection(db, "dish_ratings"), { 
             dishId: window.dishToRateId, 
             dishName: window.currentDish.name,
             rating: window.currentRatingVal, 
             review: review || "No review text",
-            timestamp: new Date() 
+            timestamp: new Date(),
+            restaurantId: window.currentRestaurantId
         });
         
         window.closeRatingModal();
         window.showToast("Thank you for your review! ⭐");
-        window.launchConfetti(); // Confetti chalegi mast lagta hai
+        window.launchConfetti(); 
     } catch(e) {
         window.showToast("Failed to submit rating.");
     }
 };
 
-// 🔥 Tweak: Bounce cart icon when item added
 const originalAddCurrentToCart = window.addCurrentToCart;
 window.addCurrentToCart = (e) => {
     originalAddCurrentToCart(e);
     const cartIcon = document.getElementById('float-btn-view');
     if(cartIcon) {
         cartIcon.classList.remove('bounce-pop');
-        void cartIcon.offsetWidth; // Trigger reflow
+        void cartIcon.offsetWidth; 
         cartIcon.classList.add('bounce-pop');
     }
 };
 
-// Database Se Data Laane Ka Naya Function
 async function loadDynamicMenu() {
     try {
         console.log("⏳ Fetching data from Database...");
         
-        // 1. Adapter se data manga rahe hain
         const restaurant = await APIService.getRestaurant();
         const categories = await APIService.getCategories();
         const dishes = await APIService.getDishes();
@@ -950,18 +962,14 @@ async function loadDynamicMenu() {
             return;
         }
 
-        // 2. App ka Title set karna
         document.title = `${restaurant.name} - Smart Menu`;
 
-        // 🔥 3. ASLI MAGIC: Naye data ko Screen Par Bhejna 🔥
         window.allDishes = dishes;
         
-        // Isse left side ka menu/sidebar update hoga
         if (typeof window.applyFilters === 'function') {
             window.applyFilters();
         }
         
-        // Isse pehli dish automatically screen par center me load ho jayegi
         if (window.allDishes.length > 0) {
             window.loadDish(window.allDishes[0]);
         }
@@ -973,11 +981,7 @@ async function loadDynamicMenu() {
     }
 }
 
-// App load hote hi Session aur Data dono start karna
 window.addEventListener('DOMContentLoaded', () => {
-    // Ye line ensure karegi ki memory me restaurant ki ID set ho
     if(typeof initSession === 'function') initSession();
-    
-    // Naya data load karo
     loadDynamicMenu();
 });
