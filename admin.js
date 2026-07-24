@@ -18,7 +18,7 @@ const auth = getAuth(app);
 
 window.currentRestaurantId = 'rest_001';
 
-// 🛡️ SAFE UI INIT (Taki button 100% click ho)
+// 🛡️ SAFE UI INIT 
 document.addEventListener('DOMContentLoaded', () => {
     if(typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
         Chart.register(ChartDataLabels);
@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateInput = document.getElementById('reportDate');
     if(dateInput) dateInput.valueAsDate = new Date();
     
-    // 🚀 100% Guaranteed Click Listener
     const loginBtn = document.getElementById('loginBtn');
     if(loginBtn) {
         loginBtn.addEventListener('click', window.loginAdmin);
@@ -65,7 +64,6 @@ window.loginAdmin = () => {
     
     signInWithEmailAndPassword(auth, email, pass)
         .then((userCredential) => {
-            // 🔥 Login Successful, Force Hide Screen
             const loginScreen = document.getElementById('loginScreen');
             if(loginScreen) loginScreen.style.display = 'none';
             if(btn) {
@@ -212,7 +210,7 @@ window.sendPromoWhatsApp = (phone) => {
 };
 
 // ==========================================
-// 🍔 MENU & INVENTORY
+// 🍔 MENU & INVENTORY & SAAS DATA
 // ==========================================
 let allMenuData = [];
 let isInitialLoad = true;
@@ -262,7 +260,7 @@ window.initAdminData = function() {
         actionContainer.style.display = hasActions ? 'block' : 'none';
     });
 
-    // Orders & CRM Logic
+    // Orders, CRM & SAAS Analytics
     const qLive = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qLive, (snap) => {
         const liveList = document.getElementById('admin-live-orders');
@@ -274,6 +272,11 @@ window.initAdminData = function() {
         let activeCount = 0; let totalRev = 0;
         let crmCustomers = new Map(); 
         window.allCompletedOrdersForChart = []; 
+
+        // 🚀 NEW SAAS ANALYTICS VARIABLES
+        let saasPending = 0; let saasPreparing = 0; let saasServed = 0; let saasCancelled = 0;
+        let revWeek = 0; let revMonth = 0;
+        let dishCount = {}; 
 
         let allOrders = [];
         snap.forEach((doc) => {
@@ -296,6 +299,7 @@ window.initAdminData = function() {
             const displayTimeStr = isToday ? timeFormat : `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short'})}, ${timeFormat}`;
             const orderDateStr = date.toISOString().split('T')[0];
 
+            // CRM Extraction
             if(data.customerPhone && data.customerPhone !== "N/A") {
                 let phoneStr = String(data.customerPhone).replace(/\D/g, '');
                 if(phoneStr.length >= 10) {
@@ -304,13 +308,37 @@ window.initAdminData = function() {
                 }
             }
 
+            // 🚀 SaaS Stats Calculation
+            if (isToday) {
+                if (data.status === 'New') saasPending++;
+                if (data.status === 'Preparing') saasPreparing++;
+                if (data.status === 'Completed') saasServed++;
+                if (data.status === 'Cancelled') saasCancelled++;
+            }
+
             if(data.status === 'Completed') {
                 window.allCompletedOrdersForChart.unshift(data); 
                 if(orderDateStr === selectedDate) {
                     totalRev += data.totalAmount;
                 }
+                
+                // Advanced Revenue Calc
+                const diffTime = Math.abs(todayDate - date);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                if (diffDays <= 7) revWeek += data.totalAmount;
+                if (date.getMonth() === todayDate.getMonth() && date.getFullYear() === todayDate.getFullYear()) {
+                    revMonth += data.totalAmount;
+                }
+                
+                // Top Dish Calc
+                if(data.items) {
+                    data.items.forEach(item => {
+                        dishCount[item.name] = (dishCount[item.name] || 0) + item.qty;
+                    });
+                }
             }
 
+            // Order Card Generation
             if(orderDateStr === selectedDate || data.status === 'New' || data.status === 'Preparing') {
                 let itemsHTML = '';
                 data.items.forEach(item => {
@@ -351,7 +379,7 @@ window.initAdminData = function() {
                 }
 
                 let cardHtml = `
-                    <div class="order-card" style="border-radius:24px; border:1px solid var(--border); margin-bottom:20px; box-shadow:var(--shadow-soft);">
+                    <div class="order-card premium-hover" style="border-radius:24px; border:1px solid var(--border); margin-bottom:20px; box-shadow:var(--shadow-soft);">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--border); padding-bottom:15px; margin-bottom:10px;">
                             <div style="display:flex; align-items:center; gap:10px;">
                                 ${tableDisplayBadge}
@@ -392,6 +420,8 @@ window.initAdminData = function() {
         });
 
         isInitialLoad = false;
+        
+        // Update Old Header Stats
         const totOrders = document.getElementById('total-orders');
         const totRev = document.getElementById('total-revenue');
         if(totOrders) totOrders.innerText = activeCount;
@@ -401,6 +431,46 @@ window.initAdminData = function() {
         if(liveCard) {
             if(activeCount > 0) liveCard.classList.add('pulse-live');
             else liveCard.classList.remove('pulse-live');
+        }
+
+        // 🚀 POPULATE NEW SAAS DASHBOARD (With Counter Animation)
+        const setStat = (id, val, prefix = "") => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.classList.remove('skeleton');
+                let start = 0;
+                const duration = 1000; 
+                const stepTime = Math.abs(Math.floor(duration / (val || 1)));
+                if(val === 0) { el.innerText = prefix + val; return; }
+                const timer = setInterval(() => {
+                    start += Math.ceil(val / 20);
+                    if(start >= val) { start = val; clearInterval(timer); }
+                    el.innerText = prefix + start;
+                }, stepTime);
+            }
+        };
+
+        setStat('saas-total-orders', saasPending + saasPreparing + saasServed + saasCancelled);
+        setStat('saas-pending', saasPending);
+        setStat('saas-preparing', saasPreparing);
+        setStat('saas-served', saasServed);
+        setStat('saas-cancelled', saasCancelled);
+        
+        setStat('rev-today', totalRev, "₹");
+        setStat('rev-week', revWeek, "₹");
+        setStat('rev-month', revMonth, "₹");
+
+        let topDish = Object.keys(dishCount).sort((a,b) => dishCount[b] - dishCount[a])[0];
+        const topDishEl = document.getElementById('top-dish-name');
+        if(topDishEl) {
+            topDishEl.classList.remove('skeleton');
+            topDishEl.innerText = topDish ? `${topDish} (${dishCount[topDish]} sold)` : "Need more orders";
+        }
+        
+        const topCatEl = document.getElementById('top-cat-name');
+        if(topCatEl) {
+            topCatEl.classList.remove('skeleton');
+            topCatEl.innerText = topDish ? "Trending 🔥" : "Need more orders";
         }
 
         if(window.updateRevenueChart) window.updateRevenueChart(window.allCompletedOrdersForChart);
@@ -419,7 +489,7 @@ window.initAdminData = function() {
             } else {
                 crmCustomers.forEach(c => {
                     crmBody.innerHTML += `
-                        <div class="crm-customer-row">
+                        <div class="crm-customer-row premium-hover">
                             <div>
                                 <div style="font-weight:700; font-size:15px; color:var(--text-main); margin-bottom:4px;">${c.name}</div>
                                 <div style="font-size:12px; font-weight:600; color:var(--text-sub);"><i class="ph-fill ph-phone" style="color:var(--info);"></i> +${c.phone}</div>
@@ -483,7 +553,7 @@ window.renderAdminMenu = (data) => {
         let displayIcon = item.emoji && item.emoji.length < 5 && !item.emoji.includes('http') && item.emoji !== '🍲' ? item.emoji : getPremiumIcon(item.category);
 
         list.innerHTML += `
-            <div class="menu-item-row" style="opacity: ${opacity}">
+            <div class="menu-item-row premium-hover" style="opacity: ${opacity}">
                 <div class="menu-item-info" onclick="editDish('${item.id}')">
                     <div class="dish-icon" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${displayIcon}</div>
                     <div class="dish-details">
