@@ -18,35 +18,16 @@ const auth = getAuth(app);
 
 window.currentRestaurantId = 'rest_001';
 
-// 🛡️ SAFE UI INIT 
-document.addEventListener('DOMContentLoaded', () => {
-    if(typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
-        Chart.register(ChartDataLabels);
-    }
-    const dateInput = document.getElementById('reportDate');
-    if(dateInput) dateInput.valueAsDate = new Date();
-    
-    const loginBtn = document.getElementById('loginBtn');
-    if(loginBtn) {
-        loginBtn.addEventListener('click', window.loginAdmin);
-    }
-});
+// 🛡️ SAFE UI INIT (Bina delay ke direct load hoga)
+if(typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+    Chart.register(ChartDataLabels);
+}
+const dateInput = document.getElementById('reportDate');
+if(dateInput) dateInput.valueAsDate = new Date();
 
 // ==========================================
 // 🔐 AUTHENTICATION & LOGOUT LOGIC
 // ==========================================
-onAuthStateChanged(auth, (user) => {
-    const loginScreen = document.getElementById('loginScreen');
-    if(loginScreen) {
-        if (user) { 
-            loginScreen.style.display = 'none'; 
-            if(typeof window.initAdminData === 'function') window.initAdminData(); 
-        } else { 
-            loginScreen.style.display = 'flex'; 
-        }
-    }
-});
-
 window.loginAdmin = () => {
     const email = document.getElementById('adminEmail').value.trim();
     const pass = document.getElementById('adminPass').value.trim();
@@ -80,6 +61,32 @@ window.loginAdmin = () => {
             }
         });
 };
+
+// 🔥 100% GUARANTEED CLICK & ENTER KEY LOGIC 🔥
+const loginBtn = document.getElementById('loginBtn');
+if(loginBtn) {
+    loginBtn.onclick = window.loginAdmin;
+}
+const passInput = document.getElementById('adminPass');
+if(passInput) {
+    passInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            window.loginAdmin();
+        }
+    });
+}
+
+onAuthStateChanged(auth, (user) => {
+    const loginScreen = document.getElementById('loginScreen');
+    if(loginScreen) {
+        if (user) { 
+            loginScreen.style.display = 'none'; 
+            if(typeof window.initAdminData === 'function') window.initAdminData(); 
+        } else { 
+            loginScreen.style.display = 'flex'; 
+        }
+    }
+});
 
 window.triggerLogout = () => {
     const modal = document.getElementById('logoutConfirmModal');
@@ -220,8 +227,8 @@ window.initAdminData = function() {
     const reportDateEl = document.getElementById('reportDate');
     const selectedDate = reportDateEl ? reportDateEl.value : new Date().toISOString().split('T')[0];
 
-    // Filtered Menu Fetch
-    const qMenu = query(collection(db, "menu_items"), where("restaurantId", "==", window.currentRestaurantId));
+    // Menu Fetch
+    const qMenu = query(collection(db, "menu_items"));
     onSnapshot(qMenu, (snap) => {
         const totalDishes = document.getElementById('total-dishes');
         if(totalDishes) totalDishes.innerText = snap.size;
@@ -232,7 +239,7 @@ window.initAdminData = function() {
     });
 
     // Alerts (Waiter / Music)
-    const qWaiter = query(collection(db, "waiter_calls"), where("restaurantId", "==", window.currentRestaurantId));
+    const qWaiter = query(collection(db, "waiter_calls"));
     onSnapshot(qWaiter, (waiterSnap) => {
         const actionContainer = document.getElementById('action-center-container');
         const actionList = document.getElementById('action-alerts-list');
@@ -261,7 +268,7 @@ window.initAdminData = function() {
     });
 
     // Orders, CRM & SAAS Analytics
-    const qLive = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId));
+    const qLive = query(collection(db, "orders"));
     onSnapshot(qLive, (snap) => {
         const liveList = document.getElementById('admin-live-orders');
         const pastList = document.getElementById('admin-past-orders');
@@ -273,7 +280,6 @@ window.initAdminData = function() {
         let crmCustomers = new Map(); 
         window.allCompletedOrdersForChart = []; 
 
-        // 🚀 NEW SAAS ANALYTICS VARIABLES
         let saasPending = 0; let saasPreparing = 0; let saasServed = 0; let saasCancelled = 0;
         let revWeek = 0; let revMonth = 0;
         let dishCount = {}; 
@@ -299,7 +305,6 @@ window.initAdminData = function() {
             const displayTimeStr = isToday ? timeFormat : `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short'})}, ${timeFormat}`;
             const orderDateStr = date.toISOString().split('T')[0];
 
-            // CRM Extraction
             if(data.customerPhone && data.customerPhone !== "N/A") {
                 let phoneStr = String(data.customerPhone).replace(/\D/g, '');
                 if(phoneStr.length >= 10) {
@@ -308,7 +313,6 @@ window.initAdminData = function() {
                 }
             }
 
-            // 🚀 SaaS Stats Calculation
             if (isToday) {
                 if (data.status === 'New') saasPending++;
                 if (data.status === 'Preparing') saasPreparing++;
@@ -322,7 +326,6 @@ window.initAdminData = function() {
                     totalRev += data.totalAmount;
                 }
                 
-                // Advanced Revenue Calc
                 const diffTime = Math.abs(todayDate - date);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                 if (diffDays <= 7) revWeek += data.totalAmount;
@@ -330,7 +333,6 @@ window.initAdminData = function() {
                     revMonth += data.totalAmount;
                 }
                 
-                // Top Dish Calc
                 if(data.items) {
                     data.items.forEach(item => {
                         dishCount[item.name] = (dishCount[item.name] || 0) + item.qty;
@@ -338,7 +340,6 @@ window.initAdminData = function() {
                 }
             }
 
-            // Order Card Generation
             if(orderDateStr === selectedDate || data.status === 'New' || data.status === 'Preparing') {
                 let itemsHTML = '';
                 data.items.forEach(item => {
@@ -421,7 +422,6 @@ window.initAdminData = function() {
 
         isInitialLoad = false;
         
-        // Update Old Header Stats
         const totOrders = document.getElementById('total-orders');
         const totRev = document.getElementById('total-revenue');
         if(totOrders) totOrders.innerText = activeCount;
@@ -433,7 +433,6 @@ window.initAdminData = function() {
             else liveCard.classList.remove('pulse-live');
         }
 
-        // 🚀 POPULATE NEW SAAS DASHBOARD (With Counter Animation)
         const setStat = (id, val, prefix = "") => {
             const el = document.getElementById(id);
             if(el) {
@@ -690,7 +689,6 @@ window.resolveAction = async (collectionName, id) => {
 };
 
 let isQrGenerated = false;
-let isQrGenerated = false;
 window.switchTab = (tabId, element = null) => {
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
     const activeSec = document.getElementById('section-' + tabId);
@@ -701,18 +699,13 @@ window.switchTab = (tabId, element = null) => {
         element.classList.add('active');
     }
 
-    // 🚀 DYNAMIC SAAS QR CODE LOGIC
     if (tabId === 'settings' && !isQrGenerated) {
         setTimeout(() => {
             const qrBox = document.getElementById("qrcode-box");
-            const linkInput = document.getElementById("menu-link");
-            
-            if (qrBox && linkInput) {
+            if (qrBox) {
                 qrBox.innerHTML = ""; 
-                
-                // Har hotel ka apna personal link banega yahan
                 const dynamicLink = `https://itxarun.github.io/Smart-Menu/index.html?rest=${window.currentRestaurantId}`;
-                linkInput.value = dynamicLink; // Input box me bhi wahi link dikhega
+                document.getElementById("menu-link").value = dynamicLink;
                 
                 new QRCode(qrBox, { 
                     text: dynamicLink, 
