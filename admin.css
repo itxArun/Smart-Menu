@@ -342,3 +342,54 @@ input:checked + .slider:before { transform: translateX(22px); }
     color: white;
     box-shadow: 0 4px 10px rgba(229, 57, 53, 0.3);
 }
+/* =========================================
+   🚀 PREMIUM SAAS UPGRADES (ANIMATIONS & SKELETONS)
+========================================= */
+
+/* Smooth Card Hover (Micro Animations) */
+.premium-hover {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.premium-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(229, 57, 53, 0.15);
+    border-color: rgba(229, 57, 53, 0.3);
+}
+
+/* Beautiful Loading Skeleton */
+.skeleton {
+    background: linear-gradient(90deg, var(--input-bg) 25%, var(--bg-card) 50%, var(--input-bg) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 8px;
+    color: transparent !important;
+    pointer-events: none;
+    user-select: none;
+}
+.skeleton * {
+    visibility: hidden;
+}
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Advanced Stats Grid */
+.advanced-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 20px;
+    background: var(--bg-main);
+}
+.mini-stat-card {
+    background: var(--bg-card);
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.mini-stat-title { font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+.mini-stat-val { font-size: 20px; font-weight: 800; color: var(--text-main); }
