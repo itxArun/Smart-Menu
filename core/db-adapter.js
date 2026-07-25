@@ -1,6 +1,7 @@
 import { getSessionData } from './session.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+// 🔥 IMPORT ME 'query' AUR 'where' ADD KIYA 🔥
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // Tumhara Asli Firebase Config
 const firebaseConfig = {
@@ -18,15 +19,27 @@ const db = getFirestore(app);
 // The Pro Firebase Service
 class FirebaseService {
     
-    // 1. Restaurant Info Lana
+    // 1. Restaurant Info Lana (Ab ye DYNAMIC hai)
     async fetchRestaurant(restId) {
-        // Future me ye bhi Firebase se aayega. Abhi default bhej rahe hain taaki UI na toote.
-        return {
-            id: restId,
-            name: "Thanos Kitchen", 
-            currency: "₹",
-            isOpen: true
-        };
+        try {
+            // Database se us hotel ka naam mangwa rahe hain
+            const q = query(collection(db, "merchants"), where("restaurantId", "==", restId));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+                const data = snap.docs[0].data();
+                return {
+                    id: restId,
+                    name: data.restaurantName || "Smart Menu",
+                    currency: "₹",
+                    isOpen: true
+                };
+            }
+        } catch (error) {
+            console.error("Restaurant details fetch error:", error);
+        }
+        
+        // Agar net slow ho toh ye backup chalega
+        return { id: restId, name: "Smart Menu", currency: "₹", isOpen: true };
     }
 
     // 2. Categories Lana
@@ -34,10 +47,13 @@ class FirebaseService {
         return []; 
     }
 
-    // 3. 🔥 ASLI MAGIC: Tumhare Firebase se saari dishes wapas laana 🔥
+    // 3. 🔥 ASLI MAGIC: BOUNCER FILTER LAG GAYA 🔥
     async fetchDishes(restId) {
         try {
-            const querySnapshot = await getDocs(collection(db, "menu_items"));
+            // Pehle sab aa raha tha, ab sirf 'restId' wala menu download hoga
+            const qMenu = query(collection(db, "menu_items"), where("restaurantId", "==", restId));
+            const querySnapshot = await getDocs(qMenu);
+            
             let tempDishes = [];
             
             querySnapshot.forEach((doc) => { 
@@ -70,7 +86,7 @@ class FirebaseService {
     }
 }
 
-// 🚀 Active Database Switcher (Ab ye Firebase par set hai)
+// 🚀 Active Database Switcher
 const database = new FirebaseService();
 
 // 🌉 The API Gateway
