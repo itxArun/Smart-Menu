@@ -1,7 +1,6 @@
 import { APIService } from './core/db-adapter.js';
 import { initSession, getSessionData } from './core/session.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-// 🔥 ADDED 'where' IN THE IMPORT FOR SAAS FILTERING 🔥
 import { getFirestore, collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, doc, updateDoc, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -24,35 +23,6 @@ const scannedRestaurantId = urlParams.get('rest');
 // URL se ID capture karega, nahi toh fallback use karega
 window.currentRestaurantId = scannedRestaurantId ? scannedRestaurantId : 'rest_001';
 console.log("Customer is viewing Menu for Hotel ID: ", window.currentRestaurantId);
-// 🔥 JADOO: UPDATE RESTAURANT NAME IN CUSTOMER UI 🔥
-setTimeout(async () => {
-    try {
-        // APIService se hotel ka asli naam mangwao
-        const restData = await APIService.getRestaurant();
-        
-        if (restData && restData.name && restData.name !== "Smart Menu") {
-            // 1. Browser ke upar Tab ka naam change
-            document.title = restData.name + " - Menu";
-            
-            // 2. Page par "NextPlate" dhoondh kar usko Replace karo
-            const elements = document.querySelectorAll('h1, h2, h3, p, span, div, a');
-            elements.forEach(el => {
-                if (el.childNodes.length === 1 && el.innerText.trim() === 'NextPlate') {
-                    el.innerText = restData.name;
-                    el.style.color = '#E53935'; // Same red color
-                }
-            });
-            
-            // Agar logo kisi specific class me ho toh backup
-            const logoEl = document.querySelector('.logo, .brand-logo, .logo-text');
-            if (logoEl && logoEl.innerText.includes('NextPlate')) {
-                logoEl.innerText = restData.name;
-            }
-        }
-    } catch(e) { 
-        console.log("Logo update error:", e); 
-    }
-}, 800); // 0.8 seconds wait karega taaki page load ho jaye
 
 window.allDishes = [];
 window.currentDish = null;
@@ -88,7 +58,6 @@ window.confirmCallWaiter = async () => {
     const tableNo = document.getElementById('waiterTableInput').value; const remark = document.getElementById('waiterRemarkInput').value || "No remark";
     if (!tableNo) { alert("Please enter a table number!"); return; }
     try {
-        // 🔥 ADDED restaurantId FOR SAAS 🔥
         await addDoc(collection(db, "waiter_calls"), { 
             tableNumber: tableNo, 
             remark: remark, 
@@ -237,7 +206,6 @@ window.viewOnTable = async () => {
     document.querySelector('#ar-viewer').activateAR(); 
     if (window.currentDish) { 
         try { 
-            // 🔥 ADDED restaurantId FOR SAAS 🔥
             await addDoc(collection(db, "ar_views"), { 
                 dishName: window.currentDish.name, 
                 timestamp: new Date(),
@@ -949,7 +917,6 @@ window.submitRating = async () => {
     window.showToast("Submitting...");
     
     try {
-        // 🔥 ADDED restaurantId FOR SAAS 🔥
         await addDoc(collection(db, "dish_ratings"), { 
             dishId: window.dishToRateId, 
             dishName: window.currentDish.name,
@@ -992,6 +959,23 @@ async function loadDynamicMenu() {
         }
 
         document.title = `${restaurant.name} - Smart Menu`;
+
+        // 🔥 BULLETPROOF SAAS NAME REPLACER 🔥
+        if (restaurant.name !== "Smart Menu") {
+            const replaceText = (node) => {
+                // Agar ye text wali line hai, toh isme word dhoondh kar change karo
+                if (node.nodeType === 3 && node.nodeValue) { 
+                    if (node.nodeValue.includes("NextPlate")) {
+                        node.nodeValue = node.nodeValue.replace("NextPlate", restaurant.name);
+                    }
+                } 
+                // Agar ye koi element hai (par script/style nahi), toh uske andar ghuso
+                else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
+                    node.childNodes.forEach(child => replaceText(child));
+                }
+            };
+            replaceText(document.body);
+        }
 
         window.allDishes = dishes;
         
