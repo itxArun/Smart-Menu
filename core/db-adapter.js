@@ -89,18 +89,16 @@ class FirebaseService {
 // 🚀 Active Database Switcher
 const database = new FirebaseService();
 
-// 🌉 The API Gateway
+// 🌉 The API Gateway (🔥 STRICT SAAS UPDATE 🔥)
 export const APIService = {
     getRestaurant: async () => {
-        const session = getSessionData();
-        return await database.fetchRestaurant(session.rid);
+        // Ab session memory par depend nahi rahenge, direct URL wali ID use karenge!
+        return await database.fetchRestaurant(window.currentRestaurantId);
     },
     getCategories: async () => {
-        const session = getSessionData();
-        return await database.fetchCategories(session.rid);
+        return await database.fetchCategories(window.currentRestaurantId);
     },
     getDishes: async () => {
-        const session = getSessionData();
-        return await database.fetchDishes(session.rid);
+        return await database.fetchDishes(window.currentRestaurantId);
     }
 };
