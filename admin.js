@@ -240,8 +240,8 @@ window.initAdminData = function() {
     const reportDateEl = document.getElementById('reportDate');
     const selectedDate = reportDateEl ? reportDateEl.value : new Date().toISOString().split('T')[0];
 
-    // Menu Fetch
-    const qMenu = query(collection(db, "menu_items"));
+    // 🛡️ 1. BOUNCER FOR MENU ITEMS
+    const qMenu = query(collection(db, "menu_items"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qMenu, (snap) => {
         const totalDishes = document.getElementById('total-dishes');
         if(totalDishes) totalDishes.innerText = snap.size;
@@ -251,8 +251,8 @@ window.initAdminData = function() {
         window.filterAdminMenu(); 
     });
 
-    // Alerts (Waiter / Music)
-    const qWaiter = query(collection(db, "waiter_calls"));
+    // 🛡️ 2. BOUNCER FOR WAITER CALLS
+    const qWaiter = query(collection(db, "waiter_calls"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qWaiter, (waiterSnap) => {
         const actionContainer = document.getElementById('action-center-container');
         const actionList = document.getElementById('action-alerts-list');
@@ -280,8 +280,8 @@ window.initAdminData = function() {
         actionContainer.style.display = hasActions ? 'block' : 'none';
     });
 
-    // Orders, CRM & SAAS Analytics
-    const qLive = query(collection(db, "orders"));
+    // 🛡️ 3. BOUNCER FOR ORDERS, CRM & SAAS ANALYTICS
+    const qLive = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qLive, (snap) => {
         const liveList = document.getElementById('admin-live-orders');
         const pastList = document.getElementById('admin-past-orders');
