@@ -702,6 +702,7 @@ window.resolveAction = async (collectionName, id) => {
 };
 
 let isQrGenerated = false;
+
 window.switchTab = (tabId, element = null) => {
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
     const activeSec = document.getElementById('section-' + tabId);
@@ -712,13 +713,15 @@ window.switchTab = (tabId, element = null) => {
         element.classList.add('active');
     }
 
-    if (tabId === 'settings' && !isQrGenerated) {
+    if (tabId === 'settings') {
         setTimeout(() => {
             const qrBox = document.getElementById("qrcode-box");
             if (qrBox) {
                 qrBox.innerHTML = ""; 
                 const dynamicLink = `https://itxarun.github.io/Smart-Menu/index.html?rest=${window.currentRestaurantId}`;
-                document.getElementById("menu-link").value = dynamicLink;
+                
+                const linkInput = document.getElementById("menu-link");
+                if (linkInput) linkInput.value = dynamicLink;
                 
                 new QRCode(qrBox, { 
                     text: dynamicLink, 
@@ -728,7 +731,6 @@ window.switchTab = (tabId, element = null) => {
                     colorLight: "#ffffff", 
                     correctLevel: QRCode.CorrectLevel.H 
                 });
-                isQrGenerated = true;
             }
         }, 100);
     }
