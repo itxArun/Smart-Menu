@@ -24,6 +24,35 @@ const scannedRestaurantId = urlParams.get('rest');
 // URL se ID capture karega, nahi toh fallback use karega
 window.currentRestaurantId = scannedRestaurantId ? scannedRestaurantId : 'rest_001';
 console.log("Customer is viewing Menu for Hotel ID: ", window.currentRestaurantId);
+// 🔥 JADOO: UPDATE RESTAURANT NAME IN CUSTOMER UI 🔥
+setTimeout(async () => {
+    try {
+        // APIService se hotel ka asli naam mangwao
+        const restData = await APIService.getRestaurant();
+        
+        if (restData && restData.name && restData.name !== "Smart Menu") {
+            // 1. Browser ke upar Tab ka naam change
+            document.title = restData.name + " - Menu";
+            
+            // 2. Page par "NextPlate" dhoondh kar usko Replace karo
+            const elements = document.querySelectorAll('h1, h2, h3, p, span, div, a');
+            elements.forEach(el => {
+                if (el.childNodes.length === 1 && el.innerText.trim() === 'NextPlate') {
+                    el.innerText = restData.name;
+                    el.style.color = '#E53935'; // Same red color
+                }
+            });
+            
+            // Agar logo kisi specific class me ho toh backup
+            const logoEl = document.querySelector('.logo, .brand-logo, .logo-text');
+            if (logoEl && logoEl.innerText.includes('NextPlate')) {
+                logoEl.innerText = restData.name;
+            }
+        }
+    } catch(e) { 
+        console.log("Logo update error:", e); 
+    }
+}, 800); // 0.8 seconds wait karega taaki page load ho jaye
 
 window.allDishes = [];
 window.currentDish = null;
