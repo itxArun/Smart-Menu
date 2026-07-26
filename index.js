@@ -232,7 +232,13 @@ window.renderMultiTracker = function() {
     activeOrdersList.forEach(id => {
         const data = activeOrderData[id]; if (!data) { newActiveList.push(id); return; }
         let statusRaw = data.status; newActiveList.push(id); 
-        let isNew = (statusRaw === 'New'); let isPrep = (statusRaw === 'Preparing'); let isDone = (statusRaw === 'Completed'); let isCanc = (statusRaw === 'Cancelled');
+        let isNew = (statusRaw === 'New'); 
+let isAcc = (statusRaw === 'Accepted'); 
+let isPrep = (statusRaw === 'Preparing'); 
+let isReady = (statusRaw === 'Ready');
+let isServed = (statusRaw === 'Served'); 
+let isCanc = (statusRaw === 'Cancelled');
+
         if (!isCanc) showTrackBtn = true; if (isNew || isPrep) showPulse = true;
 
         let isToday = false;
@@ -274,12 +280,31 @@ window.renderMultiTracker = function() {
                 </div>
             </div>
             <div style="font-size: 13px; color: var(--text-main); font-weight: 500; margin-bottom: 20px;">${itemsList}</div>
-            ${!isCanc ? `
-            <div class="visual-tracker">
-                <div class="tracker-step ${statusRaw !== 'Cancelled' ? 'done' : ''}"><div class="step-icon"><i class="ph-bold ph-check"></i></div><div class="step-text">Placed</div></div>
-                <div class="tracker-step ${isPrep || isDone ? 'done' : (isNew ? 'active' : '')}"><div class="step-icon"><i class="ph-fill ph-cooking-pot"></i></div><div class="step-text">Preparing</div></div>
-                <div class="tracker-step ${isDone ? 'done' : (isPrep ? 'active' : '')}"><div class="step-icon"><i class="ph-fill ph-bell-ringing"></i></div><div class="step-text">Ready</div></div>
+            ${!isCanc ? `      
+            <div class="visual-tracker" style="display: flex; justify-content: space-between; position: relative; margin-top: 15px;">
+                <div style="position: absolute; top: 15px; left: 10%; right: 10%; height: 3px; background: var(--border-light); z-index: 1;"></div>
+                
+                <div class="tracker-step ${statusRaw !== 'Cancelled' ? 'done' : ''}" style="z-index: 2; text-align: center; width: 20%;">
+                    <div class="step-icon" style="background: ${!isNew ? 'var(--success)' : 'var(--primary)'}; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);"><i class="ph-bold ph-receipt"></i></div>
+                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: var(--text-main);">Placed</div>
+                </div>
+
+                <div class="tracker-step ${isAcc || isPrep || isReady || isServed ? 'done' : (isNew ? '' : 'active')}" style="z-index: 2; text-align: center; width: 20%;">
+                    <div class="step-icon" style="background: ${isAcc || isPrep || isReady || isServed ? 'var(--success)' : '#eee'}; color: ${isAcc || isPrep || isReady || isServed ? 'white' : '#aaa'}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;"><i class="ph-bold ph-thumbs-up"></i></div>
+                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: ${isAcc || isPrep || isReady || isServed ? 'var(--text-main)' : '#aaa'};">Accepted</div>
+                </div>
+
+                <div class="tracker-step ${isPrep || isReady || isServed ? 'done' : ''}" style="z-index: 2; text-align: center; width: 20%;">
+                    <div class="step-icon" style="background: ${isPrep || isReady || isServed ? 'var(--warning)' : '#eee'}; color: ${isPrep || isReady || isServed ? 'white' : '#aaa'}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;"><i class="ph-bold ph-cooking-pot"></i></div>
+                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: ${isPrep || isReady || isServed ? 'var(--text-main)' : '#aaa'};">Cooking</div>
+                </div>
+                
+                <div class="tracker-step ${isReady || isServed ? 'done' : ''}" style="z-index: 2; text-align: center; width: 20%;">
+                    <div class="step-icon" style="background: ${isReady || isServed ? 'var(--success)' : '#eee'}; color: ${isReady || isServed ? 'white' : '#aaa'}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;"><i class="ph-bold ph-bell-ringing"></i></div>
+                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: ${isReady || isServed ? 'var(--text-main)' : '#aaa'};">Ready</div>
+                </div>
             </div>` : ''}
+
             ${actionHtml}
         </div>`;
 
