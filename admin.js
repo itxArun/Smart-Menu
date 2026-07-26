@@ -368,29 +368,34 @@ window.initAdminData = function() {
 
                 const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span style="background:var(--warning); font-weight:800; padding:6px 12px; border-radius:10px; color:white; font-size:12px;"><i class="ph-fill ph-shopping-bag"></i> Takeaway</span>' : `<span style="background:var(--input-bg); color:var(--text-main); font-weight:800; padding:6px 12px; border-radius:10px; font-size:12px; border:1px solid var(--border);"><i class="ph-fill ph-map-pin"></i> Table ${data.tableNumber}</span>`;
                 
-                let statusBadge = '';
-                if(data.status === 'New') statusBadge = `<span class="status-badge status-new">New</span>`;
-                else if(data.status === 'Preparing') statusBadge = `<span class="status-badge status-prep">Preparing...</span>`;
-                else if(data.status === 'Completed') statusBadge = `<span class="status-badge status-done">Delivered</span>`;
-                else statusBadge = `<span class="status-badge status-canc">Cancelled</span>`;
+                // 🔥 1. Premium Status Badge Logic
+let statusBadge = '';
+if(data.status === 'New') statusBadge = `<span class="status-badge status-new"><i class="ph-bold ph-bell-ringing"></i> New</span>`;
+else if(data.status === 'Accepted') statusBadge = `<span class="status-badge status-accepted"><i class="ph-bold ph-thumbs-up"></i> Accepted</span>`;
+else if(data.status === 'Preparing') statusBadge = `<span class="status-badge status-prep"><i class="ph-bold ph-cooking-pot"></i> Preparing</span>`;
+else if(data.status === 'Ready') statusBadge = `<span class="status-badge status-ready"><i class="ph-bold ph-check-circle"></i> Ready</span>`;
+else if(data.status === 'Served') statusBadge = `<span class="status-badge status-done"><i class="ph-bold ph-flag-checkered"></i> Served</span>`;
+else statusBadge = `<span class="status-badge status-canc"><i class="ph-bold ph-x-circle"></i> Cancelled</span>`;
 
-                const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
-                let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
-                let waitColor = diffMins >= 30 ? 'var(--danger)' : (diffMins >= 15 ? 'var(--warning)' : 'var(--success)');
-                
-                const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--info); font-weight:700; text-decoration:none;"><i class="ph-fill ph-phone"></i> ${data.customerPhone}</a>` : "N/A";
+// 🔥 2. Step-by-Step Action Buttons Logic
+let actionButtons = '';
+if(data.status === 'New') {
+    activeCount++;
+    actionButtons = `
+        <button class="btn-action-new" style="background:var(--info);" onclick="updateOrderStatus('${data.docId}', 'Accepted')">Accept Order</button>
+        <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>
+    `;
+} else if(data.status === 'Accepted') {
+    activeCount++;
+    actionButtons = `<button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${data.docId}', 'Preparing')">Start Cooking</button>`;
+} else if(data.status === 'Preparing') {
+    activeCount++;
+    actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Ready')">Mark Ready</button>`;
+} else if(data.status === 'Ready') {
+    activeCount++;
+    actionButtons = `<button class="btn-action-new" style="background:var(--primary);" onclick="updateOrderStatus('${data.docId}', 'Served')">Serve to Table</button>`;
+}
 
-                let actionButtons = '';
-                if(data.status === 'New') {
-                    activeCount++;
-                    actionButtons = `
-                        <button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${data.docId}', 'Preparing')"><i class="ph-fill ph-cooking-pot"></i> Cook</button>
-                        <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>
-                    `;
-                } else if(data.status === 'Preparing') {
-                    activeCount++;
-                    actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Completed')"><i class="ph-fill ph-bell-ringing"></i> Serve Order</button>`;
-                }
 
                 let cardHtml = `
                     <div class="order-card premium-hover" style="border-radius:24px; border:1px solid var(--border); margin-bottom:20px; box-shadow:var(--shadow-soft);">
