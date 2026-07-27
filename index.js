@@ -589,41 +589,65 @@ window.initDiningSession = () => {
     }
 };
 
-window.html5QrcodeScanner = null;
+let html5QrCode;
 
 window.openInAppScanner = () => {
-    document.getElementById('qrScannerModal').classList.add('show');
-    if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+    const modal = document.getElementById('qrScannerModal');
+    if(modal) modal.classList.add('show');
     
-    window.html5QrcodeScanner = new Html5Qrcode("reader");
-    window.html5QrcodeScanner.start(
+    if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+
+    // 1. Initialize Advanced Scanner
+    html5QrCode = new Html5Qrcode("reader");
+    
+    // 2. High-Speed Configuration
+    const config = { 
+        fps: 15, 
+        qrbox: { width: 250, height: 250 }, 
+        aspectRatio: 1.0 
+    };
+
+    // 3. Force Back Camera
+    html5QrCode.start(
         { facingMode: "environment" }, 
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        config,
         (decodedText, decodedResult) => {
-            if(decodedText.includes('scan=true')) {
-                window.html5QrcodeScanner.stop().then(() => {
-                    document.getElementById('qrScannerModal').classList.remove('show');
+            // 🔥 SUCCESS: Scan hote hi camera turant stop karo
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+                window.closeScanner();
+                
+                if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+                
+                // 4. Validation & Redirect Logic
+                if(decodedText.includes('rest=')) {
                     localStorage.setItem('dining_session_start', new Date().getTime());
-                    document.getElementById('customAlert').classList.remove('show');
-                    if(typeof window.showToast === 'function') window.showToast("Table Verified! Menu Unlocked. 🔓");
-                    if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
-                });
-            } else {
-                if(typeof window.showToast === 'function') window.showToast("Invalid QR! Please scan the table QR.");
-            }
+                    window.location.href = decodedText;
+                } else {
+                    if(typeof window.showToast === 'function') window.showToast("Invalid Table QR Code!");
+                    else alert("Invalid Table QR Code!");
+                }
+            }).catch(err => console.log("Stop Error:", err));
         },
-        (errorMessage) => { /* Ignore errors */ }
+        (errorMessage) => { /* Background scan tracking errors ko ignore karo */ }
     ).catch((err) => {
-        alert("Camera permission is required to scan the QR code.");
+        alert("Camera permission is required to scan the QR.");
         window.closeScanner();
     });
 };
 
 window.closeScanner = () => {
-    if(window.html5QrcodeScanner) {
-        window.html5QrcodeScanner.stop().catch(e => console.log(e));
+    const modal = document.getElementById('qrScannerModal');
+    if(modal) modal.classList.remove('show');
+    
+    // Manual close par bhi camera kill karna zaroori hai
+    if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+            html5QrCode.clear();
+        }).catch((err) => {
+            console.log(err);
+        });
     }
-    document.getElementById('qrScannerModal').classList.remove('show');
 };
 
 window.checkSessionValid = () => {
