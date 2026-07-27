@@ -589,7 +589,11 @@ window.initDiningSession = () => {
     }
 };
 
+// ==========================================
+// 📷 ADVANCED LIGHTNING FAST QR SCANNER (BUG FIXED)
+// ==========================================
 let html5QrCode;
+let isQRProcessing = false; // 🔥 Double scan ko rokne ke liye naya flag
 
 window.openInAppScanner = () => {
     const modal = document.getElementById('qrScannerModal');
@@ -597,39 +601,63 @@ window.openInAppScanner = () => {
     
     if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
 
-    // 1. Initialize Advanced Scanner
     html5QrCode = new Html5Qrcode("reader");
+    isQRProcessing = false; // Har baar open hone par reset karo
     
-    // 2. High-Speed Configuration
-    const config = { 
-        fps: 15, 
-        qrbox: { width: 250, height: 250 }, 
-        aspectRatio: 1.0 
-    };
+    // High-Speed Configuration
+    const config = { fps: 15, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
 
-    // 3. Force Back Camera
     html5QrCode.start(
         { facingMode: "environment" }, 
         config,
         (decodedText, decodedResult) => {
-            // 🔥 SUCCESS: Scan hote hi camera turant stop karo
-            html5QrCode.stop().then(() => {
-                html5QrCode.clear();
-                window.closeScanner();
+            // 🔥 Agar ek baar process ho raha hai, toh baki scans ko ignore karo
+            if (isQRProcessing) return; 
+            isQRProcessing = true;
+            
+            if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+
+            // 🔥 Validate: Naye (rest=) aur Purane (scan=true) dono QR support karega
+            if(decodedText.includes('rest=') || decodedText.includes('scan=')) {
                 
-                if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+                // 1. Session update karo (Is se 2 hour wala lock khul jayega)
+                localStorage.setItem('dining_session_start', new Date().getTime());
                 
-                // 4. Validation & Redirect Logic
-                if(decodedText.includes('rest=')) {
-                    localStorage.setItem('dining_session_start', new Date().getTime());
-                    window.location.href = decodedText;
-                } else {
-                    if(typeof window.showToast === 'function') window.showToast("Invalid Table QR Code!");
-                    else alert("Invalid Table QR Code!");
-                }
-            }).catch(err => console.log("Stop Error:", err));
+                // 2. Camera jaldi se stop karo
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    window.closeScanner();
+
+                    // 3. Naya Restaurant ID nikalo (agar naya QR hai toh)
+                    let scannedRestId = null;
+                    if(decodedText.includes('rest=')) {
+                        scannedRestId = decodedText.split('rest=')[1].split('&')[0];
+                    }
+                    
+                    const currentRestId = new URLSearchParams(window.location.search).get('rest');
+
+                    // 4. Smart Redirect Logic:
+                    if(scannedRestId && scannedRestId !== currentRestId) {
+                        // Agar scan kiya hua table kisi aur restaurant ka hai, tabhi link change karo
+                        window.location.href = window.location.pathname + '?rest=' + scannedRestId;
+                    } else {
+                        // Agar same table hai, toh reload mat karo, bas Success msg dikhao!
+                        if(typeof window.showToast === 'function') window.showToast("Table Unlocked Successfully! 🎉");
+                    }
+
+                }).catch(err => {
+                    console.log("Scanner stop error", err);
+                    window.closeScanner();
+                });
+
+            } else {
+                // Agar fake QR hai toh scan wapas chalu rakho
+                isQRProcessing = false;
+                if(typeof window.showToast === 'function') window.showToast("Invalid QR Code!");
+                else alert("Invalid QR Code!");
+            }
         },
-        (errorMessage) => { /* Background scan tracking errors ko ignore karo */ }
+        (errorMessage) => { /* Background frame errors ko silently ignore karo */ }
     ).catch((err) => {
         alert("Camera permission is required to scan the QR.");
         window.closeScanner();
@@ -640,7 +668,6 @@ window.closeScanner = () => {
     const modal = document.getElementById('qrScannerModal');
     if(modal) modal.classList.remove('show');
     
-    // Manual close par bhi camera kill karna zaroori hai
     if (html5QrCode) {
         html5QrCode.stop().then(() => {
             html5QrCode.clear();
