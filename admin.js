@@ -752,33 +752,47 @@ window.switchAdminOrderTab = (tab) => {
 };
 
 window.downloadQR = () => {
+window.downloadQR = () => {
+    // 1. Hotel ka naam uthao
+    const brandElement = document.getElementById("qr-brand-name") || document.getElementById("admin-restaurant-name");
+    const brandName = brandElement ? brandElement.innerText : "Smart Menu";
+    
+    // 2. Hidden template me naam update karo
+    const exportBrandElement = document.getElementById("export-brand-name");
+    if(exportBrandElement) exportBrandElement.innerText = brandName;
+    
+    // 3. QR Code ki canvas image utha kar template me daalo
     const qrCanvas = document.querySelector("#qrcode-box canvas");
-    if(!qrCanvas) { alert("QR Code not generated yet!"); return; }
+    const exportQrBox = document.getElementById("export-qr-box");
+    
+    if (!qrCanvas) {
+        alert("Pehle table ka QR generate hone dein!");
+        return;
+    }
 
-    const printCanvas = document.createElement('canvas');
-    const ctx = printCanvas.getContext('2d');
-    printCanvas.width = 800; printCanvas.height = 1100;
+    exportQrBox.innerHTML = ''; // Pehle se kuch ho toh hata do
+    const img = document.createElement("img");
+    img.src = qrCanvas.toDataURL("image/png");
+    img.style.width = "300px";
+    img.style.height = "300px";
+    exportQrBox.appendChild(img);
 
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
-    ctx.fillStyle = '#E53935'; ctx.fillRect(0, 0, printCanvas.width, 250);
-
-    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 80px Arial'; ctx.textAlign = 'center';
-    ctx.fillText('NextPlate', 400, 110);
-    ctx.font = 'bold 45px Arial'; ctx.fillText('Scan to View Menu & Order', 400, 190);
-
-    ctx.drawImage(qrCanvas, 200, 300, 400, 400);
-
-    ctx.fillStyle = '#1C1C1E'; ctx.font = 'bold 40px Arial'; ctx.fillText('How to scan?', 400, 800);
-    ctx.fillStyle = '#757575'; ctx.font = '32px Arial';
-    ctx.fillText('📷 1. Open Phone Camera / Google Lens', 400, 880);
-    ctx.fillText('👉 2. Point at the QR Code', 400, 940);
-    ctx.fillText('💳 3. You can also use Paytm / PhonePe', 400, 1000);
-
-    const url = printCanvas.toDataURL("image/png");
-    const a = document.createElement('a'); a.href = url; a.download = "Table_QR_Standee.png";
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    // 4. Html2Canvas se premium photo kheencho aur download karwao
+    if (typeof html2canvas !== 'undefined') {
+        html2canvas(document.getElementById('premium-qr-export'), { 
+            scale: 2, // High resolution HD
+            useCORS: true 
+        }).then(canvas => {
+            let link = document.createElement('a');
+            link.download = brandName.replace(/\s+/g, '_') + '_Premium_QR.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    } else {
+        alert("Error: html2canvas library missing!");
+    }
 };
-
+    
 window.toggleTheme = () => {
     const tgl = document.getElementById('themeToggle');
     if(tgl && tgl.checked) document.body.setAttribute('data-theme', 'dark');
