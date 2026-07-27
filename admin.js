@@ -752,7 +752,6 @@ window.switchAdminOrderTab = (tab) => {
 };
 
 window.downloadQR = () => {
-window.downloadQR = () => {
     // 1. Hotel ka naam uthao
     const brandElement = document.getElementById("qr-brand-name") || document.getElementById("admin-restaurant-name");
     const brandName = brandElement ? brandElement.innerText : "Smart Menu";
