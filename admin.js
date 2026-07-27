@@ -368,7 +368,7 @@ window.initAdminData = function() {
 
                 const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span style="background:var(--warning); font-weight:800; padding:6px 12px; border-radius:10px; color:white; font-size:12px;"><i class="ph-fill ph-shopping-bag"></i> Takeaway</span>' : `<span style="background:var(--input-bg); color:var(--text-main); font-weight:800; padding:6px 12px; border-radius:10px; font-size:12px; border:1px solid var(--border);"><i class="ph-fill ph-map-pin"></i> Table ${data.tableNumber}</span>`;
                 
-                // 🔥 1. Premium Status Badge Logic
+// 🔥 1. Premium Status Badge Logic
 let statusBadge = '';
 if(data.status === 'New') statusBadge = `<span class="status-badge status-new"><i class="ph-bold ph-bell-ringing"></i> New</span>`;
 else if(data.status === 'Accepted') statusBadge = `<span class="status-badge status-accepted"><i class="ph-bold ph-thumbs-up"></i> Accepted</span>`;
@@ -395,6 +395,15 @@ if(data.status === 'New') {
     activeCount++;
     actionButtons = `<button class="btn-action-new" style="background:var(--primary);" onclick="updateOrderStatus('${data.docId}', 'Served')">Serve to Table</button>`;
 }
+
+// 🔥 3. Time & Phone Variables Fixed 🔥
+let diffMins = 0;
+if(data.timestamp) {
+    diffMins = Math.floor((Date.now() - data.timestamp.toDate().getTime()) / 60000);
+}
+let waitText = diffMins <= 0 ? 'Just now' : diffMins + ' min ago';
+let waitColor = diffMins >= 30 ? 'var(--danger)' : 'var(--text-main)';
+const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--primary); font-size:16px;"><i class="ph-bold ph-phone-call"></i></a>` : '';
 
 
                 let cardHtml = `
