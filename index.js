@@ -300,8 +300,115 @@ let isCanc = (statusRaw === 'Cancelled');
                     <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: ${isPrep || isReady || isServed ? 'var(--text-main)' : '#aaa'};">Cooking</div>
                 </div>
                 
-                <div class="tracker-step ${isReady || isServed ? 'done' : ''}" style="z-index: 2; text-align: center; width: 20%;">
-                    <div class="step-icon" style="background: ${isReady || isServed ? 'var(--success)' : '#eee'}; color: ${isReady || isServed ? 'white' : '#aaa'}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;"><i class="ph-bold ph-bell-ringing"></i></div>
+                <div class="tracker-step ${isReady || isServed ? 'done' : ''}" style="z-index: 2; text-align: center; width: 20%;">window.renderMultiTracker = function() {
+    const liveContainer = document.getElementById('live-orders-container'); 
+    const pastContainer = document.getElementById('past-orders-container');
+    const trackBtn = document.getElementById('btn-track-order'); 
+    const pulse = document.getElementById('track-badge-pulse');
+    
+    // 💊 Dynamic Pill Elements
+    const dynamicPill = document.getElementById('dynamic-order-pill');
+    const pillTitle = document.getElementById('dynamic-pill-title');
+    const pillIconBg = document.getElementById('pill-icon-bg');
+    const pillIcon = document.getElementById('dynamic-pill-icon');
+    const pillPulse = document.querySelector('.pill-pulse-ring');
+
+    liveContainer.innerHTML = ''; 
+    pastContainer.innerHTML = ''; 
+    
+    let showTrackBtn = false; 
+    let showPulse = false;
+    
+    let activeOrdersList = []; 
+    try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) { activeOrdersList = []; }
+    let newActiveList = [];
+
+    let highestStatusLevel = -1; // Pill show karne ke liye track karenge
+
+    activeOrdersList.forEach(id => {
+        const data = activeOrderData[id]; 
+        if (!data) { newActiveList.push(id); return; }
+        
+        let statusRaw = data.status; 
+        newActiveList.push(id); 
+        
+        let isNew = (statusRaw === 'New'); 
+        let isAcc = (statusRaw === 'Accepted'); 
+        let isPrep = (statusRaw === 'Preparing'); 
+        let isReady = (statusRaw === 'Ready');
+        let isServed = (statusRaw === 'Served'); 
+        let isCanc = (statusRaw === 'Cancelled');
+        
+        let isDone = isServed; // 🔥 Ye bug fix kiya gaya hai
+        if (!isCanc) showTrackBtn = true; 
+        if (isNew || isPrep || isAcc || isReady) showPulse = true;
+
+        // 💊 Pill Logic - Check current active order level
+        let currentLevel = -1;
+        if (isNew) currentLevel = 0;
+        if (isAcc) currentLevel = 1;
+        if (isPrep) currentLevel = 2;
+        if (isReady) currentLevel = 3;
+        
+        if (currentLevel > highestStatusLevel) highestStatusLevel = currentLevel;
+
+        let isToday = false;
+        if (data.timestamp) { 
+            const d = data.timestamp.toDate(); 
+            const t = new Date(); 
+            isToday = d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear(); 
+        } else { isToday = true; }
+
+        let itemsList = data.items.map(i => `<span style="display:block; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.02);"><b>${i.qty}x</b> ${i.name}</span>`).join('');
+        
+        let orderTime = '';
+        if (data.timestamp) {
+            const d = data.timestamp.toDate();
+            const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            orderTime = `<span style="font-weight: 700;">${isToday ? 'Today' : d.toLocaleDateString()}</span>, ${timeStr}`;
+        }
+
+        let actionHtml = '';
+        if (isNew) actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 16px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:10px; transition:0.2s;">Cancel ❌</button>`;
+        else if (isPrep) { let eta = data.items.length * 5; actionHtml = `<div style="background:rgba(255, 159, 0, 0.1); color:var(--warning); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px; border:1px dashed var(--warning);">⏳ ETA: ${eta} - ${eta+5} Mins</div>`; } 
+        else if (isDone) actionHtml = `<div style="background:rgba(36, 150, 63, 0.1); color:var(--green); border:1px dashed var(--green); padding:10px; border-radius:12px; font-size:12px; font-weight:700; text-align:center; margin-top:15px; margin-bottom:10px;">🎉 Enjoy your meal!</div>`;
+        else if (isCanc) actionHtml = `<div style="background:var(--bg-light); color:var(--text-sub); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px;">Order Cancelled</div>`;
+
+        let cardBg = isDone ? 'var(--light-green)' : '#fff'; 
+        let cardBorder = isDone ? '1px solid #24963F' : '1px solid var(--border-light)';
+
+        let cardHtml = `
+        <div style="background:${cardBg}; border:${cardBorder}; border-radius: 20px; padding: 20px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft); transition:0.3s;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom: 1px solid #eee; padding-bottom:10px;">
+                <div style="font-weight:800; color:var(--text-main); font-size:16px;">#${id.slice(-4)}</div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                    <div style="font-size:16px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</div>
+                    <div style="font-size:11px; color:var(--text-sub); font-weight:500;">${orderTime}</div>
+                </div>
+            </div>
+            <div style="font-size: 13px; color: var(--text-main); font-weight: 500; margin-bottom: 20px;">${itemsList}</div>
+            
+            ${(!isCanc && !isDone) ? `      
+            <div class="visual-tracker" style="display: flex; justify-content: space-between; position: relative; margin-top: 15px;">
+                <div style="position: absolute; top: 15px; left: 10%; right: 10%; height: 3px; background: var(--border-light); z-index: 1;"></div>
+                
+                <div class="tracker-step" style="z-index: 2; text-align: center; width: 25%;">
+                    <div class="step-icon" style="background: ${isNew ? 'var(--primary)' : 'var(--success)'}; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: ${isNew ? '0 0 10px rgba(226,55,68,0.5)' : 'none'};"><i class="ph-bold ph-receipt"></i></div>
+                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: var(--text-main);">Placed</div>
+                </div>
+
+                <div class="tracker-step" style="z-index: 2; text-align: center; width: 25%;">
+                    <div class="step-icon" style="background: ${isAcc ? 'var(--primary)' : (isPrep || isReady || isServed ? 'var(--success)' : '#eee')}; color: ${isAcc || isPrep || isReady || isServed ? 'white' : '#aaa'}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: ${isAcc ? '0 0 10px rgba(226,55,68,0.5)' : 'none'};"><i class="ph-bold ph-thumbs-up"></i></div>
+                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: ${isAcc || isPrep || isReady || isServed ? 'var(--text-main)' : '#aaa'};">Accepted</div>
+                </div>
+
+                <div class="tracker-step" style="z-index: 2; text-align: center; width: 25%;">
+                    <div class="step-icon" style="background: ${isPrep ? 'var(--warning)' : (isReady || isServed ? 'var(--success)' : '#eee')}; color: ${isPrep || isReady || isServed ? 'white' : '#aaa'}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: ${isPrep ? '0 0 10px rgba(255,159,0,0.5)' : 'none'};"><i class="ph-bold ph-cooking-pot"></i></div>
+                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: ${isPrep || isReady || isServed ? 'var(--text-main)' : '#aaa'};">Cooking</div>
+                </div>
+                
+                <div class="tracker-step" style="z-index: 2; text-align: center; width: 25%;">
+                    <div class="step-icon" style="background: ${isReady ? 'var(--success)' : (isServed ? 'var(--success)' : '#eee')}; color: ${isReady || isServed ? 'white' : '#aaa'}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: ${isReady ? '0 0 10px rgba(36,150,63,0.5)' : 'none'};"><i class="ph-bold ph-bell-ringing"></i></div>
                     <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: ${isReady || isServed ? 'var(--text-main)' : '#aaa'};">Ready</div>
                 </div>
             </div>` : ''}
@@ -309,13 +416,51 @@ let isCanc = (statusRaw === 'Cancelled');
             ${actionHtml}
         </div>`;
 
-        if (isToday || (!isCanc && !isDone)) liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; else pastContainer.innerHTML = cardHtml + pastContainer.innerHTML; 
+        if (isToday || (!isCanc && !isDone)) liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; 
+        else pastContainer.innerHTML = cardHtml + pastContainer.innerHTML; 
     });
 
     localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
-    if (showTrackBtn && activeOrdersList.length > 0) { trackBtn.classList.add('show'); pulse.style.display = showPulse ? 'block' : 'none'; } else trackBtn.classList.remove('show'); 
+    
+    if (showTrackBtn && activeOrdersList.length > 0) { 
+        trackBtn.classList.add('show'); 
+        pulse.style.display = showPulse ? 'block' : 'none'; 
+    } else {
+        trackBtn.classList.remove('show'); 
+    } 
+    
     if (liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
     if (pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
+
+    // 💊 Dynamic Pill UI Changer
+    if (dynamicPill) {
+        if (highestStatusLevel === -1) {
+            dynamicPill.classList.remove('show');
+        } else {
+            dynamicPill.classList.add('show');
+            if(highestStatusLevel === 0) {
+                pillTitle.innerText = "Order Placed!";
+                pillIconBg.style.background = "var(--primary)";
+                pillIcon.className = "ph-bold ph-receipt";
+                pillPulse.style.borderColor = "var(--primary)";
+            } else if(highestStatusLevel === 1) {
+                pillTitle.innerText = "Order Accepted";
+                pillIconBg.style.background = "var(--primary)";
+                pillIcon.className = "ph-bold ph-thumbs-up";
+                pillPulse.style.borderColor = "var(--primary)";
+            } else if(highestStatusLevel === 2) {
+                pillTitle.innerText = "Cooking in progress...";
+                pillIconBg.style.background = "var(--warning)";
+                pillIcon.className = "ph-bold ph-cooking-pot";
+                pillPulse.style.borderColor = "var(--warning)";
+            } else if(highestStatusLevel === 3) {
+                pillTitle.innerText = "Food is Ready! 😋";
+                pillIconBg.style.background = "var(--success)";
+                pillIcon.className = "ph-bold ph-bell-ringing";
+                pillPulse.style.borderColor = "var(--success)";
+            }
+        }
+    }
 }
 
 window.orderToCancelId = null;
