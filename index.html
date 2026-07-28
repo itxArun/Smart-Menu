@@ -254,7 +254,20 @@
             <div id="cart-spacer" style="height: 0px; transition: height 0.3s ease;"></div>
         </div>
     </div>
-
+    <!-- 💊 PREMIUM DYNAMIC ORDER PILL (ZOMATO STYLE) -->
+    <div id="dynamic-order-pill" class="dynamic-order-pill" onclick="toggleTracker()">
+        <div class="pill-content">
+            <div class="pill-icon-wrapper" id="pill-icon-bg">
+                <i class="ph-bold ph-cooking-pot" id="dynamic-pill-icon"></i>
+                <div class="pill-pulse-ring"></div>
+            </div>
+            <div class="pill-text-wrapper">
+                <div class="pill-title" id="dynamic-pill-title">Preparing Order...</div>
+                <div class="pill-sub">Tap to track status <i class="ph-bold ph-caret-right"></i></div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Floating Cart Bar -->
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
