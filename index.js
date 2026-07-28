@@ -239,6 +239,7 @@ let isReady = (statusRaw === 'Ready');
 let isServed = (statusRaw === 'Served'); 
 let isCanc = (statusRaw === 'Cancelled');
 
+        let isDone = isServed; // Correcting isDone logic missing in original
         if (!isCanc) showTrackBtn = true; if (isNew || isPrep) showPulse = true;
 
         let isToday = false;
@@ -573,27 +574,30 @@ window.launchConfetti = function() {
 // 🚀 2-HOUR SESSION SECURITY & IN-APP SCANNER LOGIC 🚀
 // =========================================================
 const SESSION_LIMIT_HOURS = 2;
+let html5QrCode;
+let isQRProcessing = false; 
 
 window.initDiningSession = () => {
     const urlParams = new URLSearchParams(window.location.search);
+    const nowTime = new Date().getTime();
     
-    if (urlParams.get('scan') === 'true') {
-        localStorage.setItem('dining_session_start', new Date().getTime());
-        urlParams.delete('scan');
-        let newUrl = window.location.pathname;
-        if(urlParams.toString().length > 0) newUrl += '?' + urlParams.toString();
-        window.history.replaceState({}, document.title, newUrl);
+    // Naya scan aaya hai?
+    if (urlParams.get('scan') === 'true' || urlParams.get('rest')) {
+        localStorage.setItem('dining_session_start', nowTime);
+        
+        // Clean URL without reloading
+        if(urlParams.get('scan') === 'true') {
+            urlParams.delete('scan');
+            let newUrl = window.location.pathname;
+            if(urlParams.toString().length > 0) newUrl += '?' + urlParams.toString();
+            window.history.replaceState({}, document.title, newUrl);
+        }
     } 
     else if (!localStorage.getItem('dining_session_start')) {
-        localStorage.setItem('dining_session_start', new Date().getTime());
+        // Agar first time aya bina kisi URL parameter ke
+        localStorage.setItem('dining_session_start', nowTime);
     }
 };
-
-// ==========================================
-// 📷 ADVANCED LIGHTNING FAST QR SCANNER (BUG FIXED)
-// ==========================================
-let html5QrCode;
-let isQRProcessing = false; // 🔥 Double scan ko rokne ke liye naya flag
 
 window.openInAppScanner = () => {
     const modal = document.getElementById('qrScannerModal');
@@ -602,62 +606,55 @@ window.openInAppScanner = () => {
     if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
 
     html5QrCode = new Html5Qrcode("reader");
-    isQRProcessing = false; // Har baar open hone par reset karo
+    isQRProcessing = false; 
     
-    // High-Speed Configuration
-    const config = { fps: 15, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
+    const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
 
     html5QrCode.start(
         { facingMode: "environment" }, 
         config,
         (decodedText, decodedResult) => {
-            // 🔥 Agar ek baar process ho raha hai, toh baki scans ko ignore karo
             if (isQRProcessing) return; 
             isQRProcessing = true;
             
             if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
 
-            // 🔥 Validate: Naye (rest=) aur Purane (scan=true) dono QR support karega
             if(decodedText.includes('rest=') || decodedText.includes('scan=')) {
                 
-                // 1. Session update karo (Is se 2 hour wala lock khul jayega)
+                // 1. Session reset karo immediately
                 localStorage.setItem('dining_session_start', new Date().getTime());
                 
-                // 2. Camera jaldi se stop karo
-                html5QrCode.stop().then(() => {
-                    html5QrCode.clear();
-                    window.closeScanner();
+                // 2. Camera stop karke clear karo safely (Delay with Promise)
+                if(html5QrCode) {
+                     html5QrCode.stop().then(() => {
+                         setTimeout(() => { html5QrCode.clear(); window.closeScanner(); }, 100);
+                     }).catch(e => { console.log(e); window.closeScanner(); });
+                } else {
+                     window.closeScanner();
+                }
 
-                    // 3. Naya Restaurant ID nikalo (agar naya QR hai toh)
-                    let scannedRestId = null;
-                    if(decodedText.includes('rest=')) {
-                        scannedRestId = decodedText.split('rest=')[1].split('&')[0];
-                    }
-                    
-                    const currentRestId = new URLSearchParams(window.location.search).get('rest');
+                // 3. Smart Redirect
+                let scannedRestId = null;
+                if(decodedText.includes('rest=')) scannedRestId = decodedText.split('rest=')[1].split('&')[0];
+                const currentRestId = new URLSearchParams(window.location.search).get('rest');
 
-                    // 4. Smart Redirect Logic:
-                    if(scannedRestId && scannedRestId !== currentRestId) {
-                        // Agar scan kiya hua table kisi aur restaurant ka hai, tabhi link change karo
-                        window.location.href = window.location.pathname + '?rest=' + scannedRestId;
-                    } else {
-                        // Agar same table hai, toh reload mat karo, bas Success msg dikhao!
-                        if(typeof window.showToast === 'function') window.showToast("Table Unlocked Successfully! 🎉");
-                    }
+                // Alert ko pehle hatao taaki overlay na phase
+                const customAlert = document.getElementById('customAlert');
+                if(customAlert) customAlert.classList.remove('show');
 
-                }).catch(err => {
-                    console.log("Scanner stop error", err);
-                    window.closeScanner();
-                });
+                if(scannedRestId && scannedRestId !== currentRestId) {
+                    window.location.href = window.location.pathname + '?rest=' + scannedRestId;
+                } else {
+                    if(typeof window.showToast === 'function') window.showToast("Table Unlocked Successfully! 🎉");
+                }
 
             } else {
-                // Agar fake QR hai toh scan wapas chalu rakho
                 isQRProcessing = false;
                 if(typeof window.showToast === 'function') window.showToast("Invalid QR Code!");
                 else alert("Invalid QR Code!");
             }
         },
-        (errorMessage) => { /* Background frame errors ko silently ignore karo */ }
+        (errorMessage) => { /* Ignore background frame noise */ }
     ).catch((err) => {
         alert("Camera permission is required to scan the QR.");
         window.closeScanner();
@@ -670,11 +667,10 @@ window.closeScanner = () => {
     
     if (html5QrCode) {
         html5QrCode.stop().then(() => {
-            html5QrCode.clear();
-        }).catch((err) => {
-            console.log(err);
-        });
+            setTimeout(() => { html5QrCode.clear(); }, 100);
+        }).catch((err) => { console.log(err); });
     }
+    isQRProcessing = false;
 };
 
 window.checkSessionValid = () => {
@@ -684,7 +680,7 @@ window.checkSessionValid = () => {
     const now = new Date().getTime();
     const diffHours = (now - parseInt(startTime)) / (1000 * 60 * 60);
     
-    if (diffHours > SESSION_LIMIT_HOURS) {
+    if (diffHours >= SESSION_LIMIT_HOURS) {
         document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-clock" style="color: var(--danger); font-size: 55px;"></i>';
         document.getElementById('alertMessage').innerText = 'Session Expired!';
         
