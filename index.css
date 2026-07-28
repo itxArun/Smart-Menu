@@ -460,74 +460,53 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 .var-btn { flex: 1; padding: 8px 0; border: none; background: transparent; font-size: 12px; font-weight: 600; color: var(--text-sub); border-radius: 50px; cursor: pointer; }
 .var-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
 
-/* MAGIC SLIDE EFFECT FOR FULL WIDTH ADD/STEPPER */
+/* MAGIC SLIDE EFFECT FOR ADD/STEPPER (COMPACT FIX) */
 .action-row { 
     display: flex; 
     gap: 10px; 
     width: 100%; 
     height: 48px; 
-    align-items: center; 
-    margin-bottom: 0;
+    align-items: flex-end; 
+    justify-content: flex-end; /* Right side shift */
+    margin-top: 10px;
 }
 
 .add-action-wrapper { 
     position: relative; 
-    flex: 1;  /* This ensures it takes 100% of the available width */
-    height: 100%; 
+    width: 130px; /* Sirf 130px width lega, poora screen nahi */
+    height: 44px; 
     overflow: hidden; 
-    border-radius: 14px; 
+    border-radius: 12px; 
     background: var(--bg-light); 
 }
 
 .btn-cart { 
     position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    background: var(--primary-gradient); 
-    color: var(--white); 
-    border: none; 
-    border-radius: 14px; 
-    font-size: 16px; /* Slightly larger text for full width */
-    font-weight: 800; 
-    cursor: pointer; 
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    gap: 6px; 
-    z-index: 2;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--primary-gradient); color: var(--white); 
+    border: none; border-radius: 12px; font-size: 14px; font-weight: 800; 
+    cursor: pointer; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+    display: flex; justify-content: center; align-items: center; gap: 4px; z-index: 2;
 }
 
 .stepper-control { 
     position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    background: var(--white); 
-    border: 2px solid var(--primary); 
-    border-radius: 14px; 
-    display: flex !important; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 0 15px; /* Comfortable padding */
-    font-weight: 700; 
-    color: var(--primary); 
-    font-size: 16px; 
-    box-sizing: border-box;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--white); border: 2px solid var(--primary); 
+    border-radius: 12px; display: flex !important; 
+    justify-content: space-between; align-items: center; 
+    padding: 0 10px; font-weight: 700; color: var(--primary); 
+    font-size: 14px; box-sizing: border-box;
     transform: translateY(100%); 
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
-    z-index: 1;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 1;
 }
 
 .add-action-wrapper.show-stepper .btn-cart { transform: translateY(-100%); }
 .add-action-wrapper.show-stepper .stepper-control { transform: translateY(0); }
 
 .btn-cart:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(226, 55, 68, 0.2); }
-.stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 20px; font-weight: 800; cursor: pointer; padding: 8px 15px; }
-.stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 8px; transform: scale(0.9);}
+.stepper-control button { background: transparent; border: none; color: var(--primary); font-size: 18px; font-weight: 800; cursor: pointer; padding: 4px 8px; }
+.stepper-control button:active { background: rgba(226,55,68,0.1); border-radius: 6px; transform: scale(0.9);}
 
 /* ==========================================
    FLOATING CHECKOUT BAR
@@ -716,95 +695,97 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 }
 
 /* ==========================================
-   🌠 SMART GLASS TRACKER (Mixed Concept)
+   🌠 SMART EXPANDING GLASS TRACKER (Image Base Edge)
    ========================================== */
 .smart-glass-tracker {
-    position: fixed;
-    bottom: 95px; /* Cart ke theek upar */
-    right: 15px; /* Right corner me float karega */
-    background: rgba(20, 20, 22, 0.7); /* Dark Glassmorphism */
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    position: absolute;
+    /* Image height (50vh) ke theek upar, white card (-20px) se bacha kar */
+    top: calc(50vh - 40px); 
+    right: 15px; 
+    height: 40px;
+    width: 40px; /* Default chhota gol size */
+    background: rgba(28, 28, 30, 0.65); /* Frosted Dark Glass */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     border-radius: 50px;
     display: flex;
     align-items: center;
-    padding: 6px 16px 6px 6px;
-    gap: 12px;
-    z-index: 998; /* Ensures it sits below checkout bar correctly */
+    z-index: 25;
     cursor: pointer;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s;
-    transform: translateX(120%); /* Default screen ke bahar chhupa rahega */
+    overflow: hidden;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s, transform 0.4s;
     opacity: 0;
     pointer-events: none;
+    transform: scale(0.8);
 }
 
 .smart-glass-tracker.show {
-    transform: translateX(0); /* Right se slide hoke aayega */
     opacity: 1;
     pointer-events: auto;
+    transform: scale(1);
 }
 
-.glass-ring-box {
+/* Jab text dikhana ho toh lamba hoga */
+.smart-glass-tracker.expand {
+    width: 145px; 
+}
+
+.glass-ring-wrapper {
     position: relative;
-    width: 46px;
-    height: 46px;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5); /* Icon ke peeche halka dark circle */
 }
 
 .tracker-svg-ring {
     position: absolute;
-    transform: rotate(-90deg); /* Progress bar Top se start ho isliye rotate */
+    transform: rotate(-90deg);
 }
 
 .tracker-ring-bg {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.08);
-    stroke-width: 3.5;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 3;
 }
 
 .tracker-ring-progress {
     fill: none;
     stroke: var(--warning); 
-    stroke-width: 3.5;
+    stroke-width: 3;
     stroke-linecap: round;
-    stroke-dasharray: 125.6; /* 2 * pi * 20 (Ring ka exact size) */
-    stroke-dashoffset: 125.6; /* Starts empty */
+    stroke-dasharray: 106.8; /* 2 * pi * 17 */
+    stroke-dashoffset: 106.8;
     transition: stroke-dashoffset 1s ease-in-out, stroke 0.5s ease;
 }
 
 #glass-tracker-icon {
-    font-size: 20px;
+    font-size: 18px;
     color: #fff;
     z-index: 2;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
-.glass-tracker-info {
-    display: flex;
-    flex-direction: column;
+.glass-tracker-text-wrapper {
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    padding-right: 14px;
+    padding-left: 2px;
+}
+
+.smart-glass-tracker.expand .glass-tracker-text-wrapper {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 #glass-tracker-title {
     color: #fff;
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: 0.3px;
-}
-
-.glass-tracker-sub {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    letter-spacing: 0.3px;
 }
