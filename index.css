@@ -316,3 +316,86 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
     70% { box-shadow: 0 0 0 6px rgba(56, 142, 60, 0); } 
     100% { box-shadow: 0 0 0 0 rgba(56, 142, 60, 0); } 
 }
+/* ==========================================
+   💊 PREMIUM DYNAMIC ORDER PILL
+   ========================================== */
+.dynamic-order-pill {
+    position: fixed;
+    bottom: 90px; /* Cart bar ke thoda upar */
+    left: 50%;
+    transform: translateX(-50%) translateY(150px); /* Shuru me chhupa rahega */
+    background: rgba(28, 28, 30, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 8px 16px 8px 8px;
+    border-radius: 50px;
+    z-index: 998;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 0;
+    pointer-events: none;
+    cursor: pointer;
+    width: max-content;
+}
+
+.dynamic-order-pill.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.pill-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pill-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--warning);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+}
+
+.pill-pulse-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    border: 2px solid var(--warning);
+    animation: pillPulse 1.5s infinite ease-out;
+}
+
+@keyframes pillPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+.pill-text-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.pill-title {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.pill-sub {
+    color: #98989D;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
