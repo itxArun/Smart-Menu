@@ -16,11 +16,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ==========================================
-// 🚀 SMART SAAS URL READER (STEP 2)
+// 🚀 SMART SAAS URL READER
 // ==========================================
 const urlParams = new URLSearchParams(window.location.search);
 const scannedRestaurantId = urlParams.get('rest');
-// URL se ID capture karega, nahi toh fallback use karega
 window.currentRestaurantId = scannedRestaurantId ? scannedRestaurantId : 'rest_001';
 console.log("Customer is viewing Menu for Hotel ID: ", window.currentRestaurantId);
 
@@ -31,16 +30,11 @@ window.activeCategory = 'All';
 window.trendingIds = []; 
 window.currentOrderType = 'Dine-in';
 window.favorites = JSON.parse(localStorage.getItem('nextplate_favs')) || [];
-
 window.cart = JSON.parse(localStorage.getItem('nextplate_cart')) || {};
 
-window.saveCart = () => {
-    localStorage.setItem('nextplate_cart', JSON.stringify(window.cart));
-};
+window.saveCart = () => { localStorage.setItem('nextplate_cart', JSON.stringify(window.cart)); };
 
-setTimeout(() => {
-    window.updateGlobalCartUI();
-}, 500);
+setTimeout(() => { window.updateGlobalCartUI(); }, 500);
 
 window.closeCoinModal = () => document.getElementById('coinModal').classList.remove('show');
 window.toggleTracker = () => document.getElementById('tracker-modal').classList.toggle('show');
@@ -58,13 +52,7 @@ window.confirmCallWaiter = async () => {
     const tableNo = document.getElementById('waiterTableInput').value; const remark = document.getElementById('waiterRemarkInput').value || "No remark";
     if (!tableNo) { alert("Please enter a table number!"); return; }
     try {
-        await addDoc(collection(db, "waiter_calls"), { 
-            tableNumber: tableNo, 
-            remark: remark, 
-            status: "New", 
-            timestamp: new Date(),
-            restaurantId: window.currentRestaurantId 
-        });
+        await addDoc(collection(db, "waiter_calls"), { tableNumber: tableNo, remark: remark, status: "New", timestamp: new Date(), restaurantId: window.currentRestaurantId });
         window.closeWaiterPrompt(); window.showToast("Waiter is on the way!"); window.triggerHapticPop();
     } catch(e) { alert("Failed to call waiter."); }
 };
@@ -73,10 +61,8 @@ window.triggerHapticPop = () => { try { if(navigator.vibrate) navigator.vibrate(
 
 window.createFlyingDot = (e) => {
     if (!e || !e.clientX) return;
-    const target = document.getElementById('cart-icon-target');
-    const targetRect = target.getBoundingClientRect();
-    const dot = document.createElement('div');
-    dot.className = 'flying-dot'; dot.style.left = `${e.clientX - 10}px`; dot.style.top = `${e.clientY - 10}px`;
+    const target = document.getElementById('cart-icon-target'); const targetRect = target.getBoundingClientRect();
+    const dot = document.createElement('div'); dot.className = 'flying-dot'; dot.style.left = `${e.clientX - 10}px`; dot.style.top = `${e.clientY - 10}px`;
     document.body.appendChild(dot);
     setTimeout(() => { dot.style.opacity = '1'; dot.style.transform = `translate(${targetRect.left - e.clientX + 20}px, ${targetRect.top - e.clientY + 10}px) scale(0.5)`; }, 10);
     setTimeout(() => { dot.remove(); target.style.transform = 'scale(1.2)'; setTimeout(() => target.style.transform = 'scale(1)', 200); }, 600);
@@ -124,8 +110,7 @@ window.quickAddFav = (id) => {
     if(dish) {
         const key = `${dish.id}_full`;
         if(window.cart[key]) window.cart[key].qty++; else window.cart[key] = { id: dish.id, name: dish.name, price: dish.price, variant: '', qty: 1 };
-        window.saveCart(); 
-        window.triggerHapticPop(); window.showToast("Added to Cart!");
+        window.saveCart(); window.triggerHapticPop(); window.showToast("Added to Cart!");
         window.updateGlobalCartUI(); if(window.currentDish && window.currentDish.id === id) window.checkCartForCurrentDish();
     }
 };
@@ -190,31 +175,18 @@ fsViewer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].scr
 window.toggleMedia = () => {
     const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle');
     const viewer = document.querySelector('#ar-viewer');
-    
-    if (slider.classList.contains('hide')) { 
-        slider.classList.remove('hide'); 
-        if(viewer) viewer.style.display = 'none'; 
-        toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D'; 
-    } else { 
-        slider.classList.add('hide'); 
-        if(viewer) { viewer.style.display = 'block'; viewer.src = viewer.getAttribute('data-src'); }
-        toggleBtn.innerHTML = '<i class="ph-fill ph-image"></i> View Photos'; 
-    }
+    if (slider.classList.contains('hide')) { slider.classList.remove('hide'); if(viewer) viewer.style.display = 'none'; toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D'; } 
+    else { slider.classList.add('hide'); if(viewer) { viewer.style.display = 'block'; viewer.src = viewer.getAttribute('data-src'); } toggleBtn.innerHTML = '<i class="ph-fill ph-image"></i> View Photos'; }
 };
 
 window.viewOnTable = async () => { 
     document.querySelector('#ar-viewer').activateAR(); 
-    if (window.currentDish) { 
-        try { 
-            await addDoc(collection(db, "ar_views"), { 
-                dishName: window.currentDish.name, 
-                timestamp: new Date(),
-                restaurantId: window.currentRestaurantId 
-            }); 
-        } catch(e) {} 
-    } 
+    if (window.currentDish) { try { await addDoc(collection(db, "ar_views"), { dishName: window.currentDish.name, timestamp: new Date(), restaurantId: window.currentRestaurantId }); } catch(e) {} } 
 };
 
+// ==========================================
+// 📈 MULTI-TRACKER & DYNAMIC PILL (ZOMATO STYLE)
+// ==========================================
 let activeOrderListeners = {}; let activeOrderData = {};
 
 window.listenToLiveOrder = function(orderId) {
@@ -223,84 +195,6 @@ window.listenToLiveOrder = function(orderId) {
 }
 
 window.renderMultiTracker = function() {
-    const liveContainer = document.getElementById('live-orders-container'); const pastContainer = document.getElementById('past-orders-container');
-    const trackBtn = document.getElementById('btn-track-order'); const pulse = document.getElementById('track-badge-pulse');
-    liveContainer.innerHTML = ''; pastContainer.innerHTML = ''; let showTrackBtn = false; let showPulse = false;
-    let activeOrdersList = []; try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) { activeOrdersList = []; }
-    let newActiveList = [];
-
-    activeOrdersList.forEach(id => {
-        const data = activeOrderData[id]; if (!data) { newActiveList.push(id); return; }
-        let statusRaw = data.status; newActiveList.push(id); 
-        let isNew = (statusRaw === 'New'); 
-let isAcc = (statusRaw === 'Accepted'); 
-let isPrep = (statusRaw === 'Preparing'); 
-let isReady = (statusRaw === 'Ready');
-let isServed = (statusRaw === 'Served'); 
-let isCanc = (statusRaw === 'Cancelled');
-
-        let isDone = isServed; // Correcting isDone logic missing in original
-        if (!isCanc) showTrackBtn = true; if (isNew || isPrep) showPulse = true;
-
-        let isToday = false;
-        if (data.timestamp) { const d = data.timestamp.toDate(); const t = new Date(); isToday = d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear(); } else { isToday = true; }
-
-        let itemsList = data.items.map(i => `<span style="display:block; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.02);"><b>${i.qty}x</b> ${i.name}</span>`).join('');
-        
-        let orderTime = '';
-        if (data.timestamp) {
-            const d = data.timestamp.toDate();
-            const now = new Date();
-            const yesterday = new Date();
-            yesterday.setDate(now.getDate() - 1);
-            
-            let dateStr = "";
-            if (d.toDateString() === now.toDateString()) { dateStr = "Today"; } 
-            else if (d.toDateString() === yesterday.toDateString()) { dateStr = "Yesterday"; } 
-            else { dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
-            
-            const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            orderTime = `<span style="font-weight: 700;">${dateStr}</span>, ${timeStr}`;
-        }
-
-        let actionHtml = '';
-        if (isNew) actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 16px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:10px; transition:0.2s;">Cancel ❌</button>`;
-        else if (isPrep) { let eta = data.items.length * 5; actionHtml = `<div style="background:rgba(255, 159, 0, 0.1); color:var(--warning); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px; border:1px dashed var(--warning);">⏳ ETA: ${eta} - ${eta+5} Mins</div>`; } 
-        else if (isDone) actionHtml = `<div style="background:rgba(36, 150, 63, 0.1); color:var(--green); border:1px dashed var(--green); padding:10px; border-radius:12px; font-size:12px; font-weight:700; text-align:center; margin-top:15px; margin-bottom:10px;">🎉 Enjoy your meal!</div>`;
-        else if (isCanc) actionHtml = `<div style="background:var(--bg-light); color:var(--text-sub); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px;">Order Cancelled</div>`;
-
-        let cardBg = isDone ? 'var(--light-green)' : '#fff'; let cardBorder = isDone ? '1px solid #24963F' : '1px solid var(--border-light)';
-
-        let cardHtml = `
-        <div style="background:${cardBg}; border:${cardBorder}; border-radius: 20px; padding: 20px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft); transition:0.3s;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom: 1px solid #eee; padding-bottom:10px;">
-                <div style="font-weight:800; color:var(--text-main); font-size:16px;">#${id.slice(-4)}</div>
-                <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                    <div style="font-size:16px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</div>
-                    <div style="font-size:11px; color:var(--text-sub); font-weight:500;">${orderTime}</div>
-                </div>
-            </div>
-            <div style="font-size: 13px; color: var(--text-main); font-weight: 500; margin-bottom: 20px;">${itemsList}</div>
-            ${!isCanc ? `      
-            <div class="visual-tracker" style="display: flex; justify-content: space-between; position: relative; margin-top: 15px;">
-                <div style="position: absolute; top: 15px; left: 10%; right: 10%; height: 3px; background: var(--border-light); z-index: 1;"></div>
-                
-                <div class="tracker-step ${statusRaw !== 'Cancelled' ? 'done' : ''}" style="z-index: 2; text-align: center; width: 20%;">
-                    <div class="step-icon" style="background: ${!isNew ? 'var(--success)' : 'var(--primary)'}; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);"><i class="ph-bold ph-receipt"></i></div>
-                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: var(--text-main);">Placed</div>
-                </div>
-
-                <div class="tracker-step ${isAcc || isPrep || isReady || isServed ? 'done' : (isNew ? '' : 'active')}" style="z-index: 2; text-align: center; width: 20%;">
-                    <div class="step-icon" style="background: ${isAcc || isPrep || isReady || isServed ? 'var(--success)' : '#eee'}; color: ${isAcc || isPrep || isReady || isServed ? 'white' : '#aaa'}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;"><i class="ph-bold ph-thumbs-up"></i></div>
-                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: ${isAcc || isPrep || isReady || isServed ? 'var(--text-main)' : '#aaa'};">Accepted</div>
-                </div>
-
-                <div class="tracker-step ${isPrep || isReady || isServed ? 'done' : ''}" style="z-index: 2; text-align: center; width: 20%;">
-                    <div class="step-icon" style="background: ${isPrep || isReady || isServed ? 'var(--warning)' : '#eee'}; color: ${isPrep || isReady || isServed ? 'white' : '#aaa'}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;"><i class="ph-bold ph-cooking-pot"></i></div>
-                    <div class="step-text" style="font-size: 10px; font-weight: 700; margin-top: 5px; color: ${isPrep || isReady || isServed ? 'var(--text-main)' : '#aaa'};">Cooking</div>
-                </div>
-                
-                <div class="tracker-step ${isReady || isServed ? 'done' : ''}" style="z-index: 2; text-align: center; width: 20%;">window.renderMultiTracker = function() {
     const liveContainer = document.getElementById('live-orders-container'); 
     const pastContainer = document.getElementById('past-orders-container');
     const trackBtn = document.getElementById('btn-track-order'); 
@@ -313,17 +207,15 @@ let isCanc = (statusRaw === 'Cancelled');
     const pillIcon = document.getElementById('dynamic-pill-icon');
     const pillPulse = document.querySelector('.pill-pulse-ring');
 
-    liveContainer.innerHTML = ''; 
-    pastContainer.innerHTML = ''; 
+    if(liveContainer) liveContainer.innerHTML = ''; 
+    if(pastContainer) pastContainer.innerHTML = ''; 
     
     let showTrackBtn = false; 
     let showPulse = false;
-    
     let activeOrdersList = []; 
     try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) { activeOrdersList = []; }
     let newActiveList = [];
-
-    let highestStatusLevel = -1; // Pill show karne ke liye track karenge
+    let highestStatusLevel = -1; 
 
     activeOrdersList.forEach(id => {
         const data = activeOrderData[id]; 
@@ -338,24 +230,21 @@ let isCanc = (statusRaw === 'Cancelled');
         let isReady = (statusRaw === 'Ready');
         let isServed = (statusRaw === 'Served'); 
         let isCanc = (statusRaw === 'Cancelled');
+        let isDone = isServed; 
         
-        let isDone = isServed; // 🔥 Ye bug fix kiya gaya hai
         if (!isCanc) showTrackBtn = true; 
         if (isNew || isPrep || isAcc || isReady) showPulse = true;
 
-        // 💊 Pill Logic - Check current active order level
         let currentLevel = -1;
         if (isNew) currentLevel = 0;
         if (isAcc) currentLevel = 1;
         if (isPrep) currentLevel = 2;
         if (isReady) currentLevel = 3;
-        
         if (currentLevel > highestStatusLevel) highestStatusLevel = currentLevel;
 
         let isToday = false;
         if (data.timestamp) { 
-            const d = data.timestamp.toDate(); 
-            const t = new Date(); 
+            const d = data.timestamp.toDate(); const t = new Date(); 
             isToday = d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear(); 
         } else { isToday = true; }
 
@@ -416,48 +305,39 @@ let isCanc = (statusRaw === 'Cancelled');
             ${actionHtml}
         </div>`;
 
-        if (isToday || (!isCanc && !isDone)) liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; 
-        else pastContainer.innerHTML = cardHtml + pastContainer.innerHTML; 
+        if(liveContainer && pastContainer) {
+            if (isToday || (!isCanc && !isDone)) liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; 
+            else pastContainer.innerHTML = cardHtml + pastContainer.innerHTML; 
+        }
     });
 
     localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
     
-    if (showTrackBtn && activeOrdersList.length > 0) { 
-        trackBtn.classList.add('show'); 
-        pulse.style.display = showPulse ? 'block' : 'none'; 
-    } else {
-        trackBtn.classList.remove('show'); 
-    } 
+    if(trackBtn && pulse) {
+        if (showTrackBtn && activeOrdersList.length > 0) { trackBtn.classList.add('show'); pulse.style.display = showPulse ? 'block' : 'none'; } 
+        else { trackBtn.classList.remove('show'); }
+    }
     
-    if (liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
-    if (pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
+    if(liveContainer && liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
+    if(pastContainer && pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
 
-    // 💊 Dynamic Pill UI Changer
     if (dynamicPill) {
         if (highestStatusLevel === -1) {
             dynamicPill.classList.remove('show');
         } else {
             dynamicPill.classList.add('show');
             if(highestStatusLevel === 0) {
-                pillTitle.innerText = "Order Placed!";
-                pillIconBg.style.background = "var(--primary)";
-                pillIcon.className = "ph-bold ph-receipt";
-                pillPulse.style.borderColor = "var(--primary)";
+                pillTitle.innerText = "Order Placed!"; pillIconBg.style.background = "var(--primary)";
+                pillIcon.className = "ph-bold ph-receipt"; pillPulse.style.borderColor = "var(--primary)";
             } else if(highestStatusLevel === 1) {
-                pillTitle.innerText = "Order Accepted";
-                pillIconBg.style.background = "var(--primary)";
-                pillIcon.className = "ph-bold ph-thumbs-up";
-                pillPulse.style.borderColor = "var(--primary)";
+                pillTitle.innerText = "Order Accepted"; pillIconBg.style.background = "var(--primary)";
+                pillIcon.className = "ph-bold ph-thumbs-up"; pillPulse.style.borderColor = "var(--primary)";
             } else if(highestStatusLevel === 2) {
-                pillTitle.innerText = "Cooking in progress...";
-                pillIconBg.style.background = "var(--warning)";
-                pillIcon.className = "ph-bold ph-cooking-pot";
-                pillPulse.style.borderColor = "var(--warning)";
+                pillTitle.innerText = "Cooking in progress..."; pillIconBg.style.background = "var(--warning)";
+                pillIcon.className = "ph-bold ph-cooking-pot"; pillPulse.style.borderColor = "var(--warning)";
             } else if(highestStatusLevel === 3) {
-                pillTitle.innerText = "Food is Ready! 😋";
-                pillIconBg.style.background = "var(--success)";
-                pillIcon.className = "ph-bold ph-bell-ringing";
-                pillPulse.style.borderColor = "var(--success)";
+                pillTitle.innerText = "Food is Ready! 😋"; pillIconBg.style.background = "var(--success)";
+                pillIcon.className = "ph-bold ph-bell-ringing"; pillPulse.style.borderColor = "var(--success)";
             }
         }
     }
@@ -465,38 +345,17 @@ let isCanc = (statusRaw === 'Cancelled');
 
 window.orderToCancelId = null;
 
-window.cancelCustomerOrder = (orderId) => {
-    window.orderToCancelId = orderId;
-    document.getElementById('cancelConfirmModal').classList.add('show');
-    window.triggerHapticPop();
-};
-
-window.closeCancelModal = () => {
-    window.orderToCancelId = null;
-    document.getElementById('cancelConfirmModal').classList.remove('show');
-};
-
+window.cancelCustomerOrder = (orderId) => { window.orderToCancelId = orderId; document.getElementById('cancelConfirmModal').classList.add('show'); window.triggerHapticPop(); };
+window.closeCancelModal = () => { window.orderToCancelId = null; document.getElementById('cancelConfirmModal').classList.remove('show'); };
 window.confirmCancelOrder = async () => {
     const orderId = window.orderToCancelId;
-    
-    if (!orderId) {
-        alert("System Error: Order ID is missing!");
-        return;
-    }
-    
+    if (!orderId) { alert("System Error: Order ID is missing!"); return; }
     window.showToast("Cancelling...");
-    
     try { 
         await updateDoc(doc(db, "orders", orderId), { status: 'Cancelled' }); 
-        window.closeCancelModal();
-        window.showToast("Order Cancelled Successfully! ❌"); 
+        window.closeCancelModal(); window.showToast("Order Cancelled Successfully! ❌"); 
         if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
-    } catch(e) {
-        alert("Firebase Error: " + e.message);
-        console.error("Cancel Error:", e);
-        window.showToast("Failed to cancel order.");
-        window.closeCancelModal();
-    }
+    } catch(e) { window.showToast("Failed to cancel order."); window.closeCancelModal(); }
 };
 
 window.filterCategory = function(cat, element) { window.activeCategory = cat; document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); element.classList.add('active'); window.applyFilters(); };
@@ -536,10 +395,7 @@ window.renderSidebar = function(dishesToRender) {
         groupedDishes[cat].forEach((data) => {
             const itemDiv = document.createElement('div'); itemDiv.className = `side-item ${window.currentDish && window.currentDish.id === data.id ? 'active' : ''}`;
             let trendTag = window.trendingIds.includes(data.id) ? '<div class="best-seller-tag"><i class="ph-fill ph-star"></i> Best Seller</div>' : '';
-            
-            let displayIcon = data.emoji;
-            if(!data.emoji || data.emoji.length >= 5 || data.emoji === '🍲') displayIcon = getPremiumIcon(data.category);
-
+            let displayIcon = data.emoji; if(!data.emoji || data.emoji.length >= 5 || data.emoji === '🍲') displayIcon = getPremiumIcon(data.category);
             itemDiv.innerHTML = `<div class="side-icon-wrapper" style="font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${displayIcon}</div><div class="side-name">${data.name}<br>${trendTag}</div>`;
             itemDiv.onclick = () => { document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active')); itemDiv.classList.add('active'); window.loadDish(data); };
             sidebar.appendChild(itemDiv);
@@ -562,34 +418,20 @@ window.loadDish = function(data) {
     btnHalf.style.display = data.priceHalf ? 'block' : 'none'; btnPiece.style.display = data.pricePiece ? 'block' : 'none';
     if (data.priceHalf || data.pricePiece) { variantBox.classList.remove('hide'); btnFull.classList.add('active'); btnHalf.classList.remove('active'); btnPiece.classList.remove('active'); } else { variantBox.classList.add('hide'); }
 
-    const slider = document.getElementById('photo-slider'); 
-    const toggleBtn = document.getElementById('media-toggle'); 
-    const viewer = document.querySelector('#ar-viewer');
-    const progressBar = document.querySelector('.progress-bar');
-    
+    const slider = document.getElementById('photo-slider'); const toggleBtn = document.getElementById('media-toggle'); const viewer = document.querySelector('#ar-viewer'); const progressBar = document.querySelector('.progress-bar');
     slider.innerHTML = ''; slider.classList.remove('hide'); 
-    if(viewer) { viewer.style.display = 'none'; viewer.removeAttribute('src'); }
-    if(progressBar) progressBar.classList.add('hide');
+    if(viewer) { viewer.style.display = 'none'; viewer.removeAttribute('src'); } if(progressBar) progressBar.classList.add('hide');
 
     let validImages = [];
     if (data.images && Array.isArray(data.images) && data.images.length > 0) validImages = data.images.filter(url => url && url.trim() !== "");
     else if (data.image && typeof data.image === 'string' && data.image.trim() !== "") validImages = [data.image];
     else if (data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.trim() !== "") validImages = [data.imageUrl];
 
-    if (validImages.length > 0) {
-        validImages.forEach((imgUrl, idx) => { 
-            const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.onclick = () => window.openFullscreen(idx); slider.appendChild(img); 
-        });
-    } else {
-        slider.innerHTML = `<img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="slide-img" style="opacity: 0.8; object-fit: cover;">`;
-    }
+    if (validImages.length > 0) { validImages.forEach((imgUrl, idx) => { const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.onclick = () => window.openFullscreen(idx); slider.appendChild(img); }); } 
+    else { slider.innerHTML = `<img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="slide-img" style="opacity: 0.8; object-fit: cover;">`; }
 
-    if (data.modelUrl && data.modelUrl.trim() !== "") {
-        toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D';
-        if(viewer) viewer.setAttribute('data-src', data.modelUrl); 
-    } else {
-        toggleBtn.classList.add('hide');
-    }
+    if (data.modelUrl && data.modelUrl.trim() !== "") { toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D'; if(viewer) viewer.setAttribute('data-src', data.modelUrl); } 
+    else { toggleBtn.classList.add('hide'); }
     
     const favBtn = document.querySelector('.card-fav-btn');
     if(window.favorites.includes(data.id)) favBtn.style.color = 'var(--danger)'; else favBtn.style.color = '#BDBDBD';
@@ -607,67 +449,33 @@ window.selectVariant = (type) => {
 window.getCartKey = function() { return `${window.currentDish.id}_${window.currentVariant}`; }
 
 window.checkCartForCurrentDish = () => {
-    const key = window.getCartKey(); 
-    const wrapper = document.getElementById('add-action-wrapper');
-    if (window.cart[key] && window.cart[key].qty > 0) { 
-        wrapper.classList.add('show-stepper'); document.getElementById('current-qty-display').innerText = window.cart[key].qty; 
-    } else { wrapper.classList.remove('show-stepper'); }
+    const key = window.getCartKey(); const wrapper = document.getElementById('add-action-wrapper');
+    if (window.cart[key] && window.cart[key].qty > 0) { wrapper.classList.add('show-stepper'); document.getElementById('current-qty-display').innerText = window.cart[key].qty; } else { wrapper.classList.remove('show-stepper'); }
 };
 
 window.addCurrentToCart = (e) => {
     const key = window.getCartKey(); let price = window.currentDish.price; let variantText = '';
     if (window.currentVariant === 'half') { price = window.currentDish.priceHalf; variantText = '(Half)'; }
     if (window.currentVariant === 'piece') { price = window.currentDish.pricePiece; variantText = '(Per Piece)'; }
-
     window.cart[key] = { id: window.currentDish.id, name: window.currentDish.name, price: price, variant: variantText, qty: 1 };
-    
-    window.saveCart(); 
-    window.triggerHapticPop(); window.createFlyingDot(e); window.showToast("Added to Cart!");
+    window.saveCart(); window.triggerHapticPop(); window.createFlyingDot(e); window.showToast("Added to Cart!");
     window.updateGlobalCartUI(); window.checkCartForCurrentDish();
 };
 
 window.changeCurrentQty = (delta) => { const key = window.getCartKey(); window.changeCartQty(key, delta); };
-
-window.changeCartQty = (key, delta) => { 
-    if (window.cart[key]) { 
-        window.cart[key].qty += delta; 
-        if (window.cart[key].qty <= 0) delete window.cart[key]; 
-    } 
-    window.saveCart(); 
-    window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
-};
+window.changeCartQty = (key, delta) => { if (window.cart[key]) { window.cart[key].qty += delta; if (window.cart[key].qty <= 0) delete window.cart[key]; } window.saveCart(); window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); };
 
 window.updateGlobalCartUI = () => {
-    const floatingBar = document.getElementById('floating-checkout'); 
-    const bottomUi = document.getElementById('bottom-ui-card');
+    const floatingBar = document.getElementById('floating-checkout'); const bottomUi = document.getElementById('bottom-ui-card');
     let totalItems = 0; let totalPrice = 0;
-    
-    for (let key in window.cart) { 
-        totalItems += window.cart[key].qty; 
-        totalPrice += (window.cart[key].price * window.cart[key].qty); 
-    }
-    
+    for (let key in window.cart) { totalItems += window.cart[key].qty; totalPrice += (window.cart[key].price * window.cart[key].qty); }
     document.getElementById('cart-count').innerText = totalItems;
-    
     if (totalItems > 0) {
         let itemStr = totalItems === 1 ? (currentLang === 'hi' ? "आइटम" : "ITEM") : (currentLang === 'hi' ? "आइटम" : "ITEMS");
-        document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`;
-        document.getElementById('float-total').innerText = '₹' + totalPrice;
-        
-        floatingBar.classList.add('show'); 
-        if(bottomUi) bottomUi.style.paddingBottom = "140px";
-
-        setTimeout(() => { 
-            const mainContent = document.querySelector('.main-content');
-            if(mainContent) {
-                mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: "smooth" });
-            }
-        }, 100);
-
-    } else {
-        floatingBar.classList.remove('show'); 
-        if(bottomUi) bottomUi.style.paddingBottom = "20px";
-    }
+        document.getElementById('float-items').innerText = `${totalItems} ${itemStr}`; document.getElementById('float-total').innerText = '₹' + totalPrice;
+        floatingBar.classList.add('show'); if(bottomUi) bottomUi.style.paddingBottom = "140px";
+        setTimeout(() => { const mainContent = document.querySelector('.main-content'); if(mainContent) { mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: "smooth" }); } }, 100);
+    } else { floatingBar.classList.remove('show'); if(bottomUi) bottomUi.style.paddingBottom = "20px"; }
 };
 
 window.toggleCart = () => { const modal = document.getElementById('cart-modal'); if (!modal.classList.contains('show')) window.renderCartModal(); modal.classList.toggle('show'); };
@@ -697,11 +505,7 @@ window.renderCartModal = () => {
     document.getElementById('bill-final').innerText = '₹' + totalPrice;
 };
 
-window.deleteCartItem = (key) => { 
-    delete window.cart[key]; 
-    window.saveCart(); 
-    window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); 
-};
+window.deleteCartItem = (key) => { delete window.cart[key]; window.saveCart(); window.triggerHapticPop(); window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.renderCartModal(); };
 
 window.launchConfetti = function() {
     const canvas = document.getElementById('confetti-canvas'); const ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -725,333 +529,154 @@ let isQRProcessing = false;
 window.initDiningSession = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const nowTime = new Date().getTime();
-    
-    // Naya scan aaya hai?
     if (urlParams.get('scan') === 'true' || urlParams.get('rest')) {
         localStorage.setItem('dining_session_start', nowTime);
-        
-        // Clean URL without reloading
         if(urlParams.get('scan') === 'true') {
-            urlParams.delete('scan');
-            let newUrl = window.location.pathname;
-            if(urlParams.toString().length > 0) newUrl += '?' + urlParams.toString();
+            urlParams.delete('scan'); let newUrl = window.location.pathname; if(urlParams.toString().length > 0) newUrl += '?' + urlParams.toString();
             window.history.replaceState({}, document.title, newUrl);
         }
-    } 
-    else if (!localStorage.getItem('dining_session_start')) {
-        // Agar first time aya bina kisi URL parameter ke
-        localStorage.setItem('dining_session_start', nowTime);
-    }
+    } else if (!localStorage.getItem('dining_session_start')) { localStorage.setItem('dining_session_start', nowTime); }
 };
 
 window.openInAppScanner = () => {
-    const modal = document.getElementById('qrScannerModal');
-    if(modal) modal.classList.add('show');
-    
+    const modal = document.getElementById('qrScannerModal'); if(modal) modal.classList.add('show');
     if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
-
-    html5QrCode = new Html5Qrcode("reader");
-    isQRProcessing = false; 
-    
+    html5QrCode = new Html5Qrcode("reader"); isQRProcessing = false; 
     const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
 
-    html5QrCode.start(
-        { facingMode: "environment" }, 
-        config,
-        (decodedText, decodedResult) => {
-            if (isQRProcessing) return; 
-            isQRProcessing = true;
+    html5QrCode.start( { facingMode: "environment" }, config, (decodedText, decodedResult) => {
+        if (isQRProcessing) return; isQRProcessing = true;
+        if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+        if(decodedText.includes('rest=') || decodedText.includes('scan=')) {
+            localStorage.setItem('dining_session_start', new Date().getTime());
+            if(html5QrCode) { html5QrCode.stop().then(() => { setTimeout(() => { html5QrCode.clear(); window.closeScanner(); }, 100); }).catch(e => { console.log(e); window.closeScanner(); }); } 
+            else { window.closeScanner(); }
             
-            if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+            let scannedRestId = null; if(decodedText.includes('rest=')) scannedRestId = decodedText.split('rest=')[1].split('&')[0];
+            const currentRestId = new URLSearchParams(window.location.search).get('rest');
+            const customAlert = document.getElementById('customAlert'); if(customAlert) customAlert.classList.remove('show');
 
-            if(decodedText.includes('rest=') || decodedText.includes('scan=')) {
-                
-                // 1. Session reset karo immediately
-                localStorage.setItem('dining_session_start', new Date().getTime());
-                
-                // 2. Camera stop karke clear karo safely (Delay with Promise)
-                if(html5QrCode) {
-                     html5QrCode.stop().then(() => {
-                         setTimeout(() => { html5QrCode.clear(); window.closeScanner(); }, 100);
-                     }).catch(e => { console.log(e); window.closeScanner(); });
-                } else {
-                     window.closeScanner();
-                }
-
-                // 3. Smart Redirect
-                let scannedRestId = null;
-                if(decodedText.includes('rest=')) scannedRestId = decodedText.split('rest=')[1].split('&')[0];
-                const currentRestId = new URLSearchParams(window.location.search).get('rest');
-
-                // Alert ko pehle hatao taaki overlay na phase
-                const customAlert = document.getElementById('customAlert');
-                if(customAlert) customAlert.classList.remove('show');
-
-                if(scannedRestId && scannedRestId !== currentRestId) {
-                    window.location.href = window.location.pathname + '?rest=' + scannedRestId;
-                } else {
-                    if(typeof window.showToast === 'function') window.showToast("Table Unlocked Successfully! 🎉");
-                }
-
-            } else {
-                isQRProcessing = false;
-                if(typeof window.showToast === 'function') window.showToast("Invalid QR Code!");
-                else alert("Invalid QR Code!");
-            }
-        },
-        (errorMessage) => { /* Ignore background frame noise */ }
-    ).catch((err) => {
-        alert("Camera permission is required to scan the QR.");
-        window.closeScanner();
-    });
+            if(scannedRestId && scannedRestId !== currentRestId) { window.location.href = window.location.pathname + '?rest=' + scannedRestId; } 
+            else { if(typeof window.showToast === 'function') window.showToast("Table Unlocked Successfully! 🎉"); }
+        } else {
+            isQRProcessing = false; if(typeof window.showToast === 'function') window.showToast("Invalid QR Code!"); else alert("Invalid QR Code!");
+        }
+    }, (errorMessage) => {} ).catch((err) => { alert("Camera permission is required to scan the QR."); window.closeScanner(); });
 };
 
 window.closeScanner = () => {
-    const modal = document.getElementById('qrScannerModal');
-    if(modal) modal.classList.remove('show');
-    
-    if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-            setTimeout(() => { html5QrCode.clear(); }, 100);
-        }).catch((err) => { console.log(err); });
-    }
+    const modal = document.getElementById('qrScannerModal'); if(modal) modal.classList.remove('show');
+    if (html5QrCode) { html5QrCode.stop().then(() => { setTimeout(() => { html5QrCode.clear(); }, 100); }).catch((err) => {}); }
     isQRProcessing = false;
 };
 
 window.checkSessionValid = () => {
     const startTime = localStorage.getItem('dining_session_start');
     if (!startTime) return true; 
-
-    const now = new Date().getTime();
-    const diffHours = (now - parseInt(startTime)) / (1000 * 60 * 60);
+    const diffHours = (new Date().getTime() - parseInt(startTime)) / (1000 * 60 * 60);
     
     if (diffHours >= SESSION_LIMIT_HOURS) {
         document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-clock" style="color: var(--danger); font-size: 55px;"></i>';
         document.getElementById('alertMessage').innerText = 'Session Expired!';
-        
-        let alertBox = document.querySelector('#customAlert .alert-box');
-        let existingP = alertBox.querySelector('.split-desc');
-        
-        if(!existingP) {
-            existingP = document.createElement('p'); existingP.className = 'split-desc';
-            existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px';
-            document.getElementById('alertMessage').after(existingP);
-        }
-        
-        existingP.innerHTML = `Your dining session of ${SESSION_LIMIT_HOURS} hours has ended.<br><br>
-        <button onclick="openInAppScanner()" style="background:var(--primary-gradient); color:white; border:none; padding:15px; border-radius:50px; font-weight:800; cursor:pointer; margin-top:10px; width: 100%; box-shadow: 0 4px 15px rgba(229,57,53,0.3); display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 15px;">
-        <i class="ph-bold ph-camera" style="font-size: 22px;"></i> Scan QR to Unlock
-        </button>`;
-        
-        document.getElementById('customAlert').classList.add('show');
-        if(navigator.vibrate) navigator.vibrate([50, 100, 50]);
-        return false;
+        let alertBox = document.querySelector('#customAlert .alert-box'); let existingP = alertBox.querySelector('.split-desc');
+        if(!existingP) { existingP = document.createElement('p'); existingP.className = 'split-desc'; existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px'; document.getElementById('alertMessage').after(existingP); }
+        existingP.innerHTML = `Your dining session of ${SESSION_LIMIT_HOURS} hours has ended.<br><br><button onclick="openInAppScanner()" style="background:var(--primary-gradient); color:white; border:none; padding:15px; border-radius:50px; font-weight:800; cursor:pointer; margin-top:10px; width: 100%; box-shadow: 0 4px 15px rgba(229,57,53,0.3); display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 15px;"><i class="ph-bold ph-camera" style="font-size: 22px;"></i> Scan QR to Unlock</button>`;
+        document.getElementById('customAlert').classList.add('show'); if(navigator.vibrate) navigator.vibrate([50, 100, 50]); return false;
     }
     return true;
 };
-
 window.initDiningSession();
 
 window.placeOrder = async () => {
-    if (!window.checkSessionValid()) {
-        window.toggleCart(); 
-        return;
-    }
-
+    if (!window.checkSessionValid()) { window.toggleCart(); return; }
     if (Object.keys(window.cart).length === 0) { alert("Please add items to your cart first!"); return; }
     
-    const tableNo = document.getElementById('tableNumber').value; 
-    const custName = document.getElementById('customerName').value;
-    const custPhone = document.getElementById('customerPhone').value; 
-    const notes = document.getElementById('cookingNotes').value; 
-
+    const tableNo = document.getElementById('tableNumber').value; const custName = document.getElementById('customerName').value;
+    const custPhone = document.getElementById('customerPhone').value; const notes = document.getElementById('cookingNotes').value; 
     if (window.currentOrderType === 'Dine-in' && !tableNo) { alert("Please enter your Table Number!"); return; }
     if (window.currentOrderType === 'Takeaway' && !custName) { alert("Please enter your name for takeaway!"); return; }
 
-    const btn = document.getElementById('checkoutBtn'); 
-    btn.innerHTML = 'Processing...'; btn.style.background = "#FF9F00"; btn.style.boxShadow = "none"; btn.disabled = true;
+    const btn = document.getElementById('checkoutBtn'); btn.innerHTML = 'Processing...'; btn.style.background = "#FF9F00"; btn.style.boxShadow = "none"; btn.disabled = true;
     const modalContent = document.querySelector('.cart-content'); modalContent.style.opacity = "0.5";
 
     let orderItems = []; let grandTotal = 0;
     for (let k in window.cart) { 
-        orderItems.push({ 
-            id: window.cart[k].id || "", 
-            name: window.cart[k].name || "", 
-            price: window.cart[k].price || 0, 
-            variant: window.cart[k].variant || "", 
-            qty: window.cart[k].qty || 1 
-        }); 
+        orderItems.push({ id: window.cart[k].id || "", name: window.cart[k].name || "", price: window.cart[k].price || 0, variant: window.cart[k].variant || "", qty: window.cart[k].qty || 1 }); 
         grandTotal += (window.cart[k].price * window.cart[k].qty); 
     }
 
     try {
-        const docRef = await addDoc(collection(db, "orders"), { 
-            // 🔥 URL SAAS ID ATTACHED 🔥
-            restaurantId: window.currentRestaurantId,
-            orderType: window.currentOrderType || "Dine-in", 
-            tableNumber: String(tableNo || "N/A"), 
-            customerName: String(custName || "N/A"), 
-            customerPhone: String(custPhone || "N/A"), 
-            chefNotes: String(notes || "None"), 
-            items: orderItems, 
-            totalAmount: Number(grandTotal), 
-            status: 'New', 
-            paymentMethod: 'Cash', 
-            timestamp: new Date() 
-        });
-        
-        let activeOrdersList = []; 
-        try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
-        activeOrdersList.push(docRef.id); 
-        localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); 
-        window.listenToLiveOrder(docRef.id); 
-
-        window.cart = {}; 
-        localStorage.removeItem('nextplate_cart'); 
-
-        document.getElementById('cookingNotes').value = ''; 
-        window.updateGlobalCartUI(); 
-        window.checkCartForCurrentDish(); 
-        window.toggleCart(); 
-        modalContent.style.opacity = "1"; 
-        window.launchConfetti(); 
-
+        const docRef = await addDoc(collection(db, "orders"), { restaurantId: window.currentRestaurantId, orderType: window.currentOrderType || "Dine-in", tableNumber: String(tableNo || "N/A"), customerName: String(custName || "N/A"), customerPhone: String(custPhone || "N/A"), chefNotes: String(notes || "None"), items: orderItems, totalAmount: Number(grandTotal), status: 'New', paymentMethod: 'Cash', timestamp: new Date() });
+        let activeOrdersList = []; try { activeOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
+        activeOrdersList.push(docRef.id); localStorage.setItem('craveActiveOrders', JSON.stringify(activeOrdersList)); window.listenToLiveOrder(docRef.id); 
+        window.cart = {}; localStorage.removeItem('nextplate_cart'); document.getElementById('cookingNotes').value = ''; 
+        window.updateGlobalCartUI(); window.checkCartForCurrentDish(); window.toggleCart(); modalContent.style.opacity = "1"; window.launchConfetti(); 
         setTimeout(() => { let earnedCoins = Math.floor(grandTotal / 10); document.getElementById('earnedCoins').innerText = earnedCoins; document.getElementById('coinModal').classList.add('show'); window.triggerHapticPop(); }, 1000);
         setTimeout(() => { window.switchOrderTab('live'); window.toggleTracker(); }, 3500); 
-
-    } catch (e) { 
-        console.error("FIREBASE ERROR: ", e); 
-        modalContent.style.opacity = "1"; 
-        alert("Order Failed. Check connection."); 
-    } finally { 
-        btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; 
-        btn.style.background = "var(--primary-gradient)"; 
-        btn.style.boxShadow = "0 8px 25px rgba(226, 55, 68, 0.3)"; 
-        btn.disabled = false; 
-    }
+    } catch (e) { console.error("FIREBASE ERROR: ", e); modalContent.style.opacity = "1"; alert("Order Failed. Check connection."); 
+    } finally { btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; btn.style.background = "var(--primary-gradient)"; btn.style.boxShadow = "0 8px 25px rgba(226, 55, 68, 0.3)"; btn.disabled = false; }
 };
 
 // 🔥 SAAS TRENDING FILTER 🔥
 async function fetchTrendingDishes() {
     try {
-        const q = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId)); 
-        const snap = await getDocs(q); let counts = {};
+        const q = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId)); const snap = await getDocs(q); let counts = {};
         snap.forEach(d => { if(d.data().items) { d.data().items.forEach(i => { counts[i.id] = (counts[i.id] || 0) + i.qty; }); } });
         window.trendingIds = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 5);
     } catch(e) {}
 }
 
 let savedOrdersList = []; try { savedOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
-savedOrdersList.forEach(id => window.listenToLiveOrder(id));
-
-fetchTrendingDishes();
+savedOrdersList.forEach(id => window.listenToLiveOrder(id)); fetchTrendingDishes();
 
 // 🔥 SUPER FAST MENU LOADING (CACHE LOGIC) 🔥
 try {
     const cachedMenu = localStorage.getItem('nextplate_menu_cache');
     if (cachedMenu) {
         window.allDishes = JSON.parse(cachedMenu);
-        if (window.allDishes.length > 0) {
-            window.applyFilters(); 
-            if (!window.currentDish) window.loadDish(window.allDishes[0]);
-        }
+        if (window.allDishes.length > 0) { window.applyFilters(); if (!window.currentDish) window.loadDish(window.allDishes[0]); }
     }
-} catch(e) {
-    console.error("Cache load failed", e);
-}
+} catch(e) {}
 
 window.toggleDarkMode = () => {
-    const body = document.body;
-    const themeIcon = document.getElementById('theme-icon');
-    if(!themeIcon) return;
-    
+    const body = document.body; const themeIcon = document.getElementById('theme-icon'); if(!themeIcon) return;
     body.classList.toggle('dark-mode');
-    if (body.classList.contains('dark-mode')) {
-        themeIcon.classList.replace('ph-moon', 'ph-sun');
-        localStorage.setItem('theme', 'dark');
-    } else {
-        themeIcon.classList.replace('ph-sun', 'ph-moon');
-        localStorage.setItem('theme', 'light');
-    }
+    if (body.classList.contains('dark-mode')) { themeIcon.classList.replace('ph-moon', 'ph-sun'); localStorage.setItem('theme', 'dark'); } 
+    else { themeIcon.classList.replace('ph-sun', 'ph-moon'); localStorage.setItem('theme', 'light'); }
 };
 
 window.addEventListener('load', () => {
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-        const themeIcon = document.getElementById('theme-icon');
-        if(themeIcon) themeIcon.classList.replace('ph-moon', 'ph-sun');
-    }
+    if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); const themeIcon = document.getElementById('theme-icon'); if(themeIcon) themeIcon.classList.replace('ph-moon', 'ph-sun'); }
 });
 
 // 🚀 100% BULLETPROOF SPLIT BILL LOGIC 🚀
 window.calculateSplitBill = window.openSplitPrompt = function(e) {
     if(e) e.preventDefault();
-    
-    let total = 0;
-    for (let key in window.cart) { total += (window.cart[key].price * window.cart[key].qty); }
+    let total = 0; for (let key in window.cart) { total += (window.cart[key].price * window.cart[key].qty); }
     if (total === 0) { window.showToast("Your cart is empty!"); return; }
-    
     let splitModal = document.getElementById('splitPromptModal');
     if (!splitModal) {
-        splitModal = document.createElement('div');
-        splitModal.className = 'custom-alert';
-        splitModal.id = 'splitPromptModal';
-        splitModal.innerHTML = `
-        <div class="alert-box">
-            <div class="alert-icon"><i class="ph-fill ph-users" style="color: var(--green);"></i></div>
-            <h3>Split Bill</h3>
-            <p style="margin-bottom: 15px;">Kitne doston mein bill split karna hai?</p>
-            <input type="number" id="splitPeopleInput" class="input-field" placeholder="E.g., 2" value="2" min="2" style="margin-bottom: 25px; text-align: center; font-size: 20px; font-weight: 800; width: 100%; box-sizing: border-box;">
-            <div style="display: flex; gap: 12px;">
-                <button class="btn-cancel" style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer;" onclick="closeSplitPrompt()">Cancel</button>
-                <button class="alert-btn-primary" style="flex:1; margin:0; background: var(--green); box-shadow: 0 8px 20px rgba(36, 150, 63, 0.3);" onclick="confirmSplitBill()">Split Now</button>
-            </div>
-        </div>
-        `;
+        splitModal = document.createElement('div'); splitModal.className = 'custom-alert'; splitModal.id = 'splitPromptModal';
+        splitModal.innerHTML = `<div class="alert-box"><div class="alert-icon"><i class="ph-fill ph-users" style="color: var(--green);"></i></div><h3>Split Bill</h3><p style="margin-bottom: 15px;">Kitne doston mein bill split karna hai?</p><input type="number" id="splitPeopleInput" class="input-field" placeholder="E.g., 2" value="2" min="2" style="margin-bottom: 25px; text-align: center; font-size: 20px; font-weight: 800; width: 100%; box-sizing: border-box;"><div style="display: flex; gap: 12px;"><button class="btn-cancel" style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer;" onclick="closeSplitPrompt()">Cancel</button><button class="alert-btn-primary" style="flex:1; margin:0; background: var(--green); box-shadow: 0 8px 20px rgba(36, 150, 63, 0.3);" onclick="confirmSplitBill()">Split Now</button></div></div>`;
         document.body.appendChild(splitModal);
     }
-    
-    document.getElementById('splitPeopleInput').value = '2'; 
-    splitModal.classList.add('show');
+    document.getElementById('splitPeopleInput').value = '2'; splitModal.classList.add('show');
     if (typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
 };
 
-window.closeSplitPrompt = function() {
-    let m = document.getElementById('splitPromptModal');
-    if(m) m.classList.remove('show');
-};
-
+window.closeSplitPrompt = function() { let m = document.getElementById('splitPromptModal'); if(m) m.classList.remove('show'); };
 window.confirmSplitBill = function() {
-    let total = 0;
-    for (let key in window.cart) { total += (window.cart[key].price * window.cart[key].qty); }
-    
+    let total = 0; for (let key in window.cart) { total += (window.cart[key].price * window.cart[key].qty); }
     let people = document.getElementById('splitPeopleInput').value;
-    
     if (people && !isNaN(people) && parseInt(people) > 1) {
-        let perPerson = (total / parseInt(people)).toFixed(2);
-        
-        window.closeSplitPrompt();
-        
+        let perPerson = (total / parseInt(people)).toFixed(2); window.closeSplitPrompt();
         document.getElementById('alertIcon').innerHTML = '<i class="ph-fill ph-users" style="color: var(--green); font-size: 50px;"></i>';
         document.getElementById('alertMessage').innerText = 'Bill Split Done!';
-        
-        let alertBox = document.querySelector('#customAlert .alert-box');
-        let existingP = alertBox.querySelector('.split-desc');
-        if(!existingP) {
-            existingP = document.createElement('p'); existingP.className = 'split-desc';
-            existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px';
-            document.getElementById('alertMessage').after(existingP);
-        }
+        let alertBox = document.querySelector('#customAlert .alert-box'); let existingP = alertBox.querySelector('.split-desc');
+        if(!existingP) { existingP = document.createElement('p'); existingP.className = 'split-desc'; existingP.style.color = 'var(--text-sub)'; existingP.style.marginBottom = '20px'; existingP.style.fontSize = '14px'; document.getElementById('alertMessage').after(existingP); }
         existingP.innerHTML = `Total Bill: ₹${total} <br><br> Har dost ko dene honge:<br> <strong style="font-size: 28px; color: var(--green);">₹${perPerson}</strong>`;
-        
-        setTimeout(() => {
-            document.getElementById('customAlert').classList.add('show');
-            if(navigator.vibrate) navigator.vibrate(50);
-        }, 300);
-        
-    } else {
-        window.showToast("Kam se kam 2 log chahiye bro!");
-    }
+        setTimeout(() => { document.getElementById('customAlert').classList.add('show'); if(navigator.vibrate) navigator.vibrate(50); }, 300);
+    } else { window.showToast("Kam se kam 2 log chahiye bro!"); }
 };
 
 // =========================================================
@@ -1060,33 +685,14 @@ window.confirmSplitBill = function() {
 window.startChefVoice = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) { window.showToast("Voice typing not supported on this browser."); return; }
-    
-    const recognition = new SpeechRecognition();
-    recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
-    
+    const recognition = new SpeechRecognition(); recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
     const micBtn = document.getElementById('chefMicBtn');
-    micBtn.style.color = 'white';
-    micBtn.style.background = 'var(--danger)';
-    micBtn.classList.add('bounce-pop');
+    micBtn.style.color = 'white'; micBtn.style.background = 'var(--danger)'; micBtn.classList.add('bounce-pop');
     if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
-    
     recognition.start();
-    
-    recognition.onresult = (e) => { 
-        const noteInput = document.getElementById('cookingNotes');
-        noteInput.value += (noteInput.value ? ' ' : '') + e.results[0][0].transcript; 
-    };
-    
-    recognition.onspeechend = () => { 
-        micBtn.style.color = 'var(--primary)'; 
-        micBtn.style.background = 'var(--bg-light)';
-        micBtn.classList.remove('bounce-pop'); 
-    };
-    recognition.onerror = () => { 
-        micBtn.style.color = 'var(--primary)'; 
-        micBtn.style.background = 'var(--bg-light)';
-        micBtn.classList.remove('bounce-pop'); 
-    };
+    recognition.onresult = (e) => { const noteInput = document.getElementById('cookingNotes'); noteInput.value += (noteInput.value ? ' ' : '') + e.results[0][0].transcript; };
+    recognition.onspeechend = () => { micBtn.style.color = 'var(--primary)'; micBtn.style.background = 'var(--bg-light)'; micBtn.classList.remove('bounce-pop'); };
+    recognition.onerror = () => { micBtn.style.color = 'var(--primary)'; micBtn.style.background = 'var(--bg-light)'; micBtn.classList.remove('bounce-pop'); };
 };
 
 // =========================================================
@@ -1097,118 +703,60 @@ window.dishToRateId = null;
 
 window.openRatingModal = () => {
     if(!window.currentDish) return;
-    window.dishToRateId = window.currentDish.id;
-    document.getElementById('ratingDishName').innerText = window.currentDish.name;
-    window.setRating(0); 
-    document.getElementById('reviewText').value = '';
-    document.getElementById('ratingModal').classList.add('show');
+    window.dishToRateId = window.currentDish.id; document.getElementById('ratingDishName').innerText = window.currentDish.name;
+    window.setRating(0); document.getElementById('reviewText').value = ''; document.getElementById('ratingModal').classList.add('show');
 };
 
-window.closeRatingModal = () => {
-    document.getElementById('ratingModal').classList.remove('show');
-    window.dishToRateId = null;
-};
+window.closeRatingModal = () => { document.getElementById('ratingModal').classList.remove('show'); window.dishToRateId = null; };
 
 window.setRating = (val) => {
-    window.currentRatingVal = val;
-    const stars = document.getElementById('starContainer').querySelectorAll('i');
+    window.currentRatingVal = val; const stars = document.getElementById('starContainer').querySelectorAll('i');
     stars.forEach((star, index) => {
-        if (index < val) {
-            star.classList.add('active');
-            star.classList.add('bounce-pop');
-            setTimeout(() => star.classList.remove('bounce-pop'), 400); 
-        } else {
-            star.classList.remove('active');
-        }
+        if (index < val) { star.classList.add('active'); star.classList.add('bounce-pop'); setTimeout(() => star.classList.remove('bounce-pop'), 400); } 
+        else { star.classList.remove('active'); }
     });
     if(val > 0 && typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
 };
 
 window.submitRating = async () => {
-    if (window.currentRatingVal === 0) {
-        window.showToast("Please select a star rating!");
-        return;
-    }
-    
-    const review = document.getElementById('reviewText').value;
-    window.showToast("Submitting...");
-    
+    if (window.currentRatingVal === 0) { window.showToast("Please select a star rating!"); return; }
+    const review = document.getElementById('reviewText').value; window.showToast("Submitting...");
     try {
-        await addDoc(collection(db, "dish_ratings"), { 
-            dishId: window.dishToRateId, 
-            dishName: window.currentDish.name,
-            rating: window.currentRatingVal, 
-            review: review || "No review text",
-            timestamp: new Date(),
-            restaurantId: window.currentRestaurantId
-        });
-        
-        window.closeRatingModal();
-        window.showToast("Thank you for your review! ⭐");
-        window.launchConfetti(); 
-    } catch(e) {
-        window.showToast("Failed to submit rating.");
-    }
+        await addDoc(collection(db, "dish_ratings"), { dishId: window.dishToRateId, dishName: window.currentDish.name, rating: window.currentRatingVal, review: review || "No review text", timestamp: new Date(), restaurantId: window.currentRestaurantId });
+        window.closeRatingModal(); window.showToast("Thank you for your review! ⭐"); window.launchConfetti(); 
+    } catch(e) { window.showToast("Failed to submit rating."); }
 };
 
 const originalAddCurrentToCart = window.addCurrentToCart;
 window.addCurrentToCart = (e) => {
-    originalAddCurrentToCart(e);
-    const cartIcon = document.getElementById('float-btn-view');
-    if(cartIcon) {
-        cartIcon.classList.remove('bounce-pop');
-        void cartIcon.offsetWidth; 
-        cartIcon.classList.add('bounce-pop');
-    }
+    originalAddCurrentToCart(e); const cartIcon = document.getElementById('float-btn-view');
+    if(cartIcon) { cartIcon.classList.remove('bounce-pop'); void cartIcon.offsetWidth; cartIcon.classList.add('bounce-pop'); }
 };
 
 async function loadDynamicMenu() {
     try {
         console.log("⏳ Fetching data from Database...");
-        
         const restaurant = await APIService.getRestaurant();
         const categories = await APIService.getCategories();
         const dishes = await APIService.getDishes();
 
-        if (!restaurant) {
-            console.error("❌ Restaurant not found! Default ID use ho rahi hai.");
-            return;
-        }
-
+        if (!restaurant) { console.error("❌ Restaurant not found! Default ID use ho rahi hai."); return; }
         document.title = `${restaurant.name} - Smart Menu`;
 
         // 🔥 BULLETPROOF SAAS NAME REPLACER 🔥
         if (restaurant.name !== "Smart Menu") {
             const replaceText = (node) => {
-                // Agar ye text wali line hai, toh isme word dhoondh kar change karo
-                if (node.nodeType === 3 && node.nodeValue) { 
-                    if (node.nodeValue.includes("NextPlate")) {
-                        node.nodeValue = node.nodeValue.replace("NextPlate", restaurant.name);
-                    }
-                } 
-                // Agar ye koi element hai (par script/style nahi), toh uske andar ghuso
-                else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
-                    node.childNodes.forEach(child => replaceText(child));
-                }
+                if (node.nodeType === 3 && node.nodeValue) { if (node.nodeValue.includes("NextPlate")) { node.nodeValue = node.nodeValue.replace("NextPlate", restaurant.name); } } 
+                else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') { node.childNodes.forEach(child => replaceText(child)); }
             };
             replaceText(document.body);
         }
 
         window.allDishes = dishes;
-        
-        if (typeof window.applyFilters === 'function') {
-            window.applyFilters();
-        }
-        
-        if (window.allDishes.length > 0) {
-            window.loadDish(window.allDishes[0]);
-        }
-        
+        if (typeof window.applyFilters === 'function') { window.applyFilters(); }
+        if (window.allDishes.length > 0) { window.loadDish(window.allDishes[0]); }
         console.log("✅ Data Load & Render Successful!");
-        
-    } catch(e) {
-        console.error("❌ Data load error:", e);
-    }
+    } catch(e) { console.error("❌ Data load error:", e); }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
