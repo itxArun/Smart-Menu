@@ -254,20 +254,21 @@
             <div id="cart-spacer" style="height: 0px; transition: height 0.3s ease;"></div>
         </div>
     </div>
-    <!-- 💊 PREMIUM DYNAMIC ORDER PILL (ZOMATO STYLE) -->
-    <div id="dynamic-order-pill" class="dynamic-order-pill" onclick="toggleTracker()">
-        <div class="pill-content">
-            <div class="pill-icon-wrapper" id="pill-icon-bg">
-                <i class="ph-bold ph-cooking-pot" id="dynamic-pill-icon"></i>
-                <div class="pill-pulse-ring"></div>
-            </div>
-            <div class="pill-text-wrapper">
-                <div class="pill-title" id="dynamic-pill-title">Preparing Order...</div>
-                <div class="pill-sub">Tap to track status <i class="ph-bold ph-caret-right"></i></div>
-            </div>
+        <!-- 🌠 SMART GLASS TRACKER (Ring + Glassmorphism) -->
+    <div id="smart-glass-tracker" class="smart-glass-tracker" onclick="toggleTracker()">
+        <div class="glass-ring-box">
+            <svg class="tracker-svg-ring" width="46" height="46">
+                <circle class="tracker-ring-bg" cx="23" cy="23" r="20"></circle>
+                <circle class="tracker-ring-progress" id="tracker-ring-progress" cx="23" cy="23" r="20"></circle>
+            </svg>
+            <i class="ph-bold ph-cooking-pot" id="glass-tracker-icon"></i>
+        </div>
+        <div class="glass-tracker-info">
+            <span id="glass-tracker-title">Cooking...</span>
+            <span class="glass-tracker-sub">Tap to view <i class="ph-bold ph-caret-right" style="font-size: 10px;"></i></span>
         </div>
     </div>
-    
+
     <!-- Floating Cart Bar -->
     <div class="floating-checkout" id="floating-checkout" onclick="toggleCart()">
         <div class="checkout-info">
