@@ -180,7 +180,7 @@ window.toggleMedia = () => {
 };
 
 // ==========================================
-// 📈 MULTI-TRACKER & SMART GLASS RING
+// 📈 MULTI-TRACKER & SMART EXPANDING GLASS RING
 // ==========================================
 let activeOrderListeners = {}; let activeOrderData = {};
 
@@ -195,7 +195,7 @@ window.renderMultiTracker = function() {
     const trackBtn = document.getElementById('btn-track-order'); 
     const pulse = document.getElementById('track-badge-pulse');
     
-    // 🌠 Smart Glass Tracker Elements
+    // 🌠 Smart Expanding Glass Tracker Elements
     const glassTracker = document.getElementById('smart-glass-tracker');
     const glassTitle = document.getElementById('glass-tracker-title');
     const glassIcon = document.getElementById('glass-tracker-icon');
@@ -315,40 +315,54 @@ window.renderMultiTracker = function() {
     if(liveContainer && liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
     if(pastContainer && pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
 
-    // 🌠 Smart Glass Tracker UI Changer (Ring Logic)
+    // 🌠 Smart Expanding Glass Tracker UI Changer
     if (glassTracker) {
         if (highestStatusLevel === -1) {
             glassTracker.classList.remove('show');
         } else {
+            // Check if status changed to trigger expansion
+            const previousStatus = glassTracker.getAttribute('data-status') || '-1';
+            const currentStatusStr = highestStatusLevel.toString();
+            
             glassTracker.classList.add('show');
-            const circumference = 125.6; // SVG Ring length
+            const circumference = 106.8; // SVG Ring length (radius 17)
             let percent = 0;
 
             if (highestStatusLevel === 0) {
-                glassTitle.innerText = "Placed";
+                glassTitle.innerText = "Order Placed!";
                 glassIcon.className = "ph-bold ph-receipt";
                 glassRing.style.stroke = "var(--primary)";
-                percent = 25; // 25% completed
+                percent = 25; 
             } else if (highestStatusLevel === 1) {
                 glassTitle.innerText = "Accepted";
                 glassIcon.className = "ph-bold ph-thumbs-up";
-                glassRing.style.stroke = "#3B82F6"; // Blue Color
-                percent = 50; // 50% completed
+                glassRing.style.stroke = "#3B82F6"; 
+                percent = 50; 
             } else if (highestStatusLevel === 2) {
                 glassTitle.innerText = "Cooking...";
                 glassIcon.className = "ph-bold ph-cooking-pot";
                 glassRing.style.stroke = "var(--warning)";
-                percent = 75; // 75% completed
+                percent = 75; 
             } else if (highestStatusLevel === 3) {
                 glassTitle.innerText = "Ready!";
                 glassIcon.className = "ph-bold ph-bell-ringing";
                 glassRing.style.stroke = "var(--success)";
-                percent = 100; // 100% completed
+                percent = 100; 
             }
             
-            // Ring animation logic
             const offset = circumference - (percent / 100) * circumference;
             glassRing.style.strokeDashoffset = offset;
+
+            // Expand Animation Trigger
+            if (previousStatus !== currentStatusStr) {
+                glassTracker.setAttribute('data-status', currentStatusStr);
+                glassTracker.classList.add('expand');
+                
+                // 3 seconds baad wapas shrink ho jayega
+                setTimeout(() => {
+                    glassTracker.classList.remove('expand');
+                }, 3000);
+            }
         }
     }
 }
