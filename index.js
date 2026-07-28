@@ -123,7 +123,7 @@ const i18n = {
 let currentLang = 'en';
 window.setLanguage = (l) => {
     currentLang = l; document.getElementById('btn-en').classList.toggle('active', l === 'en'); document.getElementById('btn-hi').classList.toggle('active', l === 'hi');
-    document.getElementById('btn-add-new').innerHTML = `${i18n[l].add} <i class="ph-bold ph-plus"></i>`; document.getElementById('btn-ar-view').innerHTML = `<i class="ph-fill ph-camera"></i> ${i18n[l].ar}`;
+    document.getElementById('btn-add-new').innerHTML = `${i18n[l].add} <i class="ph-bold ph-plus"></i>`; 
     document.getElementById('float-btn-view').innerHTML = `${i18n[l].viewCart} <i class="ph-bold ph-arrow-right"></i>`; document.getElementById('cart-title-text').innerHTML = `<i class="ph-fill ph-shopping-bag"></i> ${i18n[l].cartTitle}`;
     document.getElementById('checkoutBtn').innerHTML = `${i18n[l].place} <i class="ph-bold ph-arrow-right"></i>`; document.getElementById('bill-total-text').innerText = i18n[l].totalPay;
     document.getElementById('btn-alert-ok').innerText = i18n[l].alertOk; document.getElementById('searchInput').placeholder = i18n[l].search;
@@ -179,13 +179,8 @@ window.toggleMedia = () => {
     else { slider.classList.add('hide'); if(viewer) { viewer.style.display = 'block'; viewer.src = viewer.getAttribute('data-src'); } toggleBtn.innerHTML = '<i class="ph-fill ph-image"></i> View Photos'; }
 };
 
-window.viewOnTable = async () => { 
-    document.querySelector('#ar-viewer').activateAR(); 
-    if (window.currentDish) { try { await addDoc(collection(db, "ar_views"), { dishName: window.currentDish.name, timestamp: new Date(), restaurantId: window.currentRestaurantId }); } catch(e) {} } 
-};
-
 // ==========================================
-// 📈 MULTI-TRACKER & DYNAMIC PILL (ZOMATO STYLE)
+// 📈 MULTI-TRACKER & SMART GLASS RING
 // ==========================================
 let activeOrderListeners = {}; let activeOrderData = {};
 
@@ -200,12 +195,11 @@ window.renderMultiTracker = function() {
     const trackBtn = document.getElementById('btn-track-order'); 
     const pulse = document.getElementById('track-badge-pulse');
     
-    // 💊 Dynamic Pill Elements
-    const dynamicPill = document.getElementById('dynamic-order-pill');
-    const pillTitle = document.getElementById('dynamic-pill-title');
-    const pillIconBg = document.getElementById('pill-icon-bg');
-    const pillIcon = document.getElementById('dynamic-pill-icon');
-    const pillPulse = document.querySelector('.pill-pulse-ring');
+    // 🌠 Smart Glass Tracker Elements
+    const glassTracker = document.getElementById('smart-glass-tracker');
+    const glassTitle = document.getElementById('glass-tracker-title');
+    const glassIcon = document.getElementById('glass-tracker-icon');
+    const glassRing = document.getElementById('tracker-ring-progress');
 
     if(liveContainer) liveContainer.innerHTML = ''; 
     if(pastContainer) pastContainer.innerHTML = ''; 
@@ -321,24 +315,40 @@ window.renderMultiTracker = function() {
     if(liveContainer && liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
     if(pastContainer && pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
 
-    if (dynamicPill) {
+    // 🌠 Smart Glass Tracker UI Changer (Ring Logic)
+    if (glassTracker) {
         if (highestStatusLevel === -1) {
-            dynamicPill.classList.remove('show');
+            glassTracker.classList.remove('show');
         } else {
-            dynamicPill.classList.add('show');
-            if(highestStatusLevel === 0) {
-                pillTitle.innerText = "Order Placed!"; pillIconBg.style.background = "var(--primary)";
-                pillIcon.className = "ph-bold ph-receipt"; pillPulse.style.borderColor = "var(--primary)";
-            } else if(highestStatusLevel === 1) {
-                pillTitle.innerText = "Order Accepted"; pillIconBg.style.background = "var(--primary)";
-                pillIcon.className = "ph-bold ph-thumbs-up"; pillPulse.style.borderColor = "var(--primary)";
-            } else if(highestStatusLevel === 2) {
-                pillTitle.innerText = "Cooking in progress..."; pillIconBg.style.background = "var(--warning)";
-                pillIcon.className = "ph-bold ph-cooking-pot"; pillPulse.style.borderColor = "var(--warning)";
-            } else if(highestStatusLevel === 3) {
-                pillTitle.innerText = "Food is Ready! 😋"; pillIconBg.style.background = "var(--success)";
-                pillIcon.className = "ph-bold ph-bell-ringing"; pillPulse.style.borderColor = "var(--success)";
+            glassTracker.classList.add('show');
+            const circumference = 125.6; // SVG Ring length
+            let percent = 0;
+
+            if (highestStatusLevel === 0) {
+                glassTitle.innerText = "Placed";
+                glassIcon.className = "ph-bold ph-receipt";
+                glassRing.style.stroke = "var(--primary)";
+                percent = 25; // 25% completed
+            } else if (highestStatusLevel === 1) {
+                glassTitle.innerText = "Accepted";
+                glassIcon.className = "ph-bold ph-thumbs-up";
+                glassRing.style.stroke = "#3B82F6"; // Blue Color
+                percent = 50; // 50% completed
+            } else if (highestStatusLevel === 2) {
+                glassTitle.innerText = "Cooking...";
+                glassIcon.className = "ph-bold ph-cooking-pot";
+                glassRing.style.stroke = "var(--warning)";
+                percent = 75; // 75% completed
+            } else if (highestStatusLevel === 3) {
+                glassTitle.innerText = "Ready!";
+                glassIcon.className = "ph-bold ph-bell-ringing";
+                glassRing.style.stroke = "var(--success)";
+                percent = 100; // 100% completed
             }
+            
+            // Ring animation logic
+            const offset = circumference - (percent / 100) * circumference;
+            glassRing.style.strokeDashoffset = offset;
         }
     }
 }
