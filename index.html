@@ -143,6 +143,48 @@
             </div>
         </div>
     </div>
+
+    <!-- 👨‍🍳 CHEF NOTE MODAL -->
+    <div class="custom-alert" id="chefNoteModal" style="z-index: 9999;">
+        <div class="alert-box">
+            <div class="alert-icon"><i class="ph-fill ph-chef-hat" style="color: var(--primary);"></i></div>
+            <h3>Chef Notes</h3>
+            <p style="margin-bottom: 15px;">Dish ke liye koi special instruction?</p>
+            <textarea id="tempChefNote" class="input-field" placeholder="E.g., Make it spicy, less oil..." style="width: 100%; height: 70px; resize: none; margin-bottom: 20px; box-sizing: border-box;"></textarea>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-cancel" style="background: var(--bg-light); color: var(--text-main); flex:1; padding: 15px; border-radius:50px; border:none; font-weight:700; cursor:pointer;" onclick="closeChefNotePrompt()">Cancel</button>
+                <button class="alert-btn-primary" style="flex:1; margin:0; background: var(--primary-gradient); box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3);" onclick="saveChefNote()">Save Note</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⚙️ SETTINGS MODAL -->
+    <div class="custom-alert" id="settingsModal" style="z-index: 9999;">
+        <div class="alert-box" style="padding: 25px; max-width: 300px;">
+            <h3 style="margin-bottom: 20px; font-size: 20px;"><i class="ph-fill ph-gear"></i> Settings</h3>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-light);">
+                <span style="font-weight: 600; font-size: 14px;">Language</span>
+                <div class="lang-switch" style="margin:0;">
+                    <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</button>
+                    <button class="lang-btn" id="btn-hi" onclick="setLanguage('hi')">HI</button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-light);">
+                <span style="font-weight: 600; font-size: 14px;">Dark Mode</span>
+                <button onclick="toggleDarkMode()" style="background: var(--bg-light); border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px;">
+                    <i class="ph-bold ph-moon" id="theme-icon"></i>
+                </button>
+            </div>
+            
+            <button class="alert-btn-primary" style="width: 100%; margin-bottom: 10px; background: rgba(36, 150, 63, 0.1); color: var(--green); border: 1px dashed var(--green); box-shadow: none;" onclick="closeSettingsAndOpenWaiter()">
+                <i class="ph-bold ph-bell-ringing"></i> Call Waiter
+            </button>
+            
+            <button class="btn-cancel" style="width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--bg-light); font-weight: 700;" onclick="closeSettingsModal()">Close</button>
+        </div>
+    </div>
     
     <!-- Header -->
     <div class="header">
@@ -151,15 +193,18 @@
             <span class="greeting-text" id="greeting-display">Good Morning <i class="ph-fill ph-coffee"></i></span>
         </div>
         <div class="header-actions">
-            <div class="track-icon" id="btn-track-order" onclick="toggleTracker()">
-                <i class="ph-fill ph-package"></i> <span id="track-btn-text">Orders</span>
+            <!-- 🔮 Smart Dynamic Orders Button -->
+            <div class="track-icon smart-order-btn" id="btn-track-order" onclick="toggleTracker()">
+                <span class="order-btn-content" id="track-btn-text"><i class="ph-fill ph-package"></i> Orders</span>
                 <div class="track-pulse" id="track-badge-pulse" style="display: none;"></div>
             </div>
             <div class="fav-header-icon" onclick="toggleFavList()"><i class="ph-fill ph-heart"></i></div>
-            <div class="lang-switch">
-                <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</button>
-                <button class="lang-btn" id="btn-hi" onclick="setLanguage('hi')">HI</button>
+            
+            <!-- ⚙️ New Settings Icon -->
+            <div class="settings-icon" onclick="openSettingsModal()" style="font-size: 22px; cursor: pointer; color: var(--text-main); display: flex; align-items: center;">
+                <i class="ph-bold ph-list"></i>
             </div>
+            
             <div class="cart-icon" id="cart-icon-target" onclick="toggleCart()">
                 <i class="ph-fill ph-shopping-cart-simple"></i> <div class="cart-badge" id="cart-count">0</div>
             </div>
@@ -201,10 +246,10 @@
             
             <div class="viewer-container">
                 <div class="premium-badges-top">
+                    <!-- Waiter button retained, 15 Min badge removed -->
                     <button onclick="openWaiterPrompt()" class="waiter-btn-chip">
                         <i class="ph-fill ph-bell-ringing"></i> Waiter
                     </button>
-                    <span class="badge-chip time"><i class="ph-fill ph-clock"></i> 15 Min</span>
                 </div>
 
                 <div id="photo-slider" class="photo-slider"></div>
@@ -224,7 +269,6 @@
                     <button class="card-fav-btn" onclick="toggleFavIcon(event)"><i class="ph-fill ph-heart"></i></button>
                 </div>
 
-                <!-- 🔥 Rating click karne par modal open hoga 🔥 -->
                 <div class="rating-type-row">
                     <div class="card-rating-badge" onclick="openRatingModal()" style="cursor: pointer;"><span class="star"><i class="ph-fill ph-star"></i> Rate</span><span class="reviews">(Leave a review)</span></div>
                     <span class="type-icon" id="display-type-icon"><i class="ph-fill ph-circle" style="color:var(--green)"></i></span>
@@ -239,6 +283,11 @@
                 </div>
                 
                 <div class="action-row">
+                    <!-- 👨‍🍳 NEW: Premium Animated Chef Note Button -->
+                    <button class="btn-chef-note magnetic-ripple glass-shine" onclick="openChefNotePrompt()">
+                        <i class="ph-bold ph-pencil-simple"></i> Add Note
+                    </button>
+                    
                     <div class="add-action-wrapper" id="add-action-wrapper">
                         <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">ADD <i class="ph-bold ph-plus"></i></button>
                         <div class="stepper-control" id="btn-stepper">
@@ -254,7 +303,7 @@
         </div>
     </div>
 
-        <!-- 🌠 SMART EXPANDING GLASS TRACKER -->
+    <!-- 🌠 SMART EXPANDING GLASS TRACKER -->
     <div id="smart-glass-tracker" class="smart-glass-tracker" onclick="toggleTracker()">
         <div class="glass-ring-wrapper">
             <svg class="tracker-svg-ring" width="40" height="40">
@@ -288,7 +337,6 @@
             <div class="cart-scroll-body">
                 <div class="cart-items-container" id="cart-items-list"></div>
                 
-                <!-- 🚀 BILL DETAILS W/ SMALL SPLIT BUTTON 🚀 -->
                 <div class="bill-details" style="background: #FAFAFA; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px dashed rgba(0,0,0,0.1);">
                     <div class="bill-total" style="display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: 800; color: var(--text-main);">
                         <div style="display: flex; flex-direction: column; gap: 6px;">
@@ -309,7 +357,6 @@
                         <button id="btn-takeaway" class="type-btn" onclick="setOrderType('Takeaway')"><i class="ph-fill ph-shopping-bag"></i> Takeaway</button>
                     </div>
                     
-                    <!-- 🗣️ NEW VOICE CHEF NOTES SECTION 🗣️ -->
                     <div style="position: relative; margin-top: 15px;">
                         <label style="font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 5px; display: block;"><i class="ph-fill ph-chef-hat"></i> Chef Notes (Optional)</label>
                         <textarea id="cookingNotes" class="input-field" placeholder="E.g., Make it spicy..." style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); box-sizing: border-box; resize: none; padding-right: 45px; height: 60px;"></textarea>
@@ -342,6 +389,11 @@
             let loader = document.getElementById("premium-loader");
             if (loader && loader.style.display !== "none") { loader.style.opacity = "0"; setTimeout(() => loader.style.display = "none", 500); }
         }, 2500); 
+
+        // Helper functions for new modals
+        window.openSettingsModal = () => { document.getElementById('settingsModal').classList.add('show'); if(typeof triggerHapticPop === 'function') triggerHapticPop(); };
+        window.closeSettingsModal = () => document.getElementById('settingsModal').classList.remove('show');
+        window.closeSettingsAndOpenWaiter = () => { closeSettingsModal(); setTimeout(() => { if(typeof openWaiterPrompt === 'function') openWaiterPrompt(); }, 300); };
     </script>
     
     <!-- 🚀 IN-APP QR SCANNER MODAL (UI FIXED) 🚀 -->
