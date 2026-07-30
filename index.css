@@ -695,97 +695,90 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 }
 
 /* ==========================================
-   🌠 SMART EXPANDING GLASS TRACKER (Image Base Edge)
+   👨‍🍳 PREMIUM CHEF NOTE BUTTON & ANIMATIONS 
    ========================================== */
-.smart-glass-tracker {
-    position: absolute;
-    /* Image height (50vh) ke theek upar, white card (-20px) se bacha kar */
-    top: calc(50vh - 40px); 
-    right: 15px; 
-    height: 40px;
-    width: 40px; /* Default chhota gol size */
-    background: rgba(28, 28, 30, 0.65); /* Frosted Dark Glass */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    z-index: 25;
-    cursor: pointer;
-    overflow: hidden;
-    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s, transform 0.4s;
-    opacity: 0;
-    pointer-events: none;
-    transform: scale(0.8);
-}
-
-.smart-glass-tracker.show {
-    opacity: 1;
-    pointer-events: auto;
-    transform: scale(1);
-}
-
-/* Jab text dikhana ho toh lamba hoga */
-.smart-glass-tracker.expand {
-    width: 145px; 
-}
-
-.glass-ring-wrapper {
+.btn-chef-note { 
+    background: var(--white); 
+    color: var(--text-main); 
+    border: 1px solid var(--border-light); 
+    border-radius: 12px; 
+    font-size: 13px; 
+    font-weight: 700; 
+    flex: 1; 
+    height: 44px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 6px; 
+    cursor: pointer; 
+    box-shadow: var(--shadow-soft); 
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s; 
     position: relative;
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    overflow: hidden;
 }
 
-.tracker-svg-ring {
+.magnetic-ripple:active { 
+    transform: scale(0.94); 
+    background: #F0F0F0; 
+}
+
+.glass-shine::before {
+    content: '';
     position: absolute;
-    transform: rotate(-90deg);
+    top: 0; left: -150%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: sweepShine 3.5s infinite;
+    z-index: 1;
 }
 
-.tracker-ring-bg {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 3;
+@keyframes sweepShine {
+    0% { left: -150%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
 }
 
-.tracker-ring-progress {
-    fill: none;
-    stroke: var(--warning); 
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-dasharray: 106.8; /* 2 * pi * 17 */
-    stroke-dashoffset: 106.8;
-    transition: stroke-dashoffset 1s ease-in-out, stroke 0.5s ease;
-}
-
-#glass-tracker-icon {
-    font-size: 18px;
-    color: #fff;
-    z-index: 2;
-}
-
-.glass-tracker-text-wrapper {
+/* ==========================================
+   🔮 SMART DYNAMIC ORDERS BUTTON (HEADER)
+   ========================================== */
+.smart-order-btn {
+    transition: max-width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s, color 0.4s, padding 0.4s;
+    max-width: 85px; 
+    overflow: hidden;
     white-space: nowrap;
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    padding-right: 14px;
-    padding-left: 2px;
 }
 
-.smart-glass-tracker.expand .glass-tracker-text-wrapper {
-    opacity: 1;
-    transform: translateX(0);
+.smart-order-btn.expand {
+    max-width: 200px; 
+    background: var(--warning) !important;
+    color: var(--white) !important;
+    border-color: var(--warning) !important;
+    padding: 6px 16px !important;
+    box-shadow: 0 4px 15px rgba(255, 159, 0, 0.4);
 }
 
-#glass-tracker-title {
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
+.smart-order-btn.expand-green {
+    max-width: 200px; 
+    background: var(--green) !important;
+    color: var(--white) !important;
+    border-color: var(--green) !important;
+    padding: 6px 16px !important;
+    box-shadow: 0 4px 15px rgba(36, 150, 63, 0.4);
+}
+
+.smart-order-btn.expand-blue {
+    max-width: 200px; 
+    background: #3B82F6 !important;
+    color: var(--white) !important;
+    border-color: #3B82F6 !important;
+    padding: 6px 16px !important;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.order-btn-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity 0.3s ease;
 }
