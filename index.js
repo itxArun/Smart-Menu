@@ -127,7 +127,7 @@ window.setLanguage = (l) => {
     document.getElementById('float-btn-view').innerHTML = `${i18n[l].viewCart} <i class="ph-bold ph-arrow-right"></i>`; document.getElementById('cart-title-text').innerHTML = `<i class="ph-fill ph-shopping-bag"></i> ${i18n[l].cartTitle}`;
     document.getElementById('checkoutBtn').innerHTML = `${i18n[l].place} <i class="ph-bold ph-arrow-right"></i>`; document.getElementById('bill-total-text').innerText = i18n[l].totalPay;
     document.getElementById('btn-alert-ok').innerText = i18n[l].alertOk; document.getElementById('searchInput').placeholder = i18n[l].search;
-    document.getElementById('tracker-title-text').innerHTML = `<i class="ph-fill ph-receipt"></i> ${i18n[l].trackTitle}`; document.getElementById('track-btn-text').innerText = i18n[l].trackBtn;
+    document.getElementById('tracker-title-text').innerHTML = `<i class="ph-fill ph-receipt"></i> ${i18n[l].trackTitle}`; document.getElementById('track-btn-text').innerHTML = `<i class="ph-fill ph-package"></i> ${i18n[l].trackBtn}`;
     document.getElementById('waiterTitleText').innerText = i18n[l].waiterTitle; document.getElementById('waiterCancelBtn').innerText = i18n[l].waiterCancel;
     document.getElementById('waiterCallBtn').innerText = i18n[l].waiterCall; document.getElementById('waiterTableInput').placeholder = i18n[l].waiterInput;
     window.setOrderType(window.currentOrderType); window.updateGlobalCartUI();
@@ -180,7 +180,7 @@ window.toggleMedia = () => {
 };
 
 // ==========================================
-// 📈 MULTI-TRACKER & SMART EXPANDING GLASS RING
+// 📈 MULTI-TRACKER & DYNAMIC HEADER BUTTON
 // ==========================================
 let activeOrderListeners = {}; let activeOrderData = {};
 
@@ -192,14 +192,11 @@ window.listenToLiveOrder = function(orderId) {
 window.renderMultiTracker = function() {
     const liveContainer = document.getElementById('live-orders-container'); 
     const pastContainer = document.getElementById('past-orders-container');
-    const trackBtn = document.getElementById('btn-track-order'); 
-    const pulse = document.getElementById('track-badge-pulse');
     
-    // 🌠 Smart Expanding Glass Tracker Elements
-    const glassTracker = document.getElementById('smart-glass-tracker');
-    const glassTitle = document.getElementById('glass-tracker-title');
-    const glassIcon = document.getElementById('glass-tracker-icon');
-    const glassRing = document.getElementById('tracker-ring-progress');
+    // Dynamic Header Button Elements
+    const trackBtn = document.getElementById('btn-track-order'); 
+    const trackBtnText = document.getElementById('track-btn-text');
+    const pulse = document.getElementById('track-badge-pulse');
 
     if(liveContainer) liveContainer.innerHTML = ''; 
     if(pastContainer) pastContainer.innerHTML = ''; 
@@ -299,72 +296,56 @@ window.renderMultiTracker = function() {
             ${actionHtml}
         </div>`;
 
+        // 🔥 STRICT TODAY VS PAST LOGIC 🔥
         if(liveContainer && pastContainer) {
-            if (isToday || (!isCanc && !isDone)) liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; 
+            if (isToday) liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; 
             else pastContainer.innerHTML = cardHtml + pastContainer.innerHTML; 
         }
     });
 
     localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
     
+    // 🔮 SMART HEADER BUTTON ANIMATION LOGIC 
     if(trackBtn && pulse) {
-        if (showTrackBtn && activeOrdersList.length > 0) { trackBtn.classList.add('show'); pulse.style.display = showPulse ? 'block' : 'none'; } 
-        else { trackBtn.classList.remove('show'); }
-    }
-    
-    if(liveContainer && liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No active orders.</p></div>`;
-    if(pastContainer && pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
-
-    // 🌠 Smart Expanding Glass Tracker UI Changer
-    if (glassTracker) {
-        if (highestStatusLevel === -1) {
-            glassTracker.classList.remove('show');
-        } else {
-            // Check if status changed to trigger expansion
-            const previousStatus = glassTracker.getAttribute('data-status') || '-1';
-            const currentStatusStr = highestStatusLevel.toString();
+        if (showTrackBtn && activeOrdersList.length > 0) { 
+            trackBtn.classList.add('show'); 
+            pulse.style.display = showPulse ? 'block' : 'none'; 
             
-            glassTracker.classList.add('show');
-            const circumference = 106.8; // SVG Ring length (radius 17)
-            let percent = 0;
-
-            if (highestStatusLevel === 0) {
-                glassTitle.innerText = "Order Placed!";
-                glassIcon.className = "ph-bold ph-receipt";
-                glassRing.style.stroke = "var(--primary)";
-                percent = 25; 
-            } else if (highestStatusLevel === 1) {
-                glassTitle.innerText = "Accepted";
-                glassIcon.className = "ph-bold ph-thumbs-up";
-                glassRing.style.stroke = "#3B82F6"; 
-                percent = 50; 
-            } else if (highestStatusLevel === 2) {
-                glassTitle.innerText = "Cooking...";
-                glassIcon.className = "ph-bold ph-cooking-pot";
-                glassRing.style.stroke = "var(--warning)";
-                percent = 75; 
-            } else if (highestStatusLevel === 3) {
-                glassTitle.innerText = "Ready!";
-                glassIcon.className = "ph-bold ph-bell-ringing";
-                glassRing.style.stroke = "var(--success)";
-                percent = 100; 
-            }
-            
-            const offset = circumference - (percent / 100) * circumference;
-            glassRing.style.strokeDashoffset = offset;
-
-            // Expand Animation Trigger
-            if (previousStatus !== currentStatusStr) {
-                glassTracker.setAttribute('data-status', currentStatusStr);
-                glassTracker.classList.add('expand');
+            // Animation Trigger for Status Changes
+            if (highestStatusLevel !== -1 && trackBtnText) {
+                const previousStatus = trackBtn.getAttribute('data-status') || '-1';
+                const currentStatusStr = highestStatusLevel.toString();
                 
-                // 3 seconds baad wapas shrink ho jayega
-                setTimeout(() => {
-                    glassTracker.classList.remove('expand');
-                }, 3000);
+                let statusText = "Orders"; let statusIcon = "ph-package"; let expandClass = "expand";
+
+                if (highestStatusLevel === 0) { statusText = "Placed!"; statusIcon = "ph-receipt"; expandClass = "expand"; } 
+                else if (highestStatusLevel === 1) { statusText = "Accepted"; statusIcon = "ph-thumbs-up"; expandClass = "expand-blue"; } 
+                else if (highestStatusLevel === 2) { statusText = "Cooking..."; statusIcon = "ph-cooking-pot"; expandClass = "expand"; } 
+                else if (highestStatusLevel === 3) { statusText = "Ready!"; statusIcon = "ph-bell-ringing"; expandClass = "expand-green"; }
+
+                if (previousStatus !== currentStatusStr) {
+                    trackBtn.setAttribute('data-status', currentStatusStr);
+                    trackBtnText.innerHTML = `<i class="ph-fill ${statusIcon}"></i> ${statusText}`;
+                    
+                    trackBtn.classList.remove('expand', 'expand-blue', 'expand-green');
+                    trackBtn.classList.add(expandClass);
+                    
+                    setTimeout(() => {
+                        trackBtn.classList.remove('expand', 'expand-blue', 'expand-green');
+                        setTimeout(() => { trackBtnText.innerHTML = `<i class="ph-fill ph-package"></i> Orders`; }, 300);
+                    }, 3000);
+                }
             }
+        } 
+        else { 
+            trackBtn.classList.remove('show'); 
+            if(trackBtnText) trackBtnText.innerHTML = `<i class="ph-fill ph-package"></i> Orders`;
+            trackBtn.setAttribute('data-status', '-1');
         }
     }
+    
+    if(liveContainer && liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No orders placed today.</p></div>`;
+    if(pastContainer && pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
 }
 
 window.orderToCancelId = null;
@@ -755,6 +736,31 @@ const originalAddCurrentToCart = window.addCurrentToCart;
 window.addCurrentToCart = (e) => {
     originalAddCurrentToCart(e); const cartIcon = document.getElementById('float-btn-view');
     if(cartIcon) { cartIcon.classList.remove('bounce-pop'); void cartIcon.offsetWidth; cartIcon.classList.add('bounce-pop'); }
+};
+
+// ==========================================
+// 👨‍🍳 CHEF NOTE LOGIC
+// ==========================================
+window.openChefNotePrompt = () => {
+    if (!window.currentDish) return;
+    document.getElementById('tempChefNote').value = ''; 
+    document.getElementById('chefNoteModal').classList.add('show');
+    if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+};
+
+window.closeChefNotePrompt = () => {
+    document.getElementById('chefNoteModal').classList.remove('show');
+};
+
+window.saveChefNote = () => {
+    const note = document.getElementById('tempChefNote').value.trim();
+    if (note) {
+        const mainNoteInput = document.getElementById('cookingNotes');
+        // Cart wale main text area me dish name ke sath note append kar denge
+        mainNoteInput.value += (mainNoteInput.value ? ' | ' : '') + window.currentDish.name + ': ' + note;
+        window.showToast("Note Added! 👨‍🍳");
+    }
+    window.closeChefNotePrompt();
 };
 
 async function loadDynamicMenu() {
