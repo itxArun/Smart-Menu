@@ -800,12 +800,24 @@ window.saveChefNote = () => {
 async function loadDynamicMenu() {
     try {
         console.log("⏳ Fetching data from Database...");
+        // Pehle hi smart greeting chalu kar do
+        if(typeof window.updateSmartGreeting === 'function') window.updateSmartGreeting();
+
         const restaurant = await APIService.getRestaurant();
         const categories = await APIService.getCategories();
         const dishes = await APIService.getDishes();
 
         if (!restaurant) { console.error("❌ Restaurant not found! Default ID use ho rahi hai."); return; }
         document.title = `${restaurant.name} - Smart Menu`;
+
+        // 🍔 1. Loader me Hotel ka asli naam dikhao aur Cache me Save karo
+        const loaderBrand = document.getElementById('loader-brand-name');
+        const loaderTagline = document.getElementById('loader-tagline');
+        if (loaderBrand && restaurant.name) {
+            loaderBrand.innerText = restaurant.name;
+            if (loaderTagline) loaderTagline.innerText = "Setting up your digital table...";
+            localStorage.setItem('crave_hotel_name_cache', restaurant.name);
+        }
 
         // 🔥 BULLETPROOF SAAS NAME REPLACER 🔥
         if (restaurant.name !== "Smart Menu") {
