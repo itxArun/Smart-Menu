@@ -16,15 +16,14 @@
 }
 
 /* ==========================================
-/* ==========================================
-   🌙 DARK MODE THEME FIX (100% HIGH CONTRAST)
+   🌙 DARK MODE THEME FIX (100% BULLETPROOF)
    ========================================== */
 body.dark-mode {
     --bg-light: #121212;
     --white: #1C1C1E;
     --text-main: #F5F5F5;
     --text-sub: #A0A0A0;
-    --border-light: rgba(255, 255, 255, 0.1);
+    --border-light: rgba(255, 255, 255, 0.12);
     --glass-bg: rgba(28, 28, 30, 0.85);
     --shadow-soft: 0 8px 24px rgba(0,0,0,0.4);
 }
@@ -33,18 +32,54 @@ body.dark-mode .bottom-ui { background: var(--white); box-shadow: 0 -10px 20px r
 body.dark-mode .cart-content { background: var(--white); box-shadow: 0 -10px 40px rgba(0,0,0,0.4); }
 body.dark-mode .swipe-content { background: var(--white); border-color: var(--border-light); }
 body.dark-mode .swipe-wrap { background: #2A2A2C; }
-body.dark-mode .bill-details { background: #2A2A2C; border-color: rgba(255,255,255,0.05); }
-body.dark-mode .input-field { background: #2A2A2C; color: #FFF; border-color: rgba(255,255,255,0.1); }
+body.dark-mode .bill-details { background: #2A2A2C; border-color: rgba(255,255,255,0.08); }
+body.dark-mode .input-field { background: #2A2A2C; color: #FFF; border-color: rgba(255,255,255,0.15); }
 body.dark-mode .skeleton { background: linear-gradient(90deg, #2c2c2e 25%, #3a3a3c 50%, #2c2c2e 75%); }
-body.dark-mode .btn-chef-note { background: #2A2A2C; color: #FFF; border-color: rgba(255,255,255,0.1); }
+body.dark-mode .btn-chef-note { background: #2A2A2C; color: #FFF; border-color: rgba(255,255,255,0.15); }
 body.dark-mode .track-icon { background: rgba(255, 159, 0, 0.15); }
-body.dark-mode .alert-box { background: var(--white); }
+body.dark-mode .alert-box { background: var(--white); border: 1px solid var(--border-light); }
 body.dark-mode .tracker-tabs { background: #2A2A2C; border-color: rgba(255,255,255,0.1); }
 body.dark-mode .tracker-tab-btn.active { background: #1C1C1E; color: var(--primary); }
 body.dark-mode .lang-switch { background: #2A2A2C; border-color: rgba(255,255,255,0.1); }
 
+/* 🔥 KILLER FIX: Override Inline #fff for Live/Past Orders & Cards in Dark Mode 🔥 */
+body.dark-mode #live-orders-container > div,
+body.dark-mode #past-orders-container > div {
+    background: #2A2A2C !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode #live-orders-container > div *,
+body.dark-mode #past-orders-container > div * {
+    color: inherit;
+}
+
+body.dark-mode #live-orders-container > div .step-text,
+body.dark-mode #past-orders-container > div .step-text {
+    color: #A0A0A0 !important;
+}
+
+body.dark-mode #live-orders-container > div .tracker-step.active .step-text,
+body.dark-mode #past-orders-container > div .tracker-step.active .step-text {
+    color: var(--warning) !important;
+}
+
+body.dark-mode #live-orders-container > div .tracker-step.done .step-text,
+body.dark-mode #past-orders-container > div .tracker-step.done .step-text {
+    color: var(--green) !important;
+}
+
+body.dark-mode #live-orders-container > div .step-icon,
+body.dark-mode #past-orders-container > div .step-icon {
+    background: #3A3A3C !important;
+    color: #FFFFFF !important;
+}
+
 /* 🔥 ALL BUTTON CONTRAST FIX IN DARK MODE (Close, Language, Sun Icon, Cancel) 🔥 */
 body.dark-mode .btn-cancel,
+body.dark-mode .btn-close,
 body.dark-mode button[onclick="closeSettingsModal()"],
 body.dark-mode button[onclick="toggleDarkMode()"],
 body.dark-mode .lang-btn:not(.active),
@@ -57,7 +92,6 @@ body.dark-mode .tracker-tab-btn:not(.active) {
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
-/* ☀️ Dark Mode Sun Icon ko mast Glowing Yellow banayega */
 body.dark-mode #theme-icon {
     color: #FF9F00 !important;
 }
@@ -161,7 +195,6 @@ h1, h2, h3, h4, h5 {
     color: var(--danger); 
 }
 
-/* 🔥 FIXED PULSE (Ab katega nahi) 🔥 */
 .track-pulse { 
     position: absolute; 
     top: -3px; 
@@ -797,7 +830,7 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
    ========================================== */
 .smart-order-btn {
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    max-width: 140px; /* 🔥 FIX: Space increased */
+    max-width: 140px;
     white-space: nowrap;
     padding: 6px 14px;
     border-radius: 50px;
@@ -805,7 +838,7 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
     align-items: center;
     justify-content: center;
     border: 1px solid rgba(255, 159, 0, 0.2);
-    overflow: visible !important; /* 🔥 FIX: Red dot pulse ab nahi katega */
+    overflow: visible !important;
 }
 
 .smart-order-btn.expand {
