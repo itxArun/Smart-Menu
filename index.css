@@ -15,6 +15,33 @@
     --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* ==========================================
+   🌙 DARK MODE THEME FIX
+   ========================================== */
+body.dark-mode {
+    --bg-light: #121212;
+    --white: #1C1C1E;
+    --text-main: #F5F5F5;
+    --text-sub: #A0A0A0;
+    --border-light: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(28, 28, 30, 0.85);
+    --shadow-soft: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+body.dark-mode .bottom-ui { background: var(--white); box-shadow: 0 -10px 20px rgba(0,0,0,0.4); }
+body.dark-mode .cart-content { background: var(--white); box-shadow: 0 -10px 40px rgba(0,0,0,0.4); }
+body.dark-mode .swipe-content { background: var(--white); border-color: var(--border-light); }
+body.dark-mode .swipe-wrap { background: #2A2A2C; }
+body.dark-mode .bill-details { background: #2A2A2C; border-color: rgba(255,255,255,0.05); }
+body.dark-mode .input-field { background: #2A2A2C; color: #FFF; border-color: rgba(255,255,255,0.1); }
+body.dark-mode .skeleton { background: linear-gradient(90deg, #2c2c2e 25%, #3a3a3c 50%, #2c2c2e 75%); }
+body.dark-mode .btn-chef-note { background: #2A2A2C; color: #FFF; border-color: rgba(255,255,255,0.1); }
+body.dark-mode .track-icon { background: rgba(255, 159, 0, 0.15); }
+body.dark-mode .alert-box { background: var(--white); }
+
+/* ==========================================
+   CORE CSS
+   ========================================== */
 body { 
     margin: 0; 
     padding: 0; 
@@ -26,6 +53,7 @@ body {
     flex-direction: column; 
     overflow: hidden; 
     -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s; /* Smooth Dark mode transition */
 }
 
 h1, h2, h3, h4, h5 { 
@@ -110,16 +138,17 @@ h1, h2, h3, h4, h5 {
     color: var(--danger); 
 }
 
+/* 🔥 FIXED PULSE (Ab katega nahi) 🔥 */
 .track-pulse { 
     position: absolute; 
-    top: -2px; 
-    right: -2px; 
+    top: -3px; 
+    right: -3px; 
     background: var(--warning); 
-    width: 10px; 
-    height: 10px; 
+    width: 12px; 
+    height: 12px; 
     border-radius: 50%; 
     animation: pulse-orange 1.5s infinite; 
-    border: 2px solid var(--white);
+    border: 2px solid var(--bg-light);
 }
 
 @keyframes pulse-orange { 
@@ -460,20 +489,20 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 .var-btn { flex: 1; padding: 8px 0; border: none; background: transparent; font-size: 12px; font-weight: 600; color: var(--text-sub); border-radius: 50px; cursor: pointer; }
 .var-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 700; border: 1px solid rgba(0,0,0,0.02);}
 
-/* MAGIC SLIDE EFFECT FOR ADD/STEPPER (COMPACT FIX) */
+/* MAGIC SLIDE EFFECT FOR ADD/STEPPER */
 .action-row { 
     display: flex; 
     gap: 10px; 
     width: 100%; 
     height: 48px; 
     align-items: flex-end; 
-    justify-content: flex-end; /* Right side shift */
+    justify-content: flex-end; 
     margin-top: 10px;
 }
 
 .add-action-wrapper { 
     position: relative; 
-    width: 130px; /* Sirf 130px width lega, poora screen nahi */
+    width: 130px; 
     height: 44px; 
     overflow: hidden; 
     border-radius: 12px; 
@@ -743,14 +772,20 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
    🔮 SMART DYNAMIC ORDERS BUTTON (HEADER)
    ========================================== */
 .smart-order-btn {
-    transition: max-width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s, color 0.4s, padding 0.4s;
-    max-width: 85px; 
-    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 120px; /* 🔥 FIX: Pehle ye 85px tha isliye button kat raha tha */
     white-space: nowrap;
+    padding: 6px 14px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 159, 0, 0.2);
+    /* 🔥 FIX: overflow: hidden hata diya gaya hai taaki red dot na kate */
 }
 
 .smart-order-btn.expand {
-    max-width: 200px; 
+    max-width: 250px; 
     background: var(--warning) !important;
     color: var(--white) !important;
     border-color: var(--warning) !important;
@@ -759,7 +794,7 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 }
 
 .smart-order-btn.expand-green {
-    max-width: 200px; 
+    max-width: 250px; 
     background: var(--green) !important;
     color: var(--white) !important;
     border-color: var(--green) !important;
@@ -768,7 +803,7 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 }
 
 .smart-order-btn.expand-blue {
-    max-width: 200px; 
+    max-width: 250px; 
     background: #3B82F6 !important;
     color: var(--white) !important;
     border-color: #3B82F6 !important;
