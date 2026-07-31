@@ -22,6 +22,40 @@ const urlParams = new URLSearchParams(window.location.search);
 const scannedRestaurantId = urlParams.get('rest');
 window.currentRestaurantId = scannedRestaurantId ? scannedRestaurantId : 'rest_001';
 console.log("Customer is viewing Menu for Hotel ID: ", window.currentRestaurantId);
+// 🚀 INSTANT CACHE LOADER (0ms Hotel Name Display)
+const cachedHotelName = localStorage.getItem('crave_hotel_name_cache');
+if (cachedHotelName) {
+    const loaderBrand = document.getElementById('loader-brand-name');
+    if (loaderBrand) loaderBrand.innerText = cachedHotelName;
+}
+// ==========================================
+// ⏰ SMART TIME-BASED GREETING ENGINE
+// ==========================================
+window.updateSmartGreeting = () => {
+    const greetingEl = document.getElementById('greeting-display');
+    if (!greetingEl) return;
+
+    const hour = new Date().getHours();
+    let greetingText = "";
+    let iconClass = "";
+
+    if (hour >= 5 && hour < 12) {
+        greetingText = "Good Morning • Coffee & Breakfast";
+        iconClass = "ph-coffee";
+    } else if (hour >= 12 && hour < 17) {
+        greetingText = "Good Afternoon • Delicious Cravings";
+        iconClass = "ph-sun";
+    } else if (hour >= 17 && hour < 22) {
+        greetingText = "Good Evening • Chef's Special Dining";
+        iconClass = "ph-bowl-food";
+    } else {
+        greetingText = "Late Night • Midnight Munchies";
+        iconClass = "ph-moon-stars";
+    }
+
+    greetingEl.innerHTML = `${greetingText} <i class="ph-fill ${iconClass}" style="color: var(--warning); margin-left: 2px;"></i>`;
+};
+
 
 window.allDishes = [];
 window.currentDish = null;
