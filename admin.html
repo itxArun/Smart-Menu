@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NextPlate - Premium Merchant Dashboard</title>
+    <title>Partner POS - Premium Merchant Dashboard</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -15,12 +15,12 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     
-    <link rel="stylesheet" href="admin.css?v=7">
+    <link rel="stylesheet" href="admin.css?v=8">
     
-    <!-- 🔥 SAAS PREMIUM ANIMATIONS 🔥 -->
+    <!-- 🔥 SAAS PREMIUM ANIMATIONS & POS STYLES 🔥 -->
     <style>
         .premium-hover { transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .premium-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(229, 57, 53, 0.15); border-color: rgba(229, 57, 53, 0.3); z-index: 10;}
+        .premium-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(229, 57, 53, 0.15); border-color: rgba(229, 57, 53, 0.3); z-index: 10; }
         
         .skeleton { background: linear-gradient(90deg, var(--input-bg) 25%, var(--bg-card) 50%, var(--input-bg) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 8px; color: transparent !important; pointer-events: none; user-select: none; }
         .skeleton * { visibility: hidden; }
@@ -30,7 +30,52 @@
         .mini-stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
         .mini-stat-title { font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
         .mini-stat-val { font-size: 20px; font-weight: 800; color: var(--text-main); }
+
+        /* ✨ 3-TAB PIPELINE BADGES & CEO HEADER */
+        .tab-badge {
+            background: rgba(229, 57, 53, 0.15);
+            color: var(--danger, #E53935);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+            margin-left: 6px;
+        }
+        .admin-tab-btn.active .tab-badge {
+            background: white;
+            color: var(--danger, #E53935);
+        }
+        .pulse-header-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--bg-main);
+            border-bottom: 1px solid var(--border);
+        }
+        .pulse-stat-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+        }
+        .pulse-stat-label { font-size: 10px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .pulse-stat-value { font-size: 18px; font-weight: 800; color: var(--text-main); }
     </style>
+
+    <!-- 🚀 0ms DYNAMIC BRAND INJECTOR (ZERO FLASH) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cachedHotelName = localStorage.getItem('crave_hotel_name_cache');
+            if (cachedHotelName) {
+                const loginTitleEl = document.getElementById('login-brand-title');
+                const loginSubEl = document.getElementById('login-subtitle');
+                if (loginTitleEl) loginTitleEl.innerText = cachedHotelName;
+                if (loginSubEl) loginSubEl.innerText = "Partner POS Dashboard • Live Orders & Kitchen";
+            }
+        });
+    </script>
 </head>
 <body>
     
@@ -49,23 +94,27 @@
         </div>
     </div>
 
-    <!-- 🔐 PREMIUM LOGIN SCREEN -->
+    <!-- 🔐 ROYAL UNIVERSAL POS LOGIN SCREEN (ZERO BRAND CLUTTER) -->
     <div id="loginScreen" class="premium-login-overlay">
         <div class="premium-login-card">
             <div class="login-logo-box">
                 <i class="ph-bold ph-lock-key"></i>
             </div>
-            <h2 class="login-title">NextPlate Admin</h2>
-            <p class="login-subtitle">Welcome back! Please login to your dashboard.</p>
+            
+            <span style="font-size: 11px; font-weight: 800; color: var(--danger, #E53935); letter-spacing: 1px; display: block; margin-bottom: 8px;">• SECURE POS PORTAL</span>
+            
+            <h2 id="login-brand-title" class="login-title">Partner POS</h2>
+            <p id="login-subtitle" class="login-subtitle">Sign in to manage live orders, kitchen & tables</p>
             
             <div class="input-group">
-                <input type="email" id="adminEmail" placeholder="Email Address">
+                <input type="email" id="adminEmail" placeholder="Merchant Email Address" required>
                 <i class="ph-fill ph-envelope input-icon"></i>
             </div>
             
             <div class="input-group">
-                <input type="password" id="adminPass" placeholder="Password">
-                <i class="ph-fill ph-lock-key input-icon"></i>
+                <input type="password" id="adminPass" placeholder="Password" required>
+                <!-- 👁️ SHOW/HIDE PASSWORD TOGGLE -->
+                <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer; pointer-events: auto;"></i>
             </div>
             
             <button id="loginBtn" class="premium-login-btn" onclick="loginAdmin()">
@@ -73,15 +122,15 @@
             </button>
             
             <div class="login-footer">
-                Powered by <strong>Arun</strong> 
+                Powered by <strong>Arun</strong> • Enterprise POS
             </div>
         </div>
     </div>
 
     <div class="top-nav">
         <div style="display: flex; flex-direction: column;">
-            <h1 class="brand-logo" id="qr-brand-name"></h1>
-            <span class="greet-text">Welcome back, Admin 👋</span>
+            <h1 class="brand-logo" id="qr-brand-name">Partner POS</h1>
+            <span class="greet-text">Welcome back, Manager 👋</span>
         </div>
         <div class="admin-profile">
             <button id="soundAuthBtn" class="btn-sound-auth" onclick="enableAudioContext()">
@@ -126,13 +175,13 @@
                 </div>
             </div>
 
+            <!-- 🍔 MENU MANAGEMENT SECTION -->
             <div class="section-card view-section active" id="section-menu">
                 <div class="section-header">
                     <h3><i class="ph-fill ph-book-open text-primary"></i> Menu Management</h3>
                     <button class="btn-add" onclick="openModal()"><i class="ph-bold ph-plus"></i> Add Dish</button>
                 </div>
                 
-                <!-- 🔥 SEARCH BOX FIX 🔥 -->
                 <div class="search-container">
                     <div class="search-input-wrapper" style="position: relative; width: 100%;">
                         <input type="text" class="search-input" id="adminSearchInput" placeholder="Search dishes..." onkeyup="filterAdminMenu()" style="width: 100%; box-sizing: border-box; padding-right: 45px;">
@@ -155,9 +204,26 @@
                 </div>
             </div>
 
+            <!-- 🚨 KITCHEN ORDERS SECTION (3-TAB STRICT PIPELINE + PULSE HEADER) -->
             <div class="section-card view-section" id="section-orders">
                 <div class="section-header">
                     <h3><i class="ph-fill ph-receipt text-primary"></i> Kitchen Orders</h3>
+                </div>
+
+                <!-- 🏆 TOP BUSINESS PULSE BAR (CEO EYE-TEST) -->
+                <div class="pulse-header-bar">
+                    <div class="pulse-stat-box">
+                        <span class="pulse-stat-label">💰 Today's Sale</span>
+                        <span class="pulse-stat-value" id="pulse-today-sale" style="color: var(--success);">₹0</span>
+                    </div>
+                    <div class="pulse-stat-box">
+                        <span class="pulse-stat-label">📦 Total Orders</span>
+                        <span class="pulse-stat-value" id="pulse-total-orders">0</span>
+                    </div>
+                    <div class="pulse-stat-box">
+                        <span class="pulse-stat-label">🔥 Kitchen Active</span>
+                        <span class="pulse-stat-value" id="pulse-kitchen-active" style="color: var(--warning);">0</span>
+                    </div>
                 </div>
 
                 <div id="action-center-container" style="padding: 20px 20px 0 20px; display: none; background: var(--bg-main); border-bottom: 1px solid var(--border);">
@@ -165,20 +231,36 @@
                     <div id="action-alerts-list"></div>
                 </div>
 
+                <!-- 🚀 STRICT 3-TAB PIPELINE NAVIGATION -->
                 <div class="admin-tracker-tabs">
-                    <button id="tab-admin-live" class="admin-tab-btn active" onclick="switchAdminOrderTab('live')">Live Orders</button>
-                    <button id="tab-admin-past" class="admin-tab-btn" onclick="switchAdminOrderTab('past')">Order History</button>
+                    <button id="tab-admin-new" class="admin-tab-btn active" onclick="switchAdminOrderTab('new')">
+                        🚨 New <span id="badge-new-count" class="tab-badge">0</span>
+                    </button>
+                    <button id="tab-admin-active" class="admin-tab-btn" onclick="switchAdminOrderTab('active')">
+                        🔥 Kitchen <span id="badge-active-count" class="tab-badge">0</span>
+                    </button>
+                    <button id="tab-admin-past" class="admin-tab-btn" onclick="switchAdminOrderTab('past')">
+                        📁 History <span id="badge-past-count" class="tab-badge">0</span>
+                    </button>
                 </div>
 
-                <div class="menu-list" id="admin-live-orders">
-                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for new orders...</div>
+                <!-- TAB 1: NEW ORDERS (Top Priority Incoming Alarm) -->
+                <div class="menu-list" id="admin-new-orders">
+                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for new incoming orders...</div>
+                </div>
+
+                <!-- TAB 2: ACTIVE KITCHEN (Cooking & Ready) -->
+                <div class="menu-list" id="admin-active-orders" style="display: none;">
+                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No active orders in the kitchen.</div>
                 </div>
                 
+                <!-- TAB 3: ORDER HISTORY (Served & Cancelled) -->
                 <div class="menu-list" id="admin-past-orders" style="display: none;">
                     <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No past orders for today.</div>
                 </div>
             </div>
 
+            <!-- 💬 WHATSAPP CRM SECTION -->
             <div class="section-card view-section" id="section-crm">
                 <div class="section-header">
                     <h3><i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i> WhatsApp CRM</h3>
@@ -401,46 +483,47 @@
         </div>
     </div>
 
-    <script type="module" src="admin.js?v=7"></script>
-<!-- 🚀 PREMIUM QR STANDEE (HIDDEN FOR EXPORT) -->
-<div id="premium-qr-export" style="position: absolute; left: -9999px; top: 0; width: 800px; background: #ffffff; font-family: 'Arial', sans-serif; overflow: hidden; border: 2px solid #fff;">
-    <!-- Header -->
-    <div style="background: linear-gradient(135deg, #8B0000, #B30000); color: white; text-align: center; padding: 50px 20px; border-bottom: 15px solid #D4AF37; border-bottom-left-radius: 50%; border-bottom-right-radius: 50%;">
-        <h1 id="export-brand-name" style="font-size: 60px; margin: 0; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">FoodStation</h1>
-        <p style="font-size: 18px; margin-top: 15px; color: #f9d877; font-weight: bold; letter-spacing: 2px;">SMART MENU • FAST SERVICE • HAPPY YOU</p>
-    </div>
+    <script type="module" src="admin.js?v=8"></script>
     
-    <!-- Title -->
-    <div style="text-align: center; font-size: 45px; font-weight: 900; color: #8B0000; margin-top: 50px;">SCAN TO VIEW<br>MENU & ORDER</div>
-    
-    <!-- Dynamic QR Box -->
-    <div style="text-align: center; margin: 40px auto;">
-        <div id="export-qr-box" style="border: 8px solid #8B0000; border-radius: 35px; padding: 25px; display: inline-block; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-            <!-- QR aayega yahan -->
+    <!-- 🚀 PREMIUM QR STANDEE (HIDDEN FOR EXPORT) -->
+    <div id="premium-qr-export" style="position: absolute; left: -9999px; top: 0; width: 800px; background: #ffffff; font-family: 'Arial', sans-serif; overflow: hidden; border: 2px solid #fff;">
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #8B0000, #B30000); color: white; text-align: center; padding: 50px 20px; border-bottom: 15px solid #D4AF37; border-bottom-left-radius: 50%; border-bottom-right-radius: 50%;">
+            <h1 id="export-brand-name" style="font-size: 60px; margin: 0; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">FoodStation</h1>
+            <p style="font-size: 18px; margin-top: 15px; color: #f9d877; font-weight: bold; letter-spacing: 2px;">SMART MENU • FAST SERVICE • HAPPY YOU</p>
+        </div>
+        
+        <!-- Title -->
+        <div style="text-align: center; font-size: 45px; font-weight: 900; color: #8B0000; margin-top: 50px;">SCAN TO VIEW<br>MENU & ORDER</div>
+        
+        <!-- Dynamic QR Box -->
+        <div style="text-align: center; margin: 40px auto;">
+            <div id="export-qr-box" style="border: 8px solid #8B0000; border-radius: 35px; padding: 25px; display: inline-block; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                <!-- QR aayega yahan -->
+            </div>
+        </div>
+        
+        <!-- Badges / Ribbons -->
+        <div style="display: flex; justify-content: space-around; margin-top: 30px; padding: 0 40px;">
+            <div style="width: 45%;">
+                <div style="background: #8B0000; color: white; padding: 15px 20px; font-weight: bold; font-size: 20px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid #D4AF37; box-shadow: 2px 4px 10px rgba(0,0,0,0.2);">📱 DIGITAL MENU</div>
+                <div style="background: #8B0000; color: white; padding: 15px 20px; font-weight: bold; font-size: 20px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid #D4AF37; box-shadow: 2px 4px 10px rgba(0,0,0,0.2);">🍽️ EASY ORDERING</div>
+            </div>
+            <div style="width: 45%;">
+                <div style="background: #8B0000; color: white; padding: 15px 20px; font-weight: bold; font-size: 20px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid #D4AF37; box-shadow: 2px 4px 10px rgba(0,0,0,0.2);">⚡ FAST SERVICE</div>
+                <div style="background: #8B0000; color: white; padding: 15px 20px; font-weight: bold; font-size: 20px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid #D4AF37; box-shadow: 2px 4px 10px rgba(0,0,0,0.2);">🛡️ CONTACTLESS</div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="background: #f4f4f4; border-top: 5px solid #8B0000; padding: 30px; text-align: center; margin-top: 40px;">
+            <div style="font-size: 35px; color: #8B0000; font-family: cursive, sans-serif; font-weight: bold; margin-bottom: 20px;">Thank You - Enjoy Your Meal</div>
+            <div style="display: flex; justify-content: space-around; padding: 0 20px;">
+                <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">1</div><br>OPEN CAMERA</div>
+                <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">2</div><br>SCAN QR CODE</div>
+                <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">3</div><br>ORDER & PAY</div>
+            </div>
         </div>
     </div>
-    
-    <!-- Badges / Ribbons -->
-    <div style="display: flex; justify-content: space-around; margin-top: 30px; padding: 0 40px;">
-        <div style="width: 45%;">
-            <div style="background: #8B0000; color: white; padding: 15px 20px; font-weight: bold; font-size: 20px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid #D4AF37; box-shadow: 2px 4px 10px rgba(0,0,0,0.2);">📱 DIGITAL MENU</div>
-            <div style="background: #8B0000; color: white; padding: 15px 20px; font-weight: bold; font-size: 20px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid #D4AF37; box-shadow: 2px 4px 10px rgba(0,0,0,0.2);">🍽️ EASY ORDERING</div>
-        </div>
-        <div style="width: 45%;">
-            <div style="background: #8B0000; color: white; padding: 15px 20px; font-weight: bold; font-size: 20px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid #D4AF37; box-shadow: 2px 4px 10px rgba(0,0,0,0.2);">⚡ FAST SERVICE</div>
-            <div style="background: #8B0000; color: white; padding: 15px 20px; font-weight: bold; font-size: 20px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid #D4AF37; box-shadow: 2px 4px 10px rgba(0,0,0,0.2);">🛡️ CONTACTLESS</div>
-        </div>
-    </div>
-    
-    <!-- Footer -->
-    <div style="background: #f4f4f4; border-top: 5px solid #8B0000; padding: 30px; text-align: center; margin-top: 40px;">
-        <div style="font-size: 35px; color: #8B0000; font-family: cursive, sans-serif; font-weight: bold; margin-bottom: 20px;">Thank You - Enjoy Your Meal</div>
-        <div style="display: flex; justify-content: space-around; padding: 0 20px;">
-            <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">1</div><br>OPEN CAMERA</div>
-            <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">2</div><br>SCAN QR CODE</div>
-            <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">3</div><br>ORDER & PAY</div>
-        </div>
-    </div>
-</div>
 </body>
 </html>
