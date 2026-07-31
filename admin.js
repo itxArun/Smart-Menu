@@ -1,6 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-// 🔥 ADDED getDocs FOR DYNAMIC LOGIN 🔥
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 // 🔥 FIREBASE CONFIGURATION 🔥
@@ -17,10 +16,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ❌ Purani fixed ID hata di hai. Ab ID login ke baad automatically set hogi!
 window.currentRestaurantId = null; 
 
-// 🛡️ SAFE UI INIT 
 if(typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
     Chart.register(ChartDataLabels);
 }
@@ -28,7 +25,7 @@ const dateInput = document.getElementById('reportDate');
 if(dateInput) dateInput.valueAsDate = new Date();
 
 // ==========================================
-// 🔐 AUTHENTICATION & DYNAMIC SAAS LOGIN LOGIC
+// 🔐 AUTHENTICATION & ZERO AUTH FLASH LOGIC
 // ==========================================
 window.loginAdmin = () => {
     const email = document.getElementById('adminEmail').value.trim();
@@ -54,11 +51,24 @@ window.loginAdmin = () => {
     });
 };
 
-// 100% GUARANTEED CLICK & ENTER KEY LOGIC
+// 👁️ PASSWORD SHOW/HIDE TOGGLE
+window.togglePasswordVisibility = () => {
+    const passInput = document.getElementById('adminPass');
+    const eyeIcon = document.getElementById('togglePassEye');
+    if (passInput && eyeIcon) {
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            eyeIcon.classList.replace('ph-eye', 'ph-eye-slash');
+        } else {
+            passInput.type = 'password';
+            eyeIcon.classList.replace('ph-eye-slash', 'ph-eye');
+        }
+    }
+};
+
 const loginBtn = document.getElementById('loginBtn');
-if(loginBtn) {
-    loginBtn.onclick = window.loginAdmin;
-}
+if(loginBtn) loginBtn.onclick = window.loginAdmin;
+
 const passInput = document.getElementById('adminPass');
 if(passInput) {
     passInput.addEventListener('keypress', function (e) {
@@ -66,12 +76,11 @@ if(passInput) {
     });
 }
 
-// 🚀 ASLI SAAS JADOO: FETCH MERCHANT DATA ON LOGIN 🚀
+// 🚀 FETCH MERCHANT DATA ON LOGIN (NO BRAND FLASH)
 onAuthStateChanged(auth, async (user) => {
     const loginScreen = document.getElementById('loginScreen');
     if (user) { 
         try {
-            // Firebase se check karo ki ye email kis hotel ka hai
             const q = query(collection(db, "merchants"), where("email", "==", user.email));
             const querySnapshot = await getDocs(q);
             
@@ -79,11 +88,11 @@ onAuthStateChanged(auth, async (user) => {
                 const merchantData = querySnapshot.docs[0].data();
                 window.currentRestaurantId = merchantData.restaurantId; 
                 
-                // 🔥 Dashboard par Hotel ka naam dynamic kar diya 🔥
                 const brandLogo = document.querySelector('.brand-logo');
-                if(brandLogo) brandLogo.innerText = merchantData.restaurantName || "NextPlate";
+                if(brandLogo) brandLogo.innerText = merchantData.restaurantName || "Partner POS";
+                
+                localStorage.setItem('crave_hotel_name_cache', merchantData.restaurantName || "Partner POS");
             } else {
-                // Agar Firebase me entry nahi mili, toh default chalega
                 window.currentRestaurantId = 'rest_001';
             }
 
@@ -92,7 +101,7 @@ onAuthStateChanged(auth, async (user) => {
 
         } catch (error) {
             console.error("Error fetching merchant data:", error);
-            window.currentRestaurantId = 'rest_001'; // Fallback
+            window.currentRestaurantId = 'rest_001'; 
             if(loginScreen) loginScreen.style.display = 'none'; 
             if(typeof window.initAdminData === 'function') window.initAdminData();
         }
@@ -127,7 +136,7 @@ window.executeLogout = () => {
 };
 
 // ==========================================
-// 🔊 SOUND & UTILS
+// 🔊 SOUND & UTILS (ELAPSED STOPWATCH)
 // ==========================================
 let soundActivated = false;
 window.enableAudioContext = () => {
@@ -144,6 +153,7 @@ window.enableAudioContext = () => {
     }
 };
 
+// ⏱️ 1-MINUTE ELAPSED STOPWATCH UPDATE
 setInterval(() => {
     document.querySelectorAll('.time-ago-tracker').forEach(el => {
         const orderTime = parseInt(el.getAttribute('data-time'));
@@ -152,7 +162,7 @@ setInterval(() => {
         let color = 'var(--success)';
         if(diffMins >= 15 && diffMins < 30) color = 'var(--warning)';
         else if(diffMins >= 30) color = 'var(--danger)';
-        el.innerText = `(${text})`;
+        el.innerText = `⏱️ ${text}`;
         el.style.color = color;
     });
 }, 60000);
@@ -230,7 +240,7 @@ window.sendPromoWhatsApp = (phone) => {
 };
 
 // ==========================================
-// 🍔 MENU & INVENTORY & SAAS DATA
+// 🍔 MENU & INVENTORY & 3-TAB PIPELINE DATA
 // ==========================================
 let allMenuData = [];
 let isInitialLoad = true;
@@ -240,7 +250,7 @@ window.initAdminData = function() {
     const reportDateEl = document.getElementById('reportDate');
     const selectedDate = reportDateEl ? reportDateEl.value : new Date().toISOString().split('T')[0];
 
-    // 🛡️ 1. BOUNCER FOR MENU ITEMS
+    // 1. BOUNCER FOR MENU ITEMS
     const qMenu = query(collection(db, "menu_items"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qMenu, (snap) => {
         const totalDishes = document.getElementById('total-dishes');
@@ -251,7 +261,7 @@ window.initAdminData = function() {
         window.filterAdminMenu(); 
     });
 
-    // 🛡️ 2. BOUNCER FOR WAITER CALLS
+    // 2. BOUNCER FOR WAITER CALLS
     const qWaiter = query(collection(db, "waiter_calls"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qWaiter, (waiterSnap) => {
         const actionContainer = document.getElementById('action-center-container');
@@ -280,22 +290,22 @@ window.initAdminData = function() {
         actionContainer.style.display = hasActions ? 'block' : 'none';
     });
 
-    // 🛡️ 3. BOUNCER FOR ORDERS, CRM & SAAS ANALYTICS
+    // 3. 🚨 3-TAB PIPELINE ORDERS BOUNCER & SAAS ANALYTICS
     const qLive = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qLive, (snap) => {
-        const liveList = document.getElementById('admin-live-orders');
+        const newList = document.getElementById('admin-new-orders');
+        const activeList = document.getElementById('admin-active-orders');
         const pastList = document.getElementById('admin-past-orders');
-        if(!liveList || !pastList) return;
+        if(!newList || !activeList || !pastList) return;
 
-        liveList.innerHTML = ''; pastList.innerHTML = '';
+        newList.innerHTML = ''; activeList.innerHTML = ''; pastList.innerHTML = '';
         
-        let activeCount = 0; let totalRev = 0;
-        let crmCustomers = new Map(); 
+        let newCount = 0; let kitchenCount = 0; let pastCount = 0;
+        let totalRev = 0; let crmCustomers = new Map(); 
         window.allCompletedOrdersForChart = []; 
 
         let saasPending = 0; let saasPreparing = 0; let saasServed = 0; let saasCancelled = 0;
-        let revWeek = 0; let revMonth = 0;
-        let dishCount = {}; 
+        let revWeek = 0; let revMonth = 0; let dishCount = {}; 
 
         let allOrders = [];
         snap.forEach((doc) => {
@@ -304,12 +314,9 @@ window.initAdminData = function() {
             allOrders.push(d);
         });
 
-        allOrders.sort((a, b) => {
-            let timeA = a.timestamp ? a.timestamp.toDate().getTime() : 0;
-            let timeB = b.timestamp ? b.timestamp.toDate().getTime() : 0;
-            return timeA - timeB;
-        });
-
+        // 📌 SORTING RULES:
+        // New & Past = Newest on Top (b - a)
+        // Kitchen Active = Oldest on Top (a - b)
         allOrders.forEach((data) => {
             const date = data.timestamp ? data.timestamp.toDate() : new Date();
             const todayDate = new Date();
@@ -329,15 +336,13 @@ window.initAdminData = function() {
             if (isToday) {
                 if (data.status === 'New') saasPending++;
                 if (data.status === 'Preparing') saasPreparing++;
-                if (data.status === 'Completed') saasServed++;
+                if (data.status === 'Completed' || data.status === 'Served') saasServed++;
                 if (data.status === 'Cancelled') saasCancelled++;
             }
 
-            if(data.status === 'Completed') {
+            if(data.status === 'Completed' || data.status === 'Served') {
                 window.allCompletedOrdersForChart.unshift(data); 
-                if(orderDateStr === selectedDate) {
-                    totalRev += data.totalAmount;
-                }
+                if(orderDateStr === selectedDate) totalRev += data.totalAmount;
                 
                 const diffTime = Math.abs(todayDate - date);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
@@ -345,15 +350,12 @@ window.initAdminData = function() {
                 if (date.getMonth() === todayDate.getMonth() && date.getFullYear() === todayDate.getFullYear()) {
                     revMonth += data.totalAmount;
                 }
-                
                 if(data.items) {
-                    data.items.forEach(item => {
-                        dishCount[item.name] = (dishCount[item.name] || 0) + item.qty;
-                    });
+                    data.items.forEach(item => { dishCount[item.name] = (dishCount[item.name] || 0) + item.qty; });
                 }
             }
 
-            if(orderDateStr === selectedDate || data.status === 'New' || data.status === 'Preparing') {
+            if(orderDateStr === selectedDate || data.status === 'New' || data.status === 'Accepted' || data.status === 'Preparing' || data.status === 'Ready') {
                 let itemsHTML = '';
                 data.items.forEach(item => {
                     itemsHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid var(--border); padding-bottom:6px;">
@@ -368,54 +370,54 @@ window.initAdminData = function() {
 
                 const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span style="background:var(--warning); font-weight:800; padding:6px 12px; border-radius:10px; color:white; font-size:12px;"><i class="ph-fill ph-shopping-bag"></i> Takeaway</span>' : `<span style="background:var(--input-bg); color:var(--text-main); font-weight:800; padding:6px 12px; border-radius:10px; font-size:12px; border:1px solid var(--border);"><i class="ph-fill ph-map-pin"></i> Table ${data.tableNumber}</span>`;
                 
-// 🔥 1. Premium Status Badge Logic
-let statusBadge = '';
-if(data.status === 'New') statusBadge = `<span class="status-badge status-new"><i class="ph-bold ph-bell-ringing"></i> New</span>`;
-else if(data.status === 'Accepted') statusBadge = `<span class="status-badge status-accepted"><i class="ph-bold ph-thumbs-up"></i> Accepted</span>`;
-else if(data.status === 'Preparing') statusBadge = `<span class="status-badge status-prep"><i class="ph-bold ph-cooking-pot"></i> Preparing</span>`;
-else if(data.status === 'Ready') statusBadge = `<span class="status-badge status-ready"><i class="ph-bold ph-check-circle"></i> Ready</span>`;
-else if(data.status === 'Served') statusBadge = `<span class="status-badge status-done"><i class="ph-bold ph-flag-checkered"></i> Served</span>`;
-else statusBadge = `<span class="status-badge status-canc"><i class="ph-bold ph-x-circle"></i> Cancelled</span>`;
+                // 1. Status Badge
+                let statusBadge = '';
+                if(data.status === 'New') statusBadge = `<span class="status-badge status-new"><i class="ph-bold ph-bell-ringing"></i> New</span>`;
+                else if(data.status === 'Accepted') statusBadge = `<span class="status-badge status-accepted"><i class="ph-bold ph-thumbs-up"></i> Accepted</span>`;
+                else if(data.status === 'Preparing') statusBadge = `<span class="status-badge status-prep"><i class="ph-bold ph-cooking-pot"></i> Cooking</span>`;
+                else if(data.status === 'Ready') statusBadge = `<span class="status-badge status-ready"><i class="ph-bold ph-check-circle"></i> Ready</span>`;
+                else if(data.status === 'Served' || data.status === 'Completed') statusBadge = `<span class="status-badge status-done"><i class="ph-bold ph-flag-checkered"></i> Served</span>`;
+                else statusBadge = `<span class="status-badge status-canc"><i class="ph-bold ph-x-circle"></i> Cancelled</span>`;
 
-// 🔥 2. Step-by-Step Action Buttons Logic
-let actionButtons = '';
-if(data.status === 'New') {
-    activeCount++;
-    actionButtons = `
-        <button class="btn-action-new" style="background:var(--info);" onclick="updateOrderStatus('${data.docId}', 'Accepted')">Accept Order</button>
-        <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>
-    `;
-} else if(data.status === 'Accepted') {
-    activeCount++;
-    actionButtons = `<button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${data.docId}', 'Preparing')">Start Cooking</button>`;
-} else if(data.status === 'Preparing') {
-    activeCount++;
-    actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Ready')">Mark Ready</button>`;
-} else if(data.status === 'Ready') {
-    activeCount++;
-    actionButtons = `<button class="btn-action-new" style="background:var(--primary);" onclick="updateOrderStatus('${data.docId}', 'Served')">Serve to Table</button>`;
-}
+                // 2. 1-Click PAID/UNPAID Button
+                const isPaid = data.isPaid === true;
+                const paidBadgeHTML = isPaid 
+                    ? `<button onclick="toggleOrderPayment('${data.docId}', true)" style="background:rgba(36,150,63,0.15); color:var(--success); border:1px solid var(--success); padding:4px 10px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-check-circle"></i> PAID</button>`
+                    : `<button onclick="toggleOrderPayment('${data.docId}', false)" style="background:rgba(229,57,53,0.15); color:var(--danger); border:1px solid var(--danger); padding:4px 10px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-x-circle"></i> UNPAID</button>`;
 
-// 🔥 3. Time & Phone Variables Fixed 🔥
-let diffMins = 0;
-if(data.timestamp) {
-    diffMins = Math.floor((Date.now() - data.timestamp.toDate().getTime()) / 60000);
-}
-let waitText = diffMins <= 0 ? 'Just now' : diffMins + ' min ago';
-let waitColor = diffMins >= 30 ? 'var(--danger)' : 'var(--text-main)';
-const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--primary); font-size:16px;"><i class="ph-bold ph-phone-call"></i></a>` : '';
+                // 3. Step-by-Step Action Buttons
+                let actionButtons = '';
+                if(data.status === 'New') {
+                    actionButtons = `
+                        <button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Accepted')">Accept Order ✓</button>
+                        <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>
+                    `;
+                } else if(data.status === 'Accepted') {
+                    actionButtons = `<button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${data.docId}', 'Preparing')">Start Cooking 🍳</button>`;
+                } else if(data.status === 'Preparing') {
+                    actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Ready')">Mark as Ready 🔔</button>`;
+                } else if(data.status === 'Ready') {
+                    actionButtons = `<button class="btn-action-new" style="background:var(--primary);" onclick="updateOrderStatus('${data.docId}', 'Served')">Served & Paid 🎉</button>`;
+                }
 
+                // 4. Time Tracker Variables
+                let diffMins = 0;
+                if(data.timestamp) diffMins = Math.floor((Date.now() - data.timestamp.toDate().getTime()) / 60000);
+                let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
+                let waitColor = diffMins >= 30 ? 'var(--danger)' : (diffMins >= 15 ? 'var(--warning)' : 'var(--success)');
+                const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--primary); font-size:16px;"><i class="ph-bold ph-phone-call"></i></a>` : '';
 
                 let cardHtml = `
                     <div class="order-card premium-hover" style="border-radius:24px; border:1px solid var(--border); margin-bottom:20px; box-shadow:var(--shadow-soft);">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--border); padding-bottom:15px; margin-bottom:10px;">
-                            <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="display:flex; align-items:center; gap:8px;">
                                 ${tableDisplayBadge}
                                 ${statusBadge}
+                                ${paidBadgeHTML}
                             </div>
                             <div style="display:flex; flex-direction:column; align-items:flex-end;">
                                 <span style="font-size:12px; font-weight:700;">${displayTimeStr}</span>
-                                ${(data.status === 'New' || data.status === 'Preparing') ? `<span class="time-ago-tracker" data-time="${date.getTime()}" style="font-size:11px; font-weight:800; color:${waitColor};">(${waitText})</span>` : ''}
+                                ${(data.status !== 'Served' && data.status !== 'Completed' && data.status !== 'Cancelled') ? `<span class="time-ago-tracker" data-time="${date.getTime()}" style="font-size:11px; font-weight:800; color:${waitColor};">⏱️ (${waitText})</span>` : ''}
                             </div>
                         </div>
                         <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:5px; background:var(--input-bg); padding:10px 15px; border-radius:12px; display:flex; justify-content:space-between;">
@@ -435,31 +437,49 @@ const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a hre
                     </div>
                 `;
 
-                if (data.status === 'New' || data.status === 'Preparing') {
-                    liveList.innerHTML += cardHtml;
+                // 🔥 STRICT 3-TAB FILTER & PRECISE SORTING 🔥
+                if (data.status === 'New') {
+                    newCount++;
+                    newList.innerHTML = cardHtml + newList.innerHTML; // Newest on Top
                     const soundToggle = document.getElementById('soundToggle');
-                    if(data.status === 'New' && soundToggle && soundToggle.checked && !isInitialLoad && soundActivated) {
+                    if(soundToggle && soundToggle.checked && !isInitialLoad && soundActivated) {
                         const now = new Date(); if((now - date) < 120000) document.getElementById('orderSound').play().catch(e=>{});
                     }
+                } else if (data.status === 'Accepted' || data.status === 'Preparing' || data.status === 'Ready') {
+                    kitchenCount++;
+                    activeList.innerHTML += cardHtml; // Oldest on Top (Kitchen speed priority)
                 } else {
-                    pastList.innerHTML = cardHtml + pastList.innerHTML;
+                    pastCount++;
+                    pastList.innerHTML = cardHtml + pastList.innerHTML; // Newest on Top for History
                 }
             }
         });
 
         isInitialLoad = false;
         
+        // Update Tabs Counter Badges
+        const bNew = document.getElementById('badge-new-count');
+        const bActive = document.getElementById('badge-active-count');
+        const bPast = document.getElementById('badge-past-count');
+        if(bNew) bNew.innerText = newCount;
+        if(bActive) bActive.innerText = kitchenCount;
+        if(bPast) bPast.innerText = pastCount;
+
+        // Update Top Business Pulse Bar
+        const pSale = document.getElementById('pulse-today-sale');
+        const pTotal = document.getElementById('pulse-total-orders');
+        const pActive = document.getElementById('pulse-kitchen-active');
+        if(pSale) pSale.innerText = '₹' + totalRev;
+        if(pTotal) pTotal.innerText = saasPending + saasPreparing + saasServed + saasCancelled;
+        if(pActive) pActive.innerText = kitchenCount;
+
+        // Update General Cards
         const totOrders = document.getElementById('total-orders');
         const totRev = document.getElementById('total-revenue');
-        if(totOrders) totOrders.innerText = activeCount;
+        if(totOrders) totOrders.innerText = newCount + kitchenCount;
         if(totRev) totRev.innerText = '₹' + totalRev;
-        
-        const liveCard = document.getElementById('live-order-card');
-        if(liveCard) {
-            if(activeCount > 0) liveCard.classList.add('pulse-live');
-            else liveCard.classList.remove('pulse-live');
-        }
 
+        // Analytics counters
         const setStat = (id, val, prefix = "") => {
             const el = document.getElementById(id);
             if(el) {
@@ -481,7 +501,6 @@ const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a hre
         setStat('saas-preparing', saasPreparing);
         setStat('saas-served', saasServed);
         setStat('saas-cancelled', saasCancelled);
-        
         setStat('rev-today', totalRev, "₹");
         setStat('rev-week', revWeek, "₹");
         setStat('rev-month', revMonth, "₹");
@@ -501,7 +520,8 @@ const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a hre
 
         if(window.updateRevenueChart) window.updateRevenueChart(window.allCompletedOrdersForChart);
         
-        if(liveList.innerHTML === '') liveList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-check-circle" style="font-size:40px; color:var(--success); opacity:0.5; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No active orders. Kitchen is clear! 🎉</span></div>';
+        if(newList.innerHTML === '') newList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-bell-slash" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No new incoming orders right now.</span></div>';
+        if(activeList.innerHTML === '') activeList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-check-circle" style="font-size:40px; color:var(--success); opacity:0.5; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">Kitchen is clear! No cooking pending. 🎉</span></div>';
         if(pastList.innerHTML === '') pastList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No past orders for today.</span></div>';
 
         const totCustomers = document.getElementById('total-customers');
@@ -528,6 +548,19 @@ const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a hre
         }
     });
 }
+
+// ==========================================
+// 🔄 PAYMENT STATUS TOGGLER (1-CLICK PAID)
+// ==========================================
+window.toggleOrderPayment = async (orderId, isCurrentlyPaid) => {
+    try {
+        await updateDoc(doc(db, "orders", orderId), {
+            isPaid: !isCurrentlyPaid
+        });
+    } catch(e) {
+        alert("Payment status update failed: " + e.message);
+    }
+};
 
 // Remaining Utility Functions 
 window.filterAdminCat = (cat, element) => {
@@ -750,26 +783,25 @@ window.switchTab = (tabId, element = null) => {
     }
 };
 
+// 🚀 STRICT 3-TAB PIPELINE SWITCHER
 window.switchAdminOrderTab = (tab) => {
-    document.getElementById('tab-admin-live').classList.remove('active');
-    document.getElementById('tab-admin-past').classList.remove('active');
-    document.getElementById('admin-live-orders').style.display = 'none';
-    document.getElementById('admin-past-orders').style.display = 'none';
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('#section-orders .menu-list').forEach(list => list.style.display = 'none');
     
-    document.getElementById(`tab-admin-${tab}`).classList.add('active');
-    document.getElementById(`admin-${tab}-orders`).style.display = 'flex';
+    const targetBtn = document.getElementById(`tab-admin-${tab}`);
+    const targetList = document.getElementById(`admin-${tab}-orders`);
+    
+    if(targetBtn) targetBtn.classList.add('active');
+    if(targetList) targetList.style.display = 'flex';
 };
 
 window.downloadQR = () => {
-    // 1. Hotel ka naam uthao
     const brandElement = document.getElementById("qr-brand-name") || document.getElementById("admin-restaurant-name");
     const brandName = brandElement ? brandElement.innerText : "Smart Menu";
     
-    // 2. Hidden template me naam update karo
     const exportBrandElement = document.getElementById("export-brand-name");
     if(exportBrandElement) exportBrandElement.innerText = brandName;
     
-    // 3. QR Code ki canvas image utha kar template me daalo
     const qrCanvas = document.querySelector("#qrcode-box canvas");
     const exportQrBox = document.getElementById("export-qr-box");
     
@@ -778,17 +810,16 @@ window.downloadQR = () => {
         return;
     }
 
-    exportQrBox.innerHTML = ''; // Pehle se kuch ho toh hata do
+    exportQrBox.innerHTML = ''; 
     const img = document.createElement("img");
     img.src = qrCanvas.toDataURL("image/png");
     img.style.width = "300px";
     img.style.height = "300px";
     exportQrBox.appendChild(img);
 
-    // 4. Html2Canvas se premium photo kheencho aur download karwao
     if (typeof html2canvas !== 'undefined') {
         html2canvas(document.getElementById('premium-qr-export'), { 
-            scale: 2, // High resolution HD
+            scale: 2, 
             useCORS: true 
         }).then(canvas => {
             let link = document.createElement('a');
