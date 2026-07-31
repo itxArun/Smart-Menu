@@ -16,7 +16,8 @@
 }
 
 /* ==========================================
-   🌙 DARK MODE THEME FIX
+/* ==========================================
+   🌙 DARK MODE THEME FIX (100% HIGH CONTRAST)
    ========================================== */
 body.dark-mode {
     --bg-light: #121212;
@@ -41,6 +42,25 @@ body.dark-mode .alert-box { background: var(--white); }
 body.dark-mode .tracker-tabs { background: #2A2A2C; border-color: rgba(255,255,255,0.1); }
 body.dark-mode .tracker-tab-btn.active { background: #1C1C1E; color: var(--primary); }
 body.dark-mode .lang-switch { background: #2A2A2C; border-color: rgba(255,255,255,0.1); }
+
+/* 🔥 ALL BUTTON CONTRAST FIX IN DARK MODE (Close, Language, Sun Icon, Cancel) 🔥 */
+body.dark-mode .btn-cancel,
+body.dark-mode button[onclick="closeSettingsModal()"],
+body.dark-mode button[onclick="toggleDarkMode()"],
+body.dark-mode .lang-btn:not(.active),
+body.dark-mode .var-btn:not(.active),
+body.dark-mode .cat-pill:not(.active),
+body.dark-mode .type-btn:not(.active),
+body.dark-mode .tracker-tab-btn:not(.active) {
+    background: #2C2C2E !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ☀️ Dark Mode Sun Icon ko mast Glowing Yellow banayega */
+body.dark-mode #theme-icon {
+    color: #FF9F00 !important;
+}
 
 /* ==========================================
    CORE CSS
