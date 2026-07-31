@@ -28,32 +28,32 @@ if (cachedHotelName) {
     const loaderBrand = document.getElementById('loader-brand-name');
     if (loaderBrand) loaderBrand.innerText = cachedHotelName;
 }
+
 // ==========================================
-// ⏰ SMART TIME-BASED GREETING ENGINE
+// ✨ 10-IN-1 RANDOM LUXURY SAAS TAGLINE ENGINE
 // ==========================================
 window.updateSmartGreeting = () => {
     const greetingEl = document.getElementById('greeting-display');
     if (!greetingEl) return;
 
-    const hour = new Date().getHours();
-    let greetingText = "";
-    let iconClass = "";
+    // 10 Best Catchy & Luxury Taglines with matching icons
+    const taglines = [
+        { text: "Love At First Bite", icon: "ph-heart", color: "var(--danger)" },
+        { text: "Smart • Fast • Delicious", icon: "ph-lightning", color: "var(--warning)" },
+        { text: "Good Food • Great Mood", icon: "ph-smiley-wink", color: "var(--green)" },
+        { text: "Fresh • Fast • Flavorful", icon: "ph-leaf", color: "var(--green)" },
+        { text: "Scan • Order • Enjoy", icon: "ph-qr-code", color: "var(--primary)" },
+        { text: "Savor The Flavor", icon: "ph-cooking-pot", color: "var(--warning)" },
+        { text: "Crafted With Passion", icon: "ph-star-four", color: "var(--danger)" },
+        { text: "Taste • Elegance • Joy", icon: "ph-sparkle", color: "var(--warning)" },
+        { text: "Freshly Cooked For You", icon: "ph-chef-hat", color: "var(--primary)" },
+        { text: "Feast • Flavor • Fun", icon: "ph-confetti", color: "var(--danger)" }
+    ];
 
-    if (hour >= 5 && hour < 12) {
-        greetingText = "Good Morning • Coffee & Breakfast";
-        iconClass = "ph-coffee";
-    } else if (hour >= 12 && hour < 17) {
-        greetingText = "Good Afternoon • Delicious Cravings";
-        iconClass = "ph-sun";
-    } else if (hour >= 17 && hour < 22) {
-        greetingText = "Good Evening • Chef's Special Dining";
-        iconClass = "ph-bowl-food";
-    } else {
-        greetingText = "Late Night • Midnight Munchies";
-        iconClass = "ph-moon-stars";
-    }
+    // Randomly ek pick karo
+    const randomPick = taglines[Math.floor(Math.random() * taglines.length)];
 
-    greetingEl.innerHTML = `${greetingText} <i class="ph-fill ${iconClass}" style="color: var(--warning); margin-left: 2px;"></i>`;
+    greetingEl.innerHTML = `${randomPick.text} <i class="ph-fill ${randomPick.icon}" style="color: ${randomPick.color}; margin-left: 2px;"></i>`;
 };
 
 
