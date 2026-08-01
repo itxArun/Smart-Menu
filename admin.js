@@ -25,7 +25,7 @@ const dateInput = document.getElementById('reportDate');
 if(dateInput) dateInput.valueAsDate = new Date();
 
 // ==========================================
-// 🔐 AUTHENTICATION & ZERO AUTH FLASH LOGIC
+// 🔐 AUTHENTICATION & MULTI-TENANT LOGIC
 // ==========================================
 window.loginAdmin = () => {
     const email = document.getElementById('adminEmail').value.trim();
@@ -76,28 +76,35 @@ if(passInput) {
     });
 }
 
-// 🚀 ASLI RESTAURANT NAME ON LOGIN (NO GENERIC BRANDING)
+// 🚀 ASLI RESTAURANT NAME ON LOGIN (MULTI-TENANT & DUAL-FILTER PROTECTED)
 onAuthStateChanged(auth, async (user) => {
     const loginScreen = document.getElementById('loginScreen');
     if (user) { 
         try {
-            const q = query(collection(db, "merchants"), where("email", "==", user.email));
-            const querySnapshot = await getDocs(q);
+            // 🔥 PEHLE EMAIL SE CHECK KARO, NAHI TO UID SE CHECK KARO
+            let q = query(collection(db, "merchants"), where("email", "==", user.email));
+            let querySnapshot = await getDocs(q);
+            
+            if (querySnapshot.empty) {
+                q = query(collection(db, "merchants"), where("uid", "==", user.uid));
+                querySnapshot = await getDocs(q);
+            }
             
             if (!querySnapshot.empty) {
                 const merchantData = querySnapshot.docs[0].data();
                 window.currentRestaurantId = merchantData.restaurantId; 
                 
-                                const realName = merchantData.restaurantName || "Partner POS";
+                const realName = merchantData.restaurantName || "Partner POS";
 
                 // 🔥 UNIVERSAL LOGO SELECTION (Teeno jagah check karega!)
                 const brandLogos = document.querySelectorAll('#admin-restaurant-name, #qr-brand-name, .brand-logo');
                 brandLogos.forEach(el => el.innerText = realName);
                 
                 localStorage.setItem('crave_hotel_name_cache', realName);
+                localStorage.setItem('crave_restaurant_id_cache', merchantData.restaurantId);
 
             } else {
-                window.currentRestaurantId = 'rest_001';
+                window.currentRestaurantId = localStorage.getItem('crave_restaurant_id_cache') || 'rest_001';
             }
 
             if(loginScreen) loginScreen.style.display = 'none'; 
@@ -105,7 +112,7 @@ onAuthStateChanged(auth, async (user) => {
 
         } catch (error) {
             console.error("Error fetching merchant data:", error);
-            window.currentRestaurantId = 'rest_001'; 
+            window.currentRestaurantId = localStorage.getItem('crave_restaurant_id_cache') || 'rest_001'; 
             if(loginScreen) loginScreen.style.display = 'none'; 
             if(typeof window.initAdminData === 'function') window.initAdminData();
         }
@@ -130,12 +137,18 @@ window.executeLogout = () => {
         btn.innerHTML = 'Wait <i class="ph-bold ph-spinner ph-spin"></i>';
         btn.disabled = true;
     }
+    
+    // 🔥 PURANE RESTAURANT KA CACHE 100% DELETE KARO
+    localStorage.removeItem('crave_hotel_name_cache');
+    localStorage.removeItem('crave_restaurant_id_cache');
+    
     signOut(auth).then(() => {
         window.closeLogoutModal();
         if(btn) {
             btn.innerHTML = 'Yes, Logout';
             btn.disabled = false;
         }
+        location.reload();
     });
 };
 
@@ -152,7 +165,7 @@ window.enableAudioContext = () => {
     soundActivated = true;
 };
 
-// 🔥 SILENT AUTOPLAY ON FIRST SCREEN CLICK (No Header Button Needed)
+// 🔥 SILENT AUTOPLAY ON FIRST SCREEN CLICK
 document.addEventListener('click', () => {
     if (!soundActivated) {
         window.enableAudioContext();
@@ -295,6 +308,7 @@ window.initAdminData = function() {
         });
         actionContainer.style.display = hasActions ? 'block' : 'none';
     });
+
     // ⭐ 4. BOUNCER FOR CUSTOMER REVIEWS & RATINGS
     const qReviews = query(collection(db, "reviews"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qReviews, (revSnap) => {
@@ -337,7 +351,6 @@ window.initAdminData = function() {
         }
     });
     
-    
     // 3. 🚨 3-TAB PIPELINE ORDERS BOUNCER & SAAS ANALYTICS
     const qLive = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qLive, (snap) => {
@@ -362,9 +375,6 @@ window.initAdminData = function() {
             allOrders.push(d);
         });
 
-        // 📌 SORTING RULES:
-        // New & Past = Newest on Top (b - a)
-        // Kitchen Active = Oldest on Top (a - b)
         allOrders.forEach((data) => {
             const date = data.timestamp ? data.timestamp.toDate() : new Date();
             const todayDate = new Date();
@@ -416,14 +426,12 @@ window.initAdminData = function() {
                     ? `<div style="background:rgba(255, 59, 48, 0.08); color:var(--danger); padding:10px 15px; border-radius:12px; font-size:12px; font-weight:700; margin-top:10px; border:1px dashed var(--danger);"><i class="ph-bold ph-warning"></i> Note: ${data.chefNotes}</div>` 
                     : '';
 
-                // 🔥 1. Dine-in vs Takeaway Border & Table Avatar Box
                 const cardTypeClass = data.orderType === 'Takeaway' ? 'type-takeaway' : 'type-dinein';
                 
                 const tableDisplayBadge = data.orderType === 'Takeaway' 
                     ? `<div class="table-id-box" style="color:var(--warning);"><div class="number-avatar" style="background:var(--warning);"><i class="ph-bold ph-shopping-bag"></i></div> Takeaway</div>` 
                     : `<div class="table-id-box"><div class="number-avatar">${String(data.tableNumber || '#').padStart(2, '0')}</div> Table ${data.tableNumber}</div>`;
                 
-                // 2. Status Badge
                 let statusBadge = '';
                 if(data.status === 'New') statusBadge = `<span class="status-badge status-new"><i class="ph-bold ph-bell-ringing"></i> New</span>`;
                 else if(data.status === 'Accepted') statusBadge = `<span class="status-badge status-accepted"><i class="ph-bold ph-thumbs-up"></i> Accepted</span>`;
@@ -432,13 +440,11 @@ window.initAdminData = function() {
                 else if(data.status === 'Served' || data.status === 'Completed') statusBadge = `<span class="status-badge status-done"><i class="ph-bold ph-flag-checkered"></i> Served</span>`;
                 else statusBadge = `<span class="status-badge status-canc"><i class="ph-bold ph-x-circle"></i> Cancelled</span>`;
 
-                // 3. 1-Click PAID/UNPAID Button
                 const isPaid = data.isPaid === true;
                 const paidBadgeHTML = isPaid 
                     ? `<button onclick="toggleOrderPayment('${data.docId}', true)" style="background:rgba(36,150,63,0.15); color:var(--success); border:1px solid var(--success); padding:5px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-check-circle"></i> PAID</button>`
                     : `<button onclick="toggleOrderPayment('${data.docId}', false)" style="background:rgba(229,57,53,0.15); color:var(--danger); border:1px solid var(--danger); padding:5px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-x-circle"></i> UNPAID</button>`;
 
-                // 4. Step-by-Step Action Buttons
                 let actionButtons = '';
                 if(data.status === 'New') {
                     actionButtons = `
@@ -453,17 +459,14 @@ window.initAdminData = function() {
                     actionButtons = `<button class="btn-action-new" style="background:var(--primary);" onclick="updateOrderStatus('${data.docId}', 'Served')">Served & Paid 🎉</button>`;
                 }
 
-                // 5. Time Tracker Variables
                 let diffMins = 0;
                 if(data.timestamp) diffMins = Math.floor((Date.now() - data.timestamp.toDate().getTime()) / 60000);
                 let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
                 let waitColor = diffMins >= 30 ? 'var(--danger)' : (diffMins >= 15 ? 'var(--warning)' : 'var(--success)');
                 const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--primary); font-size:16px;"><i class="ph-bold ph-phone-call"></i></a>` : '';
 
-                // 🔥 2-ROW CLEAN MOBILE CARD LAYOUT (ZERO OVERLAPPING)
                 let cardHtml = `
                     <div class="order-card premium-hover ${cardTypeClass}">
-                        <!-- ROW 1: TABLE BOX + TIME -->
                         <div class="card-top-row">
                             ${tableDisplayBadge}
                             <div class="order-time-display">
@@ -472,25 +475,21 @@ window.initAdminData = function() {
                             </div>
                         </div>
 
-                        <!-- ROW 2: STATUS BADGE + PAID BADGE -->
                         <div class="card-badge-row">
                             ${statusBadge}
                             ${paidBadgeHTML}
                         </div>
 
-                        <!-- CUSTOMER NAME & PHONE -->
                         <div style="font-size:12px; font-weight:600; color:var(--text-main); background:var(--input-bg); padding:10px 15px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
                             <span><i class="ph-fill ph-user" style="color:var(--primary);"></i> ${data.customerName || "N/A"}</span>
                             <span>${phoneLink}</span>
                         </div>
 
-                        <!-- DISH ITEMS & CHEF NOTE -->
                         <div style="margin-top:14px; font-size:13px; font-weight:500;">
                             ${itemsHTML}
                             ${notesHtml}
                         </div>
 
-                        <!-- FOOTER TOTAL & ACTION BUTTONS -->
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:15px; border-top:1px dashed var(--border);">
                             <span style="font-size:18px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</span>
                             <div class="order-actions-row" style="width:65%; justify-content:flex-end;">
@@ -500,27 +499,25 @@ window.initAdminData = function() {
                     </div>
                 `;
 
-                // 🔥 STRICT 3-TAB FILTER & PRECISE SORTING 🔥
                 if (data.status === 'New') {
                     newCount++;
-                    newList.innerHTML = cardHtml + newList.innerHTML; // Newest on Top
+                    newList.innerHTML = cardHtml + newList.innerHTML;
                     const soundToggle = document.getElementById('soundToggle');
                     if(soundToggle && soundToggle.checked && !isInitialLoad && soundActivated) {
                         const now = new Date(); if((now - date) < 120000) document.getElementById('orderSound').play().catch(e=>{});
                     }
                 } else if (data.status === 'Accepted' || data.status === 'Preparing' || data.status === 'Ready') {
                     kitchenCount++;
-                    activeList.innerHTML += cardHtml; // Oldest on Top (Kitchen speed priority)
+                    activeList.innerHTML += cardHtml;
                 } else {
                     pastCount++;
-                    pastList.innerHTML = cardHtml + pastList.innerHTML; // Newest on Top for History
+                    pastList.innerHTML = cardHtml + pastList.innerHTML;
                 }
             }
         });
 
         isInitialLoad = false;
         
-        // Update Tabs Counter Badges
         const bNew = document.getElementById('badge-new-count');
         const bActive = document.getElementById('badge-active-count');
         const bPast = document.getElementById('badge-past-count');
@@ -528,7 +525,6 @@ window.initAdminData = function() {
         if(bActive) bActive.innerText = kitchenCount;
         if(bPast) bPast.innerText = pastCount;
 
-        // Update Top Business Pulse Bar
         const pSale = document.getElementById('pulse-today-sale');
         const pTotal = document.getElementById('pulse-total-orders');
         const pActive = document.getElementById('pulse-kitchen-active');
@@ -536,13 +532,11 @@ window.initAdminData = function() {
         if(pTotal) pTotal.innerText = saasPending + saasPreparing + saasServed + saasCancelled;
         if(pActive) pActive.innerText = kitchenCount;
 
-        // Update General Cards
         const totOrders = document.getElementById('total-orders');
         const totRev = document.getElementById('total-revenue');
         if(totOrders) totOrders.innerText = newCount + kitchenCount;
         if(totRev) totRev.innerText = '₹' + totalRev;
 
-        // Analytics counters
         const setStat = (id, val, prefix = "") => {
             const el = document.getElementById(id);
             if(el) {
@@ -859,12 +853,10 @@ window.switchAdminOrderTab = (tab) => {
 };
 
 window.downloadQR = () => {
-    // 1. 🔥 3-Layer Safe Brand Name Fetcher
     const cachedName = localStorage.getItem('crave_hotel_name_cache');
     const brandElement = document.getElementById("admin-restaurant-name") || document.querySelector(".brand-logo");
     const brandName = cachedName || (brandElement ? brandElement.innerText : "SMART MENU");
     
-    // 2. Export Standee me asli naam ko UPPERCASE me daalo
     const exportBrandElement = document.getElementById("export-brand-name");
     if (exportBrandElement) {
         exportBrandElement.innerText = brandName.toUpperCase();
