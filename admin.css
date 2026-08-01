@@ -762,3 +762,83 @@ input:checked + .slider:before { transform: translateX(22px); }
     font-weight: 800; 
     color: var(--text-main); 
 }
+/* =========================================================
+   ✨ NEW 2-ROW ORDER CARD & VISUAL IDENTITY STYLES
+   ========================================================= */
+
+/* Left Color Strips for Fast Recognition */
+.order-card {
+    position: relative;
+    padding: 18px !important;
+    border-radius: 22px !important;
+    background: var(--bg-card);
+    border: 1px solid var(--border) !important;
+    border-left: 6px solid var(--primary) !important; /* Default */
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+.order-card.type-dinein { border-left-color: var(--success, #24963F) !important; }
+.order-card.type-takeaway { border-left-color: var(--warning, #FF9F00) !important; }
+
+/* 2-Row Clean Header Layout (Never Overlaps on Mobile) */
+.card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+/* Big Box Table Number Avatar */
+.table-id-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--input-bg);
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+.table-id-box .number-avatar {
+    background: var(--primary, #E53935);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.order-time-display {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+.order-time-display .main-time {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+.order-time-display .ago-time {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Second Row for Badges (Clean horizontal strip) */
+.card-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border);
+    margin-bottom: 10px;
+}
+
