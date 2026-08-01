@@ -15,7 +15,8 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     
-    <link rel="stylesheet" href="admin.css?v=8">
+    <!-- 🔥 Cache Busting v10 -->
+    <link rel="stylesheet" href="admin.css?v=10">
     
     <!-- 🔥 SAAS PREMIUM ANIMATIONS & POS STYLES 🔥 -->
     <style>
@@ -63,22 +64,24 @@
         .pulse-stat-label { font-size: 10px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; display: block; margin-bottom: 4px; }
         .pulse-stat-value { font-size: 18px; font-weight: 800; color: var(--text-main); }
     </style>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const cachedName = localStorage.getItem('crave_hotel_name_cache');
-        if (cachedName) {
-            const logoEl = document.getElementById('admin-restaurant-name') || document.querySelector('.brand-logo');
-            if (logoEl) logoEl.innerText = cachedName;
-        }
-    });
-</script>
-    
+
+    <!-- 🚀 0ms DASHBOARD NAME INJECTOR (SAFE FOR LOGIN) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cachedName = localStorage.getItem('crave_hotel_name_cache');
+            if (cachedName) {
+                const logoEl = document.getElementById('admin-restaurant-name');
+                if (logoEl) logoEl.innerText = cachedName;
+            }
+        });
+    </script>
 </head>
 <body>
     
     <audio id="orderSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
     <audio id="waiterSound" src="https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3" preload="auto"></audio>
 
+    <!-- 🗑️ DELETE DISH CONFIRM MODAL -->
     <div class="custom-confirm" id="deleteConfirmModal">
         <div class="confirm-box">
             <div class="confirm-icon"><i class="ph-fill ph-trash"></i></div>
@@ -91,7 +94,7 @@
         </div>
     </div>
 
-        <!-- 🔒 UNIVERSAL WHITE-LABEL RESTAURANT LOGIN SCREEN -->
+    <!-- 🔒 UNIVERSAL WHITE-LABEL RESTAURANT LOGIN SCREEN -->
     <div class="login-overlay" id="loginScreen">
         <div class="login-card">
             <!-- 1. Security & Trust Badge -->
@@ -131,8 +134,7 @@
         </div>
     </div>
 
-
-        <!-- 🏆 CLEAN SLEEK TOP NAV (NO DATE, NO SOUND BUTTON) -->
+    <!-- 🏆 CLEAN SLEEK TOP NAV (NO DATE, NO SOUND BUTTON) -->
     <div class="top-nav">
         <div style="display: flex; flex-direction: column;">
             <h1 class="brand-logo" id="admin-restaurant-name">Partner POS</h1>
@@ -143,9 +145,11 @@
         </div>
     </div>
 
+    <!-- 📱 MAIN APP WRAPPER -->
     <div class="app-container">
         <div class="main-content">
             
+            <!-- STATS COUNTER BAR -->
             <div class="stats-grid">
                 <div class="stat-card" onclick="switchTab('menu')">
                     <div class="stat-info">
@@ -212,7 +216,7 @@
                     <h3><i class="ph-fill ph-receipt text-primary"></i> Kitchen Orders</h3>
                 </div>
 
-                <!-- 🏆 TOP BUSINESS PULSE BAR (CEO EYE-TEST) -->
+                <!-- 🏆 TOP BUSINESS PULSE BAR -->
                 <div class="pulse-header-bar">
                     <div class="pulse-stat-box">
                         <span class="pulse-stat-label">💰 Today's Sale</span>
@@ -246,23 +250,23 @@
                     </button>
                 </div>
 
-                <!-- TAB 1: NEW ORDERS (Top Priority Incoming Alarm) -->
+                <!-- TAB 1: NEW ORDERS -->
                 <div class="menu-list" id="admin-new-orders">
                     <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for new incoming orders...</div>
                 </div>
 
-                <!-- TAB 2: ACTIVE KITCHEN (Cooking & Ready) -->
+                <!-- TAB 2: ACTIVE KITCHEN -->
                 <div class="menu-list" id="admin-active-orders" style="display: none;">
                     <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No active orders in the kitchen.</div>
                 </div>
                 
-                <!-- TAB 3: ORDER HISTORY (Served & Cancelled) -->
+                <!-- TAB 3: ORDER HISTORY -->
                 <div class="menu-list" id="admin-past-orders" style="display: none;">
                     <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No past orders for today.</div>
                 </div>
             </div>
 
-                        <!-- 💬 WHATSAPP CRM & REVIEWS SECTION -->
+            <!-- 💬 WHATSAPP CRM & REVIEWS SECTION -->
             <div class="section-card view-section" id="section-crm">
                 <div class="section-header">
                     <h3><i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i> WhatsApp CRM & Reviews</h3>
@@ -273,7 +277,7 @@
                     <textarea id="promoMessage" class="input-field" placeholder="Type your discount offer here... (e.g. Get 20% OFF this weekend! Use code: WEEKEND20)" style="height: 80px; resize: none; margin-bottom: 15px;"></textarea>
                 </div>
 
-                <!-- 🔥 NEW: LIVE CUSTOMER REVIEWS FEED -->
+                <!-- 🔥 LIVE CUSTOMER REVIEWS FEED -->
                 <div class="history-date-header" style="background: var(--bg-card); border-top: 1px solid var(--border);">
                     <span>⭐ Recent Customer Reviews</span>
                     <span id="avg-rating-badge" style="background: rgba(255, 159, 0, 0.15); color: #FF9F00; padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 11px;">5.0 ★</span>
@@ -288,7 +292,6 @@
                     <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-bold ph-spinner ph-spin" style="font-size:24px;"></i><br>Loading customers...</div>
                 </div>
             </div>
-
 
             <!-- 📊 PREMIUM SAAS STATS DASHBOARD -->
             <div class="section-card view-section" id="section-stats">
@@ -409,6 +412,7 @@
         </div> <!-- End Main Content -->
     </div>
 
+    <!-- 📱 BOTTOM NAV TABS -->
     <div class="bottom-nav">
         <a class="nav-tab active" onclick="switchTab('menu', this)"><i class="ph-fill ph-book-open"></i><label>MENU</label></a>
         <a class="nav-tab" onclick="switchTab('orders', this)"><i class="ph-fill ph-receipt"></i><label>ORDERS</label></a>
@@ -417,9 +421,10 @@
         <a class="nav-tab" onclick="switchTab('settings', this)"><i class="ph-fill ph-gear"></i><label>SETTINGS</label></a>
     </div>
 
+    <!-- 🍲 ADD / EDIT DISH MODAL -->
     <div class="modal-overlay" id="addModal">
         <div class="modal-card">
-                        <!-- 🔥 Highly Visible Top Close Header -->
+            <!-- 🔥 Highly Visible Top Close Header -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
                 <h3 id="modalTitle" style="margin: 0; font-size: 20px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
                     <i class="ph-fill ph-plus-circle" style="color: var(--primary);"></i> Add New Dish
@@ -484,7 +489,7 @@
                 <input type="url" id="dishPhoto4" class="input-field" placeholder="4. Extra Photo URL (Optional)" style="background: var(--bg-card);" required>
             </div>
 
-                            <!-- 🔥 Save & Cancel Dual Action Row -->
+            <!-- 🔥 Save & Cancel Dual Action Row -->
             <div style="display: flex; gap: 10px; margin-top: 25px;">
                 <button type="button" onclick="closeModal()" style="flex: 0.4; padding: 16px; border-radius: 16px; background: var(--input-bg); color: var(--text-main); font-weight: 700; border: none; cursor: pointer;">
                     Cancel
@@ -512,27 +517,22 @@
         </div>
     </div>
 
-    <script type="module" src="admin.js?v=8"></script>
+    <!-- 🔥 Cache Busting v10 for JS -->
+    <script type="module" src="admin.js?v=10"></script>
     
     <!-- 🚀 PREMIUM QR STANDEE (HIDDEN FOR EXPORT) -->
     <div id="premium-qr-export" style="position: absolute; left: -9999px; top: 0; width: 800px; background: #ffffff; font-family: 'Arial', sans-serif; overflow: hidden; border: 2px solid #fff;">
-        <!-- Header -->
         <div style="background: linear-gradient(135deg, #8B0000, #B30000); color: white; text-align: center; padding: 50px 20px; border-bottom: 15px solid #D4AF37; border-bottom-left-radius: 50%; border-bottom-right-radius: 50%;">
-            <h1 id="export-brand-name" style="font-size: 60px; margin: 0; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">FoodStation</h1>
+            <h1 id="export-brand-name" style="font-size: 60px; margin: 0; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">RESTAURANT MENU</h1>
             <p style="font-size: 18px; margin-top: 15px; color: #f9d877; font-weight: bold; letter-spacing: 2px;">SMART MENU • FAST SERVICE • HAPPY YOU</p>
         </div>
         
-        <!-- Title -->
         <div style="text-align: center; font-size: 45px; font-weight: 900; color: #8B0000; margin-top: 50px;">SCAN TO VIEW<br>MENU & ORDER</div>
         
-        <!-- Dynamic QR Box -->
         <div style="text-align: center; margin: 40px auto;">
-            <div id="export-qr-box" style="border: 8px solid #8B0000; border-radius: 35px; padding: 25px; display: inline-block; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                <!-- QR aayega yahan -->
-            </div>
+            <div id="export-qr-box" style="border: 8px solid #8B0000; border-radius: 35px; padding: 25px; display: inline-block; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15);"></div>
         </div>
         
-        <!-- Badges / Ribbons -->
         <div style="display: flex; justify-content: space-around; margin-top: 30px; padding: 0 40px;">
             <div style="width: 45%;">
                 <div style="background: #8B0000; color: white; padding: 15px 20px; font-weight: bold; font-size: 20px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid #D4AF37; box-shadow: 2px 4px 10px rgba(0,0,0,0.2);">📱 DIGITAL MENU</div>
@@ -544,7 +544,6 @@
             </div>
         </div>
         
-        <!-- Footer -->
         <div style="background: #f4f4f4; border-top: 5px solid #8B0000; padding: 30px; text-align: center; margin-top: 40px;">
             <div style="font-size: 35px; color: #8B0000; font-family: cursive, sans-serif; font-weight: bold; margin-bottom: 20px;">Thank You - Enjoy Your Meal</div>
             <div style="display: flex; justify-content: space-around; padding: 0 20px;">
