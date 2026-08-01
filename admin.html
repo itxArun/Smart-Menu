@@ -63,7 +63,16 @@
         .pulse-stat-label { font-size: 10px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; display: block; margin-bottom: 4px; }
         .pulse-stat-value { font-size: 18px; font-weight: 800; color: var(--text-main); }
     </style>
-
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cachedName = localStorage.getItem('crave_hotel_name_cache');
+        if (cachedName) {
+            const logoEl = document.getElementById('admin-restaurant-name') || document.querySelector('.brand-logo');
+            if (logoEl) logoEl.innerText = cachedName;
+        }
+    });
+</script>
+    
     <!-- 🚀 0ms DYNAMIC BRAND INJECTOR (ZERO FLASH) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -130,7 +139,7 @@
         <!-- 🏆 CLEAN SLEEK TOP NAV (NO DATE, NO SOUND BUTTON) -->
     <div class="top-nav">
         <div style="display: flex; flex-direction: column;">
-            <h1 class="brand-logo" id="admin-restaurant-name">NextPlate</h1>
+            <h1 class="brand-logo" id="admin-restaurant-name">Partner POS</h1>
             <span class="greet-text">Welcome back, Manager 👋</span>
         </div>
         <div class="admin-profile">
