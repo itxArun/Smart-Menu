@@ -292,7 +292,49 @@ window.initAdminData = function() {
         });
         actionContainer.style.display = hasActions ? 'block' : 'none';
     });
+    // ⭐ 4. BOUNCER FOR CUSTOMER REVIEWS & RATINGS
+    const qReviews = query(collection(db, "reviews"), where("restaurantId", "==", window.currentRestaurantId));
+    onSnapshot(qReviews, (revSnap) => {
+        const reviewsContainer = document.getElementById('reviews-feed-list');
+        const avgBadge = document.getElementById('avg-rating-badge');
+        if (!reviewsContainer) return;
 
+        let totalStars = 0;
+        let count = 0;
+        reviewsContainer.innerHTML = '';
+
+        revSnap.forEach(doc => {
+            const r = doc.data();
+            count++;
+            totalStars += (r.rating || 5);
+            
+            const starsHTML = "★".repeat(r.rating || 5) + "☆".repeat(5 - (r.rating || 5));
+            const dateStr = r.timestamp ? r.timestamp.toDate().toLocaleDateString('en-US', {day: 'numeric', month: 'short'}) : 'Recent';
+
+            reviewsContainer.innerHTML += `
+                <div style="padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); display: flex; flex-direction: column; gap: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 700; font-size: 13px; color: var(--text-main);"><i class="ph-fill ph-user" style="color: var(--primary);"></i> ${r.customerName || "Happy Customer"}</span>
+                        <span style="font-size: 11px; color: var(--text-sub); font-weight: 600;">${dateStr}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #FF9F00; font-weight: 800; font-size: 14px; letter-spacing: 2px;">${starsHTML}</span>
+                        <span style="font-size: 12px; color: var(--text-sub); font-style: italic;">"${r.comment || 'Great food & service!'}"</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        if (count === 0) {
+            reviewsContainer.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-fill ph-star" style="font-size: 32px; opacity: 0.3; margin-bottom: 6px;"></i><br>No customer reviews received yet.</div>';
+            if (avgBadge) avgBadge.innerText = "No Ratings";
+        } else {
+            const avg = (totalStars / count).toFixed(1);
+            if (avgBadge) avgBadge.innerText = `${avg} ★ (${count})`;
+        }
+    });
+    
+    
     // 3. 🚨 3-TAB PIPELINE ORDERS BOUNCER & SAAS ANALYTICS
     const qLive = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qLive, (snap) => {
