@@ -103,38 +103,46 @@
         </div>
     </div>
 
-    <!-- 🔐 ROYAL UNIVERSAL POS LOGIN SCREEN (ZERO BRAND CLUTTER) -->
-    <div id="loginScreen" class="premium-login-overlay">
-        <div class="premium-login-card">
-            <div class="login-logo-box">
-                <i class="ph-bold ph-lock-key"></i>
-            </div>
+        <!-- 🔒 UNIVERSAL WHITE-LABEL RESTAURANT LOGIN SCREEN -->
+    <div class="login-overlay" id="loginScreen">
+        <div class="login-card">
+            <!-- 1. Security & Trust Badge -->
+            <span style="font-size: 11px; font-weight: 800; color: var(--danger, #E53935); letter-spacing: 1.5px; display: block; margin-bottom: 10px;">
+                <i class="ph-bold ph-shield-check"></i> • SECURE ADMIN PORTAL
+            </span>
             
-            <span style="font-size: 11px; font-weight: 800; color: var(--danger, #E53935); letter-spacing: 1px; display: block; margin-bottom: 8px;">• SECURE POS PORTAL</span>
-            
-            <h2 id="login-brand-title" class="login-title">Partner POS</h2>
-            <p id="login-subtitle" class="login-subtitle">Sign in to manage live orders, kitchen & tables</p>
-            
+            <!-- 2. Universal Portal Title & Foodie Subtitle -->
+            <h2 id="login-brand-title" class="login-title" style="font-size: 26px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                Restaurant Admin Portal
+            </h2>
+            <p id="login-subtitle" class="login-subtitle" style="font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 25px;">
+                Smart Kitchens • Fast Service • Happy Diners 🍔
+            </p>
+
+            <!-- 3. Email Input -->
             <div class="input-group">
                 <input type="email" id="adminEmail" placeholder="Merchant Email Address" required>
                 <i class="ph-fill ph-envelope input-icon"></i>
             </div>
-            
-            <div class="input-group">
+
+            <!-- 4. Password Input + Eye Toggle -->
+            <div class="input-group" style="position: relative;">
                 <input type="password" id="adminPass" placeholder="Password" required>
-                <!-- 👁️ SHOW/HIDE PASSWORD TOGGLE -->
-                <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer; pointer-events: auto;"></i>
+                <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer;"></i>
             </div>
-            
+
+            <!-- 5. Login Trigger Button -->
             <button id="loginBtn" class="premium-login-btn" onclick="loginAdmin()">
                 Login to Dashboard <i class="ph-bold ph-arrow-right"></i>
             </button>
-            
-            <div class="login-footer">
+
+            <!-- 6. Minimalist Author Footer -->
+            <div class="login-footer" style="margin-top: 25px; font-size: 12px; color: var(--text-sub);">
                 Powered by <strong>Arun</strong> • Enterprise POS
             </div>
         </div>
     </div>
+
 
         <!-- 🏆 CLEAN SLEEK TOP NAV (NO DATE, NO SOUND BUTTON) -->
     <div class="top-nav">
