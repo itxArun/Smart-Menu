@@ -814,17 +814,22 @@ window.switchAdminOrderTab = (tab) => {
 };
 
 window.downloadQR = () => {
-    const brandElement = document.getElementById("qr-brand-name") || document.getElementById("admin-restaurant-name");
-    const brandName = brandElement ? brandElement.innerText : "Smart Menu";
+    // 1. 🔥 3-Layer Safe Brand Name Fetcher
+    const cachedName = localStorage.getItem('crave_hotel_name_cache');
+    const brandElement = document.getElementById("admin-restaurant-name") || document.querySelector(".brand-logo");
+    const brandName = cachedName || (brandElement ? brandElement.innerText : "SMART MENU");
     
+    // 2. Export Standee me asli naam ko UPPERCASE me daalo
     const exportBrandElement = document.getElementById("export-brand-name");
-    if(exportBrandElement) exportBrandElement.innerText = brandName;
+    if (exportBrandElement) {
+        exportBrandElement.innerText = brandName.toUpperCase();
+    }
     
     const qrCanvas = document.querySelector("#qrcode-box canvas");
     const exportQrBox = document.getElementById("export-qr-box");
     
     if (!qrCanvas) {
-        alert("Pehle table ka QR generate hone dein!");
+        alert("Pehle Table QR generate hone dein!");
         return;
     }
 
@@ -841,7 +846,7 @@ window.downloadQR = () => {
             useCORS: true 
         }).then(canvas => {
             let link = document.createElement('a');
-            link.download = brandName.replace(/\s+/g, '_') + '_Premium_QR.png';
+            link.download = brandName.replace(/\s+/g, '_') + '_Table_QR.png';
             link.href = canvas.toDataURL("image/png");
             link.click();
         });
