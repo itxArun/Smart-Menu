@@ -15,8 +15,8 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#E23744">
     
-    <!-- 🔥 Cache Busting v10 -->
-    <link rel="stylesheet" href="admin.css?v=10">
+    <!-- 🔥 Cache Busting v12 -->
+    <link rel="stylesheet" href="admin.css?v=12">
     
     <!-- 🔥 SAAS PREMIUM ANIMATIONS & POS STYLES 🔥 -->
     <style>
@@ -65,7 +65,7 @@
         .pulse-stat-value { font-size: 18px; font-weight: 800; color: var(--text-main); }
     </style>
 
-    <!-- 🚀 0ms DASHBOARD NAME INJECTOR (SAFE FOR LOGIN) -->
+    <!-- 🚀 0ms DASHBOARD NAME INJECTOR (SAFE FOR DASHBOARD ONLY) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cachedName = localStorage.getItem('crave_hotel_name_cache');
@@ -94,19 +94,19 @@
         </div>
     </div>
 
-    <!-- 🔒 UNIVERSAL WHITE-LABEL RESTAURANT LOGIN SCREEN -->
-    <div class="login-overlay" id="loginScreen">
-        <div class="login-card">
+    <!-- 🔒 UNIVERSAL WHITE-LABEL RESTAURANT LOGIN SCREEN (100% FULL SCREEN PROTECTED) -->
+    <div class="login-overlay" id="loginScreen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; background: #ffffff; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; box-sizing: border-box;">
+        <div class="login-card" style="width: 100%; max-width: 400px; background: #ffffff; padding: 30px 20px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: center;">
             <!-- 1. Security & Trust Badge -->
-            <span style="font-size: 11px; font-weight: 800; color: var(--danger, #E53935); letter-spacing: 1.5px; display: block; margin-bottom: 10px;">
+            <span style="font-size: 11px; font-weight: 800; color: #E53935; letter-spacing: 1.5px; display: block; margin-bottom: 10px;">
                 <i class="ph-bold ph-shield-check"></i> • SECURE ADMIN PORTAL
             </span>
             
             <!-- 2. Universal Portal Title & Foodie Subtitle -->
-            <h2 id="login-brand-title" class="login-title" style="font-size: 26px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+            <h2 id="login-brand-title" class="login-title" style="font-size: 26px; font-weight: 800; color: #1C1C1E; margin-bottom: 6px;">
                 Restaurant Admin Portal
             </h2>
-            <p id="login-subtitle" class="login-subtitle" style="font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 25px;">
+            <p id="login-subtitle" class="login-subtitle" style="font-size: 13px; font-weight: 600; color: #757575; margin-bottom: 25px;">
                 Smart Kitchens • Fast Service • Happy Diners 🍔
             </p>
 
@@ -128,7 +128,7 @@
             </button>
 
             <!-- 6. Minimalist Author Footer -->
-            <div class="login-footer" style="margin-top: 25px; font-size: 12px; color: var(--text-sub);">
+            <div class="login-footer" style="margin-top: 25px; font-size: 12px; color: #757575;">
                 Powered by <strong>Arun</strong> • Enterprise POS
             </div>
         </div>
@@ -517,8 +517,8 @@
         </div>
     </div>
 
-    <!-- 🔥 Cache Busting v10 for JS -->
-    <script type="module" src="admin.js?v=10"></script>
+    <!-- 🔥 Cache Busting v12 for JS -->
+    <script type="module" src="admin.js?v=12"></script>
     
     <!-- 🚀 PREMIUM QR STANDEE (HIDDEN FOR EXPORT) -->
     <div id="premium-qr-export" style="position: absolute; left: -9999px; top: 0; width: 800px; background: #ffffff; font-family: 'Arial', sans-serif; overflow: hidden; border: 2px solid #fff;">
