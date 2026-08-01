@@ -88,11 +88,14 @@ onAuthStateChanged(auth, async (user) => {
                 const merchantData = querySnapshot.docs[0].data();
                 window.currentRestaurantId = merchantData.restaurantId; 
                 
-                // 🔥 Top Bar par asli Restaurant Ka Naam show hoga
-                const brandLogo = document.getElementById('admin-restaurant-name') || document.querySelector('.brand-logo');
-                if(brandLogo) brandLogo.innerText = merchantData.restaurantName || "NextPlate";
+                                const realName = merchantData.restaurantName || "Partner POS";
+
+                // 🔥 UNIVERSAL LOGO SELECTION (Teeno jagah check karega!)
+                const brandLogos = document.querySelectorAll('#admin-restaurant-name, #qr-brand-name, .brand-logo');
+                brandLogos.forEach(el => el.innerText = realName);
                 
-                localStorage.setItem('crave_hotel_name_cache', merchantData.restaurantName || "NextPlate");
+                localStorage.setItem('crave_hotel_name_cache', realName);
+
             } else {
                 window.currentRestaurantId = 'rest_001';
             }
