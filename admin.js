@@ -76,7 +76,7 @@ if(passInput) {
     });
 }
 
-// 🚀 FETCH MERCHANT DATA ON LOGIN (NO BRAND FLASH)
+// 🚀 ASLI RESTAURANT NAME ON LOGIN (NO GENERIC BRANDING)
 onAuthStateChanged(auth, async (user) => {
     const loginScreen = document.getElementById('loginScreen');
     if (user) { 
@@ -88,10 +88,11 @@ onAuthStateChanged(auth, async (user) => {
                 const merchantData = querySnapshot.docs[0].data();
                 window.currentRestaurantId = merchantData.restaurantId; 
                 
-                const brandLogo = document.querySelector('.brand-logo');
-                if(brandLogo) brandLogo.innerText = merchantData.restaurantName || "Partner POS";
+                // 🔥 Top Bar par asli Restaurant Ka Naam show hoga
+                const brandLogo = document.getElementById('admin-restaurant-name') || document.querySelector('.brand-logo');
+                if(brandLogo) brandLogo.innerText = merchantData.restaurantName || "NextPlate";
                 
-                localStorage.setItem('crave_hotel_name_cache', merchantData.restaurantName || "Partner POS");
+                localStorage.setItem('crave_hotel_name_cache', merchantData.restaurantName || "NextPlate");
             } else {
                 window.currentRestaurantId = 'rest_001';
             }
@@ -136,22 +137,24 @@ window.executeLogout = () => {
 };
 
 // ==========================================
-// 🔊 SOUND & UTILS (ELAPSED STOPWATCH)
+// 🔊 SOUND & UTILS (SILENT AUDIO AUTOPLAY)
 // ==========================================
 let soundActivated = false;
+
 window.enableAudioContext = () => {
     const orderAud = document.getElementById('orderSound');
     const waiterAud = document.getElementById('waiterSound');
     if(orderAud) orderAud.play().then(() => { orderAud.pause(); orderAud.currentTime = 0; }).catch(e=>{});
     if(waiterAud) waiterAud.play().then(() => { waiterAud.pause(); waiterAud.currentTime = 0; }).catch(e=>{});
-    
     soundActivated = true;
-    const btn = document.getElementById('soundAuthBtn');
-    if(btn) {
-        btn.classList.add('active');
-        btn.innerHTML = '<i class="ph-bold ph-speaker-high"></i> Sound ON';
-    }
 };
+
+// 🔥 SILENT AUTOPLAY ON FIRST SCREEN CLICK (No Header Button Needed)
+document.addEventListener('click', () => {
+    if (!soundActivated) {
+        window.enableAudioContext();
+    }
+}, { once: true });
 
 // ⏱️ 1-MINUTE ELAPSED STOPWATCH UPDATE
 setInterval(() => {
@@ -368,9 +371,14 @@ window.initAdminData = function() {
                     ? `<div style="background:rgba(255, 59, 48, 0.08); color:var(--danger); padding:10px 15px; border-radius:12px; font-size:12px; font-weight:700; margin-top:10px; border:1px dashed var(--danger);"><i class="ph-bold ph-warning"></i> Note: ${data.chefNotes}</div>` 
                     : '';
 
-                const tableDisplayBadge = data.orderType === 'Takeaway' ? '<span style="background:var(--warning); font-weight:800; padding:6px 12px; border-radius:10px; color:white; font-size:12px;"><i class="ph-fill ph-shopping-bag"></i> Takeaway</span>' : `<span style="background:var(--input-bg); color:var(--text-main); font-weight:800; padding:6px 12px; border-radius:10px; font-size:12px; border:1px solid var(--border);"><i class="ph-fill ph-map-pin"></i> Table ${data.tableNumber}</span>`;
+                // 🔥 1. Dine-in vs Takeaway Border & Table Avatar Box
+                const cardTypeClass = data.orderType === 'Takeaway' ? 'type-takeaway' : 'type-dinein';
                 
-                // 1. Status Badge
+                const tableDisplayBadge = data.orderType === 'Takeaway' 
+                    ? `<div class="table-id-box" style="color:var(--warning);"><div class="number-avatar" style="background:var(--warning);"><i class="ph-bold ph-shopping-bag"></i></div> Takeaway</div>` 
+                    : `<div class="table-id-box"><div class="number-avatar">${String(data.tableNumber || '#').padStart(2, '0')}</div> Table ${data.tableNumber}</div>`;
+                
+                // 2. Status Badge
                 let statusBadge = '';
                 if(data.status === 'New') statusBadge = `<span class="status-badge status-new"><i class="ph-bold ph-bell-ringing"></i> New</span>`;
                 else if(data.status === 'Accepted') statusBadge = `<span class="status-badge status-accepted"><i class="ph-bold ph-thumbs-up"></i> Accepted</span>`;
@@ -379,13 +387,13 @@ window.initAdminData = function() {
                 else if(data.status === 'Served' || data.status === 'Completed') statusBadge = `<span class="status-badge status-done"><i class="ph-bold ph-flag-checkered"></i> Served</span>`;
                 else statusBadge = `<span class="status-badge status-canc"><i class="ph-bold ph-x-circle"></i> Cancelled</span>`;
 
-                // 2. 1-Click PAID/UNPAID Button
+                // 3. 1-Click PAID/UNPAID Button
                 const isPaid = data.isPaid === true;
                 const paidBadgeHTML = isPaid 
-                    ? `<button onclick="toggleOrderPayment('${data.docId}', true)" style="background:rgba(36,150,63,0.15); color:var(--success); border:1px solid var(--success); padding:4px 10px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-check-circle"></i> PAID</button>`
-                    : `<button onclick="toggleOrderPayment('${data.docId}', false)" style="background:rgba(229,57,53,0.15); color:var(--danger); border:1px solid var(--danger); padding:4px 10px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-x-circle"></i> UNPAID</button>`;
+                    ? `<button onclick="toggleOrderPayment('${data.docId}', true)" style="background:rgba(36,150,63,0.15); color:var(--success); border:1px solid var(--success); padding:5px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-check-circle"></i> PAID</button>`
+                    : `<button onclick="toggleOrderPayment('${data.docId}', false)" style="background:rgba(229,57,53,0.15); color:var(--danger); border:1px solid var(--danger); padding:5px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-x-circle"></i> UNPAID</button>`;
 
-                // 3. Step-by-Step Action Buttons
+                // 4. Step-by-Step Action Buttons
                 let actionButtons = '';
                 if(data.status === 'New') {
                     actionButtons = `
@@ -400,37 +408,47 @@ window.initAdminData = function() {
                     actionButtons = `<button class="btn-action-new" style="background:var(--primary);" onclick="updateOrderStatus('${data.docId}', 'Served')">Served & Paid 🎉</button>`;
                 }
 
-                // 4. Time Tracker Variables
+                // 5. Time Tracker Variables
                 let diffMins = 0;
                 if(data.timestamp) diffMins = Math.floor((Date.now() - data.timestamp.toDate().getTime()) / 60000);
                 let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
                 let waitColor = diffMins >= 30 ? 'var(--danger)' : (diffMins >= 15 ? 'var(--warning)' : 'var(--success)');
                 const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--primary); font-size:16px;"><i class="ph-bold ph-phone-call"></i></a>` : '';
 
+                // 🔥 2-ROW CLEAN MOBILE CARD LAYOUT (ZERO OVERLAPPING)
                 let cardHtml = `
-                    <div class="order-card premium-hover" style="border-radius:24px; border:1px solid var(--border); margin-bottom:20px; box-shadow:var(--shadow-soft);">
-                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--border); padding-bottom:15px; margin-bottom:10px;">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                ${tableDisplayBadge}
-                                ${statusBadge}
-                                ${paidBadgeHTML}
-                            </div>
-                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                                <span style="font-size:12px; font-weight:700;">${displayTimeStr}</span>
-                                ${(data.status !== 'Served' && data.status !== 'Completed' && data.status !== 'Cancelled') ? `<span class="time-ago-tracker" data-time="${date.getTime()}" style="font-size:11px; font-weight:800; color:${waitColor};">⏱️ (${waitText})</span>` : ''}
+                    <div class="order-card premium-hover ${cardTypeClass}">
+                        <!-- ROW 1: TABLE BOX + TIME -->
+                        <div class="card-top-row">
+                            ${tableDisplayBadge}
+                            <div class="order-time-display">
+                                <span class="main-time">${displayTimeStr}</span>
+                                ${(data.status !== 'Served' && data.status !== 'Completed' && data.status !== 'Cancelled') ? `<span class="time-ago-tracker ago-time" data-time="${date.getTime()}" style="color:${waitColor};">⏱️ ${waitText}</span>` : ''}
                             </div>
                         </div>
-                        <div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:5px; background:var(--input-bg); padding:10px 15px; border-radius:12px; display:flex; justify-content:space-between;">
-                            <span><i class="ph-fill ph-user"></i> ${data.customerName || "N/A"}</span>
+
+                        <!-- ROW 2: STATUS BADGE + PAID BADGE -->
+                        <div class="card-badge-row">
+                            ${statusBadge}
+                            ${paidBadgeHTML}
+                        </div>
+
+                        <!-- CUSTOMER NAME & PHONE -->
+                        <div style="font-size:12px; font-weight:600; color:var(--text-main); background:var(--input-bg); padding:10px 15px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span><i class="ph-fill ph-user" style="color:var(--primary);"></i> ${data.customerName || "N/A"}</span>
                             <span>${phoneLink}</span>
                         </div>
-                        <div style="margin-top:15px; font-size:13px; font-weight:500;">
+
+                        <!-- DISH ITEMS & CHEF NOTE -->
+                        <div style="margin-top:14px; font-size:13px; font-weight:500;">
                             ${itemsHTML}
                             ${notesHtml}
                         </div>
+
+                        <!-- FOOTER TOTAL & ACTION BUTTONS -->
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:15px; border-top:1px dashed var(--border);">
                             <span style="font-size:18px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</span>
-                            <div class="order-actions-row" style="width:60%; justify-content:flex-end;">
+                            <div class="order-actions-row" style="width:65%; justify-content:flex-end;">
                                 ${actionButtons}
                             </div>
                         </div>
