@@ -257,20 +257,33 @@
                 </div>
             </div>
 
-            <!-- 💬 WHATSAPP CRM SECTION -->
+                        <!-- 💬 WHATSAPP CRM & REVIEWS SECTION -->
             <div class="section-card view-section" id="section-crm">
                 <div class="section-header">
-                    <h3><i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i> WhatsApp CRM</h3>
+                    <h3><i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i> WhatsApp CRM & Reviews</h3>
                 </div>
+                
                 <div style="padding: 20px;">
                     <p style="font-size: 13px; color: var(--text-sub); margin-top: 0; font-weight:500;">Send promotional offers directly to your past customers via WhatsApp.</p>
-                    <textarea id="promoMessage" class="input-field" placeholder="Type your discount offer here... (e.g. Get 20% OFF this weekend! Use code: WEEKEND20)" style="height: 100px; resize: none; margin-bottom: 15px;"></textarea>
+                    <textarea id="promoMessage" class="input-field" placeholder="Type your discount offer here... (e.g. Get 20% OFF this weekend! Use code: WEEKEND20)" style="height: 80px; resize: none; margin-bottom: 15px;"></textarea>
                 </div>
+
+                <!-- 🔥 NEW: LIVE CUSTOMER REVIEWS FEED -->
+                <div class="history-date-header" style="background: var(--bg-card); border-top: 1px solid var(--border);">
+                    <span>⭐ Recent Customer Reviews</span>
+                    <span id="avg-rating-badge" style="background: rgba(255, 159, 0, 0.15); color: #FF9F00; padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 11px;">5.0 ★</span>
+                </div>
+                <div id="reviews-feed-list" style="max-height: 320px; overflow-y: auto; background: var(--bg-main); border-bottom: 1px solid var(--border);">
+                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for customer reviews...</div>
+                </div>
+
+                <!-- CUSTOMER DATABASE -->
                 <div class="history-date-header">Customer Database</div>
                 <div class="menu-list" id="crm-body">
                     <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-bold ph-spinner ph-spin" style="font-size:24px;"></i><br>Loading customers...</div>
                 </div>
             </div>
+
 
             <!-- 📊 PREMIUM SAAS STATS DASHBOARD -->
             <div class="section-card view-section" id="section-stats">
@@ -401,9 +414,14 @@
 
     <div class="modal-overlay" id="addModal">
         <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h3 id="modalTitle" style="margin: 0; font-size: 22px; font-weight: 800; color: var(--text-main);">Add New Dish</h3>
-                <button onclick="closeModal()" style="background: var(--input-bg); border: none; width: 36px; height: 36px; border-radius: 50%; font-weight: bold; color: var(--text-sub); cursor: pointer; display:flex; align-items:center; justify-content:center;"><i class="ph-bold ph-x"></i></button>
+                        <!-- 🔥 Highly Visible Top Close Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                <h3 id="modalTitle" style="margin: 0; font-size: 20px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                    <i class="ph-fill ph-plus-circle" style="color: var(--primary);"></i> Add New Dish
+                </h3>
+                <button type="button" onclick="closeModal()" style="background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.3); width: 38px; height: 38px; border-radius: 50%; color: var(--danger, #E53935); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;" title="Close">
+                    <i class="ph-bold ph-x"></i>
+                </button>
             </div>
             
             <input type="hidden" id="dishId">
@@ -461,7 +479,16 @@
                 <input type="url" id="dishPhoto4" class="input-field" placeholder="4. Extra Photo URL (Optional)" style="background: var(--bg-card);" required>
             </div>
 
-            <button class="btn-save" id="saveBtn" onclick="saveDish()"><i class="ph-bold ph-floppy-disk"></i> Save & Publish</button>
+                            <!-- 🔥 Save & Cancel Dual Action Row -->
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button type="button" onclick="closeModal()" style="flex: 0.4; padding: 16px; border-radius: 16px; background: var(--input-bg); color: var(--text-main); font-weight: 700; border: none; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="button" class="btn-save" id="saveBtn" onclick="saveDish()" style="flex: 1; margin-top: 0;">
+                    <i class="ph-bold ph-floppy-disk"></i> Save & Publish
+                </button>
+            </div>
+            
         </div>
     </div>
 
