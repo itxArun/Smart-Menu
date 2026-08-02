@@ -27,23 +27,51 @@ if(dateInput) dateInput.valueAsDate = new Date();
 // ==========================================
 // 🔐 AUTHENTICATION & MULTI-TENANT LOGIC
 // ==========================================
+
+// 🔥 NEW: SLEEK ERROR DISPLAY FUNCTION
+window.showLoginError = (message) => {
+    const errorBox = document.getElementById('loginErrorBox');
+    const errorText = document.getElementById('loginErrorText');
+    if (errorBox && errorText) {
+        errorText.innerText = message;
+        errorBox.style.display = 'flex';
+    }
+};
+
+window.hideLoginError = () => {
+    const errorBox = document.getElementById('loginErrorBox');
+    if (errorBox) errorBox.style.display = 'none';
+};
+
 window.loginAdmin = () => {
+    window.hideLoginError();
     const email = document.getElementById('adminEmail').value.trim();
     const pass = document.getElementById('adminPass').value.trim();
     const btn = document.getElementById('loginBtn');
     
     if(!email || !pass) {
-        alert("Bhai, Email aur Password dono daalna zaroori hai! 😅");
+        window.showLoginError("Please enter both Email and Password.");
         return;
     }
 
     if(btn) {
-        btn.innerHTML = 'Loading <i class="ph-bold ph-spinner ph-spin"></i>'; 
+        btn.innerHTML = 'Verifying <i class="ph-bold ph-spinner ph-spin"></i>'; 
         btn.disabled = true;
     }
     
     signInWithEmailAndPassword(auth, email, pass).catch(error => {
-        alert("Login Failed: " + error.message);
+        // 🔥 SLEEK CUSTOM TRANSLATED ERRORS (NO BROWSER ALERTS!)
+        let errMsg = "Incorrect Email or Password! Please check and try again.";
+        if (error.code === 'auth/invalid-email') {
+            errMsg = "Please enter a valid email address.";
+        } else if (error.code === 'auth/too-many-requests') {
+            errMsg = "Too many failed attempts. Please try again later.";
+        } else if (error.code === 'auth/network-request-failed') {
+            errMsg = "Network error! Please check your internet connection.";
+        }
+        
+        window.showLoginError(errMsg);
+        
         if(btn) {
             btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
             btn.disabled = false;
@@ -76,12 +104,13 @@ if(passInput) {
     });
 }
 
-// 🚀 ASLI RESTAURANT NAME ON LOGIN (MULTI-TENANT & DUAL-FILTER PROTECTED)
+// 🚀 ASLI RESTAURANT NAME ON LOGIN (STRICT ZERO-FALLBACK PROTECTION)
 onAuthStateChanged(auth, async (user) => {
     const loginScreen = document.getElementById('loginScreen');
+    const btn = document.getElementById('loginBtn');
+    
     if (user) { 
         try {
-            // 🔥 PEHLE EMAIL SE CHECK KARO, NAHI TO UID SE CHECK KARO
             let q = query(collection(db, "merchants"), where("email", "==", user.email));
             let querySnapshot = await getDocs(q);
             
@@ -96,30 +125,37 @@ onAuthStateChanged(auth, async (user) => {
                 
                 const realName = merchantData.restaurantName || "Partner POS";
 
-                // 🔥 UNIVERSAL LOGO SELECTION (Teeno jagah check karega!)
                 const brandLogos = document.querySelectorAll('#admin-restaurant-name, #qr-brand-name, .brand-logo');
                 brandLogos.forEach(el => el.innerText = realName);
                 
                 localStorage.setItem('crave_hotel_name_cache', realName);
                 localStorage.setItem('crave_restaurant_id_cache', merchantData.restaurantId);
 
-            } else {
-                window.currentRestaurantId = localStorage.getItem('crave_restaurant_id_cache') || 'rest_001';
-            }
+                if(loginScreen) loginScreen.style.display = 'none'; 
+                if(typeof window.initAdminData === 'function') window.initAdminData(); 
 
-            if(loginScreen) loginScreen.style.display = 'none'; 
-            if(typeof window.initAdminData === 'function') window.initAdminData(); 
+            } else {
+                // 🚨 SECURITY TRAP: AGAR DATABASE ME RESTAURANT NAHI HAIN TO AUTO-LOGOUT KARO!
+                await signOut(auth);
+                window.showLoginError("No Restaurant Profile linked with this Account! Please contact Support.");
+                if(loginScreen) loginScreen.style.display = 'flex';
+                if(btn) {
+                    btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
+                    btn.disabled = false;
+                }
+            }
 
         } catch (error) {
             console.error("Error fetching merchant data:", error);
-            window.currentRestaurantId = localStorage.getItem('crave_restaurant_id_cache') || 'rest_001'; 
-            if(loginScreen) loginScreen.style.display = 'none'; 
-            if(typeof window.initAdminData === 'function') window.initAdminData();
+            await signOut(auth);
+            window.showLoginError("Authentication Error: " + error.message);
+            if(loginScreen) loginScreen.style.display = 'flex';
         }
     } else { 
         if(loginScreen) loginScreen.style.display = 'flex'; 
     }
 });
+
 
 window.triggerLogout = () => {
     const modal = document.getElementById('logoutConfirmModal');
