@@ -758,13 +758,43 @@ window.setRating = (val) => {
 };
 
 window.submitRating = async () => {
-    if (window.currentRatingVal === 0) { window.showToast("Please select a star rating!"); return; }
-    const review = document.getElementById('reviewText').value; window.showToast("Submitting...");
+    if (window.currentRatingVal === 0) {
+        if (typeof window.showToast === 'function') window.showToast("Please select a star rating! ⭐");
+        return;
+    }
+
+    const reviewInput = document.querySelector("textarea") || document.getElementById('reviewText') || document.getElementById('reviewInput');
+    const commentText = reviewInput ? reviewInput.value.trim() : "Great dish!";
+    
+    // 🔥 URL YA APP SE RESTAURANT ID UTHAO (Taaki Admin POS se match ho)
+    const urlParams = new URLSearchParams(window.location.search);
+    const restId = window.currentRestaurantId || urlParams.get('rest') || 'rest_001';
+    
+    // Jis dish par review diya, uska naam
+    const dishName = window.currentDish ? window.currentDish.name : "Foodie";
+
     try {
-        await addDoc(collection(db, "dish_ratings"), { dishId: window.dishToRateId, dishName: window.currentDish.name, rating: window.currentRatingVal, review: review || "No review text", timestamp: new Date(), restaurantId: window.currentRestaurantId });
-        window.closeRatingModal(); window.showToast("Thank you for your review! ⭐"); window.launchConfetti(); 
-    } catch(e) { window.showToast("Failed to submit rating."); }
+        // 🔥 ADMIN POS KE EXACT 'reviews' COLLECTION ME SAVE KARO
+        await addDoc(collection(db, "reviews"), {
+            restaurantId: restId,                     // 👈 Admin POS iske bina show nahi karta
+            customerName: "Diner - " + dishName,      // 👈 Dish ka naam customer name ki jagah dikhega
+            rating: Number(window.currentRatingVal),  // 👈 Star Rating (1 se 5)
+            comment: commentText || "Loved the food! ⭐",
+            timestamp: new Date()                     // 👈 Current date & time
+        });
+
+        window.closeRatingModal();
+        if (typeof window.showToast === 'function') {
+            window.showToast("Thank you for your review! ⭐");
+        } else {
+            alert("Thank you for your review! ⭐");
+        }
+    } catch (e) {
+        console.error("Review error:", e);
+        if (typeof window.showToast === 'function') window.showToast("Failed to submit review");
+    }
 };
+
 
 const originalAddCurrentToCart = window.addCurrentToCart;
 window.addCurrentToCart = (e) => {
