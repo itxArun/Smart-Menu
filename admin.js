@@ -104,10 +104,11 @@ if(passInput) {
     });
 }
 
-// 🚀 ASLI RESTAURANT NAME ON LOGIN (STRICT ZERO-FALLBACK PROTECTION)
+// 🚀 ASLI RESTAURANT NAME ON LOGIN (STRICT ZERO-FALLBACK + ZERO-FLASH SHIELD)
 onAuthStateChanged(auth, async (user) => {
     const loginScreen = document.getElementById('loginScreen');
     const btn = document.getElementById('loginBtn');
+    const shield = document.getElementById('zeroFlashShield');
     
     if (user) { 
         try {
@@ -128,17 +129,21 @@ onAuthStateChanged(auth, async (user) => {
                 const brandLogos = document.querySelectorAll('#admin-restaurant-name, #qr-brand-name, .brand-logo');
                 brandLogos.forEach(el => el.innerText = realName);
                 
+                // 🔥 STORE CACHE & INSTANT LOGGED-IN FLAG (FOR 0ms SHIELD)
                 localStorage.setItem('crave_hotel_name_cache', realName);
                 localStorage.setItem('crave_restaurant_id_cache', merchantData.restaurantId);
+                localStorage.setItem('pos_is_logged_in', 'true');
 
-                if(loginScreen) loginScreen.style.display = 'none'; 
+                if(loginScreen) loginScreen.style.setProperty('display', 'none', 'important'); 
                 if(typeof window.initAdminData === 'function') window.initAdminData(); 
 
             } else {
-                // 🚨 SECURITY TRAP: AGAR DATABASE ME RESTAURANT NAHI HAIN TO AUTO-LOGOUT KARO!
+                // 🚨 UNREGISTERED ACCOUNT TRAP
+                localStorage.removeItem('pos_is_logged_in');
+                if (shield) shield.remove();
                 await signOut(auth);
                 window.showLoginError("No Restaurant Profile linked with this Account! Please contact Support.");
-                if(loginScreen) loginScreen.style.display = 'flex';
+                if(loginScreen) loginScreen.style.setProperty('display', 'flex', 'important');
                 if(btn) {
                     btn.innerHTML = 'Login to Dashboard <i class="ph-bold ph-arrow-right"></i>'; 
                     btn.disabled = false;
@@ -147,15 +152,19 @@ onAuthStateChanged(auth, async (user) => {
 
         } catch (error) {
             console.error("Error fetching merchant data:", error);
+            localStorage.removeItem('pos_is_logged_in');
+            if (shield) shield.remove();
             await signOut(auth);
             window.showLoginError("Authentication Error: " + error.message);
-            if(loginScreen) loginScreen.style.display = 'flex';
+            if(loginScreen) loginScreen.style.setProperty('display', 'flex', 'important');
         }
     } else { 
-        if(loginScreen) loginScreen.style.display = 'flex'; 
+        // 🔥 NOT LOGGED IN (SHOW LOGIN SCREEN NORMALLY)
+        localStorage.removeItem('pos_is_logged_in');
+        if (shield) shield.remove();
+        if(loginScreen) loginScreen.style.setProperty('display', 'flex', 'important'); 
     }
 });
-
 
 window.triggerLogout = () => {
     const modal = document.getElementById('logoutConfirmModal');
@@ -174,9 +183,10 @@ window.executeLogout = () => {
         btn.disabled = true;
     }
     
-    // 🔥 PURANE RESTAURANT KA CACHE 100% DELETE KARO
+    // 🔥 PURANE RESTAURANT & AUTH SHIELD KA CACHE 100% DELETE KARO
     localStorage.removeItem('crave_hotel_name_cache');
     localStorage.removeItem('crave_restaurant_id_cache');
+    localStorage.removeItem('pos_is_logged_in');
     
     signOut(auth).then(() => {
         window.closeLogoutModal();
