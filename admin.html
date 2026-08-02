@@ -122,6 +122,12 @@
                 <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer;"></i>
             </div>
 
+                        <!-- 🔥 NEW: SLEEK INLINE ERROR DISPLAY BOX (NO UGLY ALERTS) -->
+            <div id="loginErrorBox" style="display: none; background: rgba(229, 57, 53, 0.1); border: 1px solid rgba(229, 57, 53, 0.3); color: #E53935; padding: 12px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; margin-bottom: 15px; text-align: left; align-items: center; gap: 8px;">
+                <i class="ph-bold ph-warning-circle" style="font-size: 18px; flex-shrink: 0;"></i>
+                <span id="loginErrorText">Invalid credentials</span>
+            </div>
+            
             <!-- 5. Login Trigger Button -->
             <button id="loginBtn" class="premium-login-btn" onclick="loginAdmin()">
                 Login to Dashboard <i class="ph-bold ph-arrow-right"></i>
