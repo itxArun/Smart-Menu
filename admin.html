@@ -65,7 +65,7 @@
         .pulse-stat-value { font-size: 18px; font-weight: 800; color: var(--text-main); }
     </style>
 
-    <!-- 🚀 0ms DASHBOARD NAME INJECTOR (SAFE FOR DASHBOARD ONLY) -->
+        <!-- 🚀 0ms DASHBOARD NAME & ZERO-FLASH AUTH SHIELD -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cachedName = localStorage.getItem('crave_hotel_name_cache');
@@ -74,7 +74,16 @@
                 if (logoEl) logoEl.innerText = cachedName;
             }
         });
+
+        // 🔥 ZERO-FLASH LOGIN SHIELD: Agar pehle se login hai, to 0ms me Login Screen hide karo!
+        if (localStorage.getItem('pos_is_logged_in') === 'true') {
+            const style = document.createElement('style');
+            style.id = 'zeroFlashShield';
+            style.innerHTML = '#loginScreen { display: none !important; }';
+            document.head.appendChild(style);
+        }
     </script>
+
 </head>
 <body>
     
