@@ -429,11 +429,33 @@ window.initAdminData = function() {
             const displayTimeStr = isToday ? timeFormat : `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short'})}, ${timeFormat}`;
             const orderDateStr = date.toISOString().split('T')[0];
 
+          // 🔥 UPDATE: LIFETIME CUSTOMER LEDGER & ORDER TIMELINE
             if(data.customerPhone && data.customerPhone !== "N/A") {
                 let phoneStr = String(data.customerPhone).replace(/\D/g, '');
                 if(phoneStr.length >= 10) {
                     if(phoneStr.length === 10) phoneStr = '91' + phoneStr;
-                    crmCustomers.set(phoneStr, { name: data.customerName || "Customer", phone: phoneStr });
+                    
+                    if (!window.crmCustomersMap.has(phoneStr)) {
+                        window.crmCustomersMap.set(phoneStr, {
+                            name: data.customerName || "Customer",
+                            phone: phoneStr,
+                            totalSpend: 0,
+                            orderCount: 0,
+                            ordersList: [],
+                            dishCount: {}
+                        });
+                    }
+                    const cust = window.crmCustomersMap.get(phoneStr);
+                    if (data.customerName && data.customerName !== "Customer") cust.name = data.customerName;
+                    
+                    if (data.status === 'Completed' || data.status === 'Served') {
+                        cust.totalSpend += (data.totalAmount || 0);
+                        cust.orderCount += 1;
+                        cust.ordersList.unshift(data);
+                        (data.items || []).forEach(item => {
+                            cust.dishCount[item.name] = (cust.dishCount[item.name] || 0) + (item.qty || 1);
+                        });
+                    }
                 }
             }
 
@@ -630,28 +652,36 @@ window.initAdminData = function() {
         const totCustomers = document.getElementById('total-customers');
         if(totCustomers) totCustomers.innerText = crmCustomers.size;
         
+     // 🔥 MASTER ORDERS LIST UPDATE KARO
+        window.allOrdersMaster = allOrders;
+        window.renderPastOrdersList();
+
+        // 🔥 CRM TABLE ME CLICKABLE PROFILE & LIFETIME SPEND DIKHAO
         const crmBody = document.getElementById('crm-body');
         if(crmBody) {
             crmBody.innerHTML = '';
-            if(crmCustomers.size === 0) { 
+            if(window.crmCustomersMap.size === 0) { 
                 crmBody.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--text-sub);"><i class="ph-fill ph-users-slash" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size:13px; font-weight:600;">No customer phone numbers collected yet.</span></div>'; 
             } else {
-                crmCustomers.forEach(c => {
+                window.crmCustomersMap.forEach((c, phoneKey) => {
                     crmBody.innerHTML += `
-                        <div class="crm-customer-row premium-hover">
+                        <div class="crm-customer-row premium-hover" onclick="openCustomerHistory('${phoneKey}')" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--bg-card); margin-bottom: 8px; border-radius: 14px;">
                             <div>
-                                <div style="font-weight:700; font-size:15px; color:var(--text-main); margin-bottom:4px;">${c.name}</div>
-                                <div style="font-size:12px; font-weight:600; color:var(--text-sub);"><i class="ph-fill ph-phone" style="color:var(--info);"></i> +${c.phone}</div>
+                                <div style="font-weight: 700; font-size: 15px; color: var(--text-main); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                                    <i class="ph-fill ph-user-circle" style="color: var(--primary);"></i> ${c.name}
+                                </div>
+                                <div style="font-size: 12px; font-weight: 600; color: var(--text-sub);">
+                                    <i class="ph-fill ph-phone" style="color: var(--info);"></i> +${c.phone} • <span style="color: var(--success); font-weight: 800;">₹${c.totalSpend} (${c.orderCount} orders)</span>
+                                </div>
                             </div>
-                            <button class="btn-wa" onclick="sendPromoWhatsApp('${c.phone}')"><i class="ph-bold ph-paper-plane-right"></i> Send Promo</button>
+                            <button class="btn-wa" onclick="event.stopPropagation(); sendPromoWhatsApp('${c.phone}')" style="background: rgba(37, 211, 102, 0.15); color: #25D366; border: 1px solid rgba(37, 211, 102, 0.3); padding: 8px 12px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <i class="ph-bold ph-paper-plane-right"></i> Promo
+                            </button>
                         </div>
                     `;
                 });
             }
         }
-    });
-}
-
 // ==========================================
 // 🔄 PAYMENT STATUS TOGGLER (1-CLICK PAID)
 // ==========================================
@@ -946,4 +976,149 @@ window.toggleTheme = () => {
     if(window.updateRevenueChart && window.allCompletedOrdersForChart.length > 0) {
        window.updateRevenueChart(window.allCompletedOrdersForChart);
     }
+};
+
+// =======================================================
+// 🔥 NEW: UNIVERSAL ORDER HISTORY SEARCH & LIFETIME CRM
+// =======================================================
+window.historyFilterType = 'today';
+window.historySearchQuery = '';
+window.allOrdersMaster = [];
+window.crmCustomersMap = new Map();
+
+window.setHistoryFilter = (type) => {
+    window.historyFilterType = type;
+    const btnToday = document.getElementById('btn-hist-today');
+    const btnAll = document.getElementById('btn-hist-all');
+    if (btnToday && btnAll) {
+        if (type === 'today') {
+            btnToday.style.background = 'var(--danger, #E53935)';
+            btnToday.style.color = 'white';
+            btnAll.style.background = 'transparent';
+            btnAll.style.color = 'var(--text-sub)';
+        } else {
+            btnAll.style.background = 'var(--danger, #E53935)';
+            btnAll.style.color = 'white';
+            btnToday.style.background = 'transparent';
+            btnToday.style.color = 'var(--text-sub)';
+        }
+    }
+    window.renderPastOrdersList();
+};
+
+window.filterHistoryOrders = () => {
+    const input = document.getElementById('historySearchInput');
+    window.historySearchQuery = input ? input.value.trim().toLowerCase() : '';
+    window.renderPastOrdersList();
+};
+
+window.renderPastOrdersList = () => {
+    const container = document.getElementById('history-cards-container');
+    if (!container) return;
+
+    const todayDate = new Date();
+    let filtered = window.allOrdersMaster.filter(data => {
+        const date = data.timestamp ? data.timestamp.toDate() : new Date();
+        const isToday = date.getDate() === todayDate.getDate() && date.getMonth() === todayDate.getMonth() && date.getFullYear() === todayDate.getFullYear();
+        
+        if (window.historyFilterType === 'today' && !isToday) return false;
+        return (data.status === 'Completed' || data.status === 'Served' || data.status === 'Cancelled' || !isToday);
+    });
+
+    if (window.historySearchQuery) {
+        filtered = filtered.filter(data => {
+            const nameMatch = (data.customerName || "").toLowerCase().includes(window.historySearchQuery);
+            const phoneMatch = String(data.customerPhone || "").includes(window.historySearchQuery);
+            const tableMatch = String(data.tableNumber || "").includes(window.historySearchQuery);
+            const dishMatch = (data.items || []).some(item => (item.name || "").toLowerCase().includes(window.historySearchQuery));
+            return nameMatch || phoneMatch || tableMatch || dishMatch;
+        });
+    }
+
+    container.innerHTML = '';
+    if (filtered.length === 0) {
+        container.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No matching past orders found.</span></div>';
+        return;
+    }
+
+    filtered.forEach(data => {
+        const date = data.timestamp ? data.timestamp.toDate() : new Date();
+        const displayTimeStr = date.toLocaleDateString('en-US', {day: 'numeric', month: 'short', hour: 'numeric', minute:'2-digit', hour12: true});
+        const cardTypeClass = data.orderType === 'Takeaway' ? 'type-takeaway' : 'type-dinein';
+        
+        let itemsHTML = '';
+        (data.items || []).forEach(item => {
+            itemsHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; border-bottom:1px solid var(--border); padding-bottom:4px;">
+                <span><b>${item.qty}x</b> ${item.name}</span>
+                <span>₹${item.price * item.qty}</span>
+            </div>`;
+        });
+
+        let statusBadge = data.status === 'Cancelled' 
+            ? `<span class="status-badge status-canc"><i class="ph-bold ph-x-circle"></i> Cancelled</span>`
+            : `<span class="status-badge status-done"><i class="ph-bold ph-flag-checkered"></i> Served</span>`;
+
+        container.innerHTML += `
+            <div class="order-card premium-hover ${cardTypeClass}" style="margin-bottom: 12px;">
+                <div class="card-top-row">
+                    <div class="table-id-box"><div class="number-avatar">${String(data.tableNumber || '#').padStart(2, '0')}</div> Table ${data.tableNumber || 'N/A'}</div>
+                    <span class="main-time" style="font-size: 11px;">${displayTimeStr}</span>
+                </div>
+                <div class="card-badge-row">${statusBadge}</div>
+                <div style="font-size:12px; font-weight:600; color:var(--text-main); background:var(--input-bg); padding:8px 12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                    <span><i class="ph-fill ph-user" style="color:var(--primary);"></i> ${data.customerName || "Customer"}</span>
+                    <span><i class="ph-fill ph-phone" style="color:var(--info);"></i> ${data.customerPhone || "N/A"}</span>
+                </div>
+                <div style="font-size:12px; font-weight:500;">${itemsHTML}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);">
+                    <span style="font-size:16px; font-weight:800; color:var(--primary);">Total: ₹${data.totalAmount || 0}</span>
+                </div>
+            </div>
+        `;
+    });
+};
+
+window.openCustomerHistory = (phoneKey) => {
+    const customer = window.crmCustomersMap.get(String(phoneKey));
+    if (!customer) return;
+
+    document.getElementById('custModalName').innerHTML = `<i class="ph-fill ph-user-circle" style="color: var(--primary); font-size: 24px;"></i> ${customer.name}`;
+    document.getElementById('custModalPhone').innerText = `+${customer.phone}`;
+    document.getElementById('custModalSpend').innerText = `₹${customer.totalSpend}`;
+    document.getElementById('custModalCount').innerText = `${customer.orderCount}`;
+
+    let favDish = "N/A";
+    let maxQty = 0;
+    Object.keys(customer.dishCount || {}).forEach(dish => {
+        if (customer.dishCount[dish] > maxQty) {
+            maxQty = customer.dishCount[dish];
+            favDish = dish;
+        }
+    });
+    document.getElementById('custModalFav').innerText = favDish;
+
+    const timelineEl = document.getElementById('customer-orders-timeline');
+    timelineEl.innerHTML = '';
+    
+    (customer.ordersList || []).forEach(order => {
+        const date = order.timestamp ? order.timestamp.toDate() : new Date();
+        const dateStr = date.toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit'});
+        let itemsStr = (order.items || []).map(i => `${i.qty}x ${i.name}`).join(", ");
+
+        timelineEl.innerHTML += `
+            <div style="background: var(--bg-main); padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 11px; font-weight: 700; color: var(--text-sub);">${dateStr}</span>
+                    <span style="font-size: 13px; font-weight: 800; color: var(--success);">₹${order.totalAmount}</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-main); font-weight: 600;">🍽️ ${itemsStr}</div>
+            </div>
+        `;
+    });
+
+    document.getElementById('customerHistoryModal').classList.add('show');
+};
+
+window.closeCustomerHistoryModal = () => {
+    document.getElementById('customerHistoryModal').classList.remove('show');
 };
