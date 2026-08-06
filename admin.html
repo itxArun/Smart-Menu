@@ -65,7 +65,7 @@
         .pulse-stat-value { font-size: 18px; font-weight: 800; color: var(--text-main); }
     </style>
 
-        <!-- 🚀 0ms DASHBOARD NAME & ZERO-FLASH AUTH SHIELD -->
+    <!-- 🚀 0ms DASHBOARD NAME & ZERO-FLASH AUTH SHIELD -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cachedName = localStorage.getItem('crave_hotel_name_cache');
@@ -83,7 +83,6 @@
             document.head.appendChild(style);
         }
     </script>
-
 </head>
 <body>
     
@@ -131,7 +130,7 @@
                 <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer;"></i>
             </div>
 
-                        <!-- 🔥 NEW: SLEEK INLINE ERROR DISPLAY BOX (NO UGLY ALERTS) -->
+            <!-- 🔥 NEW: SLEEK INLINE ERROR DISPLAY BOX (NO UGLY ALERTS) -->
             <div id="loginErrorBox" style="display: none; background: rgba(229, 57, 53, 0.1); border: 1px solid rgba(229, 57, 53, 0.3); color: #E53935; padding: 12px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; margin-bottom: 15px; text-align: left; align-items: center; gap: 8px;">
                 <i class="ph-bold ph-warning-circle" style="font-size: 18px; flex-shrink: 0;"></i>
                 <span id="loginErrorText">Invalid credentials</span>
@@ -277,7 +276,6 @@
                 
                 <!-- TAB 3: ORDER HISTORY (WITH SEARCH & LIFETIME TOGGLE) -->
                 <div class="menu-list" id="admin-past-orders" style="display: none;">
-                    <!-- 🔥 NEW: HISTORY SEARCH & TIME FILTER BAR -->
                     <div style="padding: 15px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;">
                         <div class="search-input-wrapper" style="position: relative; flex: 1; min-width: 200px;">
                             <input type="text" id="historySearchInput" placeholder="Search customer, phone or dish..." onkeyup="filterHistoryOrders()" style="width: 100%; box-sizing: border-box; padding: 10px 35px 10px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text-main); font-size: 13px;">
@@ -292,6 +290,7 @@
                         <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">No past orders for today.</div>
                     </div>
                 </div>
+            </div> <!-- 🔥 PROPERLY CLOSED ORDERS SECTION CARD -->
 
             <!-- 💬 WHATSAPP CRM & REVIEWS SECTION -->
             <div class="section-card view-section" id="section-crm">
@@ -543,7 +542,8 @@
             </div>
         </div>
     </div>
-<!-- 👤 CUSTOMER LIFETIME HISTORY & LEDGER MODAL -->
+
+    <!-- 👤 CUSTOMER LIFETIME HISTORY & LEDGER MODAL -->
     <div class="modal-overlay" id="customerHistoryModal">
         <div class="modal-card" style="max-width: 500px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px;">
@@ -580,6 +580,7 @@
             <div id="customer-orders-timeline" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;"></div>
         </div>
     </div>
+
     <!-- 🔥 Cache Busting v12 for JS -->
     <script type="module" src="admin.js?v=12"></script>
     
@@ -612,7 +613,7 @@
             <div style="display: flex; justify-content: space-around; padding: 0 20px;">
                 <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">1</div><br>OPEN CAMERA</div>
                 <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">2</div><br>SCAN QR CODE</div>
-                <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">3</div><br>ORDER & PAY</div>
+                <div style="font-size: 16px; font-weight: 800; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">3</div><br>ORDER & PAY</div>
             </div>
         </div>
     </div>
