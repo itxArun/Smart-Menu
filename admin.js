@@ -28,7 +28,6 @@ if(dateInput) dateInput.valueAsDate = new Date();
 // 🔐 AUTHENTICATION & MULTI-TENANT LOGIC
 // ==========================================
 
-// 🔥 NEW: SLEEK ERROR DISPLAY FUNCTION
 window.showLoginError = (message) => {
     const errorBox = document.getElementById('loginErrorBox');
     const errorText = document.getElementById('loginErrorText');
@@ -60,7 +59,6 @@ window.loginAdmin = () => {
     }
     
     signInWithEmailAndPassword(auth, email, pass).catch(error => {
-        // 🔥 SLEEK CUSTOM TRANSLATED ERRORS (NO BROWSER ALERTS!)
         let errMsg = "Incorrect Email or Password! Please check and try again.";
         if (error.code === 'auth/invalid-email') {
             errMsg = "Please enter a valid email address.";
@@ -79,7 +77,6 @@ window.loginAdmin = () => {
     });
 };
 
-// 👁️ PASSWORD SHOW/HIDE TOGGLE
 window.togglePasswordVisibility = () => {
     const passInput = document.getElementById('adminPass');
     const eyeIcon = document.getElementById('togglePassEye');
@@ -104,7 +101,6 @@ if(passInput) {
     });
 }
 
-// 🚀 ASLI RESTAURANT NAME ON LOGIN (STRICT ZERO-FALLBACK + ZERO-FLASH SHIELD)
 onAuthStateChanged(auth, async (user) => {
     const loginScreen = document.getElementById('loginScreen');
     const btn = document.getElementById('loginBtn');
@@ -129,7 +125,6 @@ onAuthStateChanged(auth, async (user) => {
                 const brandLogos = document.querySelectorAll('#admin-restaurant-name, #qr-brand-name, .brand-logo');
                 brandLogos.forEach(el => el.innerText = realName);
                 
-                // 🔥 STORE CACHE & INSTANT LOGGED-IN FLAG (FOR 0ms SHIELD)
                 localStorage.setItem('crave_hotel_name_cache', realName);
                 localStorage.setItem('crave_restaurant_id_cache', merchantData.restaurantId);
                 localStorage.setItem('pos_is_logged_in', 'true');
@@ -138,7 +133,6 @@ onAuthStateChanged(auth, async (user) => {
                 if(typeof window.initAdminData === 'function') window.initAdminData(); 
 
             } else {
-                // 🚨 UNREGISTERED ACCOUNT TRAP
                 localStorage.removeItem('pos_is_logged_in');
                 if (shield) shield.remove();
                 await signOut(auth);
@@ -159,7 +153,6 @@ onAuthStateChanged(auth, async (user) => {
             if(loginScreen) loginScreen.style.setProperty('display', 'flex', 'important');
         }
     } else { 
-        // 🔥 NOT LOGGED IN (SHOW LOGIN SCREEN NORMALLY)
         localStorage.removeItem('pos_is_logged_in');
         if (shield) shield.remove();
         if(loginScreen) loginScreen.style.setProperty('display', 'flex', 'important'); 
@@ -183,7 +176,6 @@ window.executeLogout = () => {
         btn.disabled = true;
     }
     
-    // 🔥 PURANE RESTAURANT & AUTH SHIELD KA CACHE 100% DELETE KARO
     localStorage.removeItem('crave_hotel_name_cache');
     localStorage.removeItem('crave_restaurant_id_cache');
     localStorage.removeItem('pos_is_logged_in');
@@ -211,14 +203,12 @@ window.enableAudioContext = () => {
     soundActivated = true;
 };
 
-// 🔥 SILENT AUTOPLAY ON FIRST SCREEN CLICK
 document.addEventListener('click', () => {
     if (!soundActivated) {
         window.enableAudioContext();
     }
 }, { once: true });
 
-// ⏱️ 1-MINUTE ELAPSED STOPWATCH UPDATE
 setInterval(() => {
     document.querySelectorAll('.time-ago-tracker').forEach(el => {
         const orderTime = parseInt(el.getAttribute('data-time'));
@@ -315,7 +305,6 @@ window.initAdminData = function() {
     const reportDateEl = document.getElementById('reportDate');
     const selectedDate = reportDateEl ? reportDateEl.value : new Date().toISOString().split('T')[0];
 
-    // 1. BOUNCER FOR MENU ITEMS
     const qMenu = query(collection(db, "menu_items"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qMenu, (snap) => {
         const totalDishes = document.getElementById('total-dishes');
@@ -326,7 +315,6 @@ window.initAdminData = function() {
         window.filterAdminMenu(); 
     });
 
-    // 2. BOUNCER FOR WAITER CALLS
     const qWaiter = query(collection(db, "waiter_calls"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qWaiter, (waiterSnap) => {
         const actionContainer = document.getElementById('action-center-container');
@@ -355,7 +343,6 @@ window.initAdminData = function() {
         actionContainer.style.display = hasActions ? 'block' : 'none';
     });
 
-    // ⭐ 4. BOUNCER FOR CUSTOMER REVIEWS & RATINGS
     const qReviews = query(collection(db, "reviews"), where("restaurantId", "==", window.currentRestaurantId));
     onSnapshot(qReviews, (revSnap) => {
         const reviewsContainer = document.getElementById('reviews-feed-list');
@@ -402,13 +389,14 @@ window.initAdminData = function() {
     onSnapshot(qLive, (snap) => {
         const newList = document.getElementById('admin-new-orders');
         const activeList = document.getElementById('admin-active-orders');
-        const pastList = document.getElementById('admin-past-orders');
-        if(!newList || !activeList || !pastList) return;
+        
+        if(!newList || !activeList) return;
 
-        newList.innerHTML = ''; activeList.innerHTML = ''; pastList.innerHTML = '';
+        // 🔥 FIX: Sirf New aur Active list clear karo. History list render function manage karega!
+        newList.innerHTML = ''; activeList.innerHTML = '';
         
         let newCount = 0; let kitchenCount = 0; let pastCount = 0;
-        let totalRev = 0; let crmCustomers = new Map(); 
+        let totalRev = 0; window.crmCustomersMap.clear(); 
         window.allCompletedOrdersForChart = []; 
 
         let saasPending = 0; let saasPreparing = 0; let saasServed = 0; let saasCancelled = 0;
@@ -429,7 +417,6 @@ window.initAdminData = function() {
             const displayTimeStr = isToday ? timeFormat : `${date.toLocaleDateString('en-US', {day: 'numeric', month: 'short'})}, ${timeFormat}`;
             const orderDateStr = date.toISOString().split('T')[0];
 
-          // 🔥 UPDATE: LIFETIME CUSTOMER LEDGER & ORDER TIMELINE
             if(data.customerPhone && data.customerPhone !== "N/A") {
                 let phoneStr = String(data.customerPhone).replace(/\D/g, '');
                 if(phoneStr.length >= 10) {
@@ -481,7 +468,8 @@ window.initAdminData = function() {
                 }
             }
 
-            if(orderDateStr === selectedDate || data.status === 'New' || data.status === 'Accepted' || data.status === 'Preparing' || data.status === 'Ready') {
+            // 🔥 FIX: Sirf New aur Active cards ko yahan generate karo, History alag se chalega
+            if(data.status === 'New' || data.status === 'Accepted' || data.status === 'Preparing' || data.status === 'Ready') {
                 let itemsHTML = '';
                 data.items.forEach(item => {
                     itemsHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid var(--border); padding-bottom:6px;">
@@ -495,7 +483,6 @@ window.initAdminData = function() {
                     : '';
 
                 const cardTypeClass = data.orderType === 'Takeaway' ? 'type-takeaway' : 'type-dinein';
-                
                 const tableDisplayBadge = data.orderType === 'Takeaway' 
                     ? `<div class="table-id-box" style="color:var(--warning);"><div class="number-avatar" style="background:var(--warning);"><i class="ph-bold ph-shopping-bag"></i></div> Takeaway</div>` 
                     : `<div class="table-id-box"><div class="number-avatar">${String(data.tableNumber || '#').padStart(2, '0')}</div> Table ${data.tableNumber}</div>`;
@@ -505,8 +492,6 @@ window.initAdminData = function() {
                 else if(data.status === 'Accepted') statusBadge = `<span class="status-badge status-accepted"><i class="ph-bold ph-thumbs-up"></i> Accepted</span>`;
                 else if(data.status === 'Preparing') statusBadge = `<span class="status-badge status-prep"><i class="ph-bold ph-cooking-pot"></i> Cooking</span>`;
                 else if(data.status === 'Ready') statusBadge = `<span class="status-badge status-ready"><i class="ph-bold ph-check-circle"></i> Ready</span>`;
-                else if(data.status === 'Served' || data.status === 'Completed') statusBadge = `<span class="status-badge status-done"><i class="ph-bold ph-flag-checkered"></i> Served</span>`;
-                else statusBadge = `<span class="status-badge status-canc"><i class="ph-bold ph-x-circle"></i> Cancelled</span>`;
 
                 const isPaid = data.isPaid === true;
                 const paidBadgeHTML = isPaid 
@@ -515,10 +500,8 @@ window.initAdminData = function() {
 
                 let actionButtons = '';
                 if(data.status === 'New') {
-                    actionButtons = `
-                        <button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Accepted')">Accept Order ✓</button>
-                        <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>
-                    `;
+                    actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Accepted')">Accept Order ✓</button>
+                                     <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>`;
                 } else if(data.status === 'Accepted') {
                     actionButtons = `<button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${data.docId}', 'Preparing')">Start Cooking 🍳</button>`;
                 } else if(data.status === 'Preparing') {
@@ -527,8 +510,7 @@ window.initAdminData = function() {
                     actionButtons = `<button class="btn-action-new" style="background:var(--primary);" onclick="updateOrderStatus('${data.docId}', 'Served')">Served & Paid 🎉</button>`;
                 }
 
-                let diffMins = 0;
-                if(data.timestamp) diffMins = Math.floor((Date.now() - data.timestamp.toDate().getTime()) / 60000);
+                let diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
                 let waitText = diffMins <= 0 ? 'Just now' : `${diffMins} min ago`;
                 let waitColor = diffMins >= 30 ? 'var(--danger)' : (diffMins >= 15 ? 'var(--warning)' : 'var(--success)');
                 const phoneLink = (data.customerPhone && data.customerPhone !== "N/A") ? `<a href="tel:${data.customerPhone}" style="color:var(--primary); font-size:16px;"><i class="ph-bold ph-phone-call"></i></a>` : '';
@@ -539,48 +521,34 @@ window.initAdminData = function() {
                             ${tableDisplayBadge}
                             <div class="order-time-display">
                                 <span class="main-time">${displayTimeStr}</span>
-                                ${(data.status !== 'Served' && data.status !== 'Completed' && data.status !== 'Cancelled') ? `<span class="time-ago-tracker ago-time" data-time="${date.getTime()}" style="color:${waitColor};">⏱️ ${waitText}</span>` : ''}
+                                <span class="time-ago-tracker ago-time" data-time="${date.getTime()}" style="color:${waitColor};">⏱️ ${waitText}</span>
                             </div>
                         </div>
-
-                        <div class="card-badge-row">
-                            ${statusBadge}
-                            ${paidBadgeHTML}
-                        </div>
-
+                        <div class="card-badge-row">${statusBadge}${paidBadgeHTML}</div>
                         <div style="font-size:12px; font-weight:600; color:var(--text-main); background:var(--input-bg); padding:10px 15px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
                             <span><i class="ph-fill ph-user" style="color:var(--primary);"></i> ${data.customerName || "N/A"}</span>
                             <span>${phoneLink}</span>
                         </div>
-
-                        <div style="margin-top:14px; font-size:13px; font-weight:500;">
-                            ${itemsHTML}
-                            ${notesHtml}
-                        </div>
-
+                        <div style="margin-top:14px; font-size:13px; font-weight:500;">${itemsHTML}${notesHtml}</div>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:15px; border-top:1px dashed var(--border);">
                             <span style="font-size:18px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</span>
-                            <div class="order-actions-row" style="width:65%; justify-content:flex-end;">
-                                ${actionButtons}
-                            </div>
+                            <div class="order-actions-row" style="width:65%; justify-content:flex-end;">${actionButtons}</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
 
                 if (data.status === 'New') {
                     newCount++;
                     newList.innerHTML = cardHtml + newList.innerHTML;
                     const soundToggle = document.getElementById('soundToggle');
                     if(soundToggle && soundToggle.checked && !isInitialLoad && soundActivated) {
-                        const now = new Date(); if((now - date) < 120000) document.getElementById('orderSound').play().catch(e=>{});
+                        if((new Date() - date) < 120000) document.getElementById('orderSound').play().catch(e=>{});
                     }
-                } else if (data.status === 'Accepted' || data.status === 'Preparing' || data.status === 'Ready') {
+                } else {
                     kitchenCount++;
                     activeList.innerHTML += cardHtml;
-                } else {
-                    pastCount++;
-                    pastList.innerHTML = cardHtml + pastList.innerHTML;
                 }
+            } else if (orderDateStr === selectedDate) {
+                pastCount++; // Aaj ke served orders ka badge counter
             }
         });
 
@@ -647,16 +615,14 @@ window.initAdminData = function() {
         
         if(newList.innerHTML === '') newList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-bell-slash" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No new incoming orders right now.</span></div>';
         if(activeList.innerHTML === '') activeList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-check-circle" style="font-size:40px; color:var(--success); opacity:0.5; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">Kitchen is clear! No cooking pending. 🎉</span></div>';
-        if(pastList.innerHTML === '') pastList.innerHTML = '<div style="padding: 50px 20px; text-align: center; color: var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><br><span style="font-size: 14px; font-weight:600;">No past orders for today.</span></div>';
 
         const totCustomers = document.getElementById('total-customers');
-        if(totCustomers) totCustomers.innerText = crmCustomers.size;
+        if(totCustomers) totCustomers.innerText = window.crmCustomersMap.size;
         
-     // 🔥 MASTER ORDERS LIST UPDATE KARO
+        // 🔥 MASTER ORDERS LIST UPDATE & CRM TABLE RENDER
         window.allOrdersMaster = allOrders;
         window.renderPastOrdersList();
 
-        // 🔥 CRM TABLE ME CLICKABLE PROFILE & LIFETIME SPEND DIKHAO
         const crmBody = document.getElementById('crm-body');
         if(crmBody) {
             crmBody.innerHTML = '';
@@ -682,9 +648,9 @@ window.initAdminData = function() {
                 });
             }
         }
-// ==========================================
-// 🔄 PAYMENT STATUS TOGGLER (1-CLICK PAID)
-// ==========================================
+    });
+};
+
 window.toggleOrderPayment = async (orderId, isCurrentlyPaid) => {
     try {
         await updateDoc(doc(db, "orders", orderId), {
@@ -695,7 +661,6 @@ window.toggleOrderPayment = async (orderId, isCurrentlyPaid) => {
     }
 };
 
-// Remaining Utility Functions 
 window.filterAdminCat = (cat, element) => {
     document.querySelectorAll('.admin-cat-pill').forEach(p => p.classList.remove('active'));
     element.classList.add('active');
@@ -881,8 +846,6 @@ window.resolveAction = async (collectionName, id) => {
     try { await updateDoc(doc(db, collectionName, id), { status: "Resolved" }); } catch(e) { console.error("Resolution Failed: ", e); }
 };
 
-let isQrGenerated = false;
-
 window.switchTab = (tabId, element = null) => {
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
     const activeSec = document.getElementById('section-' + tabId);
@@ -916,7 +879,6 @@ window.switchTab = (tabId, element = null) => {
     }
 };
 
-// 🚀 STRICT 3-TAB PIPELINE SWITCHER
 window.switchAdminOrderTab = (tab) => {
     document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('#section-orders .menu-list').forEach(list => list.style.display = 'none');
