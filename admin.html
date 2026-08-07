@@ -67,6 +67,14 @@
 
     <!-- 🚀 0ms DASHBOARD NAME & ZERO-FLASH AUTH SHIELD -->
     <script>
+        // 🕒 LIVE POS SHIFT CLOCK AUTO-UPDATER
+        setInterval(() => {
+            const clockEl = document.getElementById('pos-live-clock');
+            if (clockEl) {
+                const now = new Date();
+                clockEl.innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            }
+        }, 1000);
         document.addEventListener('DOMContentLoaded', () => {
             const cachedName = localStorage.getItem('crave_hotel_name_cache');
             if (cachedName) {
@@ -148,14 +156,39 @@
         </div>
     </div>
 
-    <!-- 🏆 CLEAN SLEEK TOP NAV (NO DATE, NO SOUND BUTTON) -->
-    <div class="top-nav">
-        <div style="display: flex; flex-direction: column;">
-            <h1 class="brand-logo" id="admin-restaurant-name">Partner POS</h1>
-            <span class="greet-text">Welcome back, Manager 👋</span>
+   <!-- 🏆 ULTRA-PREMIUM SAAS TOP NAV (APPLE FROSTED GLASS & LIVE STATUS) -->
+    <div class="top-nav" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; gap: 10px; flex-wrap: wrap;">
+        <!-- Left: Hotel Name + Live Kitchen Glow Badge -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <h1 class="brand-logo" id="admin-restaurant-name" style="margin: 0; font-size: 22px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">Partner POS</h1>
+                <span style="background: rgba(36, 150, 63, 0.12); color: var(--success, #24963F); border: 1px solid rgba(36, 150, 63, 0.3); padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;">
+                    <span style="width: 7px; height: 7px; background: #24963F; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #24963F;"></span>
+                    Kitchen Online
+                </span>
+            </div>
+            <span class="greet-text" style="font-size: 12px; color: var(--text-sub); font-weight: 600;">Welcome back, Manager 👋 • Active Billing Shift</span>
         </div>
-        <div class="admin-profile">
-            <button class="btn-logout" onclick="location.reload()" title="Refresh Dashboard"><i class="ph-bold ph-arrows-clockwise"></i></button>
+
+        <!-- Right: Live Clock & Pro Action Toolbar -->
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <!-- Live Digital Clock -->
+            <div style="background: var(--input-bg); border: 1px solid var(--border); padding: 7px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                <i class="ph-fill ph-clock" style="color: var(--primary); font-size: 15px;"></i>
+                <span id="pos-live-clock">00:00 PM</span>
+            </div>
+
+            <!-- Instant Table QR Quick Button -->
+            <button onclick="switchTab('settings')" style="background: rgba(229, 57, 53, 0.1); color: var(--danger, #E53935); border: 1px solid rgba(229, 57, 53, 0.25); padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px;" title="Open Table QR">
+                <i class="ph-bold ph-qr-code" style="font-size: 16px;"></i>
+                <span class="qr-btn-text">Table QR</span>
+            </button>
+
+            <!-- Admin Profile Pill -->
+            <div style="background: var(--bg-main); border: 1px solid var(--border); padding: 6px 12px; border-radius: 25px; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--text-main);">
+                <i class="ph-fill ph-user-circle" style="color: var(--primary); font-size: 20px;"></i>
+                <span>Admin</span>
+            </div>
         </div>
     </div>
 
