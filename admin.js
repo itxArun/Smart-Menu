@@ -557,6 +557,12 @@ window.initAdminData = function() {
         const bNew = document.getElementById('badge-new-count');
         const bActive = document.getElementById('badge-active-count');
         const bPast = document.getElementById('badge-past-count');
+        // 🔥 UPDATE NOTIFICATION BELL BADGE
+        const bellBadge = document.getElementById('nav-bell-badge');
+        if (bellBadge) {
+            bellBadge.innerText = newCount;
+            bellBadge.style.display = newCount > 0 ? 'flex' : 'none';
+        }
         if(bNew) bNew.innerText = newCount;
         if(bActive) bActive.innerText = kitchenCount;
         if(bPast) bPast.innerText = pastCount;
@@ -1083,4 +1089,36 @@ window.openCustomerHistory = (phoneKey) => {
 
 window.closeCustomerHistoryModal = () => {
     document.getElementById('customerHistoryModal').classList.remove('show');
+};
+
+// =======================================================
+// 🔥 NEW: ADMIN PILL DROPDOWN & NOTIFICATION BELL LOGIC
+// =======================================================
+
+window.toggleAdminMenu = (e) => {
+    if (e) e.stopPropagation();
+    const drop = document.getElementById('adminProfileDropdown');
+    if (drop) {
+        drop.style.display = drop.style.display === 'flex' ? 'none' : 'flex';
+    }
+};
+
+// Screen ke kisi aur hisse par click karne par dropdown close ho jaye
+document.addEventListener('click', () => {
+    const drop = document.getElementById('adminProfileDropdown');
+    if (drop && drop.style.display === 'flex') {
+        drop.style.display = 'none';
+    }
+});
+
+// Sound toggle ko main setting checkbox ke sath sync rakho
+window.toggleNavSound = (checked) => {
+    const mainSound = document.getElementById('soundToggle');
+    if (mainSound) mainSound.checked = checked;
+};
+
+// Dark mode toggle ko sync rakho
+window.syncNavTheme = (checked) => {
+    const mainTheme = document.getElementById('themeToggle');
+    if (mainTheme) mainTheme.checked = checked;
 };
