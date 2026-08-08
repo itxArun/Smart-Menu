@@ -156,23 +156,21 @@
         </div>
     </div>
 
-  <!-- 🏆 ULTRA-CLEAN MINIMALIST TOP NAV (NO CLUTTER) -->
+ <!-- 🏆 ULTRA-CLEAN MINIMALIST TOP NAV (THREE-LINE MENU + BRAND) -->
     <div class="top-nav" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 500;">
         
-        <!-- LEFT: Gol Admin Pill + Hotel Name ONLY -->
-        <div style="display: flex; align-items: center; gap: 12px; position: relative;">
-            <!-- Gol Admin Pill -->
-            <button onclick="toggleAdminMenu(event)" style="background: var(--input-bg); border: 1px solid var(--border); padding: 7px 14px; border-radius: 25px; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: var(--text-main); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-                <i class="ph-fill ph-user-circle" style="color: var(--primary); font-size: 20px;"></i>
-                <span>Admin</span>
-                <i class="ph-bold ph-caret-down" style="font-size: 11px; color: var(--text-sub);"></i>
+        <!-- LEFT: Three-Line Menu Button + Hotel Name ONLY -->
+        <div style="display: flex; align-items: center; gap: 14px; position: relative;">
+            <!-- 🔥 Three-Line (Hamburger) Button -->
+            <button onclick="toggleAdminMenu(event)" style="background: var(--input-bg); border: 1px solid var(--border); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: all 0.2s ease;" title="Menu">
+                <i class="ph-bold ph-list" style="font-size: 22px;"></i>
             </button>
 
             <!-- Hotel Name ONLY (Super Clean Bold Typography) -->
             <h1 class="brand-logo" id="admin-restaurant-name" style="margin: 0; font-size: 22px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">Partner POS</h1>
 
-            <!-- 🔥 ADMIN PILL GLASSMORPHIC DROPDOWN MENU -->
-            <div id="adminProfileDropdown" style="display: none; position: absolute; top: 48px; left: 0; width: 240px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); padding: 12px; z-index: 600; flex-direction: column; gap: 6px;">
+            <!-- 🔥 THREE-LINE DROPDOWN MENU (SAME 5 PRO OPTIONS) -->
+            <div id="adminProfileDropdown" style="display: none; position: absolute; top: 50px; left: 0; width: 240px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); padding: 12px; z-index: 600; flex-direction: column; gap: 6px;">
                 <div style="padding: 8px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px;">
                     <span style="font-size: 13px; font-weight: 800; color: var(--text-main); display: block;">Manager Profile</span>
                     <span style="font-size: 11px; color: var(--success); font-weight: 700;">🟢 Active Billing Shift</span>
