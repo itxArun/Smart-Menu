@@ -869,3 +869,54 @@ window.addEventListener('DOMContentLoaded', () => {
     if(typeof initSession === 'function') initSession();
     loadDynamicMenu();
 });
+// =======================================================
+// 🔥 FLY-TO-CART & HAPTIC VIBRATION LOGIC
+// =======================================================
+
+window.triggerAddAnimation = (event, dishImgUrl) => {
+    // 📳 1. Haptic Vibration (Phone me halka jhatka)
+    if (navigator.vibrate) {
+        navigator.vibrate(50); // 50 milliseconds ki smooth vibration
+    }
+
+    // 🧽 2. Jelly Bounce on Button
+    const btn = event.currentTarget;
+    btn.classList.add('btn-bounce');
+    setTimeout(() => btn.classList.remove('btn-bounce'), 150);
+
+    // 🛒 3. Fly to Cart Magic
+    const cartIcon = document.getElementById('bottom-cart-icon'); // ⚠️ Dhyan do: Apne cart icon ki id 'bottom-cart-icon' zaroor rakhna!
+    if (!cartIcon) return;
+
+    // Button aur Cart ki location pata karo
+    const btnRect = btn.getBoundingClientRect();
+    const cartRect = cartIcon.getBoundingClientRect();
+
+    // Hawa me udne wali nayi image banao
+    const flyingImg = document.createElement('img');
+    flyingImg.src = dishImgUrl;
+    flyingImg.classList.add('flying-dish');
+    
+    // Starting position (Jahan button dabaya)
+    flyingImg.style.left = `${btnRect.left}px`;
+    flyingImg.style.top = `${btnRect.top}px`;
+    document.body.appendChild(flyingImg);
+
+    // 10ms baad image ko Cart ki taraf bhejo
+    setTimeout(() => {
+        flyingImg.style.left = `${cartRect.left}px`;
+        flyingImg.style.top = `${cartRect.top}px`;
+        flyingImg.style.transform = 'scale(0.2) rotate(180deg)';
+        flyingImg.style.opacity = '0.3';
+    }, 10);
+
+    // Animation khatam hone ke baad image hata do aur Cart ko bounce karao
+    setTimeout(() => {
+        flyingImg.remove();
+        
+        // Cart icon jelly bounce
+        cartIcon.style.transform = 'scale(1.3)';
+        cartIcon.style.transition = 'transform 0.2s ease';
+        setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
+    }, 700); // 0.7s matching CSS transition
+};
