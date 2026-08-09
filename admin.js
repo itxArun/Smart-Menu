@@ -1125,18 +1125,31 @@ window.syncNavTheme = (checked) => {
 // 🔑 FORGOT PASSWORD LOGIC (ZOMATO STYLE)
 // =======================================================
 
-// 1. Modal open karne ka function
+// 1. Modal open karne ka function (Safe Version)
 window.showForgotPassword = () => {
-    const loginEmail = document.getElementById('adminEmail').value;
-    const resetInput = document.getElementById('resetEmailInput');
-    const feedbackMsg = document.getElementById('resetFeedbackMsg');
-    
-    if (loginEmail) {
-        resetInput.value = loginEmail; 
+    try {
+        // Safe tarike se email input dhoondhna
+        const emailInput = document.getElementById('adminEmail') || document.querySelector('input[type="email"]');
+        const resetInput = document.getElementById('resetEmailInput');
+        const feedbackMsg = document.getElementById('resetFeedbackMsg');
+        const modal = document.getElementById('forgotPassModal');
+        
+        if (!modal) {
+            alert("Bhai, Modal ka HTML nahi mil raha! Ek baar check karo Step 2 paste hua hai ya nahi.");
+            return;
+        }
+
+        // Agar user ne email dala tha to copy kar lo
+        if (emailInput && emailInput.value && resetInput) {
+            resetInput.value = emailInput.value; 
+        }
+        
+        if (feedbackMsg) feedbackMsg.style.display = 'none'; 
+        modal.style.display = 'flex';
+        
+    } catch (error) {
+        console.error("Modal open hone me error:", error);
     }
-    
-    if (feedbackMsg) feedbackMsg.style.display = 'none'; 
-    document.getElementById('forgotPassModal').style.display = 'flex';
 };
 
 // 2. Modal close karne ka function
