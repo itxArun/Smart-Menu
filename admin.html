@@ -138,11 +138,13 @@
                 <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer;"></i>
             </div>
 <!-- 🔥 100% WORKING FORGOT PASSWORD BUTTON (DIRECT HTML) -->
+                        <!-- 🔥 100% WORKING FORGOT PASSWORD BUTTON (NO A-TAG) -->
             <div style="text-align: right; margin-top: 5px; margin-bottom: 20px;">
-                <div onclick="const mod = document.getElementById('forgotPassModal'); if(mod) { mod.style.display = 'flex'; } else { alert('Bhai, Page update nahi hua hai! Browser History/Cache clear karo.'); }" style="font-size: 13px; color: #E53935; font-weight: 800; cursor: pointer; display: inline-block; padding: 5px;">
+                <span onclick="window.showForgotPassword()" style="font-size: 13px; color: #E53935; font-weight: 800; cursor: pointer; border-bottom: 1px dashed #E53935; padding-bottom: 2px;">
                     Forgot Password?
-                </div>
+                </span>
             </div>
+
             <!-- 🔥 NEW: SLEEK INLINE ERROR DISPLAY BOX (NO UGLY ALERTS) -->
             <div id="loginErrorBox" style="display: none; background: rgba(229, 57, 53, 0.1); border: 1px solid rgba(229, 57, 53, 0.3); color: #E53935; padding: 12px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; margin-bottom: 15px; text-align: left; align-items: center; gap: 8px;">
                 <i class="ph-bold ph-warning-circle" style="font-size: 18px; flex-shrink: 0;"></i>
