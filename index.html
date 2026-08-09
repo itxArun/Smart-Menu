@@ -296,7 +296,7 @@
                     </button>
                     
                     <div class="add-action-wrapper" id="add-action-wrapper">
-                        <button class="btn-cart" id="btn-add-new" onclick="addCurrentToCart(event)">ADD <i class="ph-bold ph-plus"></i></button>
+                        <button class="btn-cart" id="btn-add-new" onclick="triggerAddAnimation(event); addCurrentToCart(event)">ADD <i class="ph-bold ph-plus"></i></button>
                         <div class="stepper-control" id="btn-stepper">
                             <button onclick="changeCurrentQty(-1)"><i class="ph-bold ph-minus"></i></button>
                             <span id="current-qty-display">1</span>
