@@ -932,3 +932,53 @@ model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
     gap: 4px;
     transition: opacity 0.3s ease;
 }
+
+/* =========================================================
+   🔥 PREMIUM AI ANIMATIONS (ZOMATO/SWIGGY PRO STYLE)
+   ========================================================= */
+
+/* 🌊 1. WATERFALL STAGGERED LOAD */
+.menu-item-card {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: waterfallFade 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+/* Alag-alag delay set karna taaki ek ke baad ek aayein */
+.menu-item-card:nth-child(1) { animation-delay: 0.1s; }
+.menu-item-card:nth-child(2) { animation-delay: 0.2s; }
+.menu-item-card:nth-child(3) { animation-delay: 0.3s; }
+.menu-item-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes waterfallFade {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🛸 2. 3D FLOATING PARALLAX (Image Hover Effect) */
+.dish-image {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.menu-item-card:hover .dish-image {
+    transform: scale(1.08) translateY(-5px) rotate(2deg);
+    filter: drop-shadow(0 15px 20px rgba(0,0,0,0.15));
+}
+
+/* 🧽 3. JELLY BOUNCE EFFECT (For Buttons) */
+.btn-bounce {
+    transition: transform 0.1s ease;
+}
+.btn-bounce:active {
+    transform: scale(0.85); /* Dabane par chhota hoga */
+}
+
+/* 🛒 4. FLY-TO-CART ANIMATION CLASS */
+.flying-dish {
+    position: fixed;
+    z-index: 99999;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+    transition: all 0.7s cubic-bezier(0.25, 1, 0.25, 1);
+    pointer-events: none; /* Taaki click block na kare */
+}
