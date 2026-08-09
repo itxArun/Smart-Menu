@@ -1121,3 +1121,75 @@ window.syncNavTheme = (checked) => {
     const mainTheme = document.getElementById('themeToggle');
     if (mainTheme) mainTheme.checked = checked;
 };
+// =======================================================
+// 🔑 FORGOT PASSWORD LOGIC (ZOMATO STYLE)
+// =======================================================
+
+// 1. Modal open karne ka function
+window.showForgotPassword = () => {
+    const loginEmail = document.getElementById('adminEmail').value;
+    const resetInput = document.getElementById('resetEmailInput');
+    const feedbackMsg = document.getElementById('resetFeedbackMsg');
+    
+    if (loginEmail) {
+        resetInput.value = loginEmail; 
+    }
+    
+    if (feedbackMsg) feedbackMsg.style.display = 'none'; 
+    document.getElementById('forgotPassModal').style.display = 'flex';
+};
+
+// 2. Modal close karne ka function
+window.closeForgotPassword = () => {
+    document.getElementById('forgotPassModal').style.display = 'none';
+};
+
+// 3. Asli Firebase Reset Function
+window.executePasswordReset = async () => {
+    const email = document.getElementById('resetEmailInput').value.trim();
+    const feedbackMsg = document.getElementById('resetFeedbackMsg');
+    const btn = document.getElementById('btnSendReset');
+
+    if (!email) {
+        feedbackMsg.style.display = 'block';
+        feedbackMsg.style.color = '#E53935';
+        feedbackMsg.innerText = '⚠️ Please enter your email address.';
+        return;
+    }
+
+    btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Sending...';
+    btn.style.opacity = '0.7';
+    btn.disabled = true;
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        
+        feedbackMsg.style.display = 'block';
+        feedbackMsg.style.color = '#24963F'; 
+        feedbackMsg.innerText = '✅ Reset link sent! Check your email inbox.';
+        
+        setTimeout(() => {
+            closeForgotPassword();
+            btn.innerHTML = 'Send Link';
+            btn.style.opacity = '1';
+            btn.disabled = false;
+        }, 3000);
+
+    } catch (error) {
+        console.error("Password reset error:", error);
+        feedbackMsg.style.display = 'block';
+        feedbackMsg.style.color = '#E53935'; 
+        
+        if (error.code === 'auth/user-not-found') {
+            feedbackMsg.innerText = '⚠️ No account found with this email.';
+        } else if (error.code === 'auth/invalid-email') {
+            feedbackMsg.innerText = '⚠️ Please enter a valid email format.';
+        } else {
+            feedbackMsg.innerText = '⚠️ Failed to send reset link. Please try again.';
+        }
+        
+        btn.innerHTML = 'Send Link';
+        btn.style.opacity = '1';
+        btn.disabled = false;
+    }
+};
