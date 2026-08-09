@@ -137,7 +137,10 @@
                 <input type="password" id="adminPass" placeholder="Password" required>
                 <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer;"></i>
             </div>
-
+<!-- Forgot Password Link Yahan Aayega -->
+            <div style="text-align: right; margin-top: 5px; margin-bottom: 20px;">
+                <a href="#" onclick="showForgotPassword()" style="font-size: 12px; color: var(--danger, #E53935); font-weight: 700; text-decoration: none;">Forgot Password?</a>
+            </div>
             <!-- 🔥 NEW: SLEEK INLINE ERROR DISPLAY BOX (NO UGLY ALERTS) -->
             <div id="loginErrorBox" style="display: none; background: rgba(229, 57, 53, 0.1); border: 1px solid rgba(229, 57, 53, 0.3); color: #E53935; padding: 12px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; margin-bottom: 15px; text-align: left; align-items: center; gap: 8px;">
                 <i class="ph-bold ph-warning-circle" style="font-size: 18px; flex-shrink: 0;"></i>
@@ -661,6 +664,30 @@
                 <div style="font-size: 16px; font-weight: bold; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">2</div><br>SCAN QR CODE</div>
                 <div style="font-size: 16px; font-weight: 800; color: #333;"><div style="background: #8B0000; color: white; width: 45px; height: 45px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px;">3</div><br>ORDER & PAY</div>
             </div>
+        </div>
+    </div>
+    <!-- 🔑 FORGOT PASSWORD MODAL -->
+    <div class="modal-overlay" id="forgotPassModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999999; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; width: 100%; max-width: 380px; padding: 30px 20px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center;">
+            
+            <div style="background: rgba(229,57,53,0.1); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;">
+                <i class="ph-bold ph-key" style="font-size: 28px; color: #E53935;"></i>
+            </div>
+            
+            <h3 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 800; color: #1C1C1E; font-family: 'Okra', sans-serif;">Reset Password</h3>
+            <p style="font-size: 13px; color: #757575; margin-bottom: 20px; font-weight: 600;">Enter your registered email address to receive a password reset link.</p>
+            
+            <div class="input-group" style="margin-bottom: 20px;">
+                <input type="email" id="resetEmailInput" placeholder="manager@restaurant.com" required style="width: 100%; padding: 14px 14px 14px 45px; border: 1px solid #E0E0E0; border-radius: 12px; font-size: 14px; box-sizing: border-box; background: #F9F9F9; outline: none; font-family: 'Poppins', sans-serif;">
+                <i class="ph-fill ph-envelope" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #757575; font-size: 18px;"></i>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closeForgotPassword()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: #F5F5F5; color: #1C1C1E;">Cancel</button>
+                <button id="btnSendReset" onclick="executePasswordReset()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: #E53935; color: white;">Send Link</button>
+            </div>
+            
+            <div id="resetFeedbackMsg" style="display: none; margin-top: 15px; font-size: 12px; font-weight: 700; color: #24963F;"></div>
         </div>
     </div>
 </body>
