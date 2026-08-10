@@ -138,9 +138,9 @@
                 <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer;"></i>
             </div>
 
-            <!-- 🔥 5. FORGOT PASSWORD LINK (100% CLEAN) -->
-            <div style="text-align: right; margin-top: -10px; margin-bottom: 20px;">
-                <span onclick="document.getElementById('forgotPassModal').style.display='flex';" style="font-size: 12px; color: #E53935; font-weight: 700; cursor: pointer; border-bottom: 1px dashed #E53935; padding-bottom: 1px;">
+            <!-- 🔥 5. FORGOT PASSWORD LINK (CSS GHOST FIXED) -->
+            <div style="text-align: right; margin-top: 5px; margin-bottom: 20px; position: relative; z-index: 999;">
+                <span onclick="document.getElementById('forgotPassModal').classList.add('show');" style="font-size: 13px; color: #E53935; font-weight: 800; cursor: pointer; padding: 5px 0 5px 5px; display: inline-block;">
                     Forgot Password?
                 </span>
             </div>
@@ -670,9 +670,8 @@
             </div>
         </div>
     </div>
-    
-   <!-- 🔑 FORGOT PASSWORD MODAL (FIXED) -->
-    <div class="modal-overlay" id="forgotPassModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999999; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 20px;">
+    <!-- 🔑 FORGOT PASSWORD MODAL (FIXED FOR CSS ANIMATION) -->
+    <div class="modal-overlay" id="forgotPassModal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999999; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 20px;">
         <div class="modal-card" style="width: 100%; max-width: 380px; background: white; text-align: center; border-radius: 32px; padding: 30px 20px; margin: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
             
             <div style="background: rgba(229,57,53,0.1); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;">
@@ -688,7 +687,7 @@
             </div>
             
             <div style="display: flex; gap: 10px;">
-                <button onclick="closeForgotPassword()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: #F5F5F5; color: #1C1C1E;">Cancel</button>
+                <button onclick="document.getElementById('forgotPassModal').classList.remove('show');" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: #F5F5F5; color: #1C1C1E;">Cancel</button>
                 <button id="btnSendReset" onclick="executePasswordReset()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: #E53935; color: white;">Send Link</button>
             </div>
             
