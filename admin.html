@@ -111,14 +111,13 @@
     </div>
 
     <!-- 🔒 UNIVERSAL WHITE-LABEL RESTAURANT LOGIN SCREEN (100% FULL SCREEN PROTECTED) -->
-    <div class="login-overlay" id="loginScreen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; background: #ffffff; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; box-sizing: border-box;">
-        <div class="login-card" style="width: 100%; max-width: 400px; background: #ffffff; padding: 30px 20px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: center;">
-            <!-- 1. Security & Trust Badge -->
+    <div class="login-card" style="width: 100%; max-width: 400px; background: #ffffff; padding: 30px 20px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: center;">
+            <!-- 1. Security Badge -->
             <span style="font-size: 11px; font-weight: 800; color: #E53935; letter-spacing: 1.5px; display: block; margin-bottom: 10px;">
                 <i class="ph-bold ph-shield-check"></i> • SECURE ADMIN PORTAL
             </span>
             
-            <!-- 2. Universal Portal Title & Foodie Subtitle -->
+            <!-- 2. Portal Title -->
             <h2 id="login-brand-title" class="login-title" style="font-size: 26px; font-weight: 800; color: #1C1C1E; margin-bottom: 6px;">
                 Restaurant Admin Portal
             </h2>
@@ -132,35 +131,35 @@
                 <i class="ph-fill ph-envelope input-icon"></i>
             </div>
 
-            <!-- 4. Password Input + Eye Toggle -->
+            <!-- 4. Password Input -->
             <div class="input-group" style="position: relative;">
                 <input type="password" id="adminPass" placeholder="Password" required>
                 <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer;"></i>
             </div>
-<!-- 🔥 CLEAN FORGOT PASSWORD BUTTON -->
-            <div style="text-align: right; margin-top: 5px; margin-bottom: 20px;">
-                <button type="button" onclick="showForgotPassword()" style="background: transparent; border: none; font-size: 13px; color: #E53935; font-weight: 800; cursor: pointer; padding: 0;">
+
+            <!-- 🔥 5. FORGOT PASSWORD LINK (100% CLEAN) -->
+            <div style="text-align: right; margin-top: -10px; margin-bottom: 20px;">
+                <span onclick="document.getElementById('forgotPassModal').style.display='flex';" style="font-size: 12px; color: #E53935; font-weight: 700; cursor: pointer; border-bottom: 1px dashed #E53935; padding-bottom: 1px;">
                     Forgot Password?
-                </button>
+                </span>
             </div>
 
-            <!-- 🔥 NEW: SLEEK INLINE ERROR DISPLAY BOX (NO UGLY ALERTS) -->
+            <!-- 6. Error Box -->
             <div id="loginErrorBox" style="display: none; background: rgba(229, 57, 53, 0.1); border: 1px solid rgba(229, 57, 53, 0.3); color: #E53935; padding: 12px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; margin-bottom: 15px; text-align: left; align-items: center; gap: 8px;">
                 <i class="ph-bold ph-warning-circle" style="font-size: 18px; flex-shrink: 0;"></i>
                 <span id="loginErrorText">Invalid credentials</span>
             </div>
             
-            <!-- 5. Login Trigger Button -->
+            <!-- 7. Login Trigger Button -->
             <button id="loginBtn" class="premium-login-btn" onclick="loginAdmin()">
                 Login to Dashboard <i class="ph-bold ph-arrow-right"></i>
             </button>
 
-            <!-- 6. Minimalist Author Footer -->
+            <!-- 8. Footer -->
             <div class="login-footer" style="margin-top: 25px; font-size: 12px; color: #757575;">
                 Powered by <strong>Arun</strong> • Enterprise POS
             </div>
         </div>
-    </div>
 
  <!-- 🏆 ULTRA-CLEAN MINIMALIST TOP NAV (THREE-LINE MENU + BRAND) -->
     <div class="top-nav" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 500;">
