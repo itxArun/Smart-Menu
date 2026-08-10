@@ -137,12 +137,11 @@
                 <input type="password" id="adminPass" placeholder="Password" required>
                 <i class="ph-fill ph-eye input-icon" id="togglePassEye" onclick="togglePasswordVisibility()" style="cursor: pointer;"></i>
             </div>
-<!-- 🔥 100% WORKING FORGOT PASSWORD BUTTON (DIRECT HTML) -->
-                        <!-- 🔥 100% WORKING FORGOT PASSWORD BUTTON (NO A-TAG) -->
+<!-- 🔥 BULLETPROOF FORGOT PASSWORD BUTTON -->
             <div style="text-align: right; margin-top: 5px; margin-bottom: 20px;">
-                <span onclick="window.showForgotPassword()" style="font-size: 13px; color: #E53935; font-weight: 800; cursor: pointer; border-bottom: 1px dashed #E53935; padding-bottom: 2px;">
+                <button type="button" onclick="const m = document.getElementById('forgotPassModal'); if(m) { m.style.display='flex'; } else { alert('Bhai, HTML ke sabse niche Modal ka code paste nahi hua hai ya save nahi hua!'); }" style="background: transparent; border: none; font-size: 13px; color: #E53935; font-weight: 800; cursor: pointer; padding: 0;">
                     Forgot Password?
-                </span>
+                </button>
             </div>
 
             <!-- 🔥 NEW: SLEEK INLINE ERROR DISPLAY BOX (NO UGLY ALERTS) -->
