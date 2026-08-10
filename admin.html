@@ -694,5 +694,43 @@
             <div id="resetFeedbackMsg" style="display: none; margin-top: 15px; font-size: 12px; font-weight: 700; color: #24963F;"></div>
         </div>
     </div>
+    <!-- 🖨️ THERMAL PRINTER RECEIPT TEMPLATE (Hidden by default) -->
+    <div id="print-receipt" style="display: none; background: white; color: black; font-family: monospace; padding: 10px;">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h2 style="margin: 0; font-size: 18px; font-weight: 800; font-family: sans-serif;">Partner POS</h2>
+            <p style="margin: 0; font-size: 10px;">Premium Restaurant POS</p>
+            <p style="margin: 0; font-size: 10px;">--------------------------</p>
+        </div>
+        
+        <div style="margin-bottom: 10px; font-size: 12px;">
+            <p style="margin: 2px 0;"><strong>Order ID:</strong> #<span id="print-order-id">1234</span></p>
+            <p style="margin: 2px 0;"><strong>Date:</strong> <span id="print-date">09/08/2026</span></p>
+            <p style="margin: 2px 0;"><strong>Type:</strong> <span id="print-type">Dine-in (Table 4)</span></p>
+            <p style="margin: 0; font-size: 10px;">--------------------------</p>
+        </div>
+
+        <table style="width: 100%; font-size: 12px; text-align: left; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="padding-bottom: 5px;">Item</th>
+                    <th style="padding-bottom: 5px; text-align: center;">Qty</th>
+                    <th style="padding-bottom: 5px; text-align: right;">Amt</th>
+                </tr>
+            </thead>
+            <tbody id="print-items-body">
+                <!-- Items Javascript se aayenge -->
+            </tbody>
+        </table>
+
+        <div style="margin-top: 10px; font-size: 12px;">
+            <p style="margin: 0; font-size: 10px;">--------------------------</p>
+            <h3 style="margin: 5px 0; font-size: 14px; text-align: right;">Total: ₹<span id="print-total">0</span></h3>
+            <p style="margin: 0; font-size: 10px;">--------------------------</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 15px;">
+            <p style="margin: 0; font-size: 10px;">Thank you for visiting!</p>
+        </div>
+    </div>
 </body>
 </html>
