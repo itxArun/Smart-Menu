@@ -118,28 +118,37 @@
         </div>
     </div>
 
-    <!-- 🏆 ULTRA-CLEAN MINIMALIST TOP NAV (THREE-LINE MENU + BRAND) -->
-   <div class="top-nav">
+   <!-- 🏆 ULTRA-CLEAN MINIMALIST TOP NAV (VIP LAYOUT) -->
+    <div class="top-nav">
         
-        <!-- LEFT: Three-Line Menu Button + Hotel Name ONLY -->
+        <!-- LEFT: Sirf Hotel Name (Brand Logo) -->
+        <div>
+            <h1 class="brand-logo" id="admin-restaurant-name" style="margin: 0; font-size: 22px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">Partner POS</h1>
+        </div>
+
+        <!-- RIGHT: Gol Notification Bell + Three-Line Menu -->
         <div style="display: flex; align-items: center; gap: 14px; position: relative;">
-            <!-- 🔥 Three-Line (Hamburger) Button -->
-            <button onclick="toggleAdminMenu(event)" style="background: var(--input-bg); border: 1px solid var(--border); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: all 0.2s ease;" title="Menu">
+            
+            <!-- 🔔 Bell Icon -->
+            <button onclick="switchTab('orders'); switchAdminOrderTab('new');" class="hover-glow" style="position: relative; background: var(--input-bg); border: 1px solid var(--border); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); transition: var(--transition);">
+                <i class="ph-bold ph-bell" style="font-size: 20px;"></i>
+                <span id="nav-bell-badge" style="display: none; position: absolute; top: -4px; right: -4px; background: var(--danger); color: white; font-size: 10px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 0 8px rgba(229, 57, 53, 0.6);">0</span>
+            </button>
+
+            <!-- 🍔 Three-Line Menu (Manager Profile) -->
+            <button onclick="toggleAdminMenu(event)" class="hover-glow" style="background: var(--input-bg); border: 1px solid var(--border); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); transition: var(--transition);" title="Menu">
                 <i class="ph-bold ph-list" style="font-size: 22px;"></i>
             </button>
 
-            <!-- Hotel Name ONLY (Super Clean Bold Typography) -->
-            <h1 class="brand-logo" id="admin-restaurant-name" style="margin: 0; font-size: 22px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">Partner POS</h1>
-
-            <!-- 🔥 THREE-LINE DROPDOWN MENU (SAME 5 PRO OPTIONS) -->
-            <div id="adminProfileDropdown" style="display: none; position: absolute; top: 50px; left: 0; width: 240px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); padding: 12px; z-index: 600; flex-direction: column; gap: 6px;">
+            <!-- 🔥 THREE-LINE DROPDOWN MENU (Right aligned with animation) -->
+            <div id="adminProfileDropdown" style="display: none; position: absolute; top: 55px; right: 0; width: 240px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); padding: 12px; z-index: 600; flex-direction: column; gap: 6px; transform-origin: top right; animation: dropScale 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);">
                 <div style="padding: 8px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px;">
                     <span style="font-size: 13px; font-weight: 800; color: var(--text-main); display: block;">Manager Profile</span>
                     <span style="font-size: 11px; color: var(--success); font-weight: 700;">🟢 Active Billing Shift</span>
                 </div>
                 
-                <button onclick="switchTab('settings'); toggleAdminMenu(event);" style="width: 100%; text-align: left; background: var(--input-bg); border: none; padding: 10px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <i class="ph-bold ph-qr-code" style="color: var(--danger, #E53935); font-size: 16px;"></i> Open Table QR / Print
+                <button onclick="switchTab('settings'); toggleAdminMenu(event);" class="hover-glow" style="width: 100%; text-align: left; background: var(--input-bg); border: none; padding: 10px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <i class="ph-bold ph-qr-code" style="color: var(--danger); font-size: 16px;"></i> Open Table QR / Print
                 </button>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; font-size: 12px; font-weight: 700; color: var(--text-main);">
@@ -152,18 +161,10 @@
                     <input type="checkbox" id="themeToggleNav" onchange="toggleTheme(); syncNavTheme(this.checked);" style="cursor: pointer;">
                 </div>
 
-                <button onclick="triggerLogout(); toggleAdminMenu(event);" style="width: 100%; text-align: left; background: rgba(229,57,53,0.1); border: none; padding: 10px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; color: var(--danger, #E53935); cursor: pointer; display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                <button onclick="triggerLogout(); toggleAdminMenu(event);" style="width: 100%; text-align: left; background: rgba(229,57,53,0.1); border: none; padding: 10px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; color: var(--danger); cursor: pointer; display: flex; align-items: center; gap: 8px; margin-top: 4px; transition: 0.2s;">
                     <i class="ph-bold ph-sign-out" style="font-size: 16px;"></i> Logout Dashboard
                 </button>
             </div>
-        </div>
-
-        <!-- RIGHT: Gol Notification Bell ONLY -->
-        <div>
-            <button onclick="switchTab('orders'); switchAdminOrderTab('new');" style="position: relative; background: var(--input-bg); border: 1px solid var(--border); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-                <i class="ph-bold ph-bell" style="font-size: 20px;"></i>
-                <span id="nav-bell-badge" style="display: none; position: absolute; top: -4px; right: -4px; background: var(--danger, #E53935); color: white; font-size: 10px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 0 8px rgba(229, 57, 53, 0.6);">0</span>
-            </button>
         </div>
     </div>
 
