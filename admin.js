@@ -1218,9 +1218,11 @@ window.printBill = (orderId) => {
         return;
     }
 
-    // Receipt HTML me data bharo
+   // Receipt HTML me data bharo
+    const cachedName = localStorage.getItem('crave_hotel_name_cache') || 'Restaurant Bill';
+    document.getElementById('print-hotel-name').innerText = cachedName;
+    
     document.getElementById('print-order-id').innerText = orderId.substring(0, 6).toUpperCase();
-    document.getElementById('print-date').innerText = new Date().toLocaleTimeString();
     
     // Dine in ya Takeaway
     let typeText = targetOrder.orderType === 'Takeaway' ? 'Takeaway' : `Dine-in (Table ${targetOrder.tableNumber})`;
