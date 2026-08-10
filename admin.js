@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 // 🔥 FIREBASE CONFIGURATION 🔥
 const firebaseConfig = {
     apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
@@ -1247,4 +1247,70 @@ window.printBill = (orderId) => {
     setTimeout(() => {
         window.print();
     }, 300);
+};
+// =======================================================
+// 🔒 UPDATE ADMIN PASSWORD LOGIC
+// =======================================================
+window.updateAdminPassword = async () => {
+    const newPass = document.getElementById('newPassInput').value;
+    const confirmPass = document.getElementById('confirmNewPassInput').value;
+    const feedback = document.getElementById('changePassFeedback');
+
+    feedback.style.display = 'block';
+
+    // 1. Check if empty
+    if (!newPass || !confirmPass) {
+        feedback.style.color = 'var(--danger)';
+        feedback.innerText = 'Please fill both password fields!';
+        return;
+    }
+
+    // 2. Check password length
+    if (newPass.length < 6) {
+        feedback.style.color = 'var(--danger)';
+        feedback.innerText = 'Password must be at least 6 characters long!';
+        return;
+    }
+
+    // 3. Check if passwords match
+    if (newPass !== confirmPass) {
+        feedback.style.color = 'var(--danger)';
+        feedback.innerText = 'Passwords do not match!';
+        return;
+    }
+
+    feedback.style.color = 'var(--warning)';
+    feedback.innerText = 'Updating your password...';
+
+    try {
+        // auth variable tumhare admin.js me pehle se defined hona chahiye
+        const user = auth.currentUser; 
+        
+        if (user) {
+            await updatePassword(user, newPass);
+            feedback.style.color = 'var(--success)';
+            feedback.innerText = 'Password updated successfully! 🎉';
+            
+            // Success ke baad Modal close karo aur fields khali karo
+            setTimeout(() => {
+                document.getElementById('changePassModal').classList.remove('show');
+                document.getElementById('newPassInput').value = '';
+                document.getElementById('confirmNewPassInput').value = '';
+                feedback.style.display = 'none';
+            }, 2000);
+        } else {
+            feedback.style.color = 'var(--danger)';
+            feedback.innerText = 'Error: You must be logged in to change password!';
+        }
+    } catch (error) {
+        console.error("Password update error:", error);
+        feedback.style.color = 'var(--danger)';
+        
+        // Firebase Security Feature: Agar user purana logged in hai, to use relogin karna padta hai
+        if (error.code === 'auth/requires-recent-login') {
+            feedback.innerText = 'Security Alert: Please logout and login again to change your password.';
+        } else {
+            feedback.innerText = error.message;
+        }
+    }
 };
