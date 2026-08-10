@@ -177,15 +177,17 @@ h1, h2, h3, h4, h5 {
 .top-nav { 
     flex-shrink: 0; 
     background: var(--glass-bg); 
-    padding: 12px 20px; 
+    padding: 14px 18px; /* Ye wahi padding hai jo HTML me thi */
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     border-bottom: 1px solid var(--border); 
-    z-index: 100; 
+    position: sticky;
+    top: 0;
+    z-index: 500; 
     transition: 0.3s;
-    backdrop-filter: blur(15px); 
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(14px); 
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .brand-logo { 
