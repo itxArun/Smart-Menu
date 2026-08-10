@@ -1125,36 +1125,33 @@ window.syncNavTheme = (checked) => {
 // 🔑 FORGOT PASSWORD LOGIC (ZOMATO STYLE)
 // =======================================================
 
-// 1. Modal open karne ka function (Safe Version)
+// 1. Modal open karne ka function (Fix)
 window.showForgotPassword = () => {
     try {
-        // Safe tarike se email input dhoondhna
         const emailInput = document.getElementById('adminEmail') || document.querySelector('input[type="email"]');
         const resetInput = document.getElementById('resetEmailInput');
         const feedbackMsg = document.getElementById('resetFeedbackMsg');
         const modal = document.getElementById('forgotPassModal');
         
-        if (!modal) {
-            alert("Bhai, Modal ka HTML nahi mil raha! Ek baar check karo Step 2 paste hua hai ya nahi.");
-            return;
-        }
+        if (!modal) return;
 
-        // Agar user ne email dala tha to copy kar lo
         if (emailInput && emailInput.value && resetInput) {
             resetInput.value = emailInput.value; 
         }
         
         if (feedbackMsg) feedbackMsg.style.display = 'none'; 
-        modal.style.display = 'flex';
+        
+        // 🔥 YAHI MAGIC HAI! Invisible hatane ke liye 'show' add kar rahe hain!
+        modal.classList.add('show');
         
     } catch (error) {
-        console.error("Modal open hone me error:", error);
+        console.error("Modal open error:", error);
     }
 };
 
 // 2. Modal close karne ka function
 window.closeForgotPassword = () => {
-    document.getElementById('forgotPassModal').style.display = 'none';
+    document.getElementById('forgotPassModal').classList.remove('show');
 };
 
 // 3. Asli Firebase Reset Function
