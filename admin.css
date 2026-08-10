@@ -867,3 +867,95 @@ input:checked + .slider:before { transform: translateX(22px); }
         padding: 0;
     }
 }
+
+/* =========================================================
+   🔧 BUG FIX: FORGOT PASSWORD GHOSTING FIX
+   ========================================================= */
+/* Agar JS galti se bina .show class ke display:flex laga de, toh force visible karo */
+#forgotPassModal[style*="display: flex"] {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Modal Layering Fix */
+.login-overlay { z-index: 99999 !important; }
+#forgotPassModal { z-index: 999999 !important; }
+
+/* =========================================================
+   💻 PREMIUM DESKTOP / PC RESPONSIVE UI
+   ========================================================= */
+@media (min-width: 1024px) {
+    
+    /* 1. Main Dashboard Shift (Sidebar ke liye jagah) */
+    .app-container {
+        padding-left: 90px;
+    }
+    
+    /* 2. Top Nav Shift */
+    .top-nav {
+        padding-left: 110px;
+    }
+    
+    /* 3. Bottom Nav ban gaya "Left Sidebar" 🔥 */
+    .bottom-nav {
+        top: 0;
+        left: 0;
+        width: 90px;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: center;
+        gap: 35px;
+        border-radius: 0;
+        border-right: 1px solid var(--border);
+        background: var(--bg-card);
+        box-shadow: 4px 0 20px rgba(0,0,0,0.03);
+    }
+    
+    .nav-tab {
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    /* 4. Stats Counters (2 ki jagah 4 Column) */
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    /* 5. Kitchen Orders Grid (Stretch hone se roko) */
+    #admin-new-orders, #admin-active-orders, #history-cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        padding-top: 15px;
+    }
+    
+    .order-card {
+        margin-bottom: 0 !important;
+        height: 100%; /* Saare cards same height ke rahenge */
+        box-sizing: border-box;
+    }
+
+    /* 6. Menu Management Grid */
+    #menu-body {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 15px;
+        padding: 15px 0;
+    }
+    
+    .menu-item-row {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+    }
+
+    /* 7. Popups & Modals Center Lock for PC */
+    .modal-card {
+        margin: auto;
+        border-radius: 24px;
+        transform: translateY(0) scale(0.95); /* Desktop par slide nahi, pop effect aayega */
+        max-width: 450px;
+    }
+    .modal-overlay.show .modal-card {
+        transform: translateY(0) scale(1);
+    }
+}
