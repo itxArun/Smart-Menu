@@ -301,30 +301,37 @@
                 </div>
             </div> <!-- 🔥 PROPERLY CLOSED ORDERS SECTION CARD -->
 
-            <!-- 💬 WHATSAPP CRM & REVIEWS SECTION -->
+           <!-- 💬 WHATSAPP CRM & REVIEWS SECTION -->
             <div class="section-card view-section" id="section-crm">
                 <div class="section-header">
                     <h3><i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i> WhatsApp CRM & Reviews</h3>
                 </div>
                 
-                <div style="padding: 20px;">
-                    <p style="font-size: 13px; color: var(--text-sub); margin-top: 0; font-weight:500;">Send promotional offers directly to your past customers via WhatsApp.</p>
-                    <textarea id="promoMessage" class="input-field" placeholder="Type your discount offer here... (e.g. Get 20% OFF this weekend! Use code: WEEKEND20)" style="height: 80px; resize: none; margin-bottom: 15px;"></textarea>
-                </div>
+                <div class="crm-grid">
+                    <!-- LEFT COLUMN (WhatsApp & Reviews) -->
+                    <div class="crm-left">
+                        <div style="padding: 20px;">
+                            <p style="font-size: 13px; color: var(--text-sub); margin-top: 0; font-weight:500;">Send promotional offers directly to your past customers via WhatsApp.</p>
+                            <textarea id="promoMessage" class="input-field" placeholder="Type your discount offer here... (e.g. Get 20% OFF this weekend!)" style="height: 80px; resize: none; margin-bottom: 0; width: 100%; box-sizing: border-box;"></textarea>
+                        </div>
 
-                <!-- 🔥 LIVE CUSTOMER REVIEWS FEED -->
-                <div class="history-date-header" style="background: var(--bg-card); border-top: 1px solid var(--border);">
-                    <span>⭐ Recent Customer Reviews</span>
-                    <span id="avg-rating-badge" style="background: rgba(255, 159, 0, 0.15); color: #FF9F00; padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 11px;">5.0 ★</span>
-                </div>
-                <div id="reviews-feed-list" style="max-height: 320px; overflow-y: auto; background: var(--bg-main); border-bottom: 1px solid var(--border);">
-                    <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for customer reviews...</div>
-                </div>
+                        <!-- 🔥 LIVE CUSTOMER REVIEWS FEED -->
+                        <div class="history-date-header" style="background: var(--bg-card); border-top: 1px solid var(--border);">
+                            <span>⭐ Recent Customer Reviews</span>
+                            <span id="avg-rating-badge" style="background: rgba(255, 159, 0, 0.15); color: #FF9F00; padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 11px;">5.0 ★</span>
+                        </div>
+                        <div id="reviews-feed-list" style="max-height: 320px; overflow-y: auto; background: var(--bg-main); border-bottom: 1px solid var(--border);">
+                            <div style="padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px;">Checking for customer reviews...</div>
+                        </div>
+                    </div>
 
-                <!-- CUSTOMER DATABASE -->
-                <div class="history-date-header">Customer Database</div>
-                <div class="menu-list" id="crm-body">
-                    <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-bold ph-spinner ph-spin" style="font-size:24px;"></i><br>Loading customers...</div>
+                    <!-- RIGHT COLUMN (Customer Database) -->
+                    <div class="crm-right">
+                        <div class="history-date-header" style="background: var(--bg-main);">Customer Database</div>
+                        <div class="menu-list" id="crm-body">
+                            <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;"><i class="ph-bold ph-spinner ph-spin" style="font-size:24px;"></i><br>Loading customers...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
