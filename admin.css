@@ -983,3 +983,59 @@ input:checked + .slider:before { transform: translateX(22px); }
         padding-left: 120px; 
     }
 }
+/* =========================================================
+   ✨ PREMIUM ANIMATIONS & HOVER EFFECTS (ALIVE UI)
+   ========================================================= */
+
+/* 1. Page Load Animations (Chizein hawa me float hoke aayengi) */
+.stat-card, .order-card, .mini-stat-card {
+    animation: slideUpFade 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* Staggered Delay (Ek ke baad ek load honge) */
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+.order-card { animation-delay: 0.1s; }
+
+@keyframes slideUpFade {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dropdown Smooth Animation */
+@keyframes dropScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* 2. 3D Hover Effects (Cursor le jate hi elements popup honge) */
+.stat-card:hover, .order-card:hover, .mini-stat-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important;
+    border-color: rgba(229, 57, 53, 0.2) !important;
+}
+
+/* Menu Items Hover (Left se slide aur border) */
+.menu-item-row {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.menu-item-row:hover {
+    transform: translateX(8px);
+    border-left: 4px solid var(--primary);
+    background: var(--bg-main) !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* Button Glowing Hovers */
+.hover-glow:hover, .btn-action-new:hover, .btn-save:hover, .premium-login-btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 25px rgba(229, 57, 53, 0.3) !important;
+}
+
+.btn-action-new:active, .hover-glow:active {
+    transform: translateY(1px) !important;
+    box-shadow: 0 2px 5px rgba(229, 57, 53, 0.2) !important;
+}
