@@ -19,53 +19,6 @@
     <!-- 🔥 Cache Busting v14 -->
     <link rel="stylesheet" href="admin.css?v=14">
     
-    <!-- 🔥 SAAS PREMIUM ANIMATIONS & POS STYLES 🔥 -->
-    <style>
-        .premium-hover { transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .premium-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(229, 57, 53, 0.15); border-color: rgba(229, 57, 53, 0.3); z-index: 10; }
-        
-        .skeleton { background: linear-gradient(90deg, var(--input-bg) 25%, var(--bg-card) 50%, var(--input-bg) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 8px; color: transparent !important; pointer-events: none; user-select: none; }
-        .skeleton * { visibility: hidden; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        
-        .advanced-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; background: var(--bg-main); }
-        .mini-stat-card { background: var(--bg-card); padding: 15px; border-radius: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
-        .mini-stat-title { font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
-        .mini-stat-val { font-size: 20px; font-weight: 800; color: var(--text-main); }
-
-        /* ✨ 3-TAB PIPELINE BADGES & CEO HEADER */
-        .tab-badge {
-            background: rgba(229, 57, 53, 0.15);
-            color: var(--danger, #E53935);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 800;
-            margin-left: 6px;
-        }
-        .admin-tab-btn.active .tab-badge {
-            background: white;
-            color: var(--danger, #E53935);
-        }
-        .pulse-header-bar {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            padding: 16px 20px;
-            background: var(--bg-main);
-            border-bottom: 1px solid var(--border);
-        }
-        .pulse-stat-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 12px;
-            text-align: center;
-        }
-        .pulse-stat-label { font-size: 10px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; display: block; margin-bottom: 4px; }
-        .pulse-stat-value { font-size: 18px; font-weight: 800; color: var(--text-main); }
-    </style>
-
     <!-- 🚀 0ms DASHBOARD NAME & ZERO-FLASH AUTH SHIELD -->
     <script>
         // 🕒 LIVE POS SHIFT CLOCK AUTO-UPDATER
@@ -166,7 +119,7 @@
     </div>
 
     <!-- 🏆 ULTRA-CLEAN MINIMALIST TOP NAV (THREE-LINE MENU + BRAND) -->
-    <div class="top-nav" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 500;">
+   <div class="top-nav">
         
         <!-- LEFT: Three-Line Menu Button + Hotel Name ONLY -->
         <div style="display: flex; align-items: center; gap: 14px; position: relative;">
