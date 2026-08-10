@@ -960,4 +960,26 @@ input:checked + .slider:before { transform: translateX(22px); }
     .modal-overlay.show .modal-card {
         transform: translateY(0) scale(1);
     }
+   /* 8. Fix Stretched Buttons on Desktop */
+    .order-actions-row {
+        justify-content: flex-start; /* Buttons ko left me set karega */
+        gap: 15px;
+    }
+    
+    .btn-action-new {
+        flex: 0 1 auto; /* Pura stretch nahi hone dega */
+        min-width: 140px; /* Ek standard width dega */
+        padding: 12px 24px;
+    }
+    
+    .btn-wa, .btn-save, .premium-login-btn {
+        max-width: 300px; /* Zaroorat se zyada chouda nahi hone dega */
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Top Nav padding ko PC ke liye automatically adjust karna */
+    .top-nav {
+        padding-left: 120px; 
+    }
 }
