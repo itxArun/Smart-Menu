@@ -1203,3 +1203,43 @@ window.executePasswordReset = async () => {
         btn.disabled = false;
     }
 };
+// =======================================================
+// 🖨️ THERMAL PRINTER LOGIC
+// =======================================================
+window.printBill = (orderId) => {
+    // Order dhundo
+    const targetOrder = window.allOrdersMaster.find(o => o.docId === orderId);
+    
+    if (!targetOrder) {
+        alert("Order details not found for printing!");
+        return;
+    }
+
+    // Receipt HTML me data bharo
+    document.getElementById('print-order-id').innerText = orderId.substring(0, 6).toUpperCase();
+    document.getElementById('print-date').innerText = new Date().toLocaleTimeString();
+    
+    // Dine in ya Takeaway
+    let typeText = targetOrder.orderType === 'Takeaway' ? 'Takeaway' : `Dine-in (Table ${targetOrder.tableNumber})`;
+    document.getElementById('print-type').innerText = typeText;
+    document.getElementById('print-total').innerText = targetOrder.totalAmount;
+
+    // Items list banani
+    const tbody = document.getElementById('print-items-body');
+    tbody.innerHTML = ''; 
+
+    (targetOrder.items || []).forEach(item => {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="padding: 3px 0;">${item.name}</td>
+            <td style="padding: 3px 0; text-align: center;">x${item.qty}</td>
+            <td style="padding: 3px 0; text-align: right;">₹${item.price * item.qty}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Thoda sa delay deke print dialog kholo
+    setTimeout(() => {
+        window.print();
+    }, 300);
+};
