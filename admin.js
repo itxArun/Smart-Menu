@@ -1039,6 +1039,9 @@ window.renderPastOrdersList = () => {
                 <div style="font-size:12px; font-weight:500;">${itemsHTML}</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);">
                     <span style="font-size:16px; font-weight:800; color:var(--primary);">Total: ₹${data.totalAmount || 0}</span>
+                    <button onclick="printBill('${data.docId}')" style="background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border); padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <i class="ph-bold ph-printer" style="font-size: 16px; color: var(--info);"></i> Print Bill
+                    </button>
                 </div>
             </div>
         `;
