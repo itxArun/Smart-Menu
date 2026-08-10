@@ -842,3 +842,28 @@ input:checked + .slider:before { transform: translateX(22px); }
     margin-bottom: 10px;
 }
 
+/* =========================================
+   🖨️ THERMAL PRINT MEDIA QUERY
+   ========================================= */
+@media print {
+    /* Screen par jo kuch hai sab hide kar do */
+    body * {
+        visibility: hidden;
+    }
+    
+    /* Sirf Print Receipt ko visible rakho */
+    #print-receipt, #print-receipt * {
+        visibility: visible;
+    }
+    
+    /* Receipt ko top-left me set karo standard 58mm printer ke liye */
+    #print-receipt {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 58mm; /* 58mm standard thermal paper width */
+        margin: 0;
+        padding: 0;
+    }
+}
