@@ -1039,3 +1039,33 @@ input:checked + .slider:before { transform: translateX(22px); }
     transform: translateY(1px) !important;
     box-shadow: 0 2px 5px rgba(229, 57, 53, 0.2) !important;
 }
+/* =========================================================
+   📱💻 CRM RESPONSIVE VIP LAYOUT (2-COLUMN)
+   ========================================================= */
+/* Default (Mobile) Layout */
+.crm-grid {
+    display: flex;
+    flex-direction: column;
+}
+.crm-right {
+    border-top: 1px solid var(--border);
+}
+#crm-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* PC/Laptop (Desktop) Layout */
+@media (min-width: 1024px) {
+    .crm-grid {
+        display: grid;
+        grid-template-columns: 40% 60%; /* Left thoda patla, Right chouda */
+    }
+    .crm-right {
+        border-top: none;
+        border-left: 1px solid var(--border);
+    }
+    #crm-body {
+        max-height: 600px; /* PC par scrollable lambi list */
+    }
+}
