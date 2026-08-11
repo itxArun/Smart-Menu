@@ -400,7 +400,30 @@
                     <p id="best-day-text" style="font-size:14px; font-weight:800; color:var(--success); margin-top:15px; margin-bottom:0;"></p>
                 </div>
             </div>
-
+<!-- 🪑 TABLES & LIVE FLOOR PLAN SECTION -->
+            <div class="section-card view-section" id="section-tables">
+                <div class="section-header">
+                    <h3><i class="ph-fill ph-squares-four" style="color: var(--info);"></i> Live Table Manager</h3>
+                    <button class="btn-add" onclick="addNewTable()"><i class="ph-bold ph-plus"></i> Add Table</button>
+                </div>
+                
+                <div style="padding: 20px;">
+                    <p style="font-size: 13px; color: var(--text-sub); margin-top: 0; font-weight: 500; margin-bottom: 20px;">Manage your restaurant tables, check live status, and download unique QR codes for each table.</p>
+                    
+                    <!-- Yahan Tables ke dabbe (cards) aayenge -->
+                    <div id="tables-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
+                        
+                        <!-- Dummy Table Card (Design check karne ke liye) -->
+                        <div class="table-card">
+                            <div class="table-status-indicator status-available"></div>
+                            <div class="table-number">T-1</div>
+                            <div class="table-status-text">Available</div>
+                            <button class="btn-qr-download"><i class="ph-bold ph-qr-code"></i> Get QR</button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
             <!-- ⚙️ APP SETTINGS SECTION -->
             <div class="section-card view-section" id="section-settings">
                 <div class="section-header">
@@ -469,6 +492,11 @@
     <div class="bottom-nav">
         <a class="nav-tab active" onclick="switchTab('menu', this)"><i class="ph-fill ph-book-open"></i><label>MENU</label></a>
         <a class="nav-tab" onclick="switchTab('orders', this)"><i class="ph-fill ph-receipt"></i><label>ORDERS</label></a>
+        <!-- 🪑 NAYA TABLE TAB -->
+        <div class="nav-tab" id="tab-tables" onclick="switchTab('tables')">
+            <i class="ph-fill ph-squares-four"></i>
+            <label>Tables</label>
+        </div>
         <a class="nav-tab" onclick="switchTab('crm', this)"><i class="ph-fill ph-users"></i><label>CRM</label></a>
         <a class="nav-tab" onclick="switchTab('stats', this)"><i class="ph-fill ph-chart-line-up"></i><label>STATS</label></a>
         <a class="nav-tab" onclick="switchTab('settings', this)"><i class="ph-fill ph-gear"></i><label>SETTINGS</label></a>
