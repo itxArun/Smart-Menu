@@ -47,7 +47,7 @@ class FirebaseService {
         return []; 
     }
 
-    // 3. 🔥 ASLI MAGIC: BOUNCER FILTER LAG GAYA 🔥
+  // 3. 🔥 ASLI MAGIC: BOUNCER HATA DIYA GAYA 🔥
     async fetchDishes(restId) {
         try {
             // Pehle sab aa raha tha, ab sirf 'restId' wala menu download hoga
@@ -58,25 +58,28 @@ class FirebaseService {
             
             querySnapshot.forEach((doc) => { 
                 let d = doc.data();
-                if (d.inStock !== false) { 
-                    let parsedImages = [];
-                    if (d.images && Array.isArray(d.images)) parsedImages = d.images;
-                    else if (d.image && typeof d.image === 'string') parsedImages = [d.image];
-                    else if (d.imageUrl && typeof d.imageUrl === 'string') parsedImages = [d.imageUrl];
+                
+                // 🛑 Yahan ka Bouncer (if inStock !== false) hata diya gaya hai!
+                
+                let parsedImages = [];
+                if (d.images && Array.isArray(d.images)) parsedImages = d.images;
+                else if (d.image && typeof d.image === 'string') parsedImages = [d.image];
+                else if (d.imageUrl && typeof d.imageUrl === 'string') parsedImages = [d.imageUrl];
 
-                    tempDishes.push({ 
-                        id: doc.id, 
-                        name: d.name || "Special Dish", 
-                        emoji: d.emoji || "🍲", 
-                        category: d.category || "Veg", 
-                        price: d.price || 0, 
-                        priceHalf: d.priceHalf || null, 
-                        pricePiece: d.pricePiece || null, 
-                        modelUrl: d.modelUrl || "", 
-                        images: parsedImages,
-                        restaurantId: restId // Future multi-tenant matching ke liye
-                    }); 
-                }
+                tempDishes.push({ 
+                    id: doc.id, 
+                    name: d.name || "Special Dish", 
+                    emoji: d.emoji || "🍲", 
+                    category: d.category || "Veg", 
+                    price: d.price || 0, 
+                    priceHalf: d.priceHalf || null, 
+                    pricePiece: d.pricePiece || null, 
+                    modelUrl: d.modelUrl || "", 
+                    images: parsedImages,
+                    restaurantId: restId,
+                    // 🔥 NAYA JADOO: Ye front-end ko batayega ki stock me hai ya nahi!
+                    inStock: d.inStock 
+                }); 
             });
             return tempDishes;
         } catch(error) {
@@ -84,7 +87,6 @@ class FirebaseService {
             return [];
         }
     }
-}
 
 // 🚀 Active Database Switcher
 const database = new FirebaseService();
