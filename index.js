@@ -920,3 +920,36 @@ window.triggerAddAnimation = (event, dishImgUrl) => {
         setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
     }, 700); // 0.7s matching CSS transition
 };
+// =======================================================
+// 🔗 AUTO-FILL TABLE FROM QR CODE URL
+// =======================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. URL se number nikalna (e.g. index.html?table=5)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableFromUrl = urlParams.get('table');
+    
+    if (tableFromUrl) {
+        // 2. Cart form me table number bharna aur lock karna
+        const tableInput = document.getElementById('tableNumber');
+        if (tableInput) {
+            tableInput.value = tableFromUrl;
+            tableInput.setAttribute('readonly', 'true');
+            
+            // Premium Lock UI Design
+            tableInput.style.background = 'var(--border-light)';
+            tableInput.style.color = 'var(--text-main)';
+            tableInput.style.fontWeight = '800';
+            tableInput.style.cursor = 'not-allowed';
+            tableInput.placeholder = `Table Locked to: ${tableFromUrl} 🔒`;
+        }
+
+        // Optional: Agar Waiter call wala modal hai, usme bhi table auto-fill aur lock kar do
+        const waiterTableInput = document.getElementById('waiterTableInput');
+        if (waiterTableInput) {
+            waiterTableInput.value = tableFromUrl;
+            waiterTableInput.setAttribute('readonly', 'true');
+            waiterTableInput.style.background = 'var(--border-light)';
+            waiterTableInput.style.fontWeight = '800';
+        }
+    }
+});
