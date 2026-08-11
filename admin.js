@@ -1314,3 +1314,88 @@ window.updateAdminPassword = async () => {
         }
     }
 };
+// =======================================================
+// 🪑 LIVE TABLE MANAGER & QR GENERATOR LOGIC
+// =======================================================
+
+// Ek array jo temporarily tumhari tables ko yaad rakhega (Firebase lagane tak)
+let restaurantTables = [1]; 
+
+// 1. ADD NEW TABLE FUNCTION
+window.addNewTable = () => {
+    const tableNum = prompt("Enter new Table Number (e.g., 2, 3, 4):");
+    
+    // Agar khali chhod diya ya number nahi dala
+    if (!tableNum || isNaN(tableNum)) {
+        alert("Please enter a valid table number!");
+        return;
+    }
+
+    // Agar table pehle se exist karti hai
+    if (restaurantTables.includes(Number(tableNum))) {
+        alert("Table " + tableNum + " already exists!");
+        return;
+    }
+
+    // Table add karo aur UI update karo
+    restaurantTables.push(Number(tableNum));
+    renderTables();
+};
+
+// 2. RENDER TABLES ON SCREEN
+window.renderTables = () => {
+    const grid = document.getElementById('tables-grid');
+    if (!grid) return;
+    
+    grid.innerHTML = ''; // Purana kachra saaf karo
+
+    // Sabhi tables ko line se laga kar HTML banao
+    restaurantTables.sort((a,b) => a-b).forEach(tableNum => {
+        const cardHtml = `
+            <div class="table-card" id="table-card-${tableNum}">
+                <div class="table-status-indicator status-available"></div>
+                <div class="table-number">T-${tableNum}</div>
+                <div class="table-status-text">Available</div>
+                <button class="btn-qr-download" onclick="downloadTableQR(${tableNum})">
+                    <i class="ph-bold ph-qr-code"></i> Get QR
+                </button>
+            </div>
+        `;
+        grid.insertAdjacentHTML('beforeend', cardHtml);
+    });
+};
+
+// 3. AUTO-GENERATE & DOWNLOAD UNIQUE QR CODE
+window.downloadTableQR = (tableNum) => {
+    // 🔥 Ye tumhara asli Customer App ka URL hai jisme table number automatically lag jayega
+    const baseUrl = "https://itxarun.github.io/Smart-Menu/index.html";
+    const tableUrl = `${baseUrl}?table=${tableNum}`;
+    
+    // QR Server API se high-quality (300x300) QR banwana
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tableUrl)}&margin=15`;
+
+    alert(`Generating VIP QR Code for Table ${tableNum}... Please wait.`);
+    
+    // Image fetch karke seedha device me download karna
+    fetch(qrApiUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `Table_${tableNum}_NextPlate_QR.png`; // File ka VIP naam
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(() => {
+            // Agar download block ho jaye, toh naye tab me QR dikha do
+            window.open(qrApiUrl, '_blank');
+        });
+};
+
+// Jaise hi Admin Panel khule, table grid ko load kar do
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(renderTables, 500); 
+});
