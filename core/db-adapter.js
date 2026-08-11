@@ -87,6 +87,7 @@ class FirebaseService {
             return [];
         }
     }
+} // 🛑 <--- YE RAHA WO MISSING BRACKET JO MAINE ADD KAR DIYA HAI 🔥
 
 // 🚀 Active Database Switcher
 const database = new FirebaseService();
