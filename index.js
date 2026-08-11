@@ -431,12 +431,33 @@ window.renderSidebar = function(dishesToRender) {
 
     for (let cat in groupedDishes) {
         const header = document.createElement('div'); header.style.padding = "20px 5px 10px 5px"; header.style.fontSize = "10px"; header.style.fontWeight = "800"; header.style.color = "var(--text-sub)"; header.style.textAlign = "center"; header.innerText = cat.toUpperCase(); sidebar.appendChild(header);
+        
         groupedDishes[cat].forEach((data) => {
-            const itemDiv = document.createElement('div'); itemDiv.className = `side-item ${window.currentDish && window.currentDish.id === data.id ? 'active' : ''}`;
+            
+            // 🔥 NAYA LOGIC: Check karo ki dish out of stock hai ya nahi
+            // (Tumne admin me jo bhi variable banaya ho, ye sabko pakad lega)
+            const isOutOfStock = data.status === 'out_of_stock' || data.isAvailable === false || data.inStock === false;
+            
+            const itemDiv = document.createElement('div'); 
+            
+            // Agar out of stock hai toh CSS class 'out-of-stock-card' jud jayegi
+            itemDiv.className = `side-item ${window.currentDish && window.currentDish.id === data.id ? 'active' : ''} ${isOutOfStock ? 'out-of-stock-card' : ''}`;
+            
             let trendTag = window.trendingIds.includes(data.id) ? '<div class="best-seller-tag"><i class="ph-fill ph-star"></i> Best Seller</div>' : '';
             let displayIcon = data.emoji; if(!data.emoji || data.emoji.length >= 5 || data.emoji === '🍲') displayIcon = getPremiumIcon(data.category);
+            
             itemDiv.innerHTML = `<div class="side-icon-wrapper" style="font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${displayIcon}</div><div class="side-name">${data.name}<br>${trendTag}</div>`;
-            itemDiv.onclick = () => { document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active')); itemDiv.classList.add('active'); window.loadDish(data); };
+            
+            // Click hone par detail tabhi khulegi jab item In-Stock hoga
+            itemDiv.onclick = () => { 
+                if(!isOutOfStock) {
+                    document.querySelectorAll('.side-item').forEach(d => d.classList.remove('active')); 
+                    itemDiv.classList.add('active'); 
+                    window.loadDish(data); 
+                } else {
+                    if(typeof window.showToast === 'function') window.showToast("This item is currently Out of Stock");
+                }
+            };
             sidebar.appendChild(itemDiv);
         });
     }
