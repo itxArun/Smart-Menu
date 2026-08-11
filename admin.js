@@ -1318,16 +1318,20 @@ window.updateAdminPassword = async () => {
 // 🪑 LIVE TABLE MANAGER & QR GENERATOR LOGIC (PREMIUM)
 // =======================================================
 
-let restaurantTables = [1]; 
+// =======================================================
+// 🪑 LIVE TABLE MANAGER (WITH LOCAL STORAGE SAVE)
+// =======================================================
 
-// 1. VIP Popup Open karna
+// 1. Browser ki memory (LocalStorage) se check karo ki pehle se tables save hain ya nahi
+let savedTables = localStorage.getItem('nextplate_tables');
+let restaurantTables = savedTables ? JSON.parse(savedTables) : [1]; 
+
 window.addNewTable = () => {
-    document.getElementById('newTableInput').value = ''; // Purana number clear karo
-    document.getElementById('addTableError').style.display = 'none'; // Error chupao
+    document.getElementById('newTableInput').value = ''; 
+    document.getElementById('addTableError').style.display = 'none'; 
     document.getElementById('addTableModal').classList.add('show');
 };
 
-// 2. Nayi table ko Add karne ka logic
 window.confirmAddNewTable = () => {
     const tableNumInput = document.getElementById('newTableInput').value;
     const errorText = document.getElementById('addTableError');
@@ -1346,13 +1350,14 @@ window.confirmAddNewTable = () => {
         return;
     }
 
-    // Success hone par
+    // Success hone par Array me dalo
     restaurantTables.push(tableNum);
+    
+    // 🔥 MAGIC LINE: Ab isko hamesha ke liye Browser me SAVE kar do
+    localStorage.setItem('nextplate_tables', JSON.stringify(restaurantTables));
+    
     document.getElementById('addTableModal').classList.remove('show');
     renderTables();
-    
-    // Agar re-usable toast notification function hai toh usko call kar sakte ho
-    // showToast('Table Added Successfully', 'success');
 };
 
 window.renderTables = () => {
