@@ -1418,3 +1418,11 @@ window.downloadTableQR = (tableNum) => {
             btn.style.pointerEvents = "auto";
         });
 };
+// =======================================================
+// 🔄 AUTO-LOAD TABLES ON PAGE REFRESH
+// =======================================================
+setTimeout(() => {
+    if (typeof renderTables === "function") {
+        renderTables();
+    }
+}, 500);
