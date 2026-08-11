@@ -1098,3 +1098,75 @@ input:checked + .slider:before { transform: translateX(22px); }
     flex-shrink: 0 !important; /* Button apni jagah par fix rahenge, sikudenge nahi */
     margin: 0;
 }
+/* =========================================================
+   🪑 LIVE TABLE MANAGEMENT VIP UI
+   ========================================================= */
+.table-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px 15px;
+    text-align: center;
+    position: relative;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+}
+
+.table-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    border-color: rgba(0, 122, 255, 0.2);
+}
+
+/* Red / Green Glowing Light */
+.table-status-indicator {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.status-available { background: var(--success); box-shadow: 0 0 10px rgba(36, 150, 63, 0.5); }
+.status-occupied { background: var(--danger); box-shadow: 0 0 10px rgba(255, 59, 48, 0.5); animation: pulseLive 2s infinite;}
+
+.table-number {
+    font-size: 26px;
+    font-family: 'Okra', sans-serif;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 10px 0 2px 0;
+}
+
+.table-status-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 18px;
+}
+
+/* Unique QR Download Button */
+.btn-qr-download {
+    background: rgba(0, 122, 255, 0.08);
+    color: #007AFF;
+    border: 1px dashed rgba(0, 122, 255, 0.3);
+    padding: 10px;
+    width: 100%;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+.btn-qr-download:hover {
+    background: #007AFF;
+    color: white;
+    border-style: solid;
+    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+}
