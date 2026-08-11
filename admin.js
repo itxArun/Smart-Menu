@@ -1315,48 +1315,58 @@ window.updateAdminPassword = async () => {
     }
 };
 // =======================================================
-// 🪑 LIVE TABLE MANAGER & QR GENERATOR LOGIC
+// 🪑 LIVE TABLE MANAGER & QR GENERATOR LOGIC (PREMIUM)
 // =======================================================
 
-// Ek array jo temporarily tumhari tables ko yaad rakhega (Firebase lagane tak)
 let restaurantTables = [1]; 
 
-// 1. ADD NEW TABLE FUNCTION
+// 1. VIP Popup Open karna
 window.addNewTable = () => {
-    const tableNum = prompt("Enter new Table Number (e.g., 2, 3, 4):");
-    
-    // Agar khali chhod diya ya number nahi dala
-    if (!tableNum || isNaN(tableNum)) {
-        alert("Please enter a valid table number!");
-        return;
-    }
-
-    // Agar table pehle se exist karti hai
-    if (restaurantTables.includes(Number(tableNum))) {
-        alert("Table " + tableNum + " already exists!");
-        return;
-    }
-
-    // Table add karo aur UI update karo
-    restaurantTables.push(Number(tableNum));
-    renderTables();
+    document.getElementById('newTableInput').value = ''; // Purana number clear karo
+    document.getElementById('addTableError').style.display = 'none'; // Error chupao
+    document.getElementById('addTableModal').classList.add('show');
 };
 
-// 2. RENDER TABLES ON SCREEN
+// 2. Nayi table ko Add karne ka logic
+window.confirmAddNewTable = () => {
+    const tableNumInput = document.getElementById('newTableInput').value;
+    const errorText = document.getElementById('addTableError');
+    
+    if (!tableNumInput || isNaN(tableNumInput)) {
+        errorText.innerText = "Please enter a valid number!";
+        errorText.style.display = "block";
+        return;
+    }
+
+    const tableNum = Number(tableNumInput);
+
+    if (restaurantTables.includes(tableNum)) {
+        errorText.innerText = `Table ${tableNum} is already added!`;
+        errorText.style.display = "block";
+        return;
+    }
+
+    // Success hone par
+    restaurantTables.push(tableNum);
+    document.getElementById('addTableModal').classList.remove('show');
+    renderTables();
+    
+    // Agar re-usable toast notification function hai toh usko call kar sakte ho
+    // showToast('Table Added Successfully', 'success');
+};
+
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
     if (!grid) return;
     
-    grid.innerHTML = ''; // Purana kachra saaf karo
-
-    // Sabhi tables ko line se laga kar HTML banao
+    grid.innerHTML = ''; 
     restaurantTables.sort((a,b) => a-b).forEach(tableNum => {
         const cardHtml = `
             <div class="table-card" id="table-card-${tableNum}">
                 <div class="table-status-indicator status-available"></div>
                 <div class="table-number">T-${tableNum}</div>
                 <div class="table-status-text">Available</div>
-                <button class="btn-qr-download" onclick="downloadTableQR(${tableNum})">
+                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})">
                     <i class="ph-bold ph-qr-code"></i> Get QR
                 </button>
             </div>
@@ -1365,18 +1375,19 @@ window.renderTables = () => {
     });
 };
 
-// 3. AUTO-GENERATE & DOWNLOAD UNIQUE QR CODE
+// 3. SILENT QR DOWNLOAD (Bina kisi boring alert ke)
 window.downloadTableQR = (tableNum) => {
-    // 🔥 Ye tumhara asli Customer App ka URL hai jisme table number automatically lag jayega
     const baseUrl = "https://itxarun.github.io/Smart-Menu/index.html";
     const tableUrl = `${baseUrl}?table=${tableNum}`;
-    
-    // QR Server API se high-quality (300x300) QR banwana
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tableUrl)}&margin=15`;
-
-    alert(`Generating VIP QR Code for Table ${tableNum}... Please wait.`);
     
-    // Image fetch karke seedha device me download karna
+    const btn = document.getElementById(`btn-qr-${tableNum}`);
+    const originalText = btn.innerHTML;
+    
+    // Loading animation in button
+    btn.innerHTML = `<i class="ph-bold ph-spinner ph-spin"></i> Wait...`;
+    btn.style.pointerEvents = "none"; 
+    
     fetch(qrApiUrl)
         .then(response => response.blob())
         .then(blob => {
@@ -1384,18 +1395,21 @@ window.downloadTableQR = (tableNum) => {
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = `Table_${tableNum}_NextPlate_QR.png`; // File ka VIP naam
+            a.download = `Table_${tableNum}_NextPlate_QR.png`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
+            
+            // Success animation in button
+            btn.innerHTML = `<i class="ph-bold ph-check" style="color: var(--success);"></i> Done!`;
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.pointerEvents = "auto";
+            }, 2000);
         })
         .catch(() => {
-            // Agar download block ho jaye, toh naye tab me QR dikha do
             window.open(qrApiUrl, '_blank');
+            btn.innerHTML = originalText;
+            btn.style.pointerEvents = "auto";
         });
 };
-
-// Jaise hi Admin Panel khule, table grid ko load kar do
-document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(renderTables, 500); 
-});
