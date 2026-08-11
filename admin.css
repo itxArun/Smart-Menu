@@ -1069,3 +1069,32 @@ input:checked + .slider:before { transform: translateX(22px); }
         max-height: 600px; /* PC par scrollable lambi list */
     }
 }
+/* =========================================================
+   🔧 BUG FIX: MENU ITEM OUT OF STOCK OVERLAP (PC GRID FIX)
+   ========================================================= */
+.menu-item-row {
+    gap: 12px; /* Dish name aur buttons ke beech gap rakhega */
+    align-items: center;
+}
+
+.menu-item-info {
+    flex: 1;
+    min-width: 0; /* 🔥 Ye magic line lamba text hone par button ko dhakka nahi marne degi */
+}
+
+.dish-details {
+    overflow: hidden;
+}
+
+.dish-name {
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; /* Lamba naam hoga toh aage "..." lag jayega */
+    display: block; 
+}
+
+/* Toggle Switch / Action Buttons ko dabne se rokna */
+.switch, .btn-dots {
+    flex-shrink: 0 !important; /* Button apni jagah par fix rahenge, sikudenge nahi */
+    margin: 0;
+}
