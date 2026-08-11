@@ -1170,3 +1170,25 @@ input:checked + .slider:before { transform: translateX(22px); }
     border-style: solid;
     box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
 }
+/* =========================================================
+   🐛 BUG FIX: DROPDOWN MENU HIDDEN BEHIND CARDS
+   ========================================================= */
+/* Jab bhi kisi card par mouse jaye, wo sabse upar (z-index) aa jaye */
+.menu-item-card, .menu-item-row {
+    position: relative;
+    z-index: 1;
+}
+
+.menu-item-card:hover, .menu-item-row:hover {
+    z-index: 100 !important; 
+}
+
+/* Agar parent div me overflow hidden laga hai toh usko visible karna */
+.menu-grid {
+    overflow: visible !important;
+}
+
+/* Dropdown ko zabardasti sabse aage aur upar dikhana */
+.dropdown-menu, .action-dropdown, [style*="position: absolute"] {
+    z-index: 9999 !important;
+}
