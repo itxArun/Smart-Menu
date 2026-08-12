@@ -1538,3 +1538,70 @@ window.printKOT = (orderId) => {
         printWindow.close(); 
     }, 500);
 };
+// =======================================================
+// 💸 HOTEL UPI SETTINGS LOGIC
+// =======================================================
+
+// 1. UPI ID Save karna
+window.saveHotelUPI = async () => {
+    const upiInput = document.getElementById('adminUpiInput').value.trim();
+    const btn = document.getElementById('btnSaveUpi');
+    
+    if (!upiInput) {
+        alert("Please enter a valid UPI ID!");
+        return;
+    }
+
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Saving...';
+    btn.disabled = true;
+
+    try {
+        // Firebase me current hotel ko dhundho
+        const q = query(collection(db, "merchants"), where("restaurantId", "==", window.currentRestaurantId));
+        const snap = await getDocs(q);
+        
+        if (!snap.empty) {
+            const docId = snap.docs[0].id; // Hotel ka asli database ID
+            // UPI ID update kar do
+            await updateDoc(doc(db, "merchants", docId), {
+                upiId: upiInput
+            });
+            
+            btn.innerHTML = '<i class="ph-bold ph-check"></i> Saved!';
+            btn.style.background = 'var(--success)';
+            btn.style.boxShadow = '0 4px 15px rgba(36, 150, 63, 0.2)';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '#007AFF';
+                btn.style.boxShadow = '0 4px 15px rgba(0, 122, 255, 0.2)';
+                btn.disabled = false;
+            }, 3000);
+        }
+    } catch(e) {
+        alert("Failed to save UPI: " + e.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+};
+
+// 2. Settings tab khulte hi purana UPI ID load karna
+// Tumhare switchTab function ko thoda sa upgrade kar rahe hain taaki UPI fetch ho jaye
+const originalSwitchTab = window.switchTab;
+window.switchTab = async (tabId, element = null) => {
+    originalSwitchTab(tabId, element);
+    
+    // Agar settings tab khula hai, toh database se UPI ID manga lo
+    if (tabId === 'settings') {
+        const upiBox = document.getElementById('adminUpiInput');
+        if (upiBox && !upiBox.value) {
+            try {
+                const q = query(collection(db, "merchants"), where("restaurantId", "==", window.currentRestaurantId));
+                const snap = await getDocs(q);
+                if (!snap.empty && snap.docs[0].data().upiId) {
+                    upiBox.value = snap.docs[0].data().upiId;
+                }
+            } catch(e) {}
+        }
+    }
+};
