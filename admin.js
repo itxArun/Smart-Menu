@@ -502,7 +502,10 @@ window.initAdminData = function() {
                     actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Accepted')">Accept Order ✓</button>
                                      <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>`;
                 } else if(data.status === 'Accepted') {
-                    actionButtons = `<button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${data.docId}', 'Preparing')">Start Cooking 🍳</button>`;
+                    actionButtons = `
+    <button class="btn-action-new" style="background:var(--info); color: white;" onclick="printKOT('${data.docId}')"><i class="ph-bold ph-printer"></i> Print KOT</button>
+    <button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${data.docId}', 'Preparing')">Start Cooking 🍳</button>
+`;
                 } else if(data.status === 'Preparing') {
                     actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Ready')">Mark as Ready 🔔</button>`;
                 } else if(data.status === 'Ready') {
