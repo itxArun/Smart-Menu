@@ -1381,7 +1381,7 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (FULL BG COLOR & RIGHT CROSS)
+// 🚦 VIP SMART TABLE RENDERER (TEXT FIX & FAILSAFE)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1398,37 +1398,44 @@ window.renderTables = () => {
         );
         
         let tableStatus = 'Available';
-        let cardBg = 'rgba(36, 150, 63, 0.08)';    // Halka Green Background
-        let cardBorder = 'rgba(36, 150, 63, 0.3)';  // Green Border
+        let cardBg = 'rgba(36, 150, 63, 0.08)';    
+        let cardBorder = 'rgba(36, 150, 63, 0.3)';  
         let totalUnpaid = 0;
+        let paidOrdersToClear = []; // Failsafe ke liye ID save karenge
         
         if (activeOrders.length > 0) {
             activeOrders.forEach(o => {
                 if (o.isPaid !== true) {
                     totalUnpaid += (o.totalAmount || 0);
+                } else {
+                    paidOrdersToClear.push(o.docId);
                 }
             });
             
             if (totalUnpaid > 0) {
                 tableStatus = 'Dining';
-                cardBg = 'rgba(255, 159, 0, 0.08)';    // Halka Orange Background
-                cardBorder = 'rgba(255, 159, 0, 0.4)';  // Orange Border
+                cardBg = 'rgba(255, 159, 0, 0.08)';    
+                cardBorder = 'rgba(255, 159, 0, 0.4)';  
             } else {
                 tableStatus = 'Paid';
-                cardBg = 'rgba(0, 122, 255, 0.08)';    // Halka Blue Background
-                cardBorder = 'rgba(0, 122, 255, 0.3)';  // Blue Border
+                cardBg = 'rgba(0, 122, 255, 0.08)';    
+                cardBorder = 'rgba(0, 122, 255, 0.3)';  
             }
         }
 
-        // 🎨 UI Logic: Status ke hisaab se text aur button badalna
+        // 🎨 UI Logic: Ajeeb text hataya, aur manual "Free Table" button add kiya
         let statusHtml = '';
         if (tableStatus === 'Available') {
-            statusHtml = `<div class="table-status-text" style="color:var(--success); font-weight:800; margin-bottom: 10px;">Available</div>`;
+            statusHtml = `<div class="table-status-text" style="color:var(--success); font-weight:900; font-size:14px; text-transform: uppercase; margin-bottom: 10px;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            statusHtml = `<div class="table-status-text" style="color:var(--info); font-weight:800; margin-bottom: 10px;">Clear Table</div>`;
+            // Yahan "CLEAR TABLE" hatakar "PAID" kiya aur manual clear button diya
+            statusHtml = `
+                <div class="table-status-text" style="color:var(--info); font-weight:900; font-size:16px; margin-bottom: 5px;">PAID ✓</div>
+                <button onclick="forceClearTable('${paidOrdersToClear.join(',')}')" style="background:var(--info); color:white; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer; width: max-content; margin: 0 auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">Mark Available</button>
+            `;
         } else {
             statusHtml = `
-                <div class="table-status-text" style="color:var(--warning); font-weight:800; font-size:16px;">₹${totalUnpaid} Due</div>
+                <div class="table-status-text" style="color:var(--warning); font-weight:900; font-size:16px;">₹${totalUnpaid} Due</div>
                 <div style="display:flex; gap:5px; margin-top:8px; width:100%;">
                     <button onclick="settleTablePayment(${tableNum}, 'Cash')" style="flex:1; background: white; border:1px solid var(--success); color:var(--success); border-radius:8px; padding:6px; font-size:12px; font-weight:800; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">💵 Cash</button>
                     <button onclick="settleTablePayment(${tableNum}, 'UPI')" style="flex:1; background: var(--info); border:none; color:white; border-radius:8px; padding:6px; font-size:12px; font-weight:800; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">UPI ✓</button>
@@ -1439,7 +1446,7 @@ window.renderTables = () => {
         const cardHtml = `
             <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;">
                 
-                <!-- ❌ VIP Feature: Top-Right Cross Button (Ab Right me hai) -->
+                <!-- ❌ VIP Feature: Top-Right Cross Button -->
                 <button onclick="deleteTable('${table.id}')" style="position: absolute; top: 10px; right: 10px; background: rgba(229,57,53,0.1); color: var(--danger); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; padding: 0; transition: 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white';" onmouseout="this.style.background='rgba(229,57,53,0.1)'; this.style.color='var(--danger)';">
                     <i class="ph-bold ph-x"></i>
                 </button>
@@ -1459,6 +1466,24 @@ window.renderTables = () => {
     });
 };
 
+// =======================================================
+// 🧹 FAILSAFE: INSTANT CLEAR TABLE FUNCTION
+// =======================================================
+window.forceClearTable = async (docIdsString) => {
+    if(!docIdsString) return;
+    const docIds = docIdsString.split(',');
+    
+    for(let id of docIds) {
+        if(id) {
+            try {
+                // Table instantly History (Completed) me chali jayegi aur Green ho jayegi
+                await updateDoc(doc(db, "orders", id), { status: 'Completed' });
+            } catch(e) { 
+                console.error("Failsafe Clear Error: ", e); 
+            }
+        }
+    }
+};
 // =======================================================
 // 💸 1-CLICK BILL SETTLEMENT LOGIC
 // =======================================================
