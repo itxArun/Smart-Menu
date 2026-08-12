@@ -1380,6 +1380,9 @@ window.confirmAddNewTable = async () => {
     }
 };
 
+// =======================================================
+// 🚦 VIP SMART TABLE RENDERER (LIVE COLOR CODING)
+// =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
     if (!grid) return;
@@ -1387,24 +1390,94 @@ window.renderTables = () => {
     grid.innerHTML = ''; 
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
+        
+        // 🔥 THE MAGIC: Table ke live orders dhundo
+        let activeOrders = window.allOrdersMaster.filter(o => 
+            o.tableNumber == tableNum && 
+            (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
+        );
+        
+        let tableStatus = 'Available';
+        let indicatorColor = 'var(--success)'; // Green
+        let totalUnpaid = 0;
+        
+        if (activeOrders.length > 0) {
+            activeOrders.forEach(o => {
+                if (o.isPaid !== true) {
+                    totalUnpaid += (o.totalAmount || 0);
+                }
+            });
+            
+            if (totalUnpaid > 0) {
+                tableStatus = 'Dining';
+                indicatorColor = 'var(--warning)'; // Orange
+            } else {
+                tableStatus = 'Paid';
+                indicatorColor = 'var(--info)'; // Blue
+            }
+        }
+
+        // 🎨 UI Logic: Status ke hisaab se button badalna
+        let statusHtml = '';
+        if (tableStatus === 'Available') {
+            statusHtml = `<div class="table-status-text" style="color:var(--success); font-weight:800;">🟢 Available</div>`;
+        } else if (tableStatus === 'Paid') {
+            statusHtml = `<div class="table-status-text" style="color:var(--info); font-weight:800;">🔵 Paid (Clear Table)</div>`;
+        } else {
+            statusHtml = `
+                <div class="table-status-text" style="color:var(--warning); font-weight:800; font-size:16px;">₹${totalUnpaid} Due</div>
+                <div style="display:flex; gap:5px; margin-top:8px; width:100%;">
+                    <button onclick="settleTablePayment(${tableNum}, 'Cash')" style="flex:1; background:rgba(36,150,63,0.1); border:1px solid var(--success); color:var(--success); border-radius:6px; padding:4px; font-size:12px; font-weight:bold; cursor:pointer;">💵 Cash</button>
+                    <button onclick="settleTablePayment(${tableNum}, 'UPI')" style="flex:1; background:rgba(0,122,255,0.1); border:1px solid var(--info); color:var(--info); border-radius:6px; padding:4px; font-size:12px; font-weight:bold; cursor:pointer;">UPI ✓</button>
+                </div>
+            `;
+        }
+        
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" style="position: relative;">
+            <div class="table-card" id="table-card-${tableNum}" style="position: relative; border-top: 4px solid ${indicatorColor};">
                 
                 <!-- ❌ VIP Feature: Top-Left Cross Button -->
                 <button onclick="deleteTable('${table.id}')" style="position: absolute; top: 10px; left: 10px; background: rgba(229,57,53,0.1); color: var(--danger); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); z-index: 10; transition: 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white';" onmouseout="this.style.background='rgba(229,57,53,0.1)'; this.style.color='var(--danger)';">
                     <i class="ph-bold ph-x"></i>
                 </button>
                 
-                <div class="table-status-indicator status-available"></div>
+                <div class="table-status-indicator" style="background: ${indicatorColor};"></div>
                 <div class="table-number">T-${tableNum}</div>
-                <div class="table-status-text">Available</div>
-                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})">
+                ${statusHtml}
+                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})" style="margin-top:10px;">
                     <i class="ph-bold ph-qr-code"></i> Get QR
                 </button>
             </div>
         `;
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
+};
+
+// =======================================================
+// 💸 1-CLICK BILL SETTLEMENT LOGIC
+// =======================================================
+window.settleTablePayment = async (tableNum, method) => {
+    if(!confirm(`Are you sure you want to collect payment for Table ${tableNum} via ${method}?`)) return;
+    
+    // Unpaid orders dhundo us table ke
+    let activeOrders = window.allOrdersMaster.filter(o => 
+        o.tableNumber == tableNum && 
+        (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served') &&
+        o.isPaid !== true
+    );
+    
+    // Sabko Paid mark kar do Firebase me
+    for (let order of activeOrders) {
+        try {
+            await updateDoc(doc(db, "orders", order.docId), { 
+                isPaid: true,
+                paymentMethod: method
+            });
+        } catch(e) {
+            console.error("Payment update failed: ", e);
+        }
+    }
+    // Firebase ka live listener apne aap table ko Blue kar dega!
 };
 // =======================================================
 // 🗑️ VIP DELETE TABLE LOGIC (CUSTOM MODAL)
