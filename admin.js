@@ -1385,21 +1385,24 @@ window.renderTables = () => {
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}">
+            <div class="table-card" id="table-card-${tableNum}" style="position: relative;">
+                
+                <!-- ❌ VIP Feature: Top-Left Cross Button -->
+                <button onclick="deleteTable('${table.id}')" style="position: absolute; top: 10px; left: 10px; background: rgba(229,57,53,0.1); color: var(--danger); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); z-index: 10; transition: 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white';" onmouseout="this.style.background='rgba(229,57,53,0.1)'; this.style.color='var(--danger)';">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+                
                 <div class="table-status-indicator status-available"></div>
                 <div class="table-number">T-${tableNum}</div>
                 <div class="table-status-text">Available</div>
                 <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})">
                     <i class="ph-bold ph-qr-code"></i> Get QR
                 </button>
-                <!-- 🗑️ VIP Feature: Table Remove Button -->
-                <button onclick="deleteTable('${table.id}')" style="background:rgba(229,57,53,0.1); border:none; color:var(--danger); cursor:pointer; margin-top:10px; font-size:11px; font-weight:800; padding:6px; border-radius:8px; width:100%;"><i class="ph-bold ph-trash"></i> Remove</button>
             </div>
         `;
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
 };
-
 // Table Delete Karne ka function
 window.deleteTable = async (docId) => {
     if(confirm("Are you sure you want to remove this table?")) {
