@@ -427,38 +427,27 @@
                     </div>
                 </div>
             </div>
-            <!-- ⚙️ APP SETTINGS SECTION -->
+           <!-- ⚙️ APP SETTINGS SECTION -->
             <div class="section-card view-section" id="section-settings">
                 <div class="section-header">
                     <h3><i class="ph-fill ph-gear text-primary"></i> App Settings</h3>
                 </div>
-                <!-- ⚙️ APP SETTINGS SECTION -->
-<div class="section-card view-section" id="section-settings">
-    <div class="section-header">
-        <h3><i class="ph-fill ph-gear text-primary"></i> App Settings</h3>
-    </div>
 
-    <!-- 💸 VIP UPI SETTINGS CARD (YAHAN PASTE KARNA HAI) -->
-    <div class="settings-card" style="background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px;">
-        <h3 style="margin: 0 0 15px 0; font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-            <i class="ph-fill ph-bank" style="color: #007AFF; font-size: 22px;"></i> Payment Settings
-        </h3>
-        <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 15px;">Enter your restaurant's UPI ID (GPay/PhonePe/Paytm) to receive direct payments from customers.</p>
-        
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="adminUpiInput" placeholder="e.g., itzarun@ptyes" style="flex: 1; padding: 12px 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); font-size: 14px; font-weight: 600; outline: none;">
-            <button onclick="saveHotelUPI()" id="btnSaveUpi" style="background: #007AFF; color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);">
-                Save UPI
-            </button>
-        </div>
-    </div>
-    <!-- UPI CARD YAHAN KHATAM -->
+                <!-- 💸 VIP UPI SETTINGS CARD -->
+                <div class="settings-card" style="background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 15px 0; font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                        <i class="ph-fill ph-bank" style="color: #007AFF; font-size: 22px;"></i> Payment Settings
+                    </h3>
+                    <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 15px;">Enter your restaurant's UPI ID (GPay/PhonePe/Paytm) to receive direct payments from customers.</p>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="adminUpiInput" placeholder="e.g., itzarun@ptyes" style="flex: 1; padding: 12px 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); font-size: 14px; font-weight: 600; outline: none;">
+                        <button onclick="saveHotelUPI()" id="btnSaveUpi" style="background: #007AFF; color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);">
+                            Save UPI
+                        </button>
+                    </div>
+                </div>
 
-    <div class="setting-row">
-        <div class="setting-label">
-            <i class="ph-fill ph-bell-ringing"></i>
-            <div>
-<!-- ... (baaki ka code waise hi rahega) ... -->
                 <div class="setting-row">
                     <div class="setting-label">
                         <i class="ph-fill ph-bell-ringing"></i>
@@ -472,6 +461,7 @@
                         <span class="slider"></span>
                     </label>
                 </div>
+                
                 <div class="setting-row">
                     <div class="setting-label">
                         <i class="ph-fill ph-moon-stars"></i>
@@ -485,6 +475,7 @@
                         <span class="slider"></span>
                     </label>
                 </div>
+                
                 <!-- 🔒 Change Password Button -->
                 <div class="setting-row premium-hover" style="cursor: pointer;" onclick="document.getElementById('changePassModal').classList.add('show')">
                     <div class="setting-label">
@@ -496,9 +487,11 @@
                     </div>
                     <i class="ph-bold ph-caret-right" style="color: var(--text-sub); font-size: 20px;"></i>
                 </div>
+                
                 <div class="section-header" style="border-top: 1px solid var(--border); margin-top:10px;">
                     <h3><i class="ph-fill ph-qr-code"></i> Table QR Code</h3>
                 </div>
+                
                 <div class="qr-container">
                     <p style="color: var(--text-sub); font-size: 14px; margin: 0; font-weight: 600;">Scan this to open Smart Menu</p>
                     <div id="qrcode-box"></div>
@@ -513,9 +506,6 @@
                     </div>
                 </div>
             </div>
-
-        </div> <!-- End Main Content -->
-    </div>
 
     <!-- 📱 BOTTOM NAV TABS -->
     <div class="bottom-nav">
