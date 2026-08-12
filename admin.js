@@ -1403,14 +1403,43 @@ window.renderTables = () => {
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
 };
-// Table Delete Karne ka function
-window.deleteTable = async (docId) => {
-    if(confirm("Are you sure you want to remove this table?")) {
-        try {
-            await deleteDoc(doc(db, "tables", docId));
-        } catch(e) {
-            alert("Failed to delete table: " + e.message);
-        }
+// =======================================================
+// 🗑️ VIP DELETE TABLE LOGIC (CUSTOM MODAL)
+// =======================================================
+let tableIdToDelete = null;
+
+// 1. Sirf VIP Popup Open Karna
+window.deleteTable = (docId) => {
+    tableIdToDelete = docId;
+    document.getElementById('deleteTableModal').classList.add('show');
+};
+
+// 2. Popup Close Karna
+window.closeDeleteTableModal = () => {
+    tableIdToDelete = null;
+    document.getElementById('deleteTableModal').classList.remove('show');
+};
+
+// 3. Asli Firebase Delete Logic (Jab 'Yes' dabaye)
+window.confirmDeleteTableAction = async () => {
+    if (!tableIdToDelete) return;
+    
+    // Niche wala button loading me badalna (Optional premium touch)
+    const btn = document.querySelector('#deleteTableModal button:last-child');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Wait...';
+    btn.style.pointerEvents = "none";
+
+    try {
+        await deleteDoc(doc(db, "tables", tableIdToDelete));
+        closeDeleteTableModal();
+    } catch(e) {
+        alert("Failed to delete table: " + e.message);
+        closeDeleteTableModal();
+    } finally {
+        // Button wapas normal karna
+        btn.innerHTML = originalText;
+        btn.style.pointerEvents = "auto";
     }
 };
 
