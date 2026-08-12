@@ -1479,3 +1479,59 @@ window.downloadTableQR = (tableNum) => {
             btn.style.pointerEvents = "auto";
         });
 };
+// =======================================================
+// 🖨️ KITCHEN ORDER TICKET (KOT) LOGIC
+// =======================================================
+window.printKOT = (orderId) => {
+    // 1. Order ki details nikalo
+    const targetOrder = window.allOrdersMaster.find(o => o.docId === orderId);
+    if (!targetOrder) {
+        alert("Order details not found!");
+        return;
+    }
+
+    // 2. KOT ka format set karo (Bina Price ke)
+    let typeText = targetOrder.orderType === 'Takeaway' ? 'Takeaway' : `Table ${targetOrder.tableNumber}`;
+    let printWindow = window.open('', '', 'width=320,height=500');
+    
+    printWindow.document.write(`
+        <html><head><style>
+            body { font-family: 'Courier New', Courier, monospace; text-align: left; margin: 0; padding: 15px; color: #000; }
+            .kot-header { text-align: center; font-size: 22px; font-weight: 900; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
+            .order-info { font-size: 14px; margin-bottom: 5px; font-weight: bold; }
+            .item-row { font-size: 16px; font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between; }
+            .notes-box { font-size: 14px; font-weight: bold; border: 2px solid #000; padding: 10px; margin-top: 15px; }
+            .divider { border-bottom: 2px dashed #000; margin: 10px 0; }
+        </style></head><body>
+        
+        <div class="kot-header">KOT - ${typeText}</div>
+        <div class="order-info">ID: #${orderId.substring(0,6).toUpperCase()}</div>
+        <div class="order-info">Time: ${new Date().toLocaleTimeString()}</div>
+        <div class="divider"></div>
+    `);
+
+    // 3. Items print karna
+    targetOrder.items.forEach(item => {
+        let variant = item.variant ? `<span style="font-size:12px;">(${item.variant})</span>` : '';
+        printWindow.document.write(`<div class="item-row"><span>${item.qty} x ${item.name} ${variant}</span></div>`);
+    });
+
+    // 4. Agar Chef ke liye koi Note hai, toh usko bada dikhana
+    if (targetOrder.chefNotes && targetOrder.chefNotes !== 'None' && targetOrder.chefNotes.trim() !== '') {
+        printWindow.document.write(`<div class="notes-box">⚠️ NOTE: ${targetOrder.chefNotes}</div>`);
+    }
+
+    printWindow.document.write(`
+        <div class="divider"></div>
+        <div style="text-align: center; font-size: 12px; margin-top: 10px;">* Send this slip with food *</div>
+        </body></html>
+    `);
+    
+    // 5. Print dialog open karna
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { 
+        printWindow.print(); 
+        printWindow.close(); 
+    }, 500);
+};
