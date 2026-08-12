@@ -1381,7 +1381,7 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (LIVE COLOR CODING)
+// 🚦 VIP SMART TABLE RENDERER (FULL BG COLOR & RIGHT CROSS)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1398,7 +1398,8 @@ window.renderTables = () => {
         );
         
         let tableStatus = 'Available';
-        let indicatorColor = 'var(--success)'; // Green
+        let cardBg = 'rgba(36, 150, 63, 0.08)';    // Halka Green Background
+        let cardBorder = 'rgba(36, 150, 63, 0.3)';  // Green Border
         let totalUnpaid = 0;
         
         if (activeOrders.length > 0) {
@@ -1410,41 +1411,46 @@ window.renderTables = () => {
             
             if (totalUnpaid > 0) {
                 tableStatus = 'Dining';
-                indicatorColor = 'var(--warning)'; // Orange
+                cardBg = 'rgba(255, 159, 0, 0.08)';    // Halka Orange Background
+                cardBorder = 'rgba(255, 159, 0, 0.4)';  // Orange Border
             } else {
                 tableStatus = 'Paid';
-                indicatorColor = 'var(--info)'; // Blue
+                cardBg = 'rgba(0, 122, 255, 0.08)';    // Halka Blue Background
+                cardBorder = 'rgba(0, 122, 255, 0.3)';  // Blue Border
             }
         }
 
-        // 🎨 UI Logic: Status ke hisaab se button badalna
+        // 🎨 UI Logic: Status ke hisaab se text aur button badalna
         let statusHtml = '';
         if (tableStatus === 'Available') {
-            statusHtml = `<div class="table-status-text" style="color:var(--success); font-weight:800;">🟢 Available</div>`;
+            statusHtml = `<div class="table-status-text" style="color:var(--success); font-weight:800; margin-bottom: 10px;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            statusHtml = `<div class="table-status-text" style="color:var(--info); font-weight:800;">🔵 Paid (Clear Table)</div>`;
+            statusHtml = `<div class="table-status-text" style="color:var(--info); font-weight:800; margin-bottom: 10px;">Clear Table</div>`;
         } else {
             statusHtml = `
                 <div class="table-status-text" style="color:var(--warning); font-weight:800; font-size:16px;">₹${totalUnpaid} Due</div>
                 <div style="display:flex; gap:5px; margin-top:8px; width:100%;">
-                    <button onclick="settleTablePayment(${tableNum}, 'Cash')" style="flex:1; background:rgba(36,150,63,0.1); border:1px solid var(--success); color:var(--success); border-radius:6px; padding:4px; font-size:12px; font-weight:bold; cursor:pointer;">💵 Cash</button>
-                    <button onclick="settleTablePayment(${tableNum}, 'UPI')" style="flex:1; background:rgba(0,122,255,0.1); border:1px solid var(--info); color:var(--info); border-radius:6px; padding:4px; font-size:12px; font-weight:bold; cursor:pointer;">UPI ✓</button>
+                    <button onclick="settleTablePayment(${tableNum}, 'Cash')" style="flex:1; background: white; border:1px solid var(--success); color:var(--success); border-radius:8px; padding:6px; font-size:12px; font-weight:800; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">💵 Cash</button>
+                    <button onclick="settleTablePayment(${tableNum}, 'UPI')" style="flex:1; background: var(--info); border:none; color:white; border-radius:8px; padding:6px; font-size:12px; font-weight:800; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">UPI ✓</button>
                 </div>
             `;
         }
         
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" style="position: relative; border-top: 4px solid ${indicatorColor};">
+            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;">
                 
-                <!-- ❌ VIP Feature: Top-Left Cross Button -->
-                <button onclick="deleteTable('${table.id}')" style="position: absolute; top: 10px; left: 10px; background: rgba(229,57,53,0.1); color: var(--danger); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); z-index: 10; transition: 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white';" onmouseout="this.style.background='rgba(229,57,53,0.1)'; this.style.color='var(--danger)';">
+                <!-- ❌ VIP Feature: Top-Right Cross Button (Ab Right me hai) -->
+                <button onclick="deleteTable('${table.id}')" style="position: absolute; top: 10px; right: 10px; background: rgba(229,57,53,0.1); color: var(--danger); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; padding: 0; transition: 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white';" onmouseout="this.style.background='rgba(229,57,53,0.1)'; this.style.color='var(--danger)';">
                     <i class="ph-bold ph-x"></i>
                 </button>
                 
-                <div class="table-status-indicator" style="background: ${indicatorColor};"></div>
-                <div class="table-number">T-${tableNum}</div>
-                ${statusHtml}
-                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})" style="margin-top:10px;">
+                <div class="table-number" style="margin-top: 5px;">T-${tableNum}</div>
+                
+                <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                    ${statusHtml}
+                </div>
+                
+                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})" style="margin-top:10px; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.05);">
                     <i class="ph-bold ph-qr-code"></i> Get QR
                 </button>
             </div>
