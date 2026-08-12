@@ -1315,16 +1315,28 @@ window.updateAdminPassword = async () => {
     }
 };
 // =======================================================
-// 🪑 LIVE TABLE MANAGER & QR GENERATOR LOGIC (PREMIUM)
+// 🪑 LIVE TABLE MANAGER (FIREBASE CLOUD SYNC)
 // =======================================================
 
-// =======================================================
-// 🪑 LIVE TABLE MANAGER (WITH LOCAL STORAGE SAVE)
-// =======================================================
+window.restaurantTables = [];
+let isTableListenerActive = false;
 
-// 1. Browser ki memory (LocalStorage) se check karo ki pehle se tables save hain ya nahi
-let savedTables = localStorage.getItem('nextplate_tables');
-let restaurantTables = savedTables ? JSON.parse(savedTables) : [1]; 
+// 🔥 JADOO: 1 sec me check karega login, aur Firebase se tables le aayega
+const tableChecker = setInterval(() => {
+    if (window.currentRestaurantId && !isTableListenerActive) {
+        isTableListenerActive = true;
+        clearInterval(tableChecker);
+
+        const qTables = query(collection(db, "tables"), where("restaurantId", "==", window.currentRestaurantId));
+        onSnapshot(qTables, (snap) => {
+            window.restaurantTables = [];
+            snap.forEach(doc => {
+                window.restaurantTables.push({ id: doc.id, number: doc.data().tableNumber });
+            });
+            renderTables(); // Data aate hi screen par draw kar dega
+        });
+    }
+}, 1000);
 
 window.addNewTable = () => {
     document.getElementById('newTableInput').value = ''; 
@@ -1332,7 +1344,7 @@ window.addNewTable = () => {
     document.getElementById('addTableModal').classList.add('show');
 };
 
-window.confirmAddNewTable = () => {
+window.confirmAddNewTable = async () => {
     const tableNumInput = document.getElementById('newTableInput').value;
     const errorText = document.getElementById('addTableError');
     
@@ -1344,20 +1356,25 @@ window.confirmAddNewTable = () => {
 
     const tableNum = Number(tableNumInput);
 
-    if (restaurantTables.includes(tableNum)) {
+    // Check if table already exists in cloud
+    if (window.restaurantTables.find(t => t.number === tableNum)) {
         errorText.innerText = `Table ${tableNum} is already added!`;
         errorText.style.display = "block";
         return;
     }
 
-    // Success hone par Array me dalo
-    restaurantTables.push(tableNum);
-    
-    // 🔥 MAGIC LINE: Ab isko hamesha ke liye Browser me SAVE kar do
-    localStorage.setItem('nextplate_tables', JSON.stringify(restaurantTables));
-    
     document.getElementById('addTableModal').classList.remove('show');
-    renderTables();
+    
+    // 🔥 NAYA LOGIC: LocalStorage ki jagah sidha Firebase (Database) me save!
+    try {
+        await addDoc(collection(db, "tables"), {
+            restaurantId: window.currentRestaurantId,
+            tableNumber: tableNum,
+            timestamp: new Date()
+        });
+    } catch(e) {
+        alert("Error adding table: " + e.message);
+    }
 };
 
 window.renderTables = () => {
@@ -1365,7 +1382,8 @@ window.renderTables = () => {
     if (!grid) return;
     
     grid.innerHTML = ''; 
-    restaurantTables.sort((a,b) => a-b).forEach(tableNum => {
+    window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
+        const tableNum = table.number;
         const cardHtml = `
             <div class="table-card" id="table-card-${tableNum}">
                 <div class="table-status-indicator status-available"></div>
@@ -1374,10 +1392,23 @@ window.renderTables = () => {
                 <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})">
                     <i class="ph-bold ph-qr-code"></i> Get QR
                 </button>
+                <!-- 🗑️ VIP Feature: Table Remove Button -->
+                <button onclick="deleteTable('${table.id}')" style="background:rgba(229,57,53,0.1); border:none; color:var(--danger); cursor:pointer; margin-top:10px; font-size:11px; font-weight:800; padding:6px; border-radius:8px; width:100%;"><i class="ph-bold ph-trash"></i> Remove</button>
             </div>
         `;
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
+};
+
+// Table Delete Karne ka function
+window.deleteTable = async (docId) => {
+    if(confirm("Are you sure you want to remove this table?")) {
+        try {
+            await deleteDoc(doc(db, "tables", docId));
+        } catch(e) {
+            alert("Failed to delete table: " + e.message);
+        }
+    }
 };
 
 // 3. SILENT QR DOWNLOAD (Bina kisi boring alert ke)
@@ -1389,7 +1420,6 @@ window.downloadTableQR = (tableNum) => {
     const btn = document.getElementById(`btn-qr-${tableNum}`);
     const originalText = btn.innerHTML;
     
-    // Loading animation in button
     btn.innerHTML = `<i class="ph-bold ph-spinner ph-spin"></i> Wait...`;
     btn.style.pointerEvents = "none"; 
     
@@ -1405,7 +1435,6 @@ window.downloadTableQR = (tableNum) => {
             a.click();
             window.URL.revokeObjectURL(url);
             
-            // Success animation in button
             btn.innerHTML = `<i class="ph-bold ph-check" style="color: var(--success);"></i> Done!`;
             setTimeout(() => {
                 btn.innerHTML = originalText;
@@ -1418,11 +1447,3 @@ window.downloadTableQR = (tableNum) => {
             btn.style.pointerEvents = "auto";
         });
 };
-// =======================================================
-// 🔄 AUTO-LOAD TABLES ON PAGE REFRESH
-// =======================================================
-setTimeout(() => {
-    if (typeof renderTables === "function") {
-        renderTables();
-    }
-}, 500);
