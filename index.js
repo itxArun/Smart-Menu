@@ -589,7 +589,9 @@ let isQRProcessing = false;
 window.initDiningSession = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const nowTime = new Date().getTime();
-    if (urlParams.get('scan') === 'true' || urlParams.get('rest')) {
+    
+    // 🔥 VIP FIX: Ab 'table=' aane par bhi session lock khul jayega
+    if (urlParams.get('scan') === 'true' || urlParams.get('rest') || urlParams.get('table')) {
         localStorage.setItem('dining_session_start', nowTime);
         if(urlParams.get('scan') === 'true') {
             urlParams.delete('scan'); let newUrl = window.location.pathname; if(urlParams.toString().length > 0) newUrl += '?' + urlParams.toString();
@@ -607,17 +609,52 @@ window.openInAppScanner = () => {
     html5QrCode.start( { facingMode: "environment" }, config, (decodedText, decodedResult) => {
         if (isQRProcessing) return; isQRProcessing = true;
         if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
-        if(decodedText.includes('rest=') || decodedText.includes('scan=')) {
+        
+        // 🔥 VIP FIX: Scanner ab 'table=' keyword ko pehchanega
+        if(decodedText.includes('rest=') || decodedText.includes('scan=') || decodedText.includes('table=')) {
             localStorage.setItem('dining_session_start', new Date().getTime());
-            if(html5QrCode) { html5QrCode.stop().then(() => { setTimeout(() => { html5QrCode.clear(); window.closeScanner(); }, 100); }).catch(e => { console.log(e); window.closeScanner(); }); } 
+            
+            if(html5QrCode) { html5QrCode.stop().then(() => { setTimeout(() => { html5QrCode.clear(); window.closeScanner(); }, 100); }).catch(e => { window.closeScanner(); }); } 
             else { window.closeScanner(); }
             
-            let scannedRestId = null; if(decodedText.includes('rest=')) scannedRestId = decodedText.split('rest=')[1].split('&')[0];
+            let scannedRestId = null; 
+            let scannedTableId = null;
+            
+            // Link se Table Number nikalna
+            try {
+                const urlObj = new URL(decodedText);
+                scannedRestId = urlObj.searchParams.get('rest');
+                scannedTableId = urlObj.searchParams.get('table');
+            } catch(e) {
+                if(decodedText.includes('rest=')) scannedRestId = decodedText.split('rest=')[1].split('&')[0];
+                if(decodedText.includes('table=')) scannedTableId = decodedText.split('table=')[1].split('&')[0];
+            }
+
+            // Agar table mila, toh automatically form me bhar do aur lock kar do
+            if (scannedTableId) {
+                const tableInput = document.getElementById('tableNumber');
+                if (tableInput) {
+                    tableInput.value = scannedTableId;
+                    tableInput.setAttribute('readonly', 'true');
+                    tableInput.style.background = 'var(--border-light)';
+                    tableInput.style.color = 'var(--text-main)';
+                    tableInput.style.fontWeight = '800';
+                    tableInput.style.cursor = 'not-allowed';
+                    tableInput.placeholder = `Table Locked to: ${scannedTableId} 🔒`;
+                }
+            }
+
             const currentRestId = new URLSearchParams(window.location.search).get('rest');
             const customAlert = document.getElementById('customAlert'); if(customAlert) customAlert.classList.remove('show');
 
-            if(scannedRestId && scannedRestId !== currentRestId) { window.location.href = window.location.pathname + '?rest=' + scannedRestId; } 
-            else { if(typeof window.showToast === 'function') window.showToast("Table Unlocked Successfully! 🎉"); }
+            if(scannedRestId && scannedRestId !== currentRestId) { 
+                let newUrl = window.location.pathname + '?rest=' + scannedRestId;
+                if(scannedTableId) newUrl += '&table=' + scannedTableId;
+                window.location.href = newUrl; 
+            } 
+            else { 
+                if(typeof window.showToast === 'function') window.showToast("Table Unlocked & Added! 🎉"); 
+            }
         } else {
             isQRProcessing = false; if(typeof window.showToast === 'function') window.showToast("Invalid QR Code!"); else alert("Invalid QR Code!");
         }
