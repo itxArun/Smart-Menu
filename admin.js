@@ -1424,33 +1424,38 @@ window.renderTables = () => {
 
         // 🎨 UI Logic: Status Text aur Top-Left Corner Button
         let statusHtml = '';
-        let topLeftButton = ''; // Corner button ke liye variable
+        let topLeftButton = ''; 
         
         if (tableStatus === 'Available') {
             statusHtml = `<div class="table-status-text" style="color:var(--success); font-weight:900; font-size:14px; text-transform: uppercase; margin-bottom: 10px;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            statusHtml = `<div class="table-status-text" style="color:var(--info); font-weight:900; font-size:16px; margin-bottom: 5px;">PAID ✓</div><div style="font-size: 11px; color: var(--text-sub); font-weight: 600;">Ready to clear</div>`;
-            
-            // 🔥 NAYA VIP FEATURE: Top-Left Green Tick Button (Sirf jab Paid ho)
+            statusHtml = `
+                <div class="table-status-text" style="color:var(--info); font-weight:900; font-size:16px; margin-bottom: 5px;">PAID ✓</div>
+                <div style="font-size: 11px; color: var(--text-sub); font-weight: 600;">Ready to clear</div>
+            `;
+            // Failsafe Blue Broom Icon (Clear Table)
             topLeftButton = `
-                <button onclick="forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: rgba(36,150,63,0.15); color: var(--success); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" onmouseover="this.style.background='var(--success)'; this.style.color='white';" onmouseout="this.style.background='rgba(36,150,63,0.15)'; this.style.color='var(--success)';" title="Mark Table as Available">
-                    <i class="ph-bold ph-check"></i>
+                <button onclick="forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: rgba(0,122,255,0.15); color: var(--info); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" title="Clear Table (Mark Available)">
+                    <i class="ph-bold ph-broom"></i>
                 </button>
             `;
         } else {
             statusHtml = `
                 <div class="table-status-text" style="color:var(--warning); font-weight:900; font-size:16px;">₹${totalUnpaid} Due</div>
-                <div style="display:flex; gap:5px; margin-top:8px; width:100%;">
-                    <button onclick="settleTablePayment(${tableNum}, 'Cash')" style="flex:1; background: white; border:1px solid var(--success); color:var(--success); border-radius:8px; padding:6px; font-size:12px; font-weight:800; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">💵 Cash</button>
-                    <button onclick="settleTablePayment(${tableNum}, 'UPI')" style="flex:1; background: var(--info); border:none; color:white; border-radius:8px; padding:6px; font-size:12px; font-weight:800; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">UPI ✓</button>
-                </div>
+                <div style="font-size: 11px; color: var(--text-sub); font-weight: 600; margin-top:5px;">Dining in progress</div>
+            `;
+            // 🔥 VIP FEATURE: Top-Left Green Tick Button (Mark as Paid)
+            topLeftButton = `
+                <button onclick="settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: rgba(36,150,63,0.15); color: var(--success); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" onmouseover="this.style.background='var(--success)'; this.style.color='white';" onmouseout="this.style.background='rgba(36,150,63,0.15)'; this.style.color='var(--success)';" title="Mark Table as Paid">
+                    <i class="ph-bold ph-check"></i>
+                </button>
             `;
         }
         
         const cardHtml = `
             <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;">
                 
-                ${topLeftButton} <!-- ✅ Left Corner Tick Button -->
+                ${topLeftButton}
                 
                 <!-- ❌ Right Corner Delete Button -->
                 <button onclick="deleteTable('${table.id}')" style="position: absolute; top: 10px; right: 10px; background: rgba(229,57,53,0.1); color: var(--danger); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; padding: 0; transition: 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white';" onmouseout="this.style.background='rgba(229,57,53,0.1)'; this.style.color='var(--danger)';">
