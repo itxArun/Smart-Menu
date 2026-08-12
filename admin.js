@@ -1381,7 +1381,7 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (TEXT FIX & FAILSAFE)
+// 🚦 VIP SMART TABLE RENDERER (CORNER TICK BUTTON)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1391,7 +1391,6 @@ window.renderTables = () => {
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
         
-        // 🔥 THE MAGIC: Table ke live orders dhundo
         let activeOrders = window.allOrdersMaster.filter(o => 
             o.tableNumber == tableNum && 
             (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
@@ -1401,7 +1400,7 @@ window.renderTables = () => {
         let cardBg = 'rgba(36, 150, 63, 0.08)';    
         let cardBorder = 'rgba(36, 150, 63, 0.3)';  
         let totalUnpaid = 0;
-        let paidOrdersToClear = []; // Failsafe ke liye ID save karenge
+        let paidOrdersToClear = []; 
         
         if (activeOrders.length > 0) {
             activeOrders.forEach(o => {
@@ -1423,15 +1422,20 @@ window.renderTables = () => {
             }
         }
 
-        // 🎨 UI Logic: Ajeeb text hataya, aur manual "Free Table" button add kiya
+        // 🎨 UI Logic: Status Text aur Top-Left Corner Button
         let statusHtml = '';
+        let topLeftButton = ''; // Corner button ke liye variable
+        
         if (tableStatus === 'Available') {
             statusHtml = `<div class="table-status-text" style="color:var(--success); font-weight:900; font-size:14px; text-transform: uppercase; margin-bottom: 10px;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            // Yahan "CLEAR TABLE" hatakar "PAID" kiya aur manual clear button diya
-            statusHtml = `
-                <div class="table-status-text" style="color:var(--info); font-weight:900; font-size:16px; margin-bottom: 5px;">PAID ✓</div>
-                <button onclick="forceClearTable('${paidOrdersToClear.join(',')}')" style="background:var(--info); color:white; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer; width: max-content; margin: 0 auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">Mark Available</button>
+            statusHtml = `<div class="table-status-text" style="color:var(--info); font-weight:900; font-size:16px; margin-bottom: 5px;">PAID ✓</div><div style="font-size: 11px; color: var(--text-sub); font-weight: 600;">Ready to clear</div>`;
+            
+            // 🔥 NAYA VIP FEATURE: Top-Left Green Tick Button (Sirf jab Paid ho)
+            topLeftButton = `
+                <button onclick="forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: rgba(36,150,63,0.15); color: var(--success); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" onmouseover="this.style.background='var(--success)'; this.style.color='white';" onmouseout="this.style.background='rgba(36,150,63,0.15)'; this.style.color='var(--success)';" title="Mark Table as Available">
+                    <i class="ph-bold ph-check"></i>
+                </button>
             `;
         } else {
             statusHtml = `
@@ -1446,7 +1450,9 @@ window.renderTables = () => {
         const cardHtml = `
             <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;">
                 
-                <!-- ❌ VIP Feature: Top-Right Cross Button -->
+                ${topLeftButton} <!-- ✅ Left Corner Tick Button -->
+                
+                <!-- ❌ Right Corner Delete Button -->
                 <button onclick="deleteTable('${table.id}')" style="position: absolute; top: 10px; right: 10px; background: rgba(229,57,53,0.1); color: var(--danger); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; padding: 0; transition: 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white';" onmouseout="this.style.background='rgba(229,57,53,0.1)'; this.style.color='var(--danger)';">
                     <i class="ph-bold ph-x"></i>
                 </button>
@@ -1465,7 +1471,6 @@ window.renderTables = () => {
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
 };
-
 // =======================================================
 // 🧹 FAILSAFE: INSTANT CLEAR TABLE FUNCTION
 // =======================================================
