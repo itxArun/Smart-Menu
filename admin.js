@@ -1577,30 +1577,75 @@ window.forceClearTable = async (docIdsString) => {
     }
 };
 // =======================================================
-// 💸 1-CLICK BILL SETTLEMENT LOGIC
+// 💸 1-CLICK BILL SETTLEMENT (WITH CUSTOM PREMIUM POPUP)
 // =======================================================
-window.settleTablePayment = async (tableNum, method) => {
-    if(!confirm(`Are you sure you want to collect payment for Table ${tableNum} via ${method}?`)) return;
+window.settleTablePayment = (tableNum, method) => {
+    // Purana modal agar khula ho toh hata do
+    const existingModal = document.getElementById('paymentConfirmModal');
+    if(existingModal) existingModal.remove();
+
+    // Jadoo: Bina HTML chhede JS se direct Modal Popup banana
+    let modal = document.createElement('div');
+    modal.className = 'modal-overlay show';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '999999';
+    modal.id = 'paymentConfirmModal';
     
-    // Unpaid orders dhundo us table ke
+    modal.innerHTML = `
+        <div class="modal-card" style="transform: none; margin: auto; max-width: 340px; text-align: center; border-radius: 24px; padding: 30px 20px; background: var(--bg-card, #ffffff); box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+            <div style="background: rgba(36, 150, 63, 0.1); width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;">
+                <i class="ph-bold ph-wallet" style="font-size: 32px; color: var(--success, #24963F);"></i>
+            </div>
+            <h3 style="margin-bottom: 10px; color: var(--text-main, #1C1C1E); font-weight: 800; font-size: 20px; font-family: 'Okra', sans-serif;">Confirm Payment</h3>
+            <p style="font-size: 13px; color: var(--text-sub, #757575); margin-bottom: 25px; font-weight: 500;">
+                Are you sure you want to collect payment for <b>Table ${tableNum}</b> via <b>${method}</b>?
+            </p>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="document.getElementById('paymentConfirmModal').remove()" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: var(--input-bg, #f5f5f5); color: var(--text-main, #333); transition: 0.2s;">Cancel</button>
+                <button onclick="executeTablePayment(${tableNum}, '${method}')" style="flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; background: var(--success, #24963F); color: white; box-shadow: 0 8px 20px rgba(36, 150, 63, 0.3); transition: 0.2s;">Yes, Confirm</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+};
+
+// =======================================================
+// ⚙️ ASLI PAYMENT LOGIC (JAB MANAGER 'YES' DABAYEGA)
+// =======================================================
+window.executeTablePayment = async (tableNum, method) => {
+    // 1. Popup ko turant gayab karo
+    const modal = document.getElementById('paymentConfirmModal');
+    if(modal) modal.remove();
+
+    // 2. Unpaid orders dhundo us table ke
     let activeOrders = window.allOrdersMaster.filter(o => 
         o.tableNumber == tableNum && 
         (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served') &&
         o.isPaid !== true
     );
     
-    // Sabko Paid mark kar do Firebase me
     for (let order of activeOrders) {
         try {
+            // Pehle order ko PAID mark karo (Table Blue ho jayegi)
             await updateDoc(doc(db, "orders", order.docId), { 
                 isPaid: true,
                 paymentMethod: method
             });
+            
+            // 🔥 5-SECOND TIMER MAGIC
+            // 5 second baad order apne aap Completed (History) me jayega aur Table 🟢 Green (Available) ho jayegi!
+            setTimeout(async () => {
+                try {
+                    await updateDoc(doc(db, "orders", order.docId), { status: 'Completed' });
+                } catch(err) {
+                    console.error("Auto-clear failed: ", err);
+                }
+            }, 5000); 
+
         } catch(e) {
             console.error("Payment update failed: ", e);
         }
     }
-    // Firebase ka live listener apne aap table ko Blue kar dega!
 };
 // =======================================================
 // 🗑️ VIP DELETE TABLE LOGIC (CUSTOM MODAL)
