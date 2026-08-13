@@ -223,9 +223,26 @@ window.listenToLiveOrder = function(orderId) {
     activeOrderListeners[orderId] = onSnapshot(doc(db, "orders", orderId), (d) => { if (!d.exists()) return; activeOrderData[orderId] = d.data(); window.renderMultiTracker(); });
 }
 
+// ==========================================
+// 📈 MULTI-TRACKER & DYNAMIC HEADER BUTTON (RESPONSIVE GRID FIX)
+// ==========================================
 window.renderMultiTracker = function() {
     const liveContainer = document.getElementById('live-orders-container'); 
     const pastContainer = document.getElementById('past-orders-container');
+    
+    // 🔥 VIP FIX: Laptop ke liye CSS Grid (Side-by-Side Cards)
+    if(liveContainer) {
+        liveContainer.style.display = 'grid';
+        liveContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(340px, 1fr))';
+        liveContainer.style.gap = '15px';
+        liveContainer.style.alignItems = 'start';
+    }
+    if(pastContainer) {
+        pastContainer.style.display = 'grid';
+        pastContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(340px, 1fr))';
+        pastContainer.style.gap = '15px';
+        pastContainer.style.alignItems = 'start';
+    }
     
     // Dynamic Header Button Elements
     const trackBtn = document.getElementById('btn-track-order'); 
@@ -282,9 +299,9 @@ window.renderMultiTracker = function() {
             orderTime = `<span style="font-weight: 700;">${isToday ? 'Today' : d.toLocaleDateString()}</span>, ${timeStr}`;
         }
 
-       let actionHtml = '';
+        let actionHtml = '';
         
-        // 👈 ISSUE 1 FIX: CUSTOMER UPI PAYMENT BUTTON LOGIC
+        // 💸 VIP FIX: CUSTOMER UPI PAYMENT BUTTON LOGIC
         let upiButtonHtml = '';
         if (data.isPaid !== true && !isCanc && !isDone && data.orderType !== 'Takeaway') {
             upiButtonHtml = `
@@ -301,13 +318,13 @@ window.renderMultiTracker = function() {
         else if (isDone) actionHtml = `<div style="background:rgba(36, 150, 63, 0.1); color:var(--green); border:1px dashed var(--green); padding:10px; border-radius:12px; font-size:12px; font-weight:700; text-align:center; margin-top:15px; margin-bottom:10px;">🎉 Enjoy your meal!</div>`;
         else if (isCanc) actionHtml = `<div style="background:var(--bg-light); color:var(--text-sub); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px;">Order Cancelled</div>`;
 
-        // Action HTML me UPI button bhi jod diya
         actionHtml += upiButtonHtml;
+
         let cardBg = isDone ? 'var(--light-green)' : '#fff'; 
         let cardBorder = isDone ? '1px solid #24963F' : '1px solid var(--border-light)';
 
         let cardHtml = `
-        <div style="background:${cardBg}; border:${cardBorder}; border-radius: 20px; padding: 20px; margin-bottom: 15px; text-align: left; box-shadow: var(--shadow-soft); transition:0.3s;">
+        <div style="background:${cardBg}; border:${cardBorder}; border-radius: 20px; padding: 20px; text-align: left; box-shadow: var(--shadow-soft); transition:0.3s;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom: 1px solid #eee; padding-bottom:10px;">
                 <div style="font-weight:800; color:var(--text-main); font-size:16px;">#${id.slice(-4)}</div>
                 <div style="display:flex; flex-direction:column; align-items:flex-end;">
@@ -345,7 +362,6 @@ window.renderMultiTracker = function() {
             ${actionHtml}
         </div>`;
 
-        // 🔥 STRICT TODAY VS PAST LOGIC 🔥
         if(liveContainer && pastContainer) {
             if (isToday) liveContainer.innerHTML = cardHtml + liveContainer.innerHTML; 
             else pastContainer.innerHTML = cardHtml + pastContainer.innerHTML; 
@@ -354,13 +370,11 @@ window.renderMultiTracker = function() {
 
     localStorage.setItem('craveActiveOrders', JSON.stringify(newActiveList));
     
-    // 🔮 SMART HEADER BUTTON ANIMATION LOGIC 
     if(trackBtn && pulse) {
         if (showTrackBtn && activeOrdersList.length > 0) { 
             trackBtn.classList.add('show'); 
             pulse.style.display = showPulse ? 'block' : 'none'; 
             
-            // Animation Trigger for Status Changes
             if (highestStatusLevel !== -1 && trackBtnText) {
                 const previousStatus = trackBtn.getAttribute('data-status') || '-1';
                 const currentStatusStr = highestStatusLevel.toString();
@@ -393,8 +407,9 @@ window.renderMultiTracker = function() {
         }
     }
     
-    if(liveContainer && liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No orders placed today.</p></div>`;
-    if(pastContainer && pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
+    // 🔥 Grid Column fix for Empty States taaki empty text center me rahe
+    if(liveContainer && liveContainer.innerHTML === '') liveContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-receipt" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No orders placed today.</p></div>`;
+    if(pastContainer && pastContainer.innerHTML === '') pastContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; padding: 40px 0; color:var(--text-sub);"><i class="ph-fill ph-clock-counter-clockwise" style="font-size:40px; opacity:0.3; margin-bottom:10px;"></i><p style="font-size:13px; font-weight:600; margin:0;">No past orders found.</p></div>`;
 }
 
 window.orderToCancelId = null;
