@@ -1381,7 +1381,7 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (CORNER TICK BUTTON)
+// 🚦 VIP SMART TABLE RENDERER (CLEAN UI & HOVER FIX)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1397,8 +1397,9 @@ window.renderTables = () => {
         );
         
         let tableStatus = 'Available';
-        let cardBg = 'rgba(36, 150, 63, 0.08)';    
-        let cardBorder = 'rgba(36, 150, 63, 0.3)';  
+        // 👈 ISSUE 3 FIX: Ekdam Clean White Background (Available ke liye)
+        let cardBg = '#FFFFFF';    
+        let cardBorder = 'rgba(0,0,0,0.1)';  
         let totalUnpaid = 0;
         let paidOrdersToClear = []; 
         
@@ -1415,25 +1416,24 @@ window.renderTables = () => {
                 tableStatus = 'Dining';
                 cardBg = 'rgba(255, 159, 0, 0.08)';    
                 cardBorder = 'rgba(255, 159, 0, 0.4)';  
-            } else {
+            } else if (paidOrdersToClear.length > 0) {
                 tableStatus = 'Paid';
                 cardBg = 'rgba(0, 122, 255, 0.08)';    
                 cardBorder = 'rgba(0, 122, 255, 0.3)';  
             }
         }
 
-        // 🎨 UI Logic: Status Text aur Top-Left Corner Button
         let statusHtml = '';
         let topLeftButton = ''; 
         
         if (tableStatus === 'Available') {
-            statusHtml = `<div class="table-status-text" style="color:var(--success); font-weight:900; font-size:14px; text-transform: uppercase; margin-bottom: 10px;">Available</div>`;
+            // 👈 ISSUE 3 FIX: "Available" ka bada text hata diya, bas khali space rahega
+            statusHtml = `<div style="flex-grow: 1;"></div>`;
         } else if (tableStatus === 'Paid') {
             statusHtml = `
                 <div class="table-status-text" style="color:var(--info); font-weight:900; font-size:16px; margin-bottom: 5px;">PAID ✓</div>
-                <div style="font-size: 11px; color: var(--text-sub); font-weight: 600;">Ready to clear</div>
+                <div style="font-size: 11px; color: var(--text-sub); font-weight: 600;">Clearing...</div>
             `;
-            // Failsafe Blue Broom Icon (Clear Table)
             topLeftButton = `
                 <button onclick="forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: rgba(0,122,255,0.15); color: var(--info); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" title="Clear Table (Mark Available)">
                     <i class="ph-bold ph-broom"></i>
@@ -1444,7 +1444,6 @@ window.renderTables = () => {
                 <div class="table-status-text" style="color:var(--warning); font-weight:900; font-size:16px;">₹${totalUnpaid} Due</div>
                 <div style="font-size: 11px; color: var(--text-sub); font-weight: 600; margin-top:5px;">Dining in progress</div>
             `;
-            // 🔥 VIP FEATURE: Top-Left Green Tick Button (Mark as Paid)
             topLeftButton = `
                 <button onclick="settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: rgba(36,150,63,0.15); color: var(--success); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" onmouseover="this.style.background='var(--success)'; this.style.color='white';" onmouseout="this.style.background='rgba(36,150,63,0.15)'; this.style.color='var(--success)';" title="Mark Table as Paid">
                     <i class="ph-bold ph-check"></i>
@@ -1453,22 +1452,22 @@ window.renderTables = () => {
         }
         
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;">
                 
                 ${topLeftButton}
                 
-                <!-- ❌ Right Corner Delete Button -->
                 <button onclick="deleteTable('${table.id}')" style="position: absolute; top: 10px; right: 10px; background: rgba(229,57,53,0.1); color: var(--danger); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; padding: 0; transition: 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white';" onmouseout="this.style.background='rgba(229,57,53,0.1)'; this.style.color='var(--danger)';">
                     <i class="ph-bold ph-x"></i>
                 </button>
                 
-                <div class="table-number" style="margin-top: 5px;">T-${tableNum}</div>
+                <div class="table-number" style="margin-top: 5px; font-size: 18px; font-weight: 800;">T-${tableNum}</div>
                 
                 <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
                     ${statusHtml}
                 </div>
                 
-                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})" style="margin-top:10px; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.05);">
+                <!-- 👈 ISSUE 4 FIX: Hover Fix (Inline CSS force apply ki hai) -->
+                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})" style="margin-top:10px; background: var(--input-bg, #f5f5f5); color: var(--text-main, #333); border: 1px solid rgba(0,0,0,0.05); font-weight: 700; border-radius: 8px; padding: 8px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#e0e0e0'; this.style.color='#111';" onmouseout="this.style.background='var(--input-bg, #f5f5f5)'; this.style.color='var(--text-main, #333)';">
                     <i class="ph-bold ph-qr-code"></i> Get QR
                 </button>
             </div>
@@ -1476,8 +1475,9 @@ window.renderTables = () => {
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
 };
+
 // =======================================================
-// 🧹 FAILSAFE: INSTANT CLEAR TABLE FUNCTION
+// 🧹 FAILSAFE: INSTANT CLEAR TABLE (WITH AUTO-REFRESH FIX)
 // =======================================================
 window.forceClearTable = async (docIdsString) => {
     if(!docIdsString) return;
@@ -1486,11 +1486,10 @@ window.forceClearTable = async (docIdsString) => {
     for(let id of docIds) {
         if(id) {
             try {
-                // Table instantly History (Completed) me chali jayegi aur Green ho jayegi
                 await updateDoc(doc(db, "orders", id), { status: 'Completed' });
-            } catch(e) { 
-                console.error("Failsafe Clear Error: ", e); 
-            }
+                // 👈 ISSUE 2 FIX: Update hone ke baad manually screen refresh karwana
+                setTimeout(() => { if (typeof window.renderTables === 'function') window.renderTables(); }, 500);
+            } catch(e) { console.error("Failsafe Clear Error: ", e); }
         }
     }
 };
