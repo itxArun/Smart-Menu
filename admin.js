@@ -1718,3 +1718,24 @@ window.switchTab = async (tabId, element = null) => {
         }
     }
 };
+// =======================================================
+// 🔄 VIP AUTO-REFRESH ENGINE FOR LIVE TABLES
+// =======================================================
+// Ye engine background me chupke se dekhta rahega, aur jaise hi
+// customer order karega ya payment hogi, tables ka color apne aap badal dega!
+
+setTimeout(() => {
+    if (window.currentRestaurantId) {
+        const qLiveTableOrders = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId));
+        
+        onSnapshot(qLiveTableOrders, () => {
+            // Jaise hi database me koi bhi halchal hogi (Order/Payment),
+            // Ye engine automatically Tables ko refresh kar dega (Bina page reload kiye)
+            if (typeof window.renderTables === 'function') {
+                setTimeout(() => {
+                    window.renderTables();
+                }, 500); // 0.5 sec ka delay taaki data properly sync ho jaye
+            }
+        });
+    }
+}, 2000); // App load hone ke 2 second baad engine start hoga
