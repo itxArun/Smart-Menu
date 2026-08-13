@@ -1381,12 +1381,18 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (WITH 3-DOT MENU)
+// 🚦 VIP SMART TABLE RENDERER (COMPACT & MINI UI)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
     if (!grid) return;
     
+    // 🔥 VIP FIX: JS se Grid Layout ko ekdam Compact (Chhota) banana
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))'; // Pehle 320px tha, ab chhota kar diya
+    grid.style.gap = '15px';
+    grid.style.alignItems = 'start';
+
     grid.innerHTML = ''; 
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
@@ -1439,21 +1445,21 @@ window.renderTables = () => {
             statusHtml = `<div style="flex-grow: 1;"></div>`;
         } else if (tableStatus === 'Paid') {
             statusHtml = `
-                <div class="table-status-text" style="color:var(--info); font-weight:900; font-size:16px; margin-bottom: 5px;">PAID ✓</div>
-                <div style="font-size: 11px; color: var(--text-sub); font-weight: 600;">Clearing...</div>
+                <div class="table-status-text" style="color:var(--info); font-weight:900; font-size:13px; margin-bottom: 2px;">PAID ✓</div>
+                <div style="font-size: 10px; color: var(--text-sub); font-weight: 600;">Clearing...</div>
             `;
             topLeftButton = `
-                <button onclick="forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: rgba(0,122,255,0.15); color: var(--info); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" title="Clear Table (Mark Available)">
+                <button onclick="forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 8px; left: 8px; background: rgba(0,122,255,0.15); color: var(--info); border: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" title="Clear Table">
                     <i class="ph-bold ph-broom"></i>
                 </button>
             `;
         } else {
             statusHtml = `
-                <div class="table-status-text" style="color:var(--warning); font-weight:900; font-size:16px;">₹${totalUnpaid} Due</div>
-                <div style="font-size: 11px; color: var(--text-sub); font-weight: 600; margin-top:5px;">Dining in progress</div>
+                <div class="table-status-text" style="color:var(--warning); font-weight:900; font-size:14px;">₹${totalUnpaid} Due</div>
+                <div style="font-size: 10px; color: var(--text-sub); font-weight: 600; margin-top:3px;">Dining</div>
             `;
             topLeftButton = `
-                <button onclick="settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: rgba(36,150,63,0.15); color: var(--success); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" onmouseover="this.style.background='var(--success)'; this.style.color='white';" onmouseout="this.style.background='rgba(36,150,63,0.15)'; this.style.color='var(--success)';" title="Mark Table as Paid">
+                <button onclick="settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 8px; left: 8px; background: rgba(36,150,63,0.15); color: var(--success); border: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" onmouseover="this.style.background='var(--success)'; this.style.color='white';" onmouseout="this.style.background='rgba(36,150,63,0.15)'; this.style.color='var(--success)';" title="Mark Paid">
                     <i class="ph-bold ph-check"></i>
                 </button>
             `;
@@ -1461,24 +1467,23 @@ window.renderTables = () => {
 
         if (hasActiveItems) {
             viewDetailsBtn = `
-                <button onclick="viewTableDetails(${tableNum})" style="margin-top:12px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; width: fit-content; margin-left: auto; margin-right: auto; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
-                    <i class="ph-bold ph-eye"></i> View Details
+                <button onclick="viewTableDetails(${tableNum})" style="margin-top:8px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; width: fit-content; margin-left: auto; margin-right: auto; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
+                    <i class="ph-bold ph-eye"></i> Details
                 </button>
             `;
         }
         
-        // 🔥 VIP FEATURE: 3-Dot Menu for less used options (Get QR & Delete)
         const threeDotMenu = `
-            <div style="position: absolute; top: 10px; right: 10px; z-index: 20;">
-                <button onclick="toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
+            <div style="position: absolute; top: 8px; right: 8px; z-index: 20;">
+                <button onclick="toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: var(--text-sub); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
                     <i class="ph-bold ph-dots-three-vertical"></i>
                 </button>
                 
-                <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 32px; right: 0; background: var(--bg-card, #ffffff); border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; padding: 6px; width: 140px; z-index: 30;">
-                    <button onclick="downloadTableQR(${tableNum}); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 10px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 8px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
+                <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 28px; right: 0; background: var(--bg-card, #ffffff); border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; padding: 4px; width: 120px; z-index: 30;">
+                    <button onclick="downloadTableQR(${tableNum}); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 11px; font-weight: 700; color: var(--text-main); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 6px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
                         <i class="ph-bold ph-qr-code"></i> Get QR
                     </button>
-                    <button onclick="deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 10px; font-size: 13px; font-weight: 600; color: var(--danger); cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 8px; margin-top: 2px; transition: 0.2s;" onmouseover="this.style.background='rgba(229,57,53,0.1)'" onmouseout="this.style.background='transparent'">
+                    <button onclick="deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 11px; font-weight: 700; color: var(--danger); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 6px; margin-top: 2px; transition: 0.2s;" onmouseover="this.style.background='rgba(229,57,53,0.1)'" onmouseout="this.style.background='transparent'">
                         <i class="ph-bold ph-trash"></i> Delete
                     </button>
                 </div>
@@ -1486,16 +1491,16 @@ window.renderTables = () => {
         `;
 
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; min-height: 140px; padding: 20px 15px;">
+            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; border-radius: 14px; transition: all 0.3s ease; display: flex; flex-direction: column; min-height: 90px; padding: 12px 10px;">
                 
                 ${topLeftButton}
                 ${threeDotMenu}
                 
-                <div class="table-number" style="margin-top: 15px; font-size: 22px; font-weight: 800;">T-${tableNum}</div>
+                <div class="table-number" style="margin-top: 8px; font-size: 18px; font-weight: 800;">T-${tableNum}</div>
                 
-                ${custName ? `<div style="font-size: 12px; font-weight: 800; color: var(--text-sub); margin-top: 4px; text-transform: capitalize;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                ${custName ? `<div style="font-size: 11px; font-weight: 700; color: var(--text-sub); margin-top: 2px; text-transform: capitalize;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
                 
-                <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 15px;">
+                <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 8px;">
                     ${statusHtml}
                     ${viewDetailsBtn}
                 </div>
@@ -1504,7 +1509,6 @@ window.renderTables = () => {
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
 };
-
 // =======================================================
 // ⚙️ TOGGLE 3-DOT MENU LOGIC
 // =======================================================
