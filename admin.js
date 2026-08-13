@@ -1381,7 +1381,7 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (CLEAN UI & HOVER FIX)
+// 🚦 VIP SMART TABLE RENDERER (WITH CUSTOMER DETAILS)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1397,13 +1397,23 @@ window.renderTables = () => {
         );
         
         let tableStatus = 'Available';
-        // 👈 ISSUE 3 FIX: Ekdam Clean White Background (Available ke liye)
         let cardBg = '#FFFFFF';    
         let cardBorder = 'rgba(0,0,0,0.1)';  
         let totalUnpaid = 0;
         let paidOrdersToClear = []; 
         
+        // 👤 CUSTOMER INFO VARIABLES
+        let custName = '';
+        let hasActiveItems = false;
+        
         if (activeOrders.length > 0) {
+            hasActiveItems = true;
+            // First order se customer ka naam nikalna
+            const firstOrder = activeOrders[0];
+            if(firstOrder.customerName && firstOrder.customerName !== 'N/A') {
+                custName = firstOrder.customerName;
+            }
+
             activeOrders.forEach(o => {
                 if (o.isPaid !== true) {
                     totalUnpaid += (o.totalAmount || 0);
@@ -1425,9 +1435,9 @@ window.renderTables = () => {
 
         let statusHtml = '';
         let topLeftButton = ''; 
+        let viewDetailsBtn = ''; // 👁️ Naya Button
         
         if (tableStatus === 'Available') {
-            // 👈 ISSUE 3 FIX: "Available" ka bada text hata diya, bas khali space rahega
             statusHtml = `<div style="flex-grow: 1;"></div>`;
         } else if (tableStatus === 'Paid') {
             statusHtml = `
@@ -1450,6 +1460,15 @@ window.renderTables = () => {
                 </button>
             `;
         }
+
+        // 🔥 VIP LOGIC: Agar Table par koi hai, toh uska detail button dikhao
+        if (hasActiveItems) {
+            viewDetailsBtn = `
+                <button onclick="viewTableDetails(${tableNum})" style="margin-top:8px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; width: fit-content; margin-left: auto; margin-right: auto; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
+                    <i class="ph-bold ph-eye"></i> Details
+                </button>
+            `;
+        }
         
         const cardHtml = `
             <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;">
@@ -1462,12 +1481,15 @@ window.renderTables = () => {
                 
                 <div class="table-number" style="margin-top: 5px; font-size: 18px; font-weight: 800;">T-${tableNum}</div>
                 
-                <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                <!-- 🔥 Show Customer Name (If Available) -->
+                ${custName ? `<div style="font-size: 11px; font-weight: 800; color: var(--text-sub); margin-top: 2px; text-transform: capitalize;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                
+                <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: 10px 0;">
                     ${statusHtml}
+                    ${viewDetailsBtn}
                 </div>
                 
-                <!-- 👈 ISSUE 4 FIX: Hover Fix (Inline CSS force apply ki hai) -->
-                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})" style="margin-top:10px; background: var(--input-bg, #f5f5f5); color: var(--text-main, #333); border: 1px solid rgba(0,0,0,0.05); font-weight: 700; border-radius: 8px; padding: 8px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#e0e0e0'; this.style.color='#111';" onmouseout="this.style.background='var(--input-bg, #f5f5f5)'; this.style.color='var(--text-main, #333)';">
+                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})" style="margin-top:5px; background: var(--input-bg, #f5f5f5); color: var(--text-main, #333); border: 1px solid rgba(0,0,0,0.05); font-weight: 700; border-radius: 8px; padding: 8px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#e0e0e0'; this.style.color='#111';" onmouseout="this.style.background='var(--input-bg, #f5f5f5)'; this.style.color='var(--text-main, #333)';">
                     <i class="ph-bold ph-qr-code"></i> Get QR
                 </button>
             </div>
@@ -1476,6 +1498,67 @@ window.renderTables = () => {
     });
 };
 
+// =======================================================
+// 👁️ DYNAMIC POPUP FOR TABLE ORDER DETAILS
+// =======================================================
+window.viewTableDetails = (tableNum) => {
+    // Purana modal agar khula ho toh hata do
+    const existingModal = document.getElementById('dynamicTableModal');
+    if(existingModal) existingModal.remove();
+
+    // Table ke live orders dhundo
+    let activeOrders = window.allOrdersMaster.filter(o => 
+        o.tableNumber == tableNum && 
+        (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
+    );
+    
+    if(activeOrders.length === 0) return;
+
+    let detailsHtml = activeOrders.map(o => {
+        let itemsList = o.items.map(i => `<div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px dashed rgba(0,0,0,0.05);"><span><b>${i.qty}x</b> ${i.name}</span> <span>₹${i.price * i.qty}</span></div>`).join('');
+        let custName = o.customerName !== 'N/A' ? o.customerName : 'Guest Customer';
+        let custPhone = o.customerPhone && o.customerPhone !== 'N/A' ? o.customerPhone : 'No Number';
+        let chefNote = o.chefNotes && o.chefNotes !== 'None' ? `<div style="margin-top:8px; font-size: 11px; background: #FFE5E5; color: #E53935; padding: 6px; border-radius: 6px;"><b>Note:</b> ${o.chefNotes}</div>` : '';
+
+        return `
+            <div style="background: var(--input-bg); border: 1px solid var(--border); padding: 12px; border-radius: 12px; margin-bottom: 15px; text-align: left;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px;">
+                    <span style="font-weight: 800; font-size: 14px;">Order #${o.docId.slice(-4)}</span>
+                    <span style="font-weight: 800; color: var(--primary);">₹${o.totalAmount}</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 10px;">
+                    <div><i class="ph-fill ph-user-circle"></i> <b>${custName}</b></div>
+                    <div><i class="ph-fill ph-phone"></i> ${custPhone}</div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-main);">
+                    ${itemsList}
+                </div>
+                ${chefNote}
+            </div>
+        `;
+    }).join('');
+
+    // Jadoo: Bina HTML chhede JS se direct Modal Popup banana
+    let modal = document.createElement('div');
+    modal.className = 'modal-overlay show';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '999999';
+    modal.id = 'dynamicTableModal';
+    modal.innerHTML = `
+        <div class="modal-card" style="transform: none; margin: auto; max-width: 380px; text-align: center; border-radius: 20px; padding: 25px 20px; max-height: 85vh; overflow-y: auto; background: var(--bg-card); box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
+            <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-main); font-size: 18px; font-weight: 800;">
+                <i class="ph-fill ph-receipt" style="color: var(--primary);"></i> Table ${tableNum} Details
+            </h3>
+            
+            ${detailsHtml}
+            
+            <button onclick="document.getElementById('dynamicTableModal').remove()" style="width: 100%; background: var(--text-main); color: var(--bg-main); padding: 14px; border-radius: 12px; border: none; font-weight: 800; font-size: 14px; margin-top: 10px; cursor: pointer;">
+                Close Details
+            </button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+};
 // =======================================================
 // 🧹 FAILSAFE: INSTANT CLEAR TABLE (WITH AUTO-REFRESH FIX)
 // =======================================================
