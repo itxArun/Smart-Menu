@@ -282,12 +282,27 @@ window.renderMultiTracker = function() {
             orderTime = `<span style="font-weight: 700;">${isToday ? 'Today' : d.toLocaleDateString()}</span>, ${timeStr}`;
         }
 
-        let actionHtml = '';
+       let actionHtml = '';
+        
+        // 👈 ISSUE 1 FIX: CUSTOMER UPI PAYMENT BUTTON LOGIC
+        let upiButtonHtml = '';
+        if (data.isPaid !== true && !isCanc && !isDone && data.orderType !== 'Takeaway') {
+            upiButtonHtml = `
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-light);">
+                <button onclick="payBillViaUPI('${id}', ${data.totalAmount})" style="width: 100%; background: #24963F; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(36, 150, 63, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px;">
+                    <i class="ph-bold ph-wallet" style="font-size: 18px;"></i> Pay ₹${data.totalAmount} via UPI
+                </button>
+                <div style="text-align: center; font-size: 10px; color: var(--text-sub); margin-top: 8px; font-weight: 600;">(Or pay by Cash at the counter)</div>
+            </div>`;
+        }
+
         if (isNew) actionHtml = `<button onclick="cancelCustomerOrder('${id}')" style="background:#FFE5E5; color:var(--danger); border:1px solid var(--danger); padding:8px 16px; border-radius:50px; font-size:12px; font-weight:700; cursor:pointer; display:inline-block; margin-top:10px; transition:0.2s;">Cancel ❌</button>`;
         else if (isPrep) { let eta = data.items.length * 5; actionHtml = `<div style="background:rgba(255, 159, 0, 0.1); color:var(--warning); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px; border:1px dashed var(--warning);">⏳ ETA: ${eta} - ${eta+5} Mins</div>`; } 
         else if (isDone) actionHtml = `<div style="background:rgba(36, 150, 63, 0.1); color:var(--green); border:1px dashed var(--green); padding:10px; border-radius:12px; font-size:12px; font-weight:700; text-align:center; margin-top:15px; margin-bottom:10px;">🎉 Enjoy your meal!</div>`;
         else if (isCanc) actionHtml = `<div style="background:var(--bg-light); color:var(--text-sub); padding:10px; border-radius:12px; font-size:13px; font-weight:700; text-align:center; margin-top:15px;">Order Cancelled</div>`;
 
+        // Action HTML me UPI button bhi jod diya
+        actionHtml += upiButtonHtml;
         let cardBg = isDone ? 'var(--light-green)' : '#fff'; 
         let cardBorder = isDone ? '1px solid #24963F' : '1px solid var(--border-light)';
 
@@ -1011,3 +1026,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+// =======================================================
+// 💸 CUSTOMER DIRECT UPI INTENT TRIGGER
+// =======================================================
+window.payBillViaUPI = async (orderId, amount) => {
+    let merchantUpi = ""; 
+    try {
+        // Firebase se admin ka set kiya hua UPI uthana
+        const q = query(collection(db, "merchants"), where("restaurantId", "==", window.currentRestaurantId));
+        const snap = await getDocs(q);
+        if(!snap.empty && snap.docs[0].data().upiId) {
+            merchantUpi = snap.docs[0].data().upiId;
+        }
+    } catch(e) { console.error(e); }
+    
+    if(!merchantUpi) { 
+        alert("Online payment is not setup yet. Please pay Cash at the counter."); 
+        return; 
+    }
+    
+    // GPay / PhonePe / Paytm Trigger Link
+    const upiLink = `upi://pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
+    
+    // Phone ke payment app ko force open karna
+    window.location.href = upiLink;
+    
+    // Fake Green Tick (1-Click Model ke liye)
+    if (typeof window.showToast === 'function') {
+        window.showToast("Payment Initiated! Waiting for manager confirmation.");
+    }
+};
