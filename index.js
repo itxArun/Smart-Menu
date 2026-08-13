@@ -918,9 +918,43 @@ window.saveChefNote = () => {
 async function loadDynamicMenu() {
     try {
         console.log("⏳ Fetching data from Database...");
-        // Pehle hi smart greeting chalu kar do
+        
         if(typeof window.updateSmartGreeting === 'function') window.updateSmartGreeting();
 
+        // 💀 VIP MAGIC: INSTANT SKELETON LOADER
+        // Data aane se pehle hi turant fake white boxes dikha do!
+        const sidebar = document.getElementById('sidebar-menu');
+        if (sidebar) {
+            sidebar.innerHTML = '';
+            for(let i=0; i<8; i++) {
+                sidebar.innerHTML += `
+                <div class="side-item" style="pointer-events:none; border:none; box-shadow:none; padding:15px 10px;">
+                    <div class="skeleton-box" style="width:60px; height:60px; border-radius:15px; margin: 0 auto 10px auto;"></div>
+                    <div class="skeleton-box" style="width:80%; height:12px; margin: 0 auto 5px auto;"></div>
+                    <div class="skeleton-box" style="width:50%; height:10px; margin: 0 auto;"></div>
+                </div>`;
+            }
+        }
+        
+        // Main Screen Skeleton
+        const slider = document.getElementById('photo-slider');
+        if(slider) {
+            slider.classList.remove('hide');
+            slider.innerHTML = `<div class="skeleton-box" style="width:100%; height:250px; border-radius:20px;"></div>`;
+        }
+        const displayName = document.getElementById('display-name');
+        if(displayName) displayName.innerHTML = `<div class="skeleton-box" style="width:70%; height:28px; margin-bottom:10px;"></div>`;
+        const displayPrice = document.getElementById('display-price');
+        if(displayPrice) displayPrice.innerHTML = `<div class="skeleton-box" style="width:40%; height:20px;"></div>`;
+
+        // Agar tumhara koi bada sa full-screen loader (gol ghoomne wala) pehle se HTML me hai, toh usko turant hide kar do
+        const fullScreenLoader = document.getElementById('loader') || document.getElementById('preloader');
+        if(fullScreenLoader) {
+            fullScreenLoader.style.opacity = '0';
+            setTimeout(() => fullScreenLoader.style.display = 'none', 300);
+        }
+
+        // 🔥 ASLI DATA FETCH (Ye background me aaram se aayega)
         const restaurant = await APIService.getRestaurant();
         const categories = await APIService.getCategories();
         const dishes = await APIService.getDishes();
@@ -928,7 +962,6 @@ async function loadDynamicMenu() {
         if (!restaurant) { console.error("❌ Restaurant not found! Default ID use ho rahi hai."); return; }
         document.title = `${restaurant.name} - Smart Menu`;
 
-        // 🍔 1. Loader me Hotel ka asli naam dikhao aur Cache me Save karo
         const loaderBrand = document.getElementById('loader-brand-name');
         const loaderTagline = document.getElementById('loader-tagline');
         if (loaderBrand && restaurant.name) {
@@ -937,7 +970,6 @@ async function loadDynamicMenu() {
             localStorage.setItem('crave_hotel_name_cache', restaurant.name);
         }
 
-        // 🔥 BULLETPROOF SAAS NAME REPLACER 🔥
         if (restaurant.name !== "Smart Menu") {
             const replaceText = (node) => {
                 if (node.nodeType === 3 && node.nodeValue) { if (node.nodeValue.includes("NextPlate")) { node.nodeValue = node.nodeValue.replace("NextPlate", restaurant.name); } } 
@@ -946,11 +978,15 @@ async function loadDynamicMenu() {
             replaceText(document.body);
         }
 
+        // Skeleton hatake Asli Data lagao
         window.allDishes = dishes;
         if (typeof window.applyFilters === 'function') { window.applyFilters(); }
         if (window.allDishes.length > 0) { window.loadDish(window.allDishes[0]); }
+        
         console.log("✅ Data Load & Render Successful!");
-    } catch(e) { console.error("❌ Data load error:", e); }
+    } catch(e) { 
+        console.error("❌ Data load error:", e); 
+    }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
