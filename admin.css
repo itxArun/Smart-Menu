@@ -1192,3 +1192,104 @@ input:checked + .slider:before { transform: translateX(22px); }
 .dropdown-menu, .action-dropdown, [style*="position: absolute"] {
     z-index: 9999 !important;
 }
+/* =======================================================
+   📱 GLOBAL RESPONSIVE MASTER CODE (FOR ALL SCREENS)
+   ======================================================= */
+
+/* -----------------------------------------
+   1. MOBILE PHONES (Screens smaller than 768px)
+   ----------------------------------------- */
+@media (max-width: 768px) {
+    /* Grids ko single column banao taaki lamba na khiche */
+    .stats-grid, 
+    #tables-grid, 
+    #live-orders-container, 
+    #past-orders-container, 
+    .crm-grid,
+    .advanced-stats-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important; /* Ek ke neeche ek */
+        gap: 15px !important;
+    }
+
+    /* Modals (Popups) ko screen ke andar fit rakho */
+    .modal-card, 
+    .modal-content, 
+    .login-card {
+        width: 95% !important;
+        max-width: none !important;
+        padding: 20px !important;
+        margin: 10px auto !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Layout ko column me dalo */
+    .app-container, 
+    .main-content {
+        flex-direction: column !important;
+        width: 100% !important;
+        padding: 10px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Top Nav aur Headers ko chhota karo */
+    .top-nav {
+        padding: 10px !important;
+    }
+    .brand-logo {
+        font-size: 18px !important;
+    }
+    .section-header h3 {
+        font-size: 16px !important;
+    }
+}
+
+/* -----------------------------------------
+   2. TABLETS & SMALL LAPTOPS (769px to 1024px)
+   ----------------------------------------- */
+@media (min-width: 769px) and (max-width: 1024px) {
+    /* Tablet par 2 column grid dikhao */
+    .stats-grid, 
+    #tables-grid, 
+    #live-orders-container, 
+    #past-orders-container {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+
+    .crm-grid {
+        grid-template-columns: 1fr !important; /* Tablet par CRM ko single column rakho */
+    }
+}
+
+/* -----------------------------------------
+   3. DESKTOP / BIG SCREENS (1025px and above)
+   ----------------------------------------- */
+@media (min-width: 1025px) {
+    /* Laptop par mast khula-khula 3-4 column grid dikhao */
+    .stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    #tables-grid, 
+    #live-orders-container, 
+    #past-orders-container {
+        display: grid !important;
+        /* auto-fill se screen jitni badi hogi, utne zyada dabbe (cards) ek line me aayenge */
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+        gap: 20px !important;
+        align-items: start !important;
+    }
+
+    .crm-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important; /* CRM 2 hisso me divide hoga */
+        gap: 25px !important;
+    }
+    
+    .modal-card {
+        max-width: 500px !important; /* Laptop par popup bhadda na lage */
+    }
+}
