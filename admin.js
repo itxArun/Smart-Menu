@@ -1381,7 +1381,7 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (WITH CUSTOMER DETAILS)
+// 🚦 VIP SMART TABLE RENDERER (WITH 3-DOT MENU)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1402,13 +1402,11 @@ window.renderTables = () => {
         let totalUnpaid = 0;
         let paidOrdersToClear = []; 
         
-        // 👤 CUSTOMER INFO VARIABLES
         let custName = '';
         let hasActiveItems = false;
         
         if (activeOrders.length > 0) {
             hasActiveItems = true;
-            // First order se customer ka naam nikalna
             const firstOrder = activeOrders[0];
             if(firstOrder.customerName && firstOrder.customerName !== 'N/A') {
                 custName = firstOrder.customerName;
@@ -1435,7 +1433,7 @@ window.renderTables = () => {
 
         let statusHtml = '';
         let topLeftButton = ''; 
-        let viewDetailsBtn = ''; // 👁️ Naya Button
+        let viewDetailsBtn = ''; 
         
         if (tableStatus === 'Available') {
             statusHtml = `<div style="flex-grow: 1;"></div>`;
@@ -1461,42 +1459,76 @@ window.renderTables = () => {
             `;
         }
 
-        // 🔥 VIP LOGIC: Agar Table par koi hai, toh uska detail button dikhao
         if (hasActiveItems) {
             viewDetailsBtn = `
-                <button onclick="viewTableDetails(${tableNum})" style="margin-top:8px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; width: fit-content; margin-left: auto; margin-right: auto; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
-                    <i class="ph-bold ph-eye"></i> Details
+                <button onclick="viewTableDetails(${tableNum})" style="margin-top:12px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; width: fit-content; margin-left: auto; margin-right: auto; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
+                    <i class="ph-bold ph-eye"></i> View Details
                 </button>
             `;
         }
         
-        const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;">
-                
-                ${topLeftButton}
-                
-                <button onclick="deleteTable('${table.id}')" style="position: absolute; top: 10px; right: 10px; background: rgba(229,57,53,0.1); color: var(--danger); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; padding: 0; transition: 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white';" onmouseout="this.style.background='rgba(229,57,53,0.1)'; this.style.color='var(--danger)';">
-                    <i class="ph-bold ph-x"></i>
+        // 🔥 VIP FEATURE: 3-Dot Menu for less used options (Get QR & Delete)
+        const threeDotMenu = `
+            <div style="position: absolute; top: 10px; right: 10px; z-index: 20;">
+                <button onclick="toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
+                    <i class="ph-bold ph-dots-three-vertical"></i>
                 </button>
                 
-                <div class="table-number" style="margin-top: 5px; font-size: 18px; font-weight: 800;">T-${tableNum}</div>
+                <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 32px; right: 0; background: var(--bg-card, #ffffff); border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; padding: 6px; width: 140px; z-index: 30;">
+                    <button onclick="downloadTableQR(${tableNum}); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 10px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 8px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
+                        <i class="ph-bold ph-qr-code"></i> Get QR
+                    </button>
+                    <button onclick="deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 10px; font-size: 13px; font-weight: 600; color: var(--danger); cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 8px; margin-top: 2px; transition: 0.2s;" onmouseover="this.style.background='rgba(229,57,53,0.1)'" onmouseout="this.style.background='transparent'">
+                        <i class="ph-bold ph-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const cardHtml = `
+            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; transition: all 0.3s ease; display: flex; flex-direction: column; min-height: 140px; padding: 20px 15px;">
                 
-                <!-- 🔥 Show Customer Name (If Available) -->
-                ${custName ? `<div style="font-size: 11px; font-weight: 800; color: var(--text-sub); margin-top: 2px; text-transform: capitalize;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                ${topLeftButton}
+                ${threeDotMenu}
                 
-                <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: 10px 0;">
+                <div class="table-number" style="margin-top: 15px; font-size: 22px; font-weight: 800;">T-${tableNum}</div>
+                
+                ${custName ? `<div style="font-size: 12px; font-weight: 800; color: var(--text-sub); margin-top: 4px; text-transform: capitalize;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                
+                <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 15px;">
                     ${statusHtml}
                     ${viewDetailsBtn}
                 </div>
-                
-                <button class="btn-qr-download" id="btn-qr-${tableNum}" onclick="downloadTableQR(${tableNum})" style="margin-top:5px; background: var(--input-bg, #f5f5f5); color: var(--text-main, #333); border: 1px solid rgba(0,0,0,0.05); font-weight: 700; border-radius: 8px; padding: 8px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#e0e0e0'; this.style.color='#111';" onmouseout="this.style.background='var(--input-bg, #f5f5f5)'; this.style.color='var(--text-main, #333)';">
-                    <i class="ph-bold ph-qr-code"></i> Get QR
-                </button>
             </div>
         `;
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
 };
+
+// =======================================================
+// ⚙️ TOGGLE 3-DOT MENU LOGIC
+// =======================================================
+window.toggleTableMenu = (tableNum, event) => {
+    if(event) event.stopPropagation();
+    
+    // Pehle saare open menus ko close kar do
+    document.querySelectorAll('.table-dropdown').forEach(menu => {
+        if (menu.id !== `table-menu-${tableNum}`) menu.style.display = 'none';
+    });
+    
+    // Ab click kiye gaye menu ko toggle karo
+    const menu = document.getElementById(`table-menu-${tableNum}`);
+    if(menu) {
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+};
+
+// Agar screen par kahin aur click ho, toh menu band ho jaye
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.table-dropdown') && !e.target.closest('.ph-dots-three-vertical')) {
+        document.querySelectorAll('.table-dropdown').forEach(menu => menu.style.display = 'none');
+    }
+});
 
 // =======================================================
 // 👁️ DYNAMIC POPUP FOR TABLE ORDER DETAILS
