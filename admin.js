@@ -1381,19 +1381,60 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (MINIMAL, CLICKABLE & SQUARE)
+// 🎛️ GLOBAL STATE FOR TABLE GRID SIZE
+// =======================================================
+if (!window.currentTableSize) window.currentTableSize = 'medium';
+
+window.toggleTableSize = () => {
+    // Small -> Large -> Medium -> Small (Cycle karega)
+    if (window.currentTableSize === 'medium') window.currentTableSize = 'small';
+    else if (window.currentTableSize === 'small') window.currentTableSize = 'large';
+    else window.currentTableSize = 'medium';
+    window.renderTables(); // Turant naye size me refresh karega
+};
+
+// =======================================================
+// 🚦 VIP SMART TABLE RENDERER (RESPONSIVE + CONTROLS)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
     if (!grid) return;
     
-    // 🔥 CSS Grid Magic: Mobile pe 2 column, Laptop pe 5-6 column
-    grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(135px, 1fr))'; 
-    grid.style.gap = '15px';
-    grid.style.alignItems = 'start';
+    // 👈 FIX 1: Bottom Navigation Overlap Fix (Neeche extra space taaki scroll ho sake)
+    grid.style.paddingBottom = '120px';
 
+    // 👈 FIX 2: Grid Size Controller Logic
+    let minWidth = '135px'; 
+    let sizeText = 'Medium';
+    let scaleFont = 1;
+
+    if (window.currentTableSize === 'small') {
+        minWidth = '95px'; // Phone par 3+ tables ek line me aayengi
+        sizeText = 'Small 📱';
+        scaleFont = 0.8; // Text ko thoda chhota rakhenge taaki box na phate
+    } else if (window.currentTableSize === 'large') {
+        minWidth = '180px'; // Phone par 1-2 table, laptop par mast badi
+        sizeText = 'Large 💻';
+        scaleFont = 1.1;
+    }
+
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`; 
+    grid.style.gap = '12px';
+    grid.style.alignItems = 'start';
     grid.innerHTML = ''; 
+
+    // 🔥 DYNAMIC SIZE CONTROL BUTTON (Table grid ke sabse upar dikhega)
+    const controlsHtml = `
+        <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-bottom: 5px;">
+            <button onclick="toggleTableSize()" style="background: #ffffff; border: 1px solid #ddd; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='#ffffff'">
+                <i class="ph-bold ph-squares-four" style="color: var(--primary, #E53935);"></i> Size: ${sizeText}
+            </button>
+        </div>
+    `;
+    grid.insertAdjacentHTML('beforeend', controlsHtml);
+
+    // Tables Render karna shuru
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
         
@@ -1402,12 +1443,10 @@ window.renderTables = () => {
             (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
         );
         
-        // 🎨 Default Premium Colors (Available Table)
         let tableStatus = 'Available';
         let cardBg = '#F8F9FA';    
         let cardBorder = '1px solid #E9ECEF';  
         let shadow = '0 4px 10px rgba(0,0,0,0.04)';
-        
         let totalUnpaid = 0;
         let paidOrdersToClear = []; 
         let custName = '';
@@ -1419,14 +1458,10 @@ window.renderTables = () => {
             }
 
             activeOrders.forEach(o => {
-                if (o.isPaid !== true) {
-                    totalUnpaid += (o.totalAmount || 0);
-                } else {
-                    paidOrdersToClear.push(o.docId);
-                }
+                if (o.isPaid !== true) totalUnpaid += (o.totalAmount || 0);
+                else paidOrdersToClear.push(o.docId);
             });
             
-            // 🔥 Colors for Dining (Orange) & Paid (Blue)
             if (totalUnpaid > 0) {
                 tableStatus = 'Dining';
                 cardBg = '#FFF5EB';    
@@ -1443,33 +1478,33 @@ window.renderTables = () => {
         let statusHtml = '';
         let topLeftButton = ''; 
         
-        // 🛑 event.stopPropagation() isliye lagaya hai taaki button dabane par galti se Card click na ho jaye
         if (tableStatus === 'Available') {
-            statusHtml = `<div style="font-size: 11px; color: #ADB5BD; font-weight: 700; margin-top: 5px; text-transform: uppercase;">Available</div>`;
+            statusHtml = `<div style="font-size: ${11 * scaleFont}px; color: #ADB5BD; font-weight: 800; margin-top: 5px; text-transform: uppercase;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            statusHtml = `<div style="font-size: 14px; color: #228BE6; font-weight: 900; margin-top: 4px;">PAID ✓</div>`;
+            statusHtml = `<div style="font-size: ${14 * scaleFont}px; color: #228BE6; font-weight: 900; margin-top: 4px;">PAID ✓</div>`;
             topLeftButton = `
-                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: #228BE6; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); transition: 0.2s; z-index: 10;" title="Clear Table">
+                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 8px; left: 8px; background: #228BE6; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); z-index: 10;">
                     <i class="ph-bold ph-broom"></i>
                 </button>
             `;
         } else {
-            statusHtml = `<div style="font-size: 16px; color: #FD7E14; font-weight: 900; margin-top: 4px;">₹${totalUnpaid}</div>`;
+            statusHtml = `<div style="font-size: ${16 * scaleFont}px; color: #FD7E14; font-weight: 900; margin-top: 4px;">₹${totalUnpaid}</div>`;
             topLeftButton = `
-                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: #40C057; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); transition: 0.2s; z-index: 10;" title="Collect Payment">
+                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 8px; left: 8px; background: #40C057; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); z-index: 10;">
                     <i class="ph-bold ph-check"></i>
                 </button>
             `;
         }
         
+        // 👈 FIX 3: QR Download Safe Wrapper
         const threeDotMenu = `
-            <div style="position: absolute; top: 10px; right: 10px; z-index: 20;">
+            <div style="position: absolute; top: 8px; right: 8px; z-index: 20;">
                 <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px;">
                     <i class="ph-bold ph-dots-three-vertical"></i>
                 </button>
                 
                 <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 30px; right: 0; background: #ffffff; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 10px; padding: 5px; width: 120px; z-index: 30;">
-                    <button onclick="event.stopPropagation(); downloadTableQR(${tableNum}); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 12px; font-weight: 700; color: #343A40; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                    <button onclick="safeDownloadQR(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 12px; font-weight: 700; color: #343A40; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
                         <i class="ph-bold ph-qr-code"></i> Get QR
                     </button>
                     <button onclick="event.stopPropagation(); deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 12px; font-weight: 700; color: #FA5252; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; margin-top: 2px;">
@@ -1479,26 +1514,40 @@ window.renderTables = () => {
             </div>
         `;
 
-        // 👁️ Poora Dabba Clickable banaya (Sirf occupied tables par)
         const cardAction = activeOrders.length > 0 ? `onclick="viewTableDetails(${tableNum})"` : '';
         const hoverEffect = activeOrders.length > 0 ? `cursor: pointer;` : `cursor: default;`;
 
-        // 🔥 VIP Magic: aspect-ratio: 1/1 se ye 100% square rahega
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" ${cardAction} style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 20px; display: flex; flex-direction: column; aspect-ratio: 1 / 1; justify-content: center; align-items: center; text-align: center; ${hoverEffect} transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="if('${tableStatus}' !== 'Available') this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="table-card" id="table-card-${tableNum}" ${cardAction} style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 16px; display: flex; flex-direction: column; aspect-ratio: 1 / 1; justify-content: center; align-items: center; text-align: center; ${hoverEffect} transition: transform 0.2s ease;" onmouseover="if('${tableStatus}' !== 'Available') this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                 
                 ${topLeftButton}
                 ${threeDotMenu}
                 
-                <div class="table-number" style="font-size: 30px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 5px;">T-${tableNum}</div>
+                <div class="table-number" style="font-size: ${26 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 5px;">T-${tableNum}</div>
                 
-                ${custName ? `<div style="font-size: 11px; font-weight: 800; color: #868E96; margin-top: 2px; background: rgba(0,0,0,0.04); padding: 2px 10px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                ${custName ? `<div style="font-size: ${10 * scaleFont}px; font-weight: 800; color: #868E96; margin-top: 2px; background: rgba(0,0,0,0.04); padding: 2px 8px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
                 
                 ${statusHtml}
             </div>
         `;
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
+};
+
+// =======================================================
+// 🛡️ SAFE QR DOWNLOAD WRAPPER (Fixes Click Bug)
+// =======================================================
+window.safeDownloadQR = (tableNum, event) => {
+    if(event) event.stopPropagation(); // Card click hone se rokega
+    
+    if(typeof downloadTableQR === 'function') {
+        downloadTableQR(tableNum); // Asli download function run karega
+    } else {
+        alert("QR Download system abhi ready nahi hai!");
+    }
+    
+    // Menu band kar dega
+    if(typeof toggleTableMenu === 'function') toggleTableMenu(tableNum, null);
 };
 // =======================================================
 // ⚙️ TOGGLE 3-DOT MENU LOGIC
