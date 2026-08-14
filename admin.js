@@ -1406,7 +1406,7 @@ window.toggleTableSize = () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (FIXED SIZE & EXPLICIT BUTTONS)
+// 🚦 VIP SMART TABLE RENDERER (PERFECT 6-TABLE ROW FIX)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1414,22 +1414,22 @@ window.renderTables = () => {
     
     grid.style.paddingBottom = '120px';
 
-    // 🔥 FIX: Height fix kar di taaki bhadde giant dabbe na banein
-    let minWidth = '180px'; 
-    let fixedHeight = '180px';
+    // 🔥 FIX: Width aur height ko aur compact kar diya taaki ek line me exactly 6 tables fit hon
+    let minWidth = '145px'; 
+    let fixedHeight = '145px';
     let sizeText = 'Medium';
-    let scaleFont = 1;
+    let scaleFont = 0.85; // Font bhi halka sa chhota kiya hai
 
     if (window.currentTableSize === 'small') {
-        minWidth = '130px'; 
-        fixedHeight = '140px';
+        minWidth = '110px'; 
+        fixedHeight = '115px';
         sizeText = 'Small 📱';
-        scaleFont = 0.8; 
+        scaleFont = 0.7; 
     } else if (window.currentTableSize === 'large') {
-        minWidth = '240px'; 
-        fixedHeight = '220px';
+        minWidth = '190px'; 
+        fixedHeight = '190px';
         sizeText = 'Large 💻';
-        scaleFont = 1.15;
+        scaleFont = 1.1;
     }
 
     grid.style.display = 'grid';
@@ -1501,23 +1501,22 @@ window.renderTables = () => {
         } else if (tableStatus === 'Paid') {
             statusHtml = `<div style="font-size: ${15 * scaleFont}px; color: #228BE6; font-weight: 900; margin-top: 5px;">PAID ✓</div>`;
             topLeftButton = `
-                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: #228BE6; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); z-index: 10;" title="Clear Table">
+                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: #228BE6; color: white; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); z-index: 10;" title="Clear Table">
                     <i class="ph-bold ph-broom"></i>
                 </button>
             `;
         } else {
             statusHtml = `<div style="font-size: ${18 * scaleFont}px; color: #FD7E14; font-weight: 900; margin-top: 5px;">₹${totalUnpaid}</div>`;
             topLeftButton = `
-                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: #40C057; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); z-index: 10;" title="Collect Payment">
+                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: #40C057; color: white; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); z-index: 10;" title="Collect Payment">
                     <i class="ph-bold ph-check"></i>
                 </button>
             `;
         }
 
-        // 🔥 EXPLICIT DETAILS BUTTON (Jab table busy ho tabhi dikhega)
         if (tableStatus !== 'Available') {
             viewDetailsBtn = `
-                <button onclick="viewTableDetails(${tableNum})" style="margin-top: 10px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 14px; font-size: ${11 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
+                <button onclick="viewTableDetails(${tableNum})" style="margin-top: 8px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 4px 10px; font-size: ${11 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
                     <i class="ph-bold ph-eye"></i> Details
                 </button>
             `;
@@ -1525,7 +1524,7 @@ window.renderTables = () => {
         
         const threeDotMenu = `
             <div style="position: absolute; top: 10px; right: 10px; z-index: 20;">
-                <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 22px;">
+                <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px;">
                     <i class="ph-bold ph-dots-three-vertical"></i>
                 </button>
                 
@@ -1546,11 +1545,11 @@ window.renderTables = () => {
                 ${topLeftButton}
                 ${threeDotMenu}
                 
-                ${totalItemsCount > 0 ? `<div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 800; color: #FD7E14; background: rgba(253, 126, 20, 0.1); padding: 2px 8px; border-radius: 12px;"><i class="ph-bold ph-cooking-pot"></i> ${totalItemsCount} Items</div>` : ''}
+                ${totalItemsCount > 0 ? `<div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 800; color: #FD7E14; background: rgba(253, 126, 20, 0.1); padding: 2px 8px; border-radius: 12px;"><i class="ph-bold ph-cooking-pot"></i> ${totalItemsCount}</div>` : ''}
 
-                <div class="table-number" style="font-size: ${28 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 15px;">T-${tableNum}</div>
+                <div class="table-number" style="font-size: ${26 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 15px;">T-${tableNum}</div>
                 
-                ${custName ? `<div style="font-size: ${11 * scaleFont}px; font-weight: 800; color: #868E96; margin-top: 4px; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                ${custName ? `<div style="font-size: ${10 * scaleFont}px; font-weight: 800; color: #868E96; margin-top: 4px; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
                 
                 ${statusHtml}
                 ${viewDetailsBtn}
