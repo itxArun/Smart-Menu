@@ -1394,47 +1394,59 @@ window.toggleTableSize = () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (RESPONSIVE + CONTROLS)
+// 🎛️ GLOBAL STATE FOR TABLE GRID SIZE
+// =======================================================
+if (!window.currentTableSize) window.currentTableSize = 'medium';
+
+window.toggleTableSize = () => {
+    if (window.currentTableSize === 'medium') window.currentTableSize = 'small';
+    else if (window.currentTableSize === 'small') window.currentTableSize = 'large';
+    else window.currentTableSize = 'medium';
+    window.renderTables(); 
+};
+
+// =======================================================
+// 🚦 VIP SMART TABLE RENDERER (FIXED SIZE & EXPLICIT BUTTONS)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
     if (!grid) return;
     
-    // 👈 FIX 1: Bottom Navigation Overlap Fix (Neeche extra space taaki scroll ho sake)
     grid.style.paddingBottom = '120px';
 
-    // 👈 FIX 2: Grid Size Controller Logic
-    let minWidth = '135px'; 
+    // 🔥 FIX: Height fix kar di taaki bhadde giant dabbe na banein
+    let minWidth = '180px'; 
+    let fixedHeight = '180px';
     let sizeText = 'Medium';
     let scaleFont = 1;
 
     if (window.currentTableSize === 'small') {
-        minWidth = '95px'; // Phone par 3+ tables ek line me aayengi
+        minWidth = '130px'; 
+        fixedHeight = '140px';
         sizeText = 'Small 📱';
-        scaleFont = 0.8; // Text ko thoda chhota rakhenge taaki box na phate
+        scaleFont = 0.8; 
     } else if (window.currentTableSize === 'large') {
-        minWidth = '180px'; // Phone par 1-2 table, laptop par mast badi
+        minWidth = '240px'; 
+        fixedHeight = '220px';
         sizeText = 'Large 💻';
-        scaleFont = 1.1;
+        scaleFont = 1.15;
     }
 
     grid.style.display = 'grid';
     grid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`; 
-    grid.style.gap = '12px';
+    grid.style.gap = '15px';
     grid.style.alignItems = 'start';
     grid.innerHTML = ''; 
 
-    // 🔥 DYNAMIC SIZE CONTROL BUTTON (Table grid ke sabse upar dikhega)
     const controlsHtml = `
         <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-bottom: 5px;">
-            <button onclick="toggleTableSize()" style="background: #ffffff; border: 1px solid #ddd; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='#ffffff'">
+            <button onclick="toggleTableSize()" style="background: #ffffff; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s;">
                 <i class="ph-bold ph-squares-four" style="color: var(--primary, #E53935);"></i> Size: ${sizeText}
             </button>
         </div>
     `;
     grid.insertAdjacentHTML('beforeend', controlsHtml);
 
-    // Tables Render karna shuru
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
         
@@ -1450,6 +1462,7 @@ window.renderTables = () => {
         let totalUnpaid = 0;
         let paidOrdersToClear = []; 
         let custName = '';
+        let totalItemsCount = 0;
         
         if (activeOrders.length > 0) {
             const firstOrder = activeOrders[0];
@@ -1460,6 +1473,10 @@ window.renderTables = () => {
             activeOrders.forEach(o => {
                 if (o.isPaid !== true) totalUnpaid += (o.totalAmount || 0);
                 else paidOrdersToClear.push(o.docId);
+                
+                if(o.items) {
+                    o.items.forEach(item => totalItemsCount += item.qty);
+                }
             });
             
             if (totalUnpaid > 0) {
@@ -1477,57 +1494,66 @@ window.renderTables = () => {
 
         let statusHtml = '';
         let topLeftButton = ''; 
+        let viewDetailsBtn = '';
         
         if (tableStatus === 'Available') {
-            statusHtml = `<div style="font-size: ${11 * scaleFont}px; color: #ADB5BD; font-weight: 800; margin-top: 5px; text-transform: uppercase;">Available</div>`;
+            statusHtml = `<div style="font-size: ${12 * scaleFont}px; color: #ADB5BD; font-weight: 800; margin-top: 10px; text-transform: uppercase;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            statusHtml = `<div style="font-size: ${14 * scaleFont}px; color: #228BE6; font-weight: 900; margin-top: 4px;">PAID ✓</div>`;
+            statusHtml = `<div style="font-size: ${15 * scaleFont}px; color: #228BE6; font-weight: 900; margin-top: 5px;">PAID ✓</div>`;
             topLeftButton = `
-                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 8px; left: 8px; background: #228BE6; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); z-index: 10;">
+                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: #228BE6; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); z-index: 10;" title="Clear Table">
                     <i class="ph-bold ph-broom"></i>
                 </button>
             `;
         } else {
-            statusHtml = `<div style="font-size: ${16 * scaleFont}px; color: #FD7E14; font-weight: 900; margin-top: 4px;">₹${totalUnpaid}</div>`;
+            statusHtml = `<div style="font-size: ${18 * scaleFont}px; color: #FD7E14; font-weight: 900; margin-top: 5px;">₹${totalUnpaid}</div>`;
             topLeftButton = `
-                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 8px; left: 8px; background: #40C057; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); z-index: 10;">
+                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: #40C057; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); z-index: 10;" title="Collect Payment">
                     <i class="ph-bold ph-check"></i>
                 </button>
             `;
         }
+
+        // 🔥 EXPLICIT DETAILS BUTTON (Jab table busy ho tabhi dikhega)
+        if (tableStatus !== 'Available') {
+            viewDetailsBtn = `
+                <button onclick="viewTableDetails(${tableNum})" style="margin-top: 10px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 14px; font-size: ${11 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
+                    <i class="ph-bold ph-eye"></i> Details
+                </button>
+            `;
+        }
         
-        // 👈 FIX 3: QR Download Safe Wrapper
         const threeDotMenu = `
-            <div style="position: absolute; top: 8px; right: 8px; z-index: 20;">
-                <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px;">
+            <div style="position: absolute; top: 10px; right: 10px; z-index: 20;">
+                <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 22px;">
                     <i class="ph-bold ph-dots-three-vertical"></i>
                 </button>
                 
-                <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 30px; right: 0; background: #ffffff; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 10px; padding: 5px; width: 120px; z-index: 30;">
-                    <button onclick="safeDownloadQR(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 12px; font-weight: 700; color: #343A40; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
-                        <i class="ph-bold ph-qr-code"></i> Get QR
+                <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 35px; right: 0; background: #ffffff; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; padding: 6px; width: 130px; z-index: 30;">
+                    <button onclick="event.stopPropagation(); downloadPremiumQR(${tableNum}); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 10px; font-size: 13px; font-weight: 700; color: #343A40; cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="ph-bold ph-qr-code"></i> Download QR
                     </button>
-                    <button onclick="event.stopPropagation(); deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 12px; font-weight: 700; color: #FA5252; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                    <button onclick="event.stopPropagation(); deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 10px; font-size: 13px; font-weight: 700; color: #FA5252; cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 8px; margin-top: 2px;">
                         <i class="ph-bold ph-trash"></i> Delete
                     </button>
                 </div>
             </div>
         `;
 
-        const cardAction = activeOrders.length > 0 ? `onclick="viewTableDetails(${tableNum})"` : '';
-        const hoverEffect = activeOrders.length > 0 ? `cursor: pointer;` : `cursor: default;`;
-
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" ${cardAction} style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 16px; display: flex; flex-direction: column; aspect-ratio: 1 / 1; justify-content: center; align-items: center; text-align: center; ${hoverEffect} transition: transform 0.2s ease;" onmouseover="if('${tableStatus}' !== 'Available') this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 20px; display: flex; flex-direction: column; height: ${fixedHeight}; justify-content: center; align-items: center; text-align: center; transition: transform 0.2s ease;">
                 
                 ${topLeftButton}
                 ${threeDotMenu}
                 
-                <div class="table-number" style="font-size: ${26 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 5px;">T-${tableNum}</div>
+                ${totalItemsCount > 0 ? `<div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 800; color: #FD7E14; background: rgba(253, 126, 20, 0.1); padding: 2px 8px; border-radius: 12px;"><i class="ph-bold ph-cooking-pot"></i> ${totalItemsCount} Items</div>` : ''}
+
+                <div class="table-number" style="font-size: ${28 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 15px;">T-${tableNum}</div>
                 
-                ${custName ? `<div style="font-size: ${10 * scaleFont}px; font-weight: 800; color: #868E96; margin-top: 2px; background: rgba(0,0,0,0.04); padding: 2px 8px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                ${custName ? `<div style="font-size: ${11 * scaleFont}px; font-weight: 800; color: #868E96; margin-top: 4px; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
                 
                 ${statusHtml}
+                ${viewDetailsBtn}
             </div>
         `;
         grid.insertAdjacentHTML('beforeend', cardHtml);
@@ -1535,19 +1561,108 @@ window.renderTables = () => {
 };
 
 // =======================================================
-// 🛡️ SAFE QR DOWNLOAD WRAPPER (Fixes Click Bug)
+// 👁️ DYNAMIC POPUP FOR PRO DETAILS (Kitchen Status)
 // =======================================================
-window.safeDownloadQR = (tableNum, event) => {
-    if(event) event.stopPropagation(); // Card click hone se rokega
+window.viewTableDetails = (tableNum) => {
+    const existingModal = document.getElementById('dynamicTableModal');
+    if(existingModal) existingModal.remove();
+
+    let activeOrders = window.allOrdersMaster.filter(o => 
+        o.tableNumber == tableNum && 
+        (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
+    );
     
-    if(typeof downloadTableQR === 'function') {
-        downloadTableQR(tableNum); // Asli download function run karega
-    } else {
-        alert("QR Download system abhi ready nahi hai!");
+    if(activeOrders.length === 0) return;
+
+    let detailsHtml = activeOrders.map(o => {
+        // 🔥 Item Status Formatting
+        let itemsList = o.items.map(i => {
+            let statusBadge = '';
+            if(o.status === 'Served' || o.status === 'Ready') {
+                statusBadge = `<span style="font-size: 9px; background: var(--green); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800;">SERVED</span>`;
+            } else {
+                statusBadge = `<span style="font-size: 9px; background: var(--warning); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800;">COOKING</span>`;
+            }
+            return `<div style="display:flex; justify-content:space-between; align-items:center; padding: 6px 0; border-bottom: 1px dashed rgba(0,0,0,0.05);">
+                        <span><b>${i.qty}x</b> ${i.name} ${statusBadge}</span> 
+                        <span style="font-weight:700;">₹${i.price * i.qty}</span>
+                    </div>`;
+        }).join('');
+        
+        let custName = o.customerName !== 'N/A' ? o.customerName : 'Guest Customer';
+        let chefNote = o.chefNotes && o.chefNotes !== 'None' ? `<div style="margin-top:8px; font-size: 11px; background: #FFE5E5; color: #E53935; padding: 6px; border-radius: 6px;"><b>Note:</b> ${o.chefNotes}</div>` : '';
+
+        return `
+            <div style="background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 16px; margin-bottom: 15px; text-align: left;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
+                    <span style="font-weight: 800; font-size: 14px; color: var(--text-main);">Order #${o.docId.slice(-4)}</span>
+                    <span style="font-weight: 900; font-size: 16px; color: var(--primary);">₹${o.totalAmount}</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 10px; font-weight: 600;">
+                    <i class="ph-fill ph-user-circle"></i> ${custName}
+                </div>
+                <div style="font-size: 13px; color: var(--text-main);">
+                    ${itemsList}
+                </div>
+                ${chefNote}
+            </div>
+        `;
+    }).join('');
+
+    let modal = document.createElement('div');
+    modal.className = 'modal-overlay show';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '999999';
+    modal.id = 'dynamicTableModal';
+    modal.innerHTML = `
+        <div class="modal-card" style="transform: none; margin: auto; max-width: 420px; text-align: center; border-radius: 24px; padding: 25px; max-height: 85vh; overflow-y: auto; background: var(--bg-card); box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+            <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-main); font-size: 20px; font-weight: 900;">
+                <i class="ph-fill ph-receipt" style="color: var(--primary);"></i> Table ${tableNum} Real-time Status
+            </h3>
+            ${detailsHtml}
+            <button onclick="document.getElementById('dynamicTableModal').remove()" style="width: 100%; background: var(--text-main); color: var(--bg-main); padding: 14px; border-radius: 12px; border: none; font-weight: 800; font-size: 15px; margin-top: 10px; cursor: pointer;">
+                Close Details
+            </button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+};
+
+// =======================================================
+// 📸 100% WORKING QR IMAGE DOWNLOADER
+// =======================================================
+window.downloadPremiumQR = async (tableNum) => {
+    // Current website URL nikalna
+    const domain = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+    const restId = window.currentRestaurantId || 'rest_001';
+    
+    // Wo link jo QR ke andar chhupi hogi
+    const qrUrl = `${domain}?rest=${restId}&table=${tableNum}`;
+    
+    // Free API to generate QR Code image
+    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent(qrUrl)}`;
+
+    if(typeof window.showToast === 'function') window.showToast("Generating QR... Please wait.");
+    
+    try {
+        // Image ko direct download karne ka logic
+        const response = await fetch(qrImageUrl);
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `Table_${tableNum}_FoodVilla_QR.png`; // Image ka naam
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+        
+        if(typeof window.showToast === 'function') window.showToast("QR Downloaded! 🎉");
+    } catch(e) {
+        // Agar browser block kare, toh naye tab me QR open kar dega jahan se Right Click > Save kar sakte hain
+        window.open(qrImageUrl, '_blank'); 
     }
-    
-    // Menu band kar dega
-    if(typeof toggleTableMenu === 'function') toggleTableMenu(tableNum, null);
 };
 // =======================================================
 // ⚙️ TOGGLE 3-DOT MENU LOGIC
