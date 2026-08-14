@@ -1432,7 +1432,19 @@ window.toggleTableSize = () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (100% SQUARE & WORKING QR)
+// 🎛️ GLOBAL STATE FOR TABLE GRID (Exact Columns)
+// =======================================================
+if (!window.currentTableSize) window.currentTableSize = 'small'; // Default 6 tables ke liye
+
+window.toggleTableSize = () => {
+    if (window.currentTableSize === 'medium') window.currentTableSize = 'small'; // Small = 6
+    else if (window.currentTableSize === 'small') window.currentTableSize = 'large'; // Large = 3
+    else window.currentTableSize = 'medium'; // Medium = 4
+    window.renderTables(); 
+};
+
+// =======================================================
+// 🚦 VIP SMART TABLE RENDERER (STRICT 6 COLUMNS + NAME/PHONE)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1440,29 +1452,28 @@ window.renderTables = () => {
     
     grid.style.paddingBottom = '120px';
 
-    // 🔥 FIX 1: Exact Size Control
-    // Small = 6 tables/row, Medium = 4 tables/row, Large = 3 tables/row (Laptop par)
-    let minWidth = '160px'; 
+    // 🔥 STRICT COLUMN LOGIC: Chahe kuch ho jaye, Small pe 6 hi dikhega
+    let colCount = 4;
     let sizeText = 'Medium (4/row)';
     let scaleFont = 0.9;
 
     if (window.currentTableSize === 'small') {
-        minWidth = '130px'; // Isse ek row me 6 aayenge easily
+        colCount = 6; 
         sizeText = 'Small (6/row) 📱';
         scaleFont = 0.75; 
     } else if (window.currentTableSize === 'large') {
-        minWidth = '220px'; 
+        colCount = 3; 
         sizeText = 'Large (3/row) 💻';
         scaleFont = 1.1;
     }
 
     grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`; 
+    grid.style.gridTemplateColumns = `repeat(${colCount}, 1fr)`; 
     grid.style.gap = '15px';
-    // align-items: start isliye diya taaki dabbe niche ki taraf na khinchein
     grid.style.alignItems = 'start'; 
     grid.innerHTML = ''; 
 
+    // Size Controller Button
     const controlsHtml = `
         <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-bottom: 5px;">
             <button onclick="toggleTableSize()" style="background: #ffffff; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
@@ -1472,6 +1483,7 @@ window.renderTables = () => {
     `;
     grid.insertAdjacentHTML('beforeend', controlsHtml);
 
+    // Render Tables Loop
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
         
@@ -1486,19 +1498,19 @@ window.renderTables = () => {
         let shadow = '0 4px 10px rgba(0,0,0,0.04)';
         let totalUnpaid = 0;
         let paidOrdersToClear = []; 
-        let custName = '';
         let totalItemsCount = 0;
+        
+        let custName = '';
+        let custPhone = '';
         
         if (activeOrders.length > 0) {
             const firstOrder = activeOrders[0];
-            if(firstOrder.customerName && firstOrder.customerName !== 'N/A') {
-                custName = firstOrder.customerName;
-            }
+            if(firstOrder.customerName && firstOrder.customerName !== 'N/A') custName = firstOrder.customerName;
+            if(firstOrder.customerPhone && firstOrder.customerPhone !== 'N/A') custPhone = firstOrder.customerPhone;
 
             activeOrders.forEach(o => {
                 if (o.isPaid !== true) totalUnpaid += (o.totalAmount || 0);
                 else paidOrdersToClear.push(o.docId);
-                
                 if(o.items) o.items.forEach(item => totalItemsCount += item.qty);
             });
             
@@ -1520,63 +1532,58 @@ window.renderTables = () => {
         let viewDetailsBtn = '';
         
         if (tableStatus === 'Available') {
-            statusHtml = `<div style="font-size: ${12 * scaleFont}px; color: #ADB5BD; font-weight: 800; margin-top: 10px; text-transform: uppercase;">Available</div>`;
+            statusHtml = `<div style="font-size: ${12 * scaleFont}px; color: #ADB5BD; font-weight: 800; margin-top: 5px; text-transform: uppercase;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            statusHtml = `<div style="font-size: ${15 * scaleFont}px; color: #228BE6; font-weight: 900; margin-top: 5px;">PAID ✓</div>`;
-            topLeftButton = `
-                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: #228BE6; color: white; border: none; width: ${30 * scaleFont}px; height: ${30 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${16 * scaleFont}px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); z-index: 10;">
-                    <i class="ph-bold ph-broom"></i>
-                </button>
-            `;
+            statusHtml = `<div style="font-size: ${14 * scaleFont}px; color: #228BE6; font-weight: 900; margin-top: 2px;">PAID ✓</div>`;
+            topLeftButton = `<button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 8px; left: 8px; background: #228BE6; color: white; border: none; width: ${28 * scaleFont}px; height: ${28 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${14 * scaleFont}px; z-index: 10;"><i class="ph-bold ph-broom"></i></button>`;
         } else {
-            statusHtml = `<div style="font-size: ${18 * scaleFont}px; color: #FD7E14; font-weight: 900; margin-top: 5px;">₹${totalUnpaid}</div>`;
-            topLeftButton = `
-                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: #40C057; color: white; border: none; width: ${30 * scaleFont}px; height: ${30 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${16 * scaleFont}px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); z-index: 10;">
-                    <i class="ph-bold ph-check"></i>
-                </button>
-            `;
+            statusHtml = `<div style="font-size: ${16 * scaleFont}px; color: #FD7E14; font-weight: 900; margin-top: 2px;">₹${totalUnpaid}</div>`;
+            topLeftButton = `<button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 8px; left: 8px; background: #40C057; color: white; border: none; width: ${28 * scaleFont}px; height: ${28 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${14 * scaleFont}px; z-index: 10;"><i class="ph-bold ph-check"></i></button>`;
         }
 
         if (tableStatus !== 'Available') {
-            viewDetailsBtn = `
-                <button onclick="viewTableDetails(${tableNum})" style="margin-top: 8px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 4px 10px; font-size: ${11 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    <i class="ph-bold ph-eye"></i> Details
-                </button>
-            `;
+            viewDetailsBtn = `<button onclick="viewTableDetails(${tableNum})" style="margin-top: 6px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; padding: 4px 8px; font-size: ${10 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;"><i class="ph-bold ph-eye"></i> Details</button>`;
         }
         
-        // 🔥 FIX 2: Original Safe QR Download function call (downloadTableQR)
         const threeDotMenu = `
-            <div style="position: absolute; top: 10px; right: 10px; z-index: 20;">
-                <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: ${30 * scaleFont}px; height: ${30 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${22 * scaleFont}px;">
+            <div style="position: absolute; top: 8px; right: 8px; z-index: 20;">
+                <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: ${28 * scaleFont}px; height: ${28 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${20 * scaleFont}px;">
                     <i class="ph-bold ph-dots-three-vertical"></i>
                 </button>
                 
-                <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 35px; right: 0; background: #ffffff; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; padding: 6px; width: 130px; z-index: 30;">
-                    <button onclick="event.stopPropagation(); downloadTableQR(${tableNum}); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 10px; font-size: 13px; font-weight: 700; color: #343A40; cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
-                        <i class="ph-bold ph-qr-code"></i> Download QR
+                <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 30px; right: 0; background: #ffffff; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 10px; padding: 6px; width: 120px; z-index: 30;">
+                    <button onclick="event.stopPropagation(); safeDownloadTableQR(${tableNum}); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 12px; font-weight: 700; color: #343A40; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                        <i class="ph-bold ph-qr-code"></i> Get QR
                     </button>
-                    <button onclick="event.stopPropagation(); deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 10px; font-size: 13px; font-weight: 700; color: #FA5252; cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                    <button onclick="event.stopPropagation(); deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 12px; font-weight: 700; color: #FA5252; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; margin-top: 2px;">
                         <i class="ph-bold ph-trash"></i> Delete
                     </button>
                 </div>
             </div>
         `;
 
-        // 🔥 FIX 3: THE ULTIMATE SQUARE FIX
-        // width: 100% aur height: auto lagaya hai, aur padding se height balance hogi taaki kabhi khinche nahi
+        let customerInfoHtml = '';
+        if(custName || custPhone) {
+            customerInfoHtml = `
+                <div style="font-size: ${9 * scaleFont}px; font-weight: 800; color: #868E96; margin-top: 4px; background: rgba(0,0,0,0.04); padding: 4px; border-radius: 8px; width: 85%; line-height: 1.3; overflow: hidden;">
+                    ${custName ? `<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: capitalize;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                    ${custPhone ? `<div style="white-space: nowrap; margin-top: 1px;"><i class="ph-fill ph-phone"></i> ${custPhone}</div>` : ''}
+                </div>
+            `;
+        }
+
+        // 🔥 PERFECT SQUARE & COLUMNS
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; width: 100%; height: auto; aspect-ratio: 1 / 1; overflow: hidden; box-sizing: border-box;">
+            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; box-sizing: border-box; transition: transform 0.2s ease;">
                 
                 ${topLeftButton}
                 ${threeDotMenu}
                 
-                ${totalItemsCount > 0 ? `<div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: ${9 * scaleFont}px; font-weight: 800; color: #FD7E14; background: rgba(253, 126, 20, 0.1); padding: 2px 8px; border-radius: 12px;"><i class="ph-bold ph-cooking-pot"></i> ${totalItemsCount}</div>` : ''}
+                ${totalItemsCount > 0 ? `<div style="position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-size: ${8 * scaleFont}px; font-weight: 800; color: #FD7E14; background: rgba(253, 126, 20, 0.1); padding: 2px 6px; border-radius: 10px;"><i class="ph-bold ph-cooking-pot"></i> ${totalItemsCount}</div>` : ''}
 
-                <div class="table-number" style="font-size: ${28 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 5px;">T-${tableNum}</div>
+                <div class="table-number" style="font-size: ${24 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 5px;">T-${tableNum}</div>
                 
-                ${custName ? `<div style="font-size: ${11 * scaleFont}px; font-weight: 800; color: #868E96; margin-top: 4px; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
-                
+                ${customerInfoHtml}
                 ${statusHtml}
                 ${viewDetailsBtn}
             </div>
@@ -1584,30 +1591,60 @@ window.renderTables = () => {
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
 };
+
 // =======================================================
 // ⚙️ TOGGLE 3-DOT MENU LOGIC
 // =======================================================
 window.toggleTableMenu = (tableNum, event) => {
     if(event) event.stopPropagation();
-    
-    // Pehle saare open menus ko close kar do
     document.querySelectorAll('.table-dropdown').forEach(menu => {
         if (menu.id !== `table-menu-${tableNum}`) menu.style.display = 'none';
     });
-    
-    // Ab click kiye gaye menu ko toggle karo
     const menu = document.getElementById(`table-menu-${tableNum}`);
-    if(menu) {
-        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-    }
+    if(menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
 };
 
-// Agar screen par kahin aur click ho, toh menu band ho jaye
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.table-dropdown') && !e.target.closest('.ph-dots-three-vertical')) {
         document.querySelectorAll('.table-dropdown').forEach(menu => menu.style.display = 'none');
     }
 });
+
+// =======================================================
+// 📸 100% WORKING QR DOWNLOADER
+// =======================================================
+window.safeDownloadTableQR = async (tableNum) => {
+    try {
+        if(typeof window.showToast === 'function') window.showToast("Generating QR...");
+        
+        const domain = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+        const restId = window.currentRestaurantId || 'rest_001';
+        const qrUrl = `${domain}?rest=${restId}&table=${tableNum}`;
+        const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent(qrUrl)}&margin=10`;
+
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("API failed");
+        
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `Table_${tableNum}_FoodVilla_QR.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+
+        if(typeof window.showToast === 'function') window.showToast("QR Downloaded Successfully!");
+    } catch(err) {
+        console.error("Direct download failed, opening in new tab:", err);
+        const domain = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+        const restId = window.currentRestaurantId || 'rest_001';
+        const fallbackUrl = `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent(domain + "?rest=" + restId + "&table=" + tableNum)}`;
+        window.open(fallbackUrl, '_blank');
+    }
+};
 
 // =======================================================
 // 👁️ DYNAMIC POPUP FOR TABLE ORDER DETAILS
