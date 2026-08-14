@@ -1406,7 +1406,21 @@ window.toggleTableSize = () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (PERFECT 6-TABLE ROW FIX)
+// 🎛️ GLOBAL STATE FOR TABLE GRID COLUMNS
+// =======================================================
+// Default 6 column set kiya hai
+if (!window.currentTableCols) window.currentTableCols = 6; 
+
+window.toggleTableCols = () => {
+    // Cycle karega: 6 -> 4 -> 3 -> 6
+    if (window.currentTableCols === 6) window.currentTableCols = 4;
+    else if (window.currentTableCols === 4) window.currentTableCols = 3;
+    else window.currentTableCols = 6;
+    window.renderTables(); 
+};
+
+// =======================================================
+// 🚦 VIP SMART TABLE RENDERER (PERFECT SQUARE & EXACT COLUMNS)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1414,39 +1428,44 @@ window.renderTables = () => {
     
     grid.style.paddingBottom = '120px';
 
-    // 🔥 FIX: Width aur height ko aur compact kar diya taaki ek line me exactly 6 tables fit hon
-    let minWidth = '145px'; 
-    let fixedHeight = '145px';
-    let sizeText = 'Medium';
-    let scaleFont = 0.85; // Font bhi halka sa chhota kiya hai
+    // 🔥 FIX 1: Font size scale based on Columns (Taaki 6 col me text bahar na nikle)
+    let scaleFont = 1;
+    if (window.currentTableCols === 6) scaleFont = 0.75;
+    else if (window.currentTableCols === 4) scaleFont = 0.95;
+    else scaleFont = 1.15; // 3 Columns
 
-    if (window.currentTableSize === 'small') {
-        minWidth = '110px'; 
-        fixedHeight = '115px';
-        sizeText = 'Small 📱';
-        scaleFont = 0.7; 
-    } else if (window.currentTableSize === 'large') {
-        minWidth = '190px'; 
-        fixedHeight = '190px';
-        sizeText = 'Large 💻';
-        scaleFont = 1.1;
-    }
-
+    // 🔥 FIX 2: Exact Column Control (Ab ye auto-fill nahi karega, strict rows banayega)
     grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`; 
+    grid.style.gridTemplateColumns = `repeat(${window.currentTableCols}, 1fr)`; 
     grid.style.gap = '15px';
     grid.style.alignItems = 'start';
     grid.innerHTML = ''; 
 
+    // 🔥 FIX 3: Dynamic Column Control Button
     const controlsHtml = `
         <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-bottom: 5px;">
-            <button onclick="toggleTableSize()" style="background: #ffffff; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s;">
-                <i class="ph-bold ph-squares-four" style="color: var(--primary, #E53935);"></i> Size: ${sizeText}
+            <button onclick="toggleTableCols()" style="background: #ffffff; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s;">
+                <i class="ph-bold ph-grid-four" style="color: var(--primary, #E53935);"></i> View: ${window.currentTableCols} Columns
             </button>
         </div>
     `;
     grid.insertAdjacentHTML('beforeend', controlsHtml);
 
+    // 🔥 FIX 4: Sidebar Menu "Tables" ko Active (Red) color dene ka automatic hack
+    setTimeout(() => {
+        // Ye code sidebar ke "Tables" button ko dhund kar usko highlight kar dega
+        document.querySelectorAll('.menu-item, .nav-item, li').forEach(nav => {
+            if (nav.innerText && nav.innerText.toLowerCase().includes('tables')) {
+                nav.style.color = 'var(--primary, #E53935)'; // Red Highlight
+                nav.classList.add('active');
+            } else if (nav.innerText && nav.innerText.trim().length > 0) {
+                nav.style.color = ''; // Baaki sabko normal kar dega
+                nav.classList.remove('active');
+            }
+        });
+    }, 100);
+
+    // Render Tables Loop
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
         
@@ -1474,9 +1493,7 @@ window.renderTables = () => {
                 if (o.isPaid !== true) totalUnpaid += (o.totalAmount || 0);
                 else paidOrdersToClear.push(o.docId);
                 
-                if(o.items) {
-                    o.items.forEach(item => totalItemsCount += item.qty);
-                }
+                if(o.items) o.items.forEach(item => totalItemsCount += item.qty);
             });
             
             if (totalUnpaid > 0) {
@@ -1501,14 +1518,14 @@ window.renderTables = () => {
         } else if (tableStatus === 'Paid') {
             statusHtml = `<div style="font-size: ${15 * scaleFont}px; color: #228BE6; font-weight: 900; margin-top: 5px;">PAID ✓</div>`;
             topLeftButton = `
-                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: #228BE6; color: white; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); z-index: 10;" title="Clear Table">
+                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: #228BE6; color: white; border: none; width: ${30 * scaleFont}px; height: ${30 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${16 * scaleFont}px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); z-index: 10;" title="Clear Table">
                     <i class="ph-bold ph-broom"></i>
                 </button>
             `;
         } else {
             statusHtml = `<div style="font-size: ${18 * scaleFont}px; color: #FD7E14; font-weight: 900; margin-top: 5px;">₹${totalUnpaid}</div>`;
             topLeftButton = `
-                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: #40C057; color: white; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); z-index: 10;" title="Collect Payment">
+                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: #40C057; color: white; border: none; width: ${30 * scaleFont}px; height: ${30 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${16 * scaleFont}px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); z-index: 10;" title="Collect Payment">
                     <i class="ph-bold ph-check"></i>
                 </button>
             `;
@@ -1516,7 +1533,7 @@ window.renderTables = () => {
 
         if (tableStatus !== 'Available') {
             viewDetailsBtn = `
-                <button onclick="viewTableDetails(${tableNum})" style="margin-top: 8px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 4px 10px; font-size: ${11 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
+                <button onclick="viewTableDetails(${tableNum})" style="margin-top: 10px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 4px 10px; font-size: ${11 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;">
                     <i class="ph-bold ph-eye"></i> Details
                 </button>
             `;
@@ -1524,7 +1541,7 @@ window.renderTables = () => {
         
         const threeDotMenu = `
             <div style="position: absolute; top: 10px; right: 10px; z-index: 20;">
-                <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px;">
+                <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: ${30 * scaleFont}px; height: ${30 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${22 * scaleFont}px;">
                     <i class="ph-bold ph-dots-three-vertical"></i>
                 </button>
                 
@@ -1539,17 +1556,18 @@ window.renderTables = () => {
             </div>
         `;
 
+        // 🔥 VIP FIX 5: Saari Fixed Heights Hata di hain. Sirf "aspect-ratio: 1 / 1" chhoda hai.
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 20px; display: flex; flex-direction: column; height: ${fixedHeight}; justify-content: center; align-items: center; text-align: center; transition: transform 0.2s ease;">
+            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 20px; display: flex; flex-direction: column; aspect-ratio: 1 / 1; justify-content: center; align-items: center; text-align: center; transition: transform 0.2s ease;">
                 
                 ${topLeftButton}
                 ${threeDotMenu}
                 
-                ${totalItemsCount > 0 ? `<div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 800; color: #FD7E14; background: rgba(253, 126, 20, 0.1); padding: 2px 8px; border-radius: 12px;"><i class="ph-bold ph-cooking-pot"></i> ${totalItemsCount}</div>` : ''}
+                ${totalItemsCount > 0 ? `<div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: ${9 * scaleFont}px; font-weight: 800; color: #FD7E14; background: rgba(253, 126, 20, 0.1); padding: 2px 8px; border-radius: 12px;"><i class="ph-bold ph-cooking-pot"></i> ${totalItemsCount}</div>` : ''}
 
-                <div class="table-number" style="font-size: ${26 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 15px;">T-${tableNum}</div>
+                <div class="table-number" style="font-size: ${28 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 10px;">T-${tableNum}</div>
                 
-                ${custName ? `<div style="font-size: ${10 * scaleFont}px; font-weight: 800; color: #868E96; margin-top: 4px; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                ${custName ? `<div style="font-size: ${11 * scaleFont}px; font-weight: 800; color: #868E96; margin-top: 4px; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
                 
                 ${statusHtml}
                 ${viewDetailsBtn}
@@ -1557,111 +1575,6 @@ window.renderTables = () => {
         `;
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
-};
-
-// =======================================================
-// 👁️ DYNAMIC POPUP FOR PRO DETAILS (Kitchen Status)
-// =======================================================
-window.viewTableDetails = (tableNum) => {
-    const existingModal = document.getElementById('dynamicTableModal');
-    if(existingModal) existingModal.remove();
-
-    let activeOrders = window.allOrdersMaster.filter(o => 
-        o.tableNumber == tableNum && 
-        (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
-    );
-    
-    if(activeOrders.length === 0) return;
-
-    let detailsHtml = activeOrders.map(o => {
-        // 🔥 Item Status Formatting
-        let itemsList = o.items.map(i => {
-            let statusBadge = '';
-            if(o.status === 'Served' || o.status === 'Ready') {
-                statusBadge = `<span style="font-size: 9px; background: var(--green); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800;">SERVED</span>`;
-            } else {
-                statusBadge = `<span style="font-size: 9px; background: var(--warning); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800;">COOKING</span>`;
-            }
-            return `<div style="display:flex; justify-content:space-between; align-items:center; padding: 6px 0; border-bottom: 1px dashed rgba(0,0,0,0.05);">
-                        <span><b>${i.qty}x</b> ${i.name} ${statusBadge}</span> 
-                        <span style="font-weight:700;">₹${i.price * i.qty}</span>
-                    </div>`;
-        }).join('');
-        
-        let custName = o.customerName !== 'N/A' ? o.customerName : 'Guest Customer';
-        let chefNote = o.chefNotes && o.chefNotes !== 'None' ? `<div style="margin-top:8px; font-size: 11px; background: #FFE5E5; color: #E53935; padding: 6px; border-radius: 6px;"><b>Note:</b> ${o.chefNotes}</div>` : '';
-
-        return `
-            <div style="background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 16px; margin-bottom: 15px; text-align: left;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
-                    <span style="font-weight: 800; font-size: 14px; color: var(--text-main);">Order #${o.docId.slice(-4)}</span>
-                    <span style="font-weight: 900; font-size: 16px; color: var(--primary);">₹${o.totalAmount}</span>
-                </div>
-                <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 10px; font-weight: 600;">
-                    <i class="ph-fill ph-user-circle"></i> ${custName}
-                </div>
-                <div style="font-size: 13px; color: var(--text-main);">
-                    ${itemsList}
-                </div>
-                ${chefNote}
-            </div>
-        `;
-    }).join('');
-
-    let modal = document.createElement('div');
-    modal.className = 'modal-overlay show';
-    modal.style.alignItems = 'center';
-    modal.style.zIndex = '999999';
-    modal.id = 'dynamicTableModal';
-    modal.innerHTML = `
-        <div class="modal-card" style="transform: none; margin: auto; max-width: 420px; text-align: center; border-radius: 24px; padding: 25px; max-height: 85vh; overflow-y: auto; background: var(--bg-card); box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
-            <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-main); font-size: 20px; font-weight: 900;">
-                <i class="ph-fill ph-receipt" style="color: var(--primary);"></i> Table ${tableNum} Real-time Status
-            </h3>
-            ${detailsHtml}
-            <button onclick="document.getElementById('dynamicTableModal').remove()" style="width: 100%; background: var(--text-main); color: var(--bg-main); padding: 14px; border-radius: 12px; border: none; font-weight: 800; font-size: 15px; margin-top: 10px; cursor: pointer;">
-                Close Details
-            </button>
-        </div>
-    `;
-    document.body.appendChild(modal);
-};
-
-// =======================================================
-// 📸 100% WORKING QR IMAGE DOWNLOADER
-// =======================================================
-window.downloadPremiumQR = async (tableNum) => {
-    // Current website URL nikalna
-    const domain = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
-    const restId = window.currentRestaurantId || 'rest_001';
-    
-    // Wo link jo QR ke andar chhupi hogi
-    const qrUrl = `${domain}?rest=${restId}&table=${tableNum}`;
-    
-    // Free API to generate QR Code image
-    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent(qrUrl)}`;
-
-    if(typeof window.showToast === 'function') window.showToast("Generating QR... Please wait.");
-    
-    try {
-        // Image ko direct download karne ka logic
-        const response = await fetch(qrImageUrl);
-        const blob = await response.blob();
-        const downloadUrl = window.URL.createObjectURL(blob);
-        
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-        link.download = `Table_${tableNum}_FoodVilla_QR.png`; // Image ka naam
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(downloadUrl);
-        
-        if(typeof window.showToast === 'function') window.showToast("QR Downloaded! 🎉");
-    } catch(e) {
-        // Agar browser block kare, toh naye tab me QR open kar dega jahan se Right Click > Save kar sakte hain
-        window.open(qrImageUrl, '_blank'); 
-    }
 };
 // =======================================================
 // ⚙️ TOGGLE 3-DOT MENU LOGIC
