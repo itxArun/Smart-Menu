@@ -1381,15 +1381,15 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🚦 VIP SMART TABLE RENDERER (COMPACT & MINI UI)
+// 🚦 VIP SMART TABLE RENDERER (MINIMAL, CLICKABLE & SQUARE)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
     if (!grid) return;
     
-    // 🔥 VIP FIX: JS se Grid Layout ko ekdam Compact (Chhota) banana
+    // 🔥 CSS Grid Magic: Mobile pe 2 column, Laptop pe 5-6 column
     grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))'; // Pehle 320px tha, ab chhota kar diya
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(135px, 1fr))'; 
     grid.style.gap = '15px';
     grid.style.alignItems = 'start';
 
@@ -1402,17 +1402,17 @@ window.renderTables = () => {
             (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
         );
         
+        // 🎨 Default Premium Colors (Available Table)
         let tableStatus = 'Available';
-        let cardBg = '#FFFFFF';    
-        let cardBorder = 'rgba(0,0,0,0.1)';  
+        let cardBg = '#F8F9FA';    
+        let cardBorder = '1px solid #E9ECEF';  
+        let shadow = '0 4px 10px rgba(0,0,0,0.04)';
+        
         let totalUnpaid = 0;
         let paidOrdersToClear = []; 
-        
         let custName = '';
-        let hasActiveItems = false;
         
         if (activeOrders.length > 0) {
-            hasActiveItems = true;
             const firstOrder = activeOrders[0];
             if(firstOrder.customerName && firstOrder.customerName !== 'N/A') {
                 custName = firstOrder.customerName;
@@ -1426,84 +1426,75 @@ window.renderTables = () => {
                 }
             });
             
+            // 🔥 Colors for Dining (Orange) & Paid (Blue)
             if (totalUnpaid > 0) {
                 tableStatus = 'Dining';
-                cardBg = 'rgba(255, 159, 0, 0.08)';    
-                cardBorder = 'rgba(255, 159, 0, 0.4)';  
+                cardBg = '#FFF5EB';    
+                cardBorder = '1px solid #FFD8A8';  
+                shadow = '0 6px 15px rgba(255, 159, 0, 0.12)';
             } else if (paidOrdersToClear.length > 0) {
                 tableStatus = 'Paid';
-                cardBg = 'rgba(0, 122, 255, 0.08)';    
-                cardBorder = 'rgba(0, 122, 255, 0.3)';  
+                cardBg = '#E7F5FF';    
+                cardBorder = '1px solid #A5D8FF';  
+                shadow = '0 6px 15px rgba(0, 122, 255, 0.12)';
             }
         }
 
         let statusHtml = '';
         let topLeftButton = ''; 
-        let viewDetailsBtn = ''; 
         
+        // 🛑 event.stopPropagation() isliye lagaya hai taaki button dabane par galti se Card click na ho jaye
         if (tableStatus === 'Available') {
-            statusHtml = `<div style="flex-grow: 1;"></div>`;
+            statusHtml = `<div style="font-size: 11px; color: #ADB5BD; font-weight: 700; margin-top: 5px; text-transform: uppercase;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            statusHtml = `
-                <div class="table-status-text" style="color:var(--info); font-weight:900; font-size:13px; margin-bottom: 2px;">PAID ✓</div>
-                <div style="font-size: 10px; color: var(--text-sub); font-weight: 600;">Clearing...</div>
-            `;
+            statusHtml = `<div style="font-size: 14px; color: #228BE6; font-weight: 900; margin-top: 4px;">PAID ✓</div>`;
             topLeftButton = `
-                <button onclick="forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 8px; left: 8px; background: rgba(0,122,255,0.15); color: var(--info); border: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" title="Clear Table">
+                <button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 10px; left: 10px; background: #228BE6; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); transition: 0.2s; z-index: 10;" title="Clear Table">
                     <i class="ph-bold ph-broom"></i>
                 </button>
             `;
         } else {
-            statusHtml = `
-                <div class="table-status-text" style="color:var(--warning); font-weight:900; font-size:14px;">₹${totalUnpaid} Due</div>
-                <div style="font-size: 10px; color: var(--text-sub); font-weight: 600; margin-top:3px;">Dining</div>
-            `;
+            statusHtml = `<div style="font-size: 16px; color: #FD7E14; font-weight: 900; margin-top: 4px;">₹${totalUnpaid}</div>`;
             topLeftButton = `
-                <button onclick="settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 8px; left: 8px; background: rgba(36,150,63,0.15); color: var(--success); border: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; z-index: 10;" onmouseover="this.style.background='var(--success)'; this.style.color='white';" onmouseout="this.style.background='rgba(36,150,63,0.15)'; this.style.color='var(--success)';" title="Mark Paid">
+                <button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 10px; left: 10px; background: #40C057; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(64, 192, 87, 0.3); transition: 0.2s; z-index: 10;" title="Collect Payment">
                     <i class="ph-bold ph-check"></i>
-                </button>
-            `;
-        }
-
-        if (hasActiveItems) {
-            viewDetailsBtn = `
-                <button onclick="viewTableDetails(${tableNum})" style="margin-top:8px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; width: fit-content; margin-left: auto; margin-right: auto; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
-                    <i class="ph-bold ph-eye"></i> Details
                 </button>
             `;
         }
         
         const threeDotMenu = `
-            <div style="position: absolute; top: 8px; right: 8px; z-index: 20;">
-                <button onclick="toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: var(--text-sub); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
+            <div style="position: absolute; top: 10px; right: 10px; z-index: 20;">
+                <button onclick="event.stopPropagation(); toggleTableMenu(${tableNum}, event)" style="background: transparent; border: none; color: #868E96; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px;">
                     <i class="ph-bold ph-dots-three-vertical"></i>
                 </button>
                 
-                <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 28px; right: 0; background: var(--bg-card, #ffffff); border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; padding: 4px; width: 120px; z-index: 30;">
-                    <button onclick="downloadTableQR(${tableNum}); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 11px; font-weight: 700; color: var(--text-main); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 6px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
+                <div id="table-menu-${tableNum}" class="table-dropdown" style="display: none; position: absolute; top: 30px; right: 0; background: #ffffff; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 10px; padding: 5px; width: 120px; z-index: 30;">
+                    <button onclick="event.stopPropagation(); downloadTableQR(${tableNum}); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 12px; font-weight: 700; color: #343A40; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
                         <i class="ph-bold ph-qr-code"></i> Get QR
                     </button>
-                    <button onclick="deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 11px; font-weight: 700; color: var(--danger); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 6px; margin-top: 2px; transition: 0.2s;" onmouseover="this.style.background='rgba(229,57,53,0.1)'" onmouseout="this.style.background='transparent'">
+                    <button onclick="event.stopPropagation(); deleteTable('${table.id}'); toggleTableMenu(${tableNum}, event)" style="width: 100%; text-align: left; background: transparent; border: none; padding: 8px; font-size: 12px; font-weight: 700; color: #FA5252; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; margin-top: 2px;">
                         <i class="ph-bold ph-trash"></i> Delete
                     </button>
                 </div>
             </div>
         `;
 
+        // 👁️ Poora Dabba Clickable banaya (Sirf occupied tables par)
+        const cardAction = activeOrders.length > 0 ? `onclick="viewTableDetails(${tableNum})"` : '';
+        const hoverEffect = activeOrders.length > 0 ? `cursor: pointer;` : `cursor: default;`;
+
+        // 🔥 VIP Magic: aspect-ratio: 1/1 se ye 100% square rahega
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: 1px solid ${cardBorder}; border-radius: 14px; transition: all 0.3s ease; display: flex; flex-direction: column; min-height: 90px; padding: 12px 10px;">
+            <div class="table-card" id="table-card-${tableNum}" ${cardAction} style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 20px; display: flex; flex-direction: column; aspect-ratio: 1 / 1; justify-content: center; align-items: center; text-align: center; ${hoverEffect} transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="if('${tableStatus}' !== 'Available') this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                 
                 ${topLeftButton}
                 ${threeDotMenu}
                 
-                <div class="table-number" style="margin-top: 8px; font-size: 18px; font-weight: 800;">T-${tableNum}</div>
+                <div class="table-number" style="font-size: 30px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 5px;">T-${tableNum}</div>
                 
-                ${custName ? `<div style="font-size: 11px; font-weight: 700; color: var(--text-sub); margin-top: 2px; text-transform: capitalize;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
+                ${custName ? `<div style="font-size: 11px; font-weight: 800; color: #868E96; margin-top: 2px; background: rgba(0,0,0,0.04); padding: 2px 10px; border-radius: 12px; text-transform: capitalize; max-width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="ph-fill ph-user"></i> ${custName}</div>` : ''}
                 
-                <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 8px;">
-                    ${statusHtml}
-                    ${viewDetailsBtn}
-                </div>
+                ${statusHtml}
             </div>
         `;
         grid.insertAdjacentHTML('beforeend', cardHtml);
