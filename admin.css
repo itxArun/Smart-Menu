@@ -877,7 +877,14 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 /* 1. MOBILE PHONES (Screens smaller than 768px) */
 @media (max-width: 768px) {
-    .stats-grid, 
+   /* 🔥 FIX: Upar ke dabbe (Stats) ab aamne-samne aayenge */
+    .stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    /* Baaki tables/orders wapas ek ke niche ek rahenge */
     #live-orders-container, 
     #past-orders-container, 
     .crm-grid,
