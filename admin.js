@@ -860,8 +860,12 @@ window.switchTab = (tabId, element = null) => {
     if(activeSec) activeSec.classList.add('active');
     
     if(element) {
-        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(t => {
+            t.classList.remove('active');
+            t.style.color = ''; 
+        });
         element.classList.add('active');
+        element.style.color = 'var(--primary)';
     }
 
     if (tabId === 'settings') {
@@ -1108,7 +1112,6 @@ window.toggleAdminMenu = (e) => {
     }
 };
 
-// Screen ke kisi aur hisse par click karne par dropdown close ho jaye
 document.addEventListener('click', () => {
     const drop = document.getElementById('adminProfileDropdown');
     if (drop && drop.style.display === 'flex') {
@@ -1116,22 +1119,20 @@ document.addEventListener('click', () => {
     }
 });
 
-// Sound toggle ko main setting checkbox ke sath sync rakho
 window.toggleNavSound = (checked) => {
     const mainSound = document.getElementById('soundToggle');
     if (mainSound) mainSound.checked = checked;
 };
 
-// Dark mode toggle ko sync rakho
 window.syncNavTheme = (checked) => {
     const mainTheme = document.getElementById('themeToggle');
     if (mainTheme) mainTheme.checked = checked;
 };
+
 // =======================================================
 // 🔑 FORGOT PASSWORD LOGIC (ZOMATO STYLE)
 // =======================================================
 
-// 1. Modal open karne ka function (Fix)
 window.showForgotPassword = () => {
     try {
         const emailInput = document.getElementById('adminEmail') || document.querySelector('input[type="email"]');
@@ -1147,20 +1148,16 @@ window.showForgotPassword = () => {
         
         if (feedbackMsg) feedbackMsg.style.display = 'none'; 
         
-        // 🔥 YAHI MAGIC HAI! Invisible hatane ke liye 'show' add kar rahe hain!
         modal.classList.add('show');
-        
     } catch (error) {
         console.error("Modal open error:", error);
     }
 };
 
-// 2. Modal close karne ka function
 window.closeForgotPassword = () => {
     document.getElementById('forgotPassModal').classList.remove('show');
 };
 
-// 3. Asli Firebase Reset Function
 window.executePasswordReset = async () => {
     const email = document.getElementById('resetEmailInput').value.trim();
     const feedbackMsg = document.getElementById('resetFeedbackMsg');
@@ -1209,11 +1206,11 @@ window.executePasswordReset = async () => {
         btn.disabled = false;
     }
 };
+
 // =======================================================
 // 🖨️ THERMAL PRINTER LOGIC
 // =======================================================
 window.printBill = (orderId) => {
-    // Order dhundo
     const targetOrder = window.allOrdersMaster.find(o => o.docId === orderId);
     
     if (!targetOrder) {
@@ -1221,18 +1218,14 @@ window.printBill = (orderId) => {
         return;
     }
 
-   // Receipt HTML me data bharo
     const cachedName = localStorage.getItem('crave_hotel_name_cache') || 'Restaurant Bill';
     document.getElementById('print-hotel-name').innerText = cachedName;
-    
     document.getElementById('print-order-id').innerText = orderId.substring(0, 6).toUpperCase();
     
-    // Dine in ya Takeaway
     let typeText = targetOrder.orderType === 'Takeaway' ? 'Takeaway' : `Dine-in (Table ${targetOrder.tableNumber})`;
     document.getElementById('print-type').innerText = typeText;
     document.getElementById('print-total').innerText = targetOrder.totalAmount;
 
-    // Items list banani
     const tbody = document.getElementById('print-items-body');
     tbody.innerHTML = ''; 
 
@@ -1246,11 +1239,11 @@ window.printBill = (orderId) => {
         tbody.appendChild(tr);
     });
 
-    // Thoda sa delay deke print dialog kholo
     setTimeout(() => {
         window.print();
     }, 300);
 };
+
 // =======================================================
 // 🔒 UPDATE ADMIN PASSWORD LOGIC
 // =======================================================
@@ -1261,21 +1254,18 @@ window.updateAdminPassword = async () => {
 
     feedback.style.display = 'block';
 
-    // 1. Check if empty
     if (!newPass || !confirmPass) {
         feedback.style.color = 'var(--danger)';
         feedback.innerText = 'Please fill both password fields!';
         return;
     }
 
-    // 2. Check password length
     if (newPass.length < 6) {
         feedback.style.color = 'var(--danger)';
         feedback.innerText = 'Password must be at least 6 characters long!';
         return;
     }
 
-    // 3. Check if passwords match
     if (newPass !== confirmPass) {
         feedback.style.color = 'var(--danger)';
         feedback.innerText = 'Passwords do not match!';
@@ -1286,7 +1276,6 @@ window.updateAdminPassword = async () => {
     feedback.innerText = 'Updating your password...';
 
     try {
-        // auth variable tumhare admin.js me pehle se defined hona chahiye
         const user = auth.currentUser; 
         
         if (user) {
@@ -1294,7 +1283,6 @@ window.updateAdminPassword = async () => {
             feedback.style.color = 'var(--success)';
             feedback.innerText = 'Password updated successfully! 🎉';
             
-            // Success ke baad Modal close karo aur fields khali karo
             setTimeout(() => {
                 document.getElementById('changePassModal').classList.remove('show');
                 document.getElementById('newPassInput').value = '';
@@ -1308,8 +1296,6 @@ window.updateAdminPassword = async () => {
     } catch (error) {
         console.error("Password update error:", error);
         feedback.style.color = 'var(--danger)';
-        
-        // Firebase Security Feature: Agar user purana logged in hai, to use relogin karna padta hai
         if (error.code === 'auth/requires-recent-login') {
             feedback.innerText = 'Security Alert: Please logout and login again to change your password.';
         } else {
@@ -1317,14 +1303,13 @@ window.updateAdminPassword = async () => {
         }
     }
 };
+
 // =======================================================
 // 🪑 LIVE TABLE MANAGER (FIREBASE CLOUD SYNC)
 // =======================================================
-
 window.restaurantTables = [];
 let isTableListenerActive = false;
 
-// 🔥 JADOO: 1 sec me check karega login, aur Firebase se tables le aayega
 const tableChecker = setInterval(() => {
     if (window.currentRestaurantId && !isTableListenerActive) {
         isTableListenerActive = true;
@@ -1336,7 +1321,7 @@ const tableChecker = setInterval(() => {
             snap.forEach(doc => {
                 window.restaurantTables.push({ id: doc.id, number: doc.data().tableNumber });
             });
-            renderTables(); // Data aate hi screen par draw kar dega
+            if(typeof window.renderTables === 'function') window.renderTables(); 
         });
     }
 }, 1000);
@@ -1359,7 +1344,6 @@ window.confirmAddNewTable = async () => {
 
     const tableNum = Number(tableNumInput);
 
-    // Check if table already exists in cloud
     if (window.restaurantTables.find(t => t.number === tableNum)) {
         errorText.innerText = `Table ${tableNum} is already added!`;
         errorText.style.display = "block";
@@ -1368,7 +1352,6 @@ window.confirmAddNewTable = async () => {
 
     document.getElementById('addTableModal').classList.remove('show');
     
-    // 🔥 NAYA LOGIC: LocalStorage ki jagah sidha Firebase (Database) me save!
     try {
         await addDoc(collection(db, "tables"), {
             restaurantId: window.currentRestaurantId,
@@ -1381,20 +1364,7 @@ window.confirmAddNewTable = async () => {
 };
 
 // =======================================================
-// 🎛️ GLOBAL STATE FOR TABLE GRID SIZE
-// =======================================================
-if (!window.currentTableSize) window.currentTableSize = 'medium';
-
-window.toggleTableSize = () => {
-    // Small -> Large -> Medium -> Small (Cycle karega)
-    if (window.currentTableSize === 'medium') window.currentTableSize = 'small';
-    else if (window.currentTableSize === 'small') window.currentTableSize = 'large';
-    else window.currentTableSize = 'medium';
-    window.renderTables(); // Turant naye size me refresh karega
-};
-
-// =======================================================
-// 🎛️ GLOBAL STATE FOR TABLE GRID SIZE
+// 🎛️ GLOBAL STATE FOR TABLE GRID (Intelligent Auto-Fluid)
 // =======================================================
 if (!window.currentTableSize) window.currentTableSize = 'medium';
 
@@ -1406,45 +1376,7 @@ window.toggleTableSize = () => {
 };
 
 // =======================================================
-// 🎛️ GLOBAL STATE FOR TABLE GRID COLUMNS
-// =======================================================
-// Default 6 column set kiya hai
-if (!window.currentTableCols) window.currentTableCols = 6; 
-
-window.toggleTableCols = () => {
-    // Cycle karega: 6 -> 4 -> 3 -> 6
-    if (window.currentTableCols === 6) window.currentTableCols = 4;
-    else if (window.currentTableCols === 4) window.currentTableCols = 3;
-    else window.currentTableCols = 6;
-    window.renderTables(); 
-};
-
-// =======================================================
-// 🎛️ GLOBAL STATE FOR TABLE GRID (Size Controller)
-// =======================================================
-if (!window.currentTableSize) window.currentTableSize = 'medium';
-
-window.toggleTableSize = () => {
-    if (window.currentTableSize === 'medium') window.currentTableSize = 'small';
-    else if (window.currentTableSize === 'small') window.currentTableSize = 'large';
-    else window.currentTableSize = 'medium';
-    window.renderTables(); 
-};
-
-// =======================================================
-// 🎛️ GLOBAL STATE FOR TABLE GRID (Exact Columns)
-// =======================================================
-if (!window.currentTableSize) window.currentTableSize = 'small'; // Default 6 tables ke liye
-
-window.toggleTableSize = () => {
-    if (window.currentTableSize === 'medium') window.currentTableSize = 'small'; // Small = 6
-    else if (window.currentTableSize === 'small') window.currentTableSize = 'large'; // Large = 3
-    else window.currentTableSize = 'medium'; // Medium = 4
-    window.renderTables(); 
-};
-
-// =======================================================
-// 🚦 VIP SMART TABLE RENDERER (STRICT 6 COLUMNS + NAME/PHONE)
+// 🚦 VIP SMART TABLE RENDERER (PERFECT RESPONSIVE)
 // =======================================================
 window.renderTables = () => {
     const grid = document.getElementById('tables-grid');
@@ -1452,45 +1384,51 @@ window.renderTables = () => {
     
     grid.style.paddingBottom = '120px';
 
-    // 🔥 STRICT COLUMN LOGIC: Chahe kuch ho jaye, Small pe 6 hi dikhega
-    let colCount = 4;
-    let sizeText = 'Medium (4/row)';
+    let minWidth = '145px'; 
+    let sizeText = 'Medium (4/Row)';
     let scaleFont = 0.9;
 
     if (window.currentTableSize === 'small') {
-        colCount = 6; 
-        sizeText = 'Small (6/row) 📱';
-        scaleFont = 0.75; 
+        minWidth = '105px';  
+        sizeText = 'Small 📱 (6/Row)';
+        scaleFont = 0.72; 
     } else if (window.currentTableSize === 'large') {
-        colCount = 3; 
-        sizeText = 'Large (3/row) 💻';
+        minWidth = '220px'; 
+        sizeText = 'Large 💻 (3/Row)';
         scaleFont = 1.1;
     }
 
     grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = `repeat(${colCount}, 1fr)`; 
-    grid.style.gap = '15px';
+    grid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`; 
+    grid.style.gap = '12px';
     grid.style.alignItems = 'start'; 
     grid.innerHTML = ''; 
 
-    // Size Controller Button
     const controlsHtml = `
         <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-bottom: 5px;">
-            <button onclick="toggleTableSize()" style="background: #ffffff; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <button onclick="toggleTableSize()" style="background: #ffffff; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s;">
                 <i class="ph-bold ph-squares-four" style="color: var(--primary, #E53935);"></i> Size: ${sizeText}
             </button>
         </div>
     `;
     grid.insertAdjacentHTML('beforeend', controlsHtml);
 
-    // Render Tables Loop
+    setTimeout(() => {
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            if (tab.innerText && tab.innerText.toLowerCase().includes('tables')) {
+                tab.classList.add('active');
+                tab.style.color = 'var(--primary)';
+            }
+        });
+    }, 100);
+
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
         
-        let activeOrders = window.allOrdersMaster.filter(o => 
+        let activeOrders = window.allOrdersMaster ? window.allOrdersMaster.filter(o => 
             o.tableNumber == tableNum && 
             (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
-        );
+        ) : [];
         
         let tableStatus = 'Available';
         let cardBg = '#F8F9FA';    
@@ -1499,7 +1437,6 @@ window.renderTables = () => {
         let totalUnpaid = 0;
         let paidOrdersToClear = []; 
         let totalItemsCount = 0;
-        
         let custName = '';
         let custPhone = '';
         
@@ -1542,7 +1479,7 @@ window.renderTables = () => {
         }
 
         if (tableStatus !== 'Available') {
-            viewDetailsBtn = `<button onclick="viewTableDetails(${tableNum})" style="margin-top: 6px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; padding: 4px 8px; font-size: ${10 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;"><i class="ph-bold ph-eye"></i> Details</button>`;
+            viewDetailsBtn = `<button onclick="event.stopPropagation(); viewTableDetails(${tableNum})" style="margin-top: 6px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; padding: 4px 8px; font-size: ${10 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;"><i class="ph-bold ph-eye"></i> Details</button>`;
         }
         
         const threeDotMenu = `
@@ -1572,17 +1509,12 @@ window.renderTables = () => {
             `;
         }
 
-        // 🔥 PERFECT SQUARE & COLUMNS
         const cardHtml = `
-            <div class="table-card" id="table-card-${tableNum}" style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; box-sizing: border-box; transition: transform 0.2s ease;">
-                
+            <div class="table-card" id="table-card-${tableNum}" onclick="if('${tableStatus}' !== 'Available') viewTableDetails(${tableNum})" style="position: relative; background: ${cardBg}; border: ${cardBorder}; box-shadow: ${shadow}; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; box-sizing: border-box; transition: transform 0.2s ease;">
                 ${topLeftButton}
                 ${threeDotMenu}
-                
                 ${totalItemsCount > 0 ? `<div style="position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-size: ${8 * scaleFont}px; font-weight: 800; color: #FD7E14; background: rgba(253, 126, 20, 0.1); padding: 2px 6px; border-radius: 10px;"><i class="ph-bold ph-cooking-pot"></i> ${totalItemsCount}</div>` : ''}
-
                 <div class="table-number" style="font-size: ${24 * scaleFont}px; font-weight: 900; color: #212529; letter-spacing: -1px; margin-top: 5px;">T-${tableNum}</div>
-                
                 ${customerInfoHtml}
                 ${statusHtml}
                 ${viewDetailsBtn}
@@ -1636,7 +1568,6 @@ window.safeDownloadTableQR = async (tableNum) => {
         document.body.removeChild(link);
         URL.revokeObjectURL(blobUrl);
 
-        if(typeof window.showToast === 'function') window.showToast("QR Downloaded Successfully!");
     } catch(err) {
         console.error("Direct download failed, opening in new tab:", err);
         const domain = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
@@ -1650,11 +1581,9 @@ window.safeDownloadTableQR = async (tableNum) => {
 // 👁️ DYNAMIC POPUP FOR TABLE ORDER DETAILS
 // =======================================================
 window.viewTableDetails = (tableNum) => {
-    // Purana modal agar khula ho toh hata do
     const existingModal = document.getElementById('dynamicTableModal');
     if(existingModal) existingModal.remove();
 
-    // Table ke live orders dhundo
     let activeOrders = window.allOrdersMaster.filter(o => 
         o.tableNumber == tableNum && 
         (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
@@ -1686,7 +1615,6 @@ window.viewTableDetails = (tableNum) => {
         `;
     }).join('');
 
-    // Jadoo: Bina HTML chhede JS se direct Modal Popup banana
     let modal = document.createElement('div');
     modal.className = 'modal-overlay show';
     modal.style.alignItems = 'center';
@@ -1697,9 +1625,7 @@ window.viewTableDetails = (tableNum) => {
             <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-main); font-size: 18px; font-weight: 800;">
                 <i class="ph-fill ph-receipt" style="color: var(--primary);"></i> Table ${tableNum} Details
             </h3>
-            
             ${detailsHtml}
-            
             <button onclick="document.getElementById('dynamicTableModal').remove()" style="width: 100%; background: var(--text-main); color: var(--bg-main); padding: 14px; border-radius: 12px; border: none; font-weight: 800; font-size: 14px; margin-top: 10px; cursor: pointer;">
                 Close Details
             </button>
@@ -1707,6 +1633,7 @@ window.viewTableDetails = (tableNum) => {
     `;
     document.body.appendChild(modal);
 };
+
 // =======================================================
 // 🧹 FAILSAFE: INSTANT CLEAR TABLE (WITH AUTO-REFRESH FIX)
 // =======================================================
@@ -1718,21 +1645,19 @@ window.forceClearTable = async (docIdsString) => {
         if(id) {
             try {
                 await updateDoc(doc(db, "orders", id), { status: 'Completed' });
-                // 👈 ISSUE 2 FIX: Update hone ke baad manually screen refresh karwana
                 setTimeout(() => { if (typeof window.renderTables === 'function') window.renderTables(); }, 500);
             } catch(e) { console.error("Failsafe Clear Error: ", e); }
         }
     }
 };
+
 // =======================================================
 // 💸 1-CLICK BILL SETTLEMENT (WITH CUSTOM PREMIUM POPUP)
 // =======================================================
 window.settleTablePayment = (tableNum, method) => {
-    // Purana modal agar khula ho toh hata do
     const existingModal = document.getElementById('paymentConfirmModal');
     if(existingModal) existingModal.remove();
 
-    // Jadoo: Bina HTML chhede JS se direct Modal Popup banana
     let modal = document.createElement('div');
     modal.className = 'modal-overlay show';
     modal.style.alignItems = 'center';
@@ -1758,14 +1683,12 @@ window.settleTablePayment = (tableNum, method) => {
 };
 
 // =======================================================
-// ⚙️ ASLI PAYMENT LOGIC (JAB MANAGER 'YES' DABAYEGA)
+// ⚙️ ASLI PAYMENT LOGIC
 // =======================================================
 window.executeTablePayment = async (tableNum, method) => {
-    // 1. Popup ko turant gayab karo
     const modal = document.getElementById('paymentConfirmModal');
     if(modal) modal.remove();
 
-    // 2. Unpaid orders dhundo us table ke
     let activeOrders = window.allOrdersMaster.filter(o => 
         o.tableNumber == tableNum && 
         (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served') &&
@@ -1774,14 +1697,11 @@ window.executeTablePayment = async (tableNum, method) => {
     
     for (let order of activeOrders) {
         try {
-            // Pehle order ko PAID mark karo (Table Blue ho jayegi)
             await updateDoc(doc(db, "orders", order.docId), { 
                 isPaid: true,
                 paymentMethod: method
             });
             
-            // 🔥 5-SECOND TIMER MAGIC
-            // 5 second baad order apne aap Completed (History) me jayega aur Table 🟢 Green (Available) ho jayegi!
             setTimeout(async () => {
                 try {
                     await updateDoc(doc(db, "orders", order.docId), { status: 'Completed' });
@@ -1795,28 +1715,25 @@ window.executeTablePayment = async (tableNum, method) => {
         }
     }
 };
+
 // =======================================================
-// 🗑️ VIP DELETE TABLE LOGIC (CUSTOM MODAL)
+// 🗑️ VIP DELETE TABLE LOGIC
 // =======================================================
 let tableIdToDelete = null;
 
-// 1. Sirf VIP Popup Open Karna
 window.deleteTable = (docId) => {
     tableIdToDelete = docId;
     document.getElementById('deleteTableModal').classList.add('show');
 };
 
-// 2. Popup Close Karna
 window.closeDeleteTableModal = () => {
     tableIdToDelete = null;
     document.getElementById('deleteTableModal').classList.remove('show');
 };
 
-// 3. Asli Firebase Delete Logic (Jab 'Yes' dabaye)
 window.confirmDeleteTableAction = async () => {
     if (!tableIdToDelete) return;
     
-    // Niche wala button loading me badalna (Optional premium touch)
     const btn = document.querySelector('#deleteTableModal button:last-child');
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Wait...';
@@ -1829,60 +1746,21 @@ window.confirmDeleteTableAction = async () => {
         alert("Failed to delete table: " + e.message);
         closeDeleteTableModal();
     } finally {
-        // Button wapas normal karna
         btn.innerHTML = originalText;
         btn.style.pointerEvents = "auto";
     }
 };
 
-// 3. SILENT QR DOWNLOAD (Bina kisi boring alert ke)
-window.downloadTableQR = (tableNum) => {
-    const baseUrl = "https://itxarun.github.io/Smart-Menu/index.html";
-    const tableUrl = `${baseUrl}?table=${tableNum}`;
-    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tableUrl)}&margin=15`;
-    
-    const btn = document.getElementById(`btn-qr-${tableNum}`);
-    const originalText = btn.innerHTML;
-    
-    btn.innerHTML = `<i class="ph-bold ph-spinner ph-spin"></i> Wait...`;
-    btn.style.pointerEvents = "none"; 
-    
-    fetch(qrApiUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = `Table_${tableNum}_NextPlate_QR.png`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            
-            btn.innerHTML = `<i class="ph-bold ph-check" style="color: var(--success);"></i> Done!`;
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.pointerEvents = "auto";
-            }, 2000);
-        })
-        .catch(() => {
-            window.open(qrApiUrl, '_blank');
-            btn.innerHTML = originalText;
-            btn.style.pointerEvents = "auto";
-        });
-};
 // =======================================================
 // 🖨️ KITCHEN ORDER TICKET (KOT) LOGIC
 // =======================================================
 window.printKOT = (orderId) => {
-    // 1. Order ki details nikalo
     const targetOrder = window.allOrdersMaster.find(o => o.docId === orderId);
     if (!targetOrder) {
         alert("Order details not found!");
         return;
     }
 
-    // 2. KOT ka format set karo (Bina Price ke)
     let typeText = targetOrder.orderType === 'Takeaway' ? 'Takeaway' : `Table ${targetOrder.tableNumber}`;
     let printWindow = window.open('', '', 'width=320,height=500');
     
@@ -1902,13 +1780,11 @@ window.printKOT = (orderId) => {
         <div class="divider"></div>
     `);
 
-    // 3. Items print karna
     targetOrder.items.forEach(item => {
         let variant = item.variant ? `<span style="font-size:12px;">(${item.variant})</span>` : '';
         printWindow.document.write(`<div class="item-row"><span>${item.qty} x ${item.name} ${variant}</span></div>`);
     });
 
-    // 4. Agar Chef ke liye koi Note hai, toh usko bada dikhana
     if (targetOrder.chefNotes && targetOrder.chefNotes !== 'None' && targetOrder.chefNotes.trim() !== '') {
         printWindow.document.write(`<div class="notes-box">⚠️ NOTE: ${targetOrder.chefNotes}</div>`);
     }
@@ -1919,7 +1795,6 @@ window.printKOT = (orderId) => {
         </body></html>
     `);
     
-    // 5. Print dialog open karna
     printWindow.document.close();
     printWindow.focus();
     setTimeout(() => { 
@@ -1927,11 +1802,10 @@ window.printKOT = (orderId) => {
         printWindow.close(); 
     }, 500);
 };
+
 // =======================================================
 // 💸 HOTEL UPI SETTINGS LOGIC
 // =======================================================
-
-// 1. UPI ID Save karna
 window.saveHotelUPI = async () => {
     const upiInput = document.getElementById('adminUpiInput').value.trim();
     const btn = document.getElementById('btnSaveUpi');
@@ -1946,13 +1820,11 @@ window.saveHotelUPI = async () => {
     btn.disabled = true;
 
     try {
-        // Firebase me current hotel ko dhundho
         const q = query(collection(db, "merchants"), where("restaurantId", "==", window.currentRestaurantId));
         const snap = await getDocs(q);
         
         if (!snap.empty) {
-            const docId = snap.docs[0].id; // Hotel ka asli database ID
-            // UPI ID update kar do
+            const docId = snap.docs[0].id; 
             await updateDoc(doc(db, "merchants", docId), {
                 upiId: upiInput
             });
@@ -1974,13 +1846,10 @@ window.saveHotelUPI = async () => {
     }
 };
 
-// 2. Settings tab khulte hi purana UPI ID load karna
-// Tumhare switchTab function ko thoda sa upgrade kar rahe hain taaki UPI fetch ho jaye
 const originalSwitchTab = window.switchTab;
 window.switchTab = async (tabId, element = null) => {
     originalSwitchTab(tabId, element);
     
-    // Agar settings tab khula hai, toh database se UPI ID manga lo
     if (tabId === 'settings') {
         const upiBox = document.getElementById('adminUpiInput');
         if (upiBox && !upiBox.value) {
@@ -1994,24 +1863,20 @@ window.switchTab = async (tabId, element = null) => {
         }
     }
 };
+
 // =======================================================
 // 🔄 VIP AUTO-REFRESH ENGINE FOR LIVE TABLES
 // =======================================================
-// Ye engine background me chupke se dekhta rahega, aur jaise hi
-// customer order karega ya payment hogi, tables ka color apne aap badal dega!
-
 setTimeout(() => {
     if (window.currentRestaurantId) {
         const qLiveTableOrders = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId));
         
         onSnapshot(qLiveTableOrders, () => {
-            // Jaise hi database me koi bhi halchal hogi (Order/Payment),
-            // Ye engine automatically Tables ko refresh kar dega (Bina page reload kiye)
             if (typeof window.renderTables === 'function') {
                 setTimeout(() => {
                     window.renderTables();
-                }, 500); // 0.5 sec ka delay taaki data properly sync ho jaye
+                }, 500); 
             }
         });
     }
-}, 2000); // App load hone ke 2 second baad engine start hoga
+}, 2000);
