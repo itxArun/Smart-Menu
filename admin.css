@@ -1293,3 +1293,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         max-width: 500px !important; /* Laptop par popup bhadda na lage */
     }
 }
+/* Bottom Navigation Overlap Fix */
+.main-content {
+    padding-bottom: 120px !important;
+}
