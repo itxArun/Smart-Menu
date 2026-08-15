@@ -1413,15 +1413,6 @@ window.renderTables = () => {
     `;
     grid.insertAdjacentHTML('beforeend', controlsHtml);
 
-    setTimeout(() => {
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            if (tab.innerText && tab.innerText.toLowerCase().includes('tables')) {
-                tab.classList.add('active');
-                tab.style.color = 'var(--primary)';
-            }
-        });
-    }, 100);
-
     window.restaurantTables.sort((a,b) => a.number - b.number).forEach(table => {
         const tableNum = table.number;
         
