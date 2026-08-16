@@ -1078,7 +1078,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // =======================================================
-// 💸 VIP DIGITAL BILL & DIRECT APP TRIGGERS
+// 💸 VIP DIGITAL BILL & UNIVERSAL UPI TRIGGER
 // =======================================================
 window.payBillViaUPI = async (orderId, amount) => {
     let merchantUpi = ""; 
@@ -1095,12 +1095,8 @@ window.payBillViaUPI = async (orderId, amount) => {
         return; 
     }
     
-    // 🚀 Direct App Links (Bypass WhatsApp issue)
-    const gpayLink = `tez://upi/pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
-    const phonepeLink = `phonepe://pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
-    const paytmLink = `paytmmp://pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
+    // 🚀 Universal UPI Link (Phone khud chooser dikhayega)
     const anyUpiLink = `upi://pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
-
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(anyUpiLink)}&margin=10`;
 
     const existingModal = document.getElementById('digitalBillModal');
@@ -1117,58 +1113,25 @@ window.payBillViaUPI = async (orderId, amount) => {
                 <button onclick="document.getElementById('digitalBillModal').remove()" style="background:transparent; border:none; font-size:20px; color:var(--text-sub); cursor:pointer;"><i class="ph-bold ph-x"></i></button>
             </div>
             
-            <!-- 🔥 FIX 1: Solid Dark Amount Text (No Blur) -->
             <div style="font-size: 38px; font-weight: 900; color: #1C1C1E; margin-bottom: 15px; opacity: 1 !important; text-shadow: 0 2px 5px rgba(0,0,0,0.05);">₹${amount}</div>
             
             <div style="background: var(--bg-light); padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 20px; border: 1px solid var(--border-light);">
                 <img src="${qrApiUrl}" style="width: 150px; height: 150px; border-radius: 10px;" alt="UPI QR Code">
             </div>
 
-            <!-- 🔥 FIX 2: 3 Direct App Buttons & Small "Paid" Button -->
-            <div style="font-size: 11px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Pay Directly Via</div>
-            
-            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                <a href="${gpayLink}" style="flex: 1; background: #fff; border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 5px; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6124/6124998.png" style="width: 24px; height: 24px; object-fit: contain;">
-                    <span style="font-size: 11px; font-weight: 700; color: #1C1C1E;">GPay</span>
+            <div style="display: flex; gap: 10px; flex-direction: column;">
+                <!-- 🚀 UNIVERSAL APP OPENER BUTTON -->
+                <a href="${anyUpiLink}" style="text-decoration: none; width: 100%; background: linear-gradient(135deg, #007AFF 0%, #0056b3 100%); color: white; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); transition: 0.2s;">
+                    <i class="ph-bold ph-device-mobile" style="font-size: 20px;"></i> Open UPI App on Phone
                 </a>
-                <a href="${phonepeLink}" style="flex: 1; background: #fff; border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 5px; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-                    <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/phonepe-logo-icon.png" style="width: 24px; height: 24px; object-fit: contain;">
-                    <span style="font-size: 11px; font-weight: 700; color: #1C1C1E;">PhonePe</span>
-                </a>
-                <a href="${paytmLink}" style="flex: 1; background: #fff; border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 5px; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-                    <img src="https://cdn-icons-png.flaticon.com/512/825/825454.png" style="width: 24px; height: 24px; object-fit: contain;">
-                    <span style="font-size: 11px; font-weight: 700; color: #1C1C1E;">Paytm</span>
-                </a>
-            </div>
 
-            <!-- Small Confirmation Button -->
-            <button onclick="markOrderAsPaid('${orderId}')" style="width: 100%; background: transparent; color: var(--text-main); border: 1px solid var(--border-light); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s;">
-                ✓ I Have Paid Successfully
-            </button>
+                <!-- Small Confirmation Button -->
+                <button onclick="markOrderAsPaid('${orderId}')" style="width: 100%; background: transparent; color: var(--text-main); border: 1px solid var(--border-light); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s; margin-top: 4px;">
+                    ✓ I Have Paid Successfully
+                </button>
+            </div>
         </div>
     `;
     document.body.appendChild(modal);
     if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
-};
-
-// =======================================================
-// 🟢 CUSTOMER MARKS PAYMENT AS DONE
-// =======================================================
-window.markOrderAsPaid = async (orderId) => {
-    try {
-        await updateDoc(doc(db, "orders", orderId), { 
-            isPaid: true,
-            paymentMethod: 'UPI'
-        });
-        
-        document.getElementById('digitalBillModal').remove();
-        if (typeof window.showToast === 'function') {
-            window.showToast("Payment verified! Thank you! 🎉");
-        }
-        if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
-    } catch(e) {
-        console.error("Failed to mark as paid:", e);
-        alert("Error updating payment status.");
-    }
 };
