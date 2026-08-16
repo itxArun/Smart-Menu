@@ -1078,7 +1078,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // =======================================================
-// 💸 VIP DIGITAL BILL & DIRECT UPI TRIGGER
+// 💸 VIP DIGITAL BILL & DIRECT APP TRIGGERS
 // =======================================================
 window.payBillViaUPI = async (orderId, amount) => {
     let merchantUpi = ""; 
@@ -1095,44 +1095,57 @@ window.payBillViaUPI = async (orderId, amount) => {
         return; 
     }
     
-    // GPay / PhonePe Link & QR Code
-    const upiLink = `upi://pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
-    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}&margin=10`;
+    // 🚀 Direct App Links (Bypass WhatsApp issue)
+    const gpayLink = `tez://upi/pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
+    const phonepeLink = `phonepe://pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
+    const paytmLink = `paytmmp://pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
+    const anyUpiLink = `upi://pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
 
-    // 1. Purana Modal hatao agar khula hai
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(anyUpiLink)}&margin=10`;
+
     const existingModal = document.getElementById('digitalBillModal');
     if(existingModal) existingModal.remove();
 
-    // 2. Naya Premium Popup Banao
     const modal = document.createElement('div');
     modal.className = 'custom-alert show'; 
     modal.id = 'digitalBillModal';
     modal.style.zIndex = '999999';
     modal.innerHTML = `
         <div class="alert-box" style="padding: 25px; text-align: center; max-width: 350px; background: var(--bg-card); border: 1px solid var(--border-light);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px;">
                 <h3 style="margin:0; font-size: 18px; color: var(--text-main); font-family: 'Okra', sans-serif;">Digital Bill</h3>
                 <button onclick="document.getElementById('digitalBillModal').remove()" style="background:transparent; border:none; font-size:20px; color:var(--text-sub); cursor:pointer;"><i class="ph-bold ph-x"></i></button>
             </div>
             
-            <div style="font-size: 36px; font-weight: 800; color: #24963F; margin-bottom: 15px; letter-spacing: -1px;">₹${amount}</div>
+            <!-- 🔥 FIX 1: Solid Dark Amount Text (No Blur) -->
+            <div style="font-size: 38px; font-weight: 900; color: #1C1C1E; margin-bottom: 15px; opacity: 1 !important; text-shadow: 0 2px 5px rgba(0,0,0,0.05);">₹${amount}</div>
             
             <div style="background: var(--bg-light); padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 20px; border: 1px solid var(--border-light);">
-                <img src="${qrApiUrl}" style="width: 180px; height: 180px; border-radius: 10px;" alt="UPI QR Code">
-                <div style="font-size: 11px; color: var(--text-sub); margin-top: 8px; font-weight: 600;">Scan with any UPI App</div>
+                <img src="${qrApiUrl}" style="width: 150px; height: 150px; border-radius: 10px;" alt="UPI QR Code">
             </div>
 
-            <div style="display: flex; gap: 10px; flex-direction: column;">
-                <!-- 🚀 MAIN PAYMENT BUTTON -->
-                <a href="${upiLink}" style="text-decoration: none; width: 100%; background: linear-gradient(135deg, #007AFF 0%, #0056b3 100%); color: white; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); transition: 0.2s;">
-                    <i class="ph-bold ph-shield-check" style="font-size: 20px;"></i> Pay Online Now
+            <!-- 🔥 FIX 2: 3 Direct App Buttons & Small "Paid" Button -->
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Pay Directly Via</div>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <a href="${gpayLink}" style="flex: 1; background: #fff; border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 5px; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6124/6124998.png" style="width: 24px; height: 24px; object-fit: contain;">
+                    <span style="font-size: 11px; font-weight: 700; color: #1C1C1E;">GPay</span>
                 </a>
-                
-                <!-- 🤏 SMALLER CONFIRMATION BUTTON -->
-                <button onclick="markOrderAsPaid('${orderId}')" style="width: 100%; background: transparent; color: var(--text-sub); border: 1px solid var(--border-light); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; transition: 0.2s; margin-top: 4px;">
-                    <i class="ph-bold ph-check-circle" style="color: var(--success);"></i> Yes, I have paid
-                </button>
+                <a href="${phonepeLink}" style="flex: 1; background: #fff; border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 5px; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                    <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/phonepe-logo-icon.png" style="width: 24px; height: 24px; object-fit: contain;">
+                    <span style="font-size: 11px; font-weight: 700; color: #1C1C1E;">PhonePe</span>
+                </a>
+                <a href="${paytmLink}" style="flex: 1; background: #fff; border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 5px; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                    <img src="https://cdn-icons-png.flaticon.com/512/825/825454.png" style="width: 24px; height: 24px; object-fit: contain;">
+                    <span style="font-size: 11px; font-weight: 700; color: #1C1C1E;">Paytm</span>
+                </a>
             </div>
+
+            <!-- Small Confirmation Button -->
+            <button onclick="markOrderAsPaid('${orderId}')" style="width: 100%; background: transparent; color: var(--text-main); border: 1px solid var(--border-light); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s;">
+                ✓ I Have Paid Successfully
+            </button>
         </div>
     `;
     document.body.appendChild(modal);
@@ -1144,7 +1157,6 @@ window.payBillViaUPI = async (orderId, amount) => {
 // =======================================================
 window.markOrderAsPaid = async (orderId) => {
     try {
-        // Firebase me isPaid true karte hi Admin ko table apne aap BLUE dikhegi!
         await updateDoc(doc(db, "orders", orderId), { 
             isPaid: true,
             paymentMethod: 'UPI'
