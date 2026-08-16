@@ -301,9 +301,9 @@ window.renderMultiTracker = function() {
 
         let actionHtml = '';
         
-        // 💸 VIP FIX: CUSTOMER UPI PAYMENT BUTTON LOGIC
+       // 💸 VIP FIX: CUSTOMER UPI PAYMENT BUTTON LOGIC
         let upiButtonHtml = '';
-        if (data.isPaid !== true && !isCanc && !isDone && data.orderType !== 'Takeaway') {
+        if (data.isPaid !== true && !isCanc && data.orderType !== 'Takeaway') {
             upiButtonHtml = `
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-light);">
                 <button onclick="payBillViaUPI('${id}', ${data.totalAmount})" style="width: 100%; background: #24963F; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(36, 150, 63, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px;">
@@ -1078,12 +1078,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // =======================================================
-// 💸 CUSTOMER DIRECT UPI INTENT TRIGGER
+// 💸 VIP DIGITAL BILL & DIRECT UPI TRIGGER
 // =======================================================
 window.payBillViaUPI = async (orderId, amount) => {
     let merchantUpi = ""; 
     try {
-        // Firebase se admin ka set kiya hua UPI uthana
         const q = query(collection(db, "merchants"), where("restaurantId", "==", window.currentRestaurantId));
         const snap = await getDocs(q);
         if(!snap.empty && snap.docs[0].data().upiId) {
@@ -1096,14 +1095,66 @@ window.payBillViaUPI = async (orderId, amount) => {
         return; 
     }
     
-    // GPay / PhonePe / Paytm Trigger Link
+    // GPay / PhonePe Link & QR Code
     const upiLink = `upi://pay?pa=${merchantUpi}&pn=Restaurant_Order&am=${amount}&cu=INR`;
-    
-    // Phone ke payment app ko force open karna
-    window.location.href = upiLink;
-    
-    // Fake Green Tick (1-Click Model ke liye)
-    if (typeof window.showToast === 'function') {
-        window.showToast("Payment Initiated! Waiting for manager confirmation.");
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}&margin=10`;
+
+    // 1. Purana Modal hatao agar khula hai
+    const existingModal = document.getElementById('digitalBillModal');
+    if(existingModal) existingModal.remove();
+
+    // 2. Naya Premium Popup Banao
+    const modal = document.createElement('div');
+    modal.className = 'custom-alert show'; 
+    modal.id = 'digitalBillModal';
+    modal.style.zIndex = '999999';
+    modal.innerHTML = `
+        <div class="alert-box" style="padding: 25px; text-align: center; max-width: 350px; background: var(--bg-card); border: 1px solid var(--border-light);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px;">
+                <h3 style="margin:0; font-size: 18px; color: var(--text-main); font-family: 'Okra', sans-serif;">Digital Bill</h3>
+                <button onclick="document.getElementById('digitalBillModal').remove()" style="background:transparent; border:none; font-size:20px; color:var(--text-sub); cursor:pointer;"><i class="ph-bold ph-x"></i></button>
+            </div>
+            
+            <div style="font-size: 36px; font-weight: 800; color: #24963F; margin-bottom: 15px; letter-spacing: -1px;">₹${amount}</div>
+            
+            <div style="background: var(--bg-light); padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 20px; border: 1px solid var(--border-light);">
+                <img src="${qrApiUrl}" style="width: 180px; height: 180px; border-radius: 10px;" alt="UPI QR Code">
+                <div style="font-size: 11px; color: var(--text-sub); margin-top: 8px; font-weight: 600;">Scan with any UPI App</div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-direction: column;">
+                <a href="${upiLink}" style="text-decoration: none; width: 100%; background: rgba(0, 122, 255, 0.1); color: #007AFF; border: 1px dashed rgba(0, 122, 255, 0.4); padding: 14px; border-radius: 16px; font-weight: 800; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;">
+                    <i class="ph-bold ph-device-mobile"></i> Open UPI App
+                </a>
+                
+                <button onclick="markOrderAsPaid('${orderId}')" style="width: 100%; background: #24963F; color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(36, 150, 63, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;">
+                    <i class="ph-bold ph-check-circle"></i> I Have Paid
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+};
+
+// =======================================================
+// 🟢 CUSTOMER MARKS PAYMENT AS DONE
+// =======================================================
+window.markOrderAsPaid = async (orderId) => {
+    try {
+        // Firebase me isPaid true karte hi Admin ko table apne aap BLUE dikhegi!
+        await updateDoc(doc(db, "orders", orderId), { 
+            isPaid: true,
+            paymentMethod: 'UPI'
+        });
+        
+        document.getElementById('digitalBillModal').remove();
+        if (typeof window.showToast === 'function') {
+            window.showToast("Payment verified! Thank you! 🎉");
+        }
+        if(typeof window.triggerHapticPop === 'function') window.triggerHapticPop();
+    } catch(e) {
+        console.error("Failed to mark as paid:", e);
+        alert("Error updating payment status.");
     }
 };
