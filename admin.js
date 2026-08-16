@@ -1462,11 +1462,13 @@ window.renderTables = () => {
         if (tableStatus === 'Available') {
             statusHtml = `<div style="font-size: ${12 * scaleFont}px; color: #ADB5BD; font-weight: 800; margin-top: 5px; text-transform: uppercase;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            statusHtml = `<div style="font-size: ${14 * scaleFont}px; color: #228BE6; font-weight: 900; margin-top: 2px;">PAID ✓</div>`;
-            topLeftButton = `<button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="position: absolute; top: 8px; left: 8px; background: #228BE6; color: white; border: none; width: ${28 * scaleFont}px; height: ${28 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${14 * scaleFont}px; z-index: 10;"><i class="ph-bold ph-broom"></i></button>`;
+            // 🔥 NAYA UX: Customer ke pay karte hi beech me neela "Clear Table" button aayega
+            statusHtml = `<button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="margin-top: 8px; background: #228BE6; color: white; border: none; padding: 6px 14px; border-radius: 50px; font-weight: 800; font-size: ${12 * scaleFont}px; cursor: pointer; box-shadow: 0 4px 12px rgba(34,139,230,0.3); display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;"><i class="ph-bold ph-broom"></i> Clear Table</button>`;
+            topLeftButton = ''; // Upar ka purana icon hata diya
         } else {
-            statusHtml = `<div style="font-size: ${16 * scaleFont}px; color: #FD7E14; font-weight: 900; margin-top: 2px;">₹${totalUnpaid}</div>`;
-            topLeftButton = `<button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="position: absolute; top: 8px; left: 8px; background: #40C057; color: white; border: none; width: ${28 * scaleFont}px; height: ${28 * scaleFont}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: ${14 * scaleFont}px; z-index: 10;"><i class="ph-bold ph-check"></i></button>`;
+            // 🔥 NAYA UX: Unpaid hone par Green color ka "Collect Amount" button aayega
+            statusHtml = `<button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="margin-top: 8px; background: #40C057; color: white; border: none; padding: 6px 14px; border-radius: 50px; font-weight: 800; font-size: ${12 * scaleFont}px; cursor: pointer; box-shadow: 0 4px 12px rgba(64,192,87,0.3); display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;"><i class="ph-bold ph-wallet"></i> Collect ₹${totalUnpaid}</button>`;
+            topLeftButton = ''; // Upar ka purana icon hata diya
         }
 
         if (tableStatus !== 'Available') {
