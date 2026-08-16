@@ -899,7 +899,7 @@ window.switchAdminOrderTab = (tab) => {
     const targetList = document.getElementById(`admin-${tab}-orders`);
     
     if(targetBtn) targetBtn.classList.add('active');
-    if(targetList) targetList.style.display = 'flex';
+    if(targetList) targetList.style.display = 'grid'; // 🔥 FIX: Ab ye side-by-side Tables ki tarah aayega
 };
 
 window.downloadQR = () => {
