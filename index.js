@@ -1123,12 +1123,14 @@ window.payBillViaUPI = async (orderId, amount) => {
             </div>
 
             <div style="display: flex; gap: 10px; flex-direction: column;">
-                <a href="${upiLink}" style="text-decoration: none; width: 100%; background: rgba(0, 122, 255, 0.1); color: #007AFF; border: 1px dashed rgba(0, 122, 255, 0.4); padding: 14px; border-radius: 16px; font-weight: 800; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;">
-                    <i class="ph-bold ph-device-mobile"></i> Open UPI App
+                <!-- 🚀 MAIN PAYMENT BUTTON -->
+                <a href="${upiLink}" style="text-decoration: none; width: 100%; background: linear-gradient(135deg, #007AFF 0%, #0056b3 100%); color: white; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); transition: 0.2s;">
+                    <i class="ph-bold ph-shield-check" style="font-size: 20px;"></i> Pay Online Now
                 </a>
                 
-                <button onclick="markOrderAsPaid('${orderId}')" style="width: 100%; background: #24963F; color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(36, 150, 63, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;">
-                    <i class="ph-bold ph-check-circle"></i> I Have Paid
+                <!-- 🤏 SMALLER CONFIRMATION BUTTON -->
+                <button onclick="markOrderAsPaid('${orderId}')" style="width: 100%; background: transparent; color: var(--text-sub); border: 1px solid var(--border-light); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; transition: 0.2s; margin-top: 4px;">
+                    <i class="ph-bold ph-check-circle" style="color: var(--success);"></i> Yes, I have paid
                 </button>
             </div>
         </div>
