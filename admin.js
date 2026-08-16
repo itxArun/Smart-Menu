@@ -1455,24 +1455,16 @@ window.renderTables = () => {
             }
         }
 
-        let statusHtml = '';
+      let statusHtml = '';
         let topLeftButton = ''; 
         let viewDetailsBtn = '';
         
         if (tableStatus === 'Available') {
             statusHtml = `<div style="font-size: ${12 * scaleFont}px; color: #ADB5BD; font-weight: 800; margin-top: 5px; text-transform: uppercase;">Available</div>`;
         } else if (tableStatus === 'Paid') {
-            // 🔥 NAYA UX: Customer ke pay karte hi beech me neela "Clear Table" button aayega
-            statusHtml = `<button onclick="event.stopPropagation(); forceClearTable('${paidOrdersToClear.join(',')}')" style="margin-top: 8px; background: #228BE6; color: white; border: none; padding: 6px 14px; border-radius: 50px; font-weight: 800; font-size: ${12 * scaleFont}px; cursor: pointer; box-shadow: 0 4px 12px rgba(34,139,230,0.3); display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;"><i class="ph-bold ph-broom"></i> Clear Table</button>`;
-            topLeftButton = ''; // Upar ka purana icon hata diya
+            statusHtml = `<div style="font-size: ${14 * scaleFont}px; color: #228BE6; font-weight: 900; margin-top: 2px;">PAID ✓</div>`;
         } else {
-            // 🔥 NAYA UX: Unpaid hone par Green color ka "Collect Amount" button aayega
-            statusHtml = `<button onclick="event.stopPropagation(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="margin-top: 8px; background: #40C057; color: white; border: none; padding: 6px 14px; border-radius: 50px; font-weight: 800; font-size: ${12 * scaleFont}px; cursor: pointer; box-shadow: 0 4px 12px rgba(64,192,87,0.3); display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;"><i class="ph-bold ph-wallet"></i> Collect ₹${totalUnpaid}</button>`;
-            topLeftButton = ''; // Upar ka purana icon hata diya
-        }
-
-        if (tableStatus !== 'Available') {
-            viewDetailsBtn = `<button onclick="event.stopPropagation(); viewTableDetails(${tableNum})" style="margin-top: 6px; background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; padding: 4px 8px; font-size: ${10 * scaleFont}px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;"><i class="ph-bold ph-eye"></i> Details</button>`;
+            statusHtml = `<div style="font-size: ${16 * scaleFont}px; color: #FD7E14; font-weight: 900; margin-top: 2px;">₹${totalUnpaid}</div>`;
         }
         
         const threeDotMenu = `
@@ -1571,7 +1563,7 @@ window.safeDownloadTableQR = async (tableNum) => {
 };
 
 // =======================================================
-// 👁️ DYNAMIC POPUP FOR TABLE ORDER DETAILS
+// 👁️ DYNAMIC POPUP FOR TABLE ORDER DETAILS & ACTIONS
 // =======================================================
 window.viewTableDetails = (tableNum) => {
     const existingModal = document.getElementById('dynamicTableModal');
@@ -1584,7 +1576,13 @@ window.viewTableDetails = (tableNum) => {
     
     if(activeOrders.length === 0) return;
 
+    let totalUnpaid = 0;
+    let paidOrdersToClear = [];
+
     let detailsHtml = activeOrders.map(o => {
+        if (o.isPaid !== true) totalUnpaid += (o.totalAmount || 0);
+        else paidOrdersToClear.push(o.docId);
+
         let itemsList = o.items.map(i => `<div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px dashed rgba(0,0,0,0.05);"><span><b>${i.qty}x</b> ${i.name}</span> <span>₹${i.price * i.qty}</span></div>`).join('');
         let custName = o.customerName !== 'N/A' ? o.customerName : 'Guest Customer';
         let custPhone = o.customerPhone && o.customerPhone !== 'N/A' ? o.customerPhone : 'No Number';
@@ -1594,7 +1592,7 @@ window.viewTableDetails = (tableNum) => {
             <div style="background: var(--input-bg); border: 1px solid var(--border); padding: 12px; border-radius: 12px; margin-bottom: 15px; text-align: left;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px;">
                     <span style="font-weight: 800; font-size: 14px;">Order #${o.docId.slice(-4)}</span>
-                    <span style="font-weight: 800; color: var(--primary);">₹${o.totalAmount}</span>
+                    <span style="font-weight: 800; color: ${o.isPaid ? 'var(--success)' : 'var(--primary)'};">${o.isPaid ? 'PAID ✓' : '₹'+o.totalAmount}</span>
                 </div>
                 <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 10px;">
                     <div><i class="ph-fill ph-user-circle"></i> <b>${custName}</b></div>
@@ -1608,25 +1606,42 @@ window.viewTableDetails = (tableNum) => {
         `;
     }).join('');
 
+    // 🔥 SMART ACTION BUTTONS LOGIC
+    let actionButtonsHtml = '';
+    if (totalUnpaid > 0) {
+        // Agar paise baki hain, toh Payment Done ka Green button
+        actionButtonsHtml = `<button onclick="document.getElementById('dynamicTableModal').remove(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="width: 100%; background: #40C057; color: white; padding: 16px; border-radius: 12px; border: none; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(64,192,87,0.3); margin-bottom: 10px; display:flex; justify-content:center; align-items:center; gap:8px;"><i class="ph-bold ph-check-circle" style="font-size:18px;"></i> Payment Done (₹${totalUnpaid})</button>`;
+    } else if (paidOrdersToClear.length > 0) {
+        // Agar paid ho chuka hai, toh Clear Table ka Blue button
+        actionButtonsHtml = `<button onclick="document.getElementById('dynamicTableModal').remove(); forceClearTable('${paidOrdersToClear.join(',')}')" style="width: 100%; background: #228BE6; color: white; padding: 16px; border-radius: 12px; border: none; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(34,139,230,0.3); margin-bottom: 10px; display:flex; justify-content:center; align-items:center; gap:8px;"><i class="ph-bold ph-broom" style="font-size:18px;"></i> Clear Table</button>`;
+    }
+
     let modal = document.createElement('div');
     modal.className = 'modal-overlay show';
     modal.style.alignItems = 'center';
     modal.style.zIndex = '999999';
     modal.id = 'dynamicTableModal';
     modal.innerHTML = `
-        <div class="modal-card" style="transform: none; margin: auto; max-width: 380px; text-align: center; border-radius: 20px; padding: 25px 20px; max-height: 85vh; overflow-y: auto; background: var(--bg-card); box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
-            <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-main); font-size: 18px; font-weight: 800;">
-                <i class="ph-fill ph-receipt" style="color: var(--primary);"></i> Table ${tableNum} Details
-            </h3>
+        <div class="modal-card" style="transform: none; margin: auto; max-width: 400px; text-align: center; border-radius: 20px; padding: 25px 20px; max-height: 85vh; overflow-y: auto; background: var(--bg-card); box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: var(--text-main); font-size: 20px; font-weight: 800;">
+                    <i class="ph-fill ph-receipt" style="color: var(--primary);"></i> Table ${tableNum}
+                </h3>
+                <button onclick="document.getElementById('dynamicTableModal').remove()" style="background:transparent; border:none; font-size:24px; color:var(--text-sub); cursor:pointer;"><i class="ph-bold ph-x"></i></button>
+            </div>
+            
             ${detailsHtml}
-            <button onclick="document.getElementById('dynamicTableModal').remove()" style="width: 100%; background: var(--text-main); color: var(--bg-main); padding: 14px; border-radius: 12px; border: none; font-weight: 800; font-size: 14px; margin-top: 10px; cursor: pointer;">
-                Close Details
-            </button>
+            
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed var(--border-light);">
+                ${actionButtonsHtml}
+                <button onclick="document.getElementById('dynamicTableModal').remove()" style="width: 100%; background: var(--input-bg); color: var(--text-main); padding: 14px; border-radius: 12px; border: none; font-weight: 700; font-size: 14px; cursor: pointer;">
+                    Close
+                </button>
+            </div>
         </div>
     `;
     document.body.appendChild(modal);
 };
-
 // =======================================================
 // 🧹 FAILSAFE: INSTANT CLEAR TABLE (WITH AUTO-REFRESH FIX)
 // =======================================================
