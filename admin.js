@@ -2000,3 +2000,78 @@ setInterval(() => {
         }
     });
 }, 1000);
+// =======================================================
+// 🖨️ PRINT CONSOLIDATED FULL TABLE BILL (ALL ORDERS MERGED)
+// =======================================================
+window.printTableBill = (tableNum) => {
+    let activeOrders = window.allOrdersMaster.filter(o => 
+        o.tableNumber == tableNum && 
+        (o.status === 'New' || o.status === 'Accepted' || o.status === 'Preparing' || o.status === 'Ready' || o.status === 'Served')
+    );
+    
+    if(activeOrders.length === 0) return;
+
+    let consolidatedItems = {};
+    let grandTotal = 0;
+    let customerName = "Guest";
+
+    // 🧠 MAGIC: Sab orders ke items ko ek jagah jodo aur same items ki quantity badhao
+    activeOrders.forEach(o => {
+        if (o.customerName && o.customerName !== 'N/A') customerName = o.customerName;
+        grandTotal += (o.totalAmount || 0);
+        
+        (o.items || []).forEach(item => {
+            let key = item.name + (item.variant ? `_${item.variant}` : '');
+            if (!consolidatedItems[key]) {
+                consolidatedItems[key] = { name: item.name, variant: item.variant, price: item.price, qty: 0 };
+            }
+            consolidatedItems[key].qty += item.qty; // Same dish multiple times order hui toh jud jayegi
+        });
+    });
+
+    const cachedName = localStorage.getItem('crave_hotel_name_cache') || 'Restaurant Bill';
+    let printWindow = window.open('', '', 'width=320,height=600');
+    
+    printWindow.document.write(`
+        <html><head><style>
+            body { font-family: 'Courier New', Courier, monospace; text-align: left; margin: 0; padding: 15px; color: #000; }
+            .kot-header { text-align: center; font-size: 22px; font-weight: 900; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
+            .order-info { font-size: 14px; margin-bottom: 5px; font-weight: bold; }
+            .item-row { font-size: 14px; font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start;}
+            .divider { border-bottom: 2px dashed #000; margin: 10px 0; }
+            .total-row { font-size: 18px; font-weight: 900; text-align: right; margin-top: 10px; }
+        </style></head><body>
+        
+        <div class="kot-header">${cachedName}</div>
+        <div class="order-info">Table: ${tableNum}</div>
+        <div class="order-info">Customer: ${customerName}</div>
+        <div class="order-info">Date: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</div>
+        <div class="divider"></div>
+    `);
+
+    Object.values(consolidatedItems).forEach(item => {
+        let variant = item.variant ? `<br><span style="font-size:11px; font-weight: normal;">(${item.variant})</span>` : '';
+        printWindow.document.write(`
+            <div class="item-row">
+                <span style="flex: 1; padding-right: 10px;">${item.name} ${variant}</span>
+                <span style="width: 30px; text-align: center;">x${item.qty}</span>
+                <span style="width: 60px; text-align: right;">₹${item.price * item.qty}</span>
+            </div>
+        `);
+    });
+
+    printWindow.document.write(`
+        <div class="divider"></div>
+        <div class="total-row">Grand Total: ₹${grandTotal}</div>
+        <div class="divider"></div>
+        <div style="text-align: center; font-size: 12px; margin-top: 10px;">Thank You! Visit Again</div>
+        </body></html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { 
+        printWindow.print(); 
+        printWindow.close(); 
+    }, 500);
+};
