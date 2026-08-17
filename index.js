@@ -955,11 +955,11 @@ async function loadDynamicMenu() {
         const displayPrice = document.getElementById('display-price');
         if(displayPrice) displayPrice.innerHTML = `<div class="skeleton-box" style="width:40%; height:20px;"></div>`;
 
-        // Agar tumhara koi bada sa full-screen loader (gol ghoomne wala) pehle se HTML me hai, toh usko turant hide kar do
-        const fullScreenLoader = document.getElementById('loader') || document.getElementById('preloader');
+        // 🚀 VIP FIX: Ab ye sahi ID ('premium-loader') ko pakad kar turant hide kar dega!
+        const fullScreenLoader = document.getElementById('premium-loader') || document.getElementById('loader') || document.getElementById('preloader');
         if(fullScreenLoader) {
             fullScreenLoader.style.opacity = '0';
-            setTimeout(() => fullScreenLoader.style.display = 'none', 300);
+            setTimeout(() => fullScreenLoader.style.display = 'none', 200);
         }
 
         // 🔥 ASLI DATA FETCH (Ye background me aaram se aayega)
