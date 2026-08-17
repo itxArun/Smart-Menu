@@ -1649,13 +1649,15 @@ window.viewTableDetails = (tableNum) => {
         `;
     }).join('');
 
-    // 🔥 SMART ACTION BUTTONS LOGIC
+// 🔥 SMART ACTION BUTTONS LOGIC
     let actionButtonsHtml = '';
     if (totalUnpaid > 0) {
-        // Agar paise baki hain, toh Payment Done ka Green button
-        actionButtonsHtml = `<button onclick="document.getElementById('dynamicTableModal').remove(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="width: 100%; background: #40C057; color: white; padding: 16px; border-radius: 12px; border: none; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(64,192,87,0.3); margin-bottom: 10px; display:flex; justify-content:center; align-items:center; gap:8px;"><i class="ph-bold ph-check-circle" style="font-size:18px;"></i> Payment Done (₹${totalUnpaid})</button>`;
+        // Sirf Payment ka button (Print icon ab upar jayega)
+        actionButtonsHtml = `
+            <button onclick="document.getElementById('dynamicTableModal').remove(); settleTablePayment(${tableNum}, 'Cash/UPI')" style="width: 100%; background: #40C057; color: white; padding: 16px; border-radius: 12px; border: none; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(64,192,87,0.3); margin-bottom: 10px; display:flex; justify-content:center; align-items:center; gap:8px;"><i class="ph-bold ph-check-circle" style="font-size:18px;"></i> Payment Done (₹${totalUnpaid})</button>
+        `;
     } else if (paidOrdersToClear.length > 0) {
-        // Agar paid ho chuka hai, toh Clear Table ka Blue button
+        // Clear Table Button
         actionButtonsHtml = `<button onclick="document.getElementById('dynamicTableModal').remove(); forceClearTable('${paidOrdersToClear.join(',')}')" style="width: 100%; background: #228BE6; color: white; padding: 16px; border-radius: 12px; border: none; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(34,139,230,0.3); margin-bottom: 10px; display:flex; justify-content:center; align-items:center; gap:8px;"><i class="ph-bold ph-broom" style="font-size:18px;"></i> Clear Table</button>`;
     }
 
@@ -1670,7 +1672,16 @@ window.viewTableDetails = (tableNum) => {
                 <h3 style="margin: 0; color: var(--text-main); font-size: 20px; font-weight: 800;">
                     <i class="ph-fill ph-receipt" style="color: var(--primary);"></i> Table ${tableNum}
                 </h3>
-                <button onclick="document.getElementById('dynamicTableModal').remove()" style="background:transparent; border:none; font-size:24px; color:var(--text-sub); cursor:pointer;"><i class="ph-bold ph-x"></i></button>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <!-- 🔥 NAYA LOGIC: Top Corner Print Icon -->
+                    <button onclick="printTableBill(${tableNum})" style="background:transparent; border:none; font-size:22px; color:var(--info); cursor:pointer; display:flex; align-items:center;" title="Print Full Bill">
+                        <i class="ph-bold ph-printer"></i>
+                    </button>
+                    <!-- Close (Cross) Button -->
+                    <button onclick="document.getElementById('dynamicTableModal').remove()" style="background:transparent; border:none; font-size:24px; color:var(--text-sub); cursor:pointer;">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
             </div>
             
             ${detailsHtml}
@@ -1684,7 +1695,6 @@ window.viewTableDetails = (tableNum) => {
         </div>
     `;
     document.body.appendChild(modal);
-};
 // =======================================================
 // 🧹 FAILSAFE: INSTANT CLEAR TABLE (WITH AUTO-REFRESH FIX)
 // =======================================================
