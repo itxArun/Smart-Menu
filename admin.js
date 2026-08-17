@@ -557,9 +557,9 @@ window.initAdminData = function() {
                             <span>${phoneLink}</span>
                         </div>
                        <div style="margin-top:14px; font-size:13px; font-weight:500;">${itemsHTML}${notesHtml}${paymentVerificationHtml}</div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:15px; border-top:1px dashed var(--border);">
-                            <span style="font-size:18px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</span>
-                            <div class="order-actions-row" style="width:65%; justify-content:flex-end;">${actionButtons}</div>
+                       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:15px; border-top:1px dashed var(--border); gap: 10px;">
+                            <span style="font-size:18px; font-weight:900; color:var(--primary); white-space: nowrap; flex-shrink: 0;">₹${data.totalAmount}</span>
+                            <div class="order-actions-row" style="display: flex; gap: 8px; flex: 1; justify-content: flex-end; width: auto; overflow: hidden;">${actionButtons}</div>
                         </div>
                     </div>`;
 
