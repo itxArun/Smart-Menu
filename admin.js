@@ -1453,15 +1453,23 @@ window.renderTables = () => {
         let shadow = '0 4px 10px rgba(0,0,0,0.04)';
         let totalUnpaid = 0;
         let paidOrdersToClear = []; 
-        let totalItemsCount = 0;
+       let totalItemsCount = 0;
         let custName = '';
         let custPhone = '';
+        let diningStartTime = null;
         
         if (activeOrders.length > 0) {
+            // 🔥 NAYA LOGIC: Find the exact time they placed their first order
+            const oldestOrder = activeOrders.reduce((prev, curr) => {
+                if (!prev.timestamp) return curr;
+                if (!curr.timestamp) return prev;
+                return (prev.timestamp.toDate() < curr.timestamp.toDate()) ? prev : curr;
+            });
+            if(oldestOrder.timestamp) diningStartTime = oldestOrder.timestamp.toDate().getTime();
+
             const firstOrder = activeOrders[0];
             if(firstOrder.customerName && firstOrder.customerName !== 'N/A') custName = firstOrder.customerName;
             if(firstOrder.customerPhone && firstOrder.customerPhone !== 'N/A') custPhone = firstOrder.customerPhone;
-
             activeOrders.forEach(o => {
                 if (o.isPaid !== true) totalUnpaid += (o.totalAmount || 0);
                 else paidOrdersToClear.push(o.docId);
@@ -1481,9 +1489,18 @@ window.renderTables = () => {
             }
         }
 
-      let statusHtml = '';
+     let statusHtml = '';
         let topLeftButton = ''; 
         let viewDetailsBtn = '';
+        
+        // 🔥 NAYA LOGIC: Live Dining Timer Box (Top Left Corner)
+        if (tableStatus === 'Dining' && diningStartTime) {
+            topLeftButton = `
+            <div style="position: absolute; top: 8px; left: 8px; background: rgba(253, 126, 20, 0.1); border: 1px dashed rgba(253, 126, 20, 0.4); color: #FD7E14; padding: 4px 6px; border-radius: 6px; font-size: ${10 * scaleFont}px; font-weight: 800; display: flex; align-items: center; gap: 4px; z-index: 10;">
+                <i class="ph-bold ph-hourglass-high"></i>
+                <span class="live-dining-timer" data-start="${diningStartTime}">00:00</span>
+            </div>`;
+        }
         
         if (tableStatus === 'Available') {
             statusHtml = `<div style="font-size: ${12 * scaleFont}px; color: #ADB5BD; font-weight: 800; margin-top: 5px; text-transform: uppercase;">Available</div>`;
@@ -1939,3 +1956,37 @@ window.verifyCustomerPayment = async (orderId, isApproved) => {
         alert("Failed to verify payment.");
     }
 };
+// =======================================================
+// ⏱️ LIVE DINING TIMER TICKER (RUNS EVERY SECOND)
+// =======================================================
+setInterval(() => {
+    document.querySelectorAll('.live-dining-timer').forEach(el => {
+        const startTime = parseInt(el.getAttribute('data-start'));
+        if(isNaN(startTime)) return;
+        
+        const diffSecs = Math.floor((Date.now() - startTime) / 1000);
+        if (diffSecs >= 0) {
+            const hours = Math.floor(diffSecs / 3600);
+            const mins = Math.floor((diffSecs % 3600) / 60);
+            const secs = diffSecs % 60;
+            
+            let timeStr = '';
+            if (hours > 0) {
+                // Agar 1 ghante se upar ho gaya
+                timeStr = `${hours}h ${mins}m`; 
+            } else {
+                // Normal Minutes : Seconds format (e.g., 14:05)
+                timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            el.innerText = timeStr;
+            
+            // 🔥 Pro Feature: Agar customer 45 Minutes (2700 seconds) se baitha hai, 
+            // toh timer apne aap RED color ka ho jayega alert karne ke liye!
+            if (diffSecs > 2700) {
+                el.parentElement.style.color = '#E53935'; 
+                el.parentElement.style.background = 'rgba(229, 57, 53, 0.1)';
+                el.parentElement.style.borderColor = 'rgba(229, 57, 53, 0.3)';
+            }
+        }
+    });
+}, 1000);
