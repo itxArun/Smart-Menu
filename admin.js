@@ -492,11 +492,36 @@ window.initAdminData = function() {
                 else if(data.status === 'Preparing') statusBadge = `<span class="status-badge status-prep"><i class="ph-bold ph-cooking-pot"></i> Cooking</span>`;
                 else if(data.status === 'Ready') statusBadge = `<span class="status-badge status-ready"><i class="ph-bold ph-check-circle"></i> Ready</span>`;
 
-                const isPaid = data.isPaid === true;
-                const paidBadgeHTML = isPaid 
-                    ? `<button onclick="toggleOrderPayment('${data.docId}', true)" style="background:rgba(36,150,63,0.15); color:var(--success); border:1px solid var(--success); padding:5px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-check-circle"></i> PAID</button>`
-                    : `<button onclick="toggleOrderPayment('${data.docId}', false)" style="background:rgba(229,57,53,0.15); color:var(--danger); border:1px solid var(--danger); padding:5px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-x-circle"></i> UNPAID</button>`;
+               const isPaid = data.isPaid === true;
+                let paidBadgeHTML = '';
+                
+                // 🔥 NAYA LOGIC: Agar customer ne App se payment mark kiya hai
+                if (!isPaid && data.paymentPending === true) {
+                    paidBadgeHTML = `<span style="background:rgba(255, 159, 0, 0.15); color:var(--warning); border:1px solid var(--warning); padding:5px 12px; border-radius:10px; font-size:11px; font-weight:800; display:flex; align-items:center; gap:4px; animation: pulse 1s infinite;"><i class="ph-bold ph-spinner ph-spin"></i> Verify Payment</span>`;
+                } else if (isPaid) {
+                    paidBadgeHTML = `<button onclick="toggleOrderPayment('${data.docId}', true)" style="background:rgba(36,150,63,0.15); color:var(--success); border:1px solid var(--success); padding:5px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-check-circle"></i> PAID</button>`;
+                } else {
+                    paidBadgeHTML = `<button onclick="toggleOrderPayment('${data.docId}', false)" style="background:rgba(229,57,53,0.15); color:var(--danger); border:1px solid var(--danger); padding:5px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;"><i class="ph-bold ph-x-circle"></i> UNPAID</button>`;
+                }
 
+                // 🔥 NAYA LOGIC: Verification Alert Box (Jo Manager ko Yes/No option dega)
+                let paymentVerificationHtml = '';
+                if (!isPaid && data.paymentPending === true) {
+                    paymentVerificationHtml = `
+                    <div style="background: rgba(255, 159, 0, 0.1); border: 1px dashed var(--warning); padding: 10px; border-radius: 12px; margin-top: 10px; text-align: center;">
+                        <div style="font-size: 12px; font-weight: 800; color: var(--warning); margin-bottom: 8px;">
+                            ⚠️ Did you receive UPI Payment?
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="verifyCustomerPayment('${data.docId}', true)" style="flex: 1; background: var(--success); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; box-shadow: 0 4px 10px rgba(36, 150, 63, 0.2);">
+                                ✓ Yes, Received
+                            </button>
+                            <button onclick="verifyCustomerPayment('${data.docId}', false)" style="flex: 1; background: var(--danger); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;">
+                                ✗ No, Fake
+                            </button>
+                        </div>
+                    </div>`;
+                }
                 let actionButtons = '';
                 if(data.status === 'New') {
                     actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Accepted')">Accept Order ✓</button>
@@ -531,7 +556,7 @@ window.initAdminData = function() {
                             <span><i class="ph-fill ph-user" style="color:var(--primary);"></i> ${data.customerName || "N/A"}</span>
                             <span>${phoneLink}</span>
                         </div>
-                        <div style="margin-top:14px; font-size:13px; font-weight:500;">${itemsHTML}${notesHtml}</div>
+                       <div style="margin-top:14px; font-size:13px; font-weight:500;">${itemsHTML}${notesHtml}${paymentVerificationHtml}</div>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:15px; border-top:1px dashed var(--border);">
                             <span style="font-size:18px; font-weight:800; color:var(--primary);">₹${data.totalAmount}</span>
                             <div class="order-actions-row" style="width:65%; justify-content:flex-end;">${actionButtons}</div>
@@ -1888,3 +1913,28 @@ setTimeout(() => {
         });
     }
 }, 2000);
+// =======================================================
+// 🔒 SECURE PAYMENT VERIFICATION HANDLER
+// =======================================================
+window.verifyCustomerPayment = async (orderId, isApproved) => {
+    try {
+        if (isApproved) {
+            // Manager ne approve kar diya
+            await updateDoc(doc(db, "orders", orderId), {
+                isPaid: true,
+                paymentPending: false
+            });
+            if(typeof window.showToast === 'function') window.showToast("Payment Approved! ✅");
+        } else {
+            // Manager ne reject kar diya
+            await updateDoc(doc(db, "orders", orderId), {
+                isPaid: false,
+                paymentPending: false
+            });
+            alert("Payment rejected! Mark as unpaid.");
+        }
+    } catch(e) {
+        console.error("Verification error: ", e);
+        alert("Failed to verify payment.");
+    }
+};
