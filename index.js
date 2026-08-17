@@ -517,7 +517,7 @@ window.loadDish = function(data) {
     else if (data.image && typeof data.image === 'string' && data.image.trim() !== "") validImages = [data.image];
     else if (data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.trim() !== "") validImages = [data.imageUrl];
 
-    if (validImages.length > 0) { validImages.forEach((imgUrl, idx) => { const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.onclick = () => window.openFullscreen(idx); slider.appendChild(img); }); } 
+   if (validImages.length > 0) { validImages.forEach((imgUrl, idx) => { const img = document.createElement('img'); img.src = imgUrl; img.className = 'slide-img'; img.loading = 'lazy'; /* 🚀 Lazy loading added */ img.onclick = () => window.openFullscreen(idx); slider.appendChild(img); }); }
     else { slider.innerHTML = `<img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="slide-img" style="opacity: 0.8; object-fit: cover;">`; }
 
     if (data.modelUrl && data.modelUrl.trim() !== "") { toggleBtn.classList.remove('hide'); toggleBtn.innerHTML = '<i class="ph-fill ph-cube"></i> View 3D'; if(viewer) viewer.setAttribute('data-src', data.modelUrl); } 
@@ -744,13 +744,21 @@ window.placeOrder = async () => {
     } finally { btn.innerHTML = `${currentLang === 'hi' ? i18n.hi.place : i18n.en.place} <i class="ph-bold ph-arrow-right"></i>`; btn.style.background = "var(--primary-gradient)"; btn.style.boxShadow = "0 8px 25px rgba(226, 55, 68, 0.3)"; btn.disabled = false; }
 };
 
-// 🔥 SAAS TRENDING FILTER 🔥
+// 🔥 SAAS TRENDING FILTER (SPEED OPTIMIZED) 🔥
 async function fetchTrendingDishes() {
     try {
-        const q = query(collection(db, "orders"), where("restaurantId", "==", window.currentRestaurantId)); const snap = await getDocs(q); let counts = {};
+        // 🚀 FIX: Ab ye hazaron orders ki jagah sirf latest 50 orders download karega!
+        const q = query(
+            collection(db, "orders"), 
+            where("restaurantId", "==", window.currentRestaurantId),
+            orderBy("timestamp", "desc"),
+            limit(50)
+        ); 
+        const snap = await getDocs(q); 
+        let counts = {};
         snap.forEach(d => { if(d.data().items) { d.data().items.forEach(i => { counts[i.id] = (counts[i.id] || 0) + i.qty; }); } });
         window.trendingIds = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 5);
-    } catch(e) {}
+    } catch(e) { console.error("Trending Error:", e); }
 }
 
 let savedOrdersList = []; try { savedOrdersList = JSON.parse(localStorage.getItem('craveActiveOrders') || '[]'); } catch(e) {}
