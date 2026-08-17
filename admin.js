@@ -523,18 +523,19 @@ window.initAdminData = function() {
                     </div>`;
                 }
                 let actionButtons = '';
+                // 🔥 NAYA LOGIC: Buttons ko chhota aur premium banane ka CSS
+                const btnStyle = "padding: 8px 14px; font-size: 13px; font-weight: 700; border-radius: 8px; min-height: unset; height: auto; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: none;";
+                
                 if(data.status === 'New') {
-                    actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Accepted')">Accept Order ✓</button>
-                                     <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3;" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x"></i></button>`;
+                    actionButtons = `<button class="btn-action-new" style="background:var(--success); ${btnStyle}" onclick="updateOrderStatus('${data.docId}', 'Accepted')">Accept ✓</button>
+                                     <button class="btn-action-new" style="background:rgba(255,59,48,0.1); color:var(--danger); flex:0.3; ${btnStyle}" onclick="updateOrderStatus('${data.docId}', 'Cancelled')"><i class="ph-bold ph-x" style="font-size:16px;"></i></button>`;
                 } else if(data.status === 'Accepted') {
-                    actionButtons = `
-    <button class="btn-action-new" style="background:var(--info); color: white;" onclick="printKOT('${data.docId}')"><i class="ph-bold ph-printer"></i> Print KOT</button>
-    <button class="btn-action-new" style="background:var(--warning);" onclick="updateOrderStatus('${data.docId}', 'Preparing')">Start Cooking 🍳</button>
-`;
+                    actionButtons = `<button class="btn-action-new" style="background:var(--info); color: white; ${btnStyle}" onclick="printKOT('${data.docId}')"><i class="ph-bold ph-printer"></i> KOT</button>
+                                     <button class="btn-action-new" style="background:var(--warning); ${btnStyle}" onclick="updateOrderStatus('${data.docId}', 'Preparing')">Cook 🍳</button>`;
                 } else if(data.status === 'Preparing') {
-                    actionButtons = `<button class="btn-action-new" style="background:var(--success);" onclick="updateOrderStatus('${data.docId}', 'Ready')">Mark as Ready 🔔</button>`;
+                    actionButtons = `<button class="btn-action-new" style="background:var(--success); ${btnStyle}" onclick="updateOrderStatus('${data.docId}', 'Ready')">Ready 🔔</button>`;
                 } else if(data.status === 'Ready') {
-                    actionButtons = `<button class="btn-action-new" style="background:var(--primary);" onclick="updateOrderStatus('${data.docId}', 'Served')">Served & Paid 🎉</button>`;
+                    actionButtons = `<button class="btn-action-new" style="background:var(--primary); ${btnStyle}" onclick="updateOrderStatus('${data.docId}', 'Served')">Served 🎉</button>`;
                 }
 
                 let diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
