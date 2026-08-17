@@ -375,19 +375,17 @@
 
     <div class="toast" id="toast"><i class="ph-fill ph-check-circle"></i> <span>Added to Cart!</span></div>
 
-    <script>
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                let loader = document.getElementById("premium-loader");
-                if (loader) { loader.style.opacity = "0"; setTimeout(() => loader.style.display = "none", 500); }
-            }, 800);
-        });
+   <script>
+        // 🚀 SAFETY TIMER REDUCED: Ab zabardasti 2.5 sec nahi rokega
         setTimeout(function() {
             let loader = document.getElementById("premium-loader");
-            if (loader && loader.style.display !== "none") { loader.style.opacity = "0"; setTimeout(() => loader.style.display = "none", 500); }
-        }, 2500); 
-
-        // Helper functions for new modals
+            if (loader && loader.style.display !== "none") { 
+                loader.style.opacity = "0"; 
+                setTimeout(() => loader.style.display = "none", 300); 
+            }
+        }, 800); // 2500ms se ghata kar sirf 800ms kar diya!
+        
+        // ... baki functions (openSettingsModal wagera wahi rahenge) ...
         window.openSettingsModal = () => { document.getElementById('settingsModal').classList.add('show'); if(typeof triggerHapticPop === 'function') triggerHapticPop(); };
         window.closeSettingsModal = () => document.getElementById('settingsModal').classList.remove('show');
         window.closeSettingsAndOpenWaiter = () => { closeSettingsModal(); setTimeout(() => { if(typeof openWaiterPrompt === 'function') openWaiterPrompt(); }, 300); };
