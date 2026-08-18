@@ -1695,6 +1695,7 @@ window.viewTableDetails = (tableNum) => {
         </div>
     `;
     document.body.appendChild(modal);
+    };
 // =======================================================
 // 🧹 FAILSAFE: INSTANT CLEAR TABLE (WITH AUTO-REFRESH FIX)
 // =======================================================
