@@ -59,3 +59,7 @@ window.logoutDashboard = () => {
     
     showToast("Logged out successfully!", "success");
 };
+// 🔥 TEMPORARY BYPASS (Testing ke liye Auto-Load)
+window.onload = () => {
+    updateGreetingAndDate();
+};
