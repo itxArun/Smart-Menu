@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Dashboard | CEO Panel</title>
+    <title>Master Dashboard | CRM Panel</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
     <link rel="stylesheet" href="dashboard.css">
 </head>
@@ -17,87 +17,97 @@
         <div id="toastMessage" class="toast-text"></div>
     </div>
 
-    <!-- 🟢 3D BACKGROUND SPHERES -->
-    <div class="bg-shapes">
-        <div class="sphere s1"></div><div class="sphere s2"></div>
-        <div class="sphere s3"></div><div class="sphere s4"></div>
-    </div>
-
-    <!-- 🔐 LOGIN SECTION -->
-    <div class="glass-container" id="loginSection">
-        <div class="login-box">
+    <!-- 🔐 LOGIN SECTION (Bina Golon ke, ekdam Clean Dark) -->
+    <div class="login-wrapper" id="loginSection">
+        <div class="crm-login-box">
             <h2>MASTER LOGIN</h2>
             <div class="input-group">
-                <label>Email</label>
-                <input type="email" id="saEmail">
+                <input type="email" id="saEmail" placeholder="Email Address">
             </div>
             <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="saPass">
+                <input type="password" id="saPass" placeholder="Password">
             </div>
             <button class="login-btn" onclick="superAdminLogin()">Sign In</button>
         </div>
     </div>
 
-    <!-- 👑 ASLI DASHBOARD SECTION -->
+    <!-- 👑 ASLI CRM DASHBOARD SECTION -->
     <div class="dashboard-container" id="dashboardSection" style="display: none;">
         
-        <!-- 🍔 Collapsible Sidebar -->
-        <div class="sidebar glass-card" id="sidebar">
-            <div class="sidebar-header">
-                <div class="menu-btn" onclick="toggleSidebar()"><i class="ph-bold ph-list"></i></div>
-                <h2 class="brand-title"><i class="ph-fill ph-crown"></i> <span class="nav-text">CEO Panel</span></h2>
+        <!-- 🍔 Sidebar (Reference photo jaisa, profile top par) -->
+        <div class="sidebar" id="sidebar">
+            <div class="brand-logo">
+                <h2>CRM<span>iC</span></h2>
             </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">A</div>
+                <div class="user-info">
+                    <span class="user-name">Arun Bhai</span>
+                    <span class="user-role">Super Admin</span>
+                </div>
+            </div>
+
+            <div class="menu-label">Main Menu</div>
             <ul class="nav-links">
-                <li class="active"><i class="ph-fill ph-squares-four"></i> <span class="nav-text">Overview</span></li>
-                <li><i class="ph-fill ph-storefront"></i> <span class="nav-text">Add New Hotel</span></li>
-                <li><i class="ph-fill ph-users"></i> <span class="nav-text">All Clients</span></li>
-                <li class="logout-btn" onclick="logoutDashboard()"><i class="ph-fill ph-sign-out"></i> <span class="nav-text">Logout</span></li>
+                <li class="active"><i class="ph ph-squares-four"></i> <span>Dashboard</span></li>
+                <li><i class="ph ph-cube"></i> <span>Project List</span></li>
+                <li><i class="ph ph-folder"></i> <span>File Manager</span></li>
+                <li><i class="ph ph-ticket"></i> <span>Support Tickets</span></li>
+                <li class="logout-btn" onclick="logoutDashboard()"><i class="ph ph-sign-out"></i> <span>Logout</span></li>
             </ul>
         </div>
 
         <!-- Main Content Area -->
         <div class="main-content">
-            <!-- 🌟 Premium Header -->
-            <div class="header glass-card">
-                <div class="header-left">
-                    <h2 id="dynamicGreeting">Hello, Arun Bhai! 🚀</h2>
-                    <p class="header-date" id="currentDate">Loading date...</p>
+            
+            <!-- 🌟 Premium Top Header -->
+            <div class="crm-header">
+                <div class="header-left-icons">
+                    <button class="btn-icon active"><i class="ph ph-chart-bar"></i></button>
+                    <button class="btn-icon"><i class="ph ph-arrows-out-simple"></i></button>
+                    <button class="btn-icon"><i class="ph ph-bell"></i></button>
                 </div>
                 
-                <div class="header-center">
-                    <div class="search-box">
-                        <i class="ph-bold ph-magnifying-glass"></i>
-                        <input type="text" placeholder="Search hotels, IDs...">
-                    </div>
-                </div>
-
-                <div class="header-right">
-                    <button class="quick-btn"><i class="ph-bold ph-plus"></i> New Client</button>
-                    <div class="notification-bell">
-                        <i class="ph-fill ph-bell"></i>
-                        <div class="dot"></div>
-                    </div>
-                    <div class="profile-pic">A</div>
+                <div class="header-search">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" placeholder="Search hotels, IDs...">
+                    <i class="ph ph-list" style="cursor:pointer;"></i>
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card glass-card">
-                    <div class="icon-box"><i class="ph-fill ph-storefront"></i></div>
-                    <div>
-                        <h3>Total Hotels</h3>
-                        <h1>12</h1>
+            <!-- 📊 Bento Grid Widgets -->
+            <div class="crm-grid">
+                
+                <!-- Widget 1: Revenue / Budget -->
+                <div class="crm-widget">
+                    <div class="w-title">Total Revenue</div>
+                    <h1 class="w-amount">₹45,000</h1>
+                    <div class="w-sub">Remaining <span style="color:#00d084;">₹7,740</span></div>
+                    <div class="progress-bar-thin"><div class="fill" style="width: 75%;"></div></div>
+                </div>
+
+                <!-- Widget 2: Tasks Status (Like Photo) -->
+                <div class="crm-widget">
+                    <div class="w-title">Overall Progress</div>
+                    <div class="task-circles">
+                        <div class="tc"><div class="circle wait"><i class="ph ph-clock"></i></div><span>Waiting</span></div>
+                        <div class="tc"><div class="circle dev">67%</div><span>Dev</span></div>
+                        <div class="tc"><div class="circle done"><i class="ph ph-check"></i></div><span>Done</span></div>
                     </div>
                 </div>
-                <div class="stat-card glass-card">
-                    <div class="icon-box" style="color: #38BDF8;"><i class="ph-fill ph-coins"></i></div>
-                    <div>
-                        <h3>Total Revenue</h3>
-                        <h1>₹45,000</h1>
-                    </div>
+
+                <!-- Widget 3: Table Layout -->
+                <div class="crm-widget table-widget">
+                    <div class="w-title">Overdue Tasks</div>
+                    <table class="mini-table">
+                        <tr><th>Client</th><th>Deadline</th><th>Status</th></tr>
+                        <tr><td>Hotel Taj</td><td>2026-08-15</td><td class="t-wait">Waiting</td></tr>
+                        <tr><td>FoodVilla</td><td>2026-08-12</td><td class="t-prog">Day 4</td></tr>
+                        <tr><td>Radisson</td><td>2026-08-06</td><td class="t-late">Days 10</td></tr>
+                    </table>
                 </div>
+
             </div>
         </div>
     </div>
