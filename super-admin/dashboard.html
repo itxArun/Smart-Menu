@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Dashboard | CEO Panel</title>
+    <title>Master Panel | Super Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
     <link rel="stylesheet" href="dashboard.css">
@@ -16,10 +16,10 @@
         <div id="toastMessage" class="toast-text"></div>
     </div>
 
-    <!-- 🔐 LOGIN SECTION (Glass Effect ke sath, Center me) -->
+    <!-- 🔐 LOGIN SECTION (Center me) -->
     <div class="login-wrapper" id="loginSection">
         <div class="glass-box login-box">
-            <h2><i class="ph-fill ph-shield-check" style="color: #00d084;"></i> MASTER LOGIN</h2>
+            <h2><i class="ph-fill ph-shield-check" style="color: #00d084;"></i> SUPER ADMIN</h2>
             <div class="input-group">
                 <input type="email" id="saEmail" placeholder="Master Email">
             </div>
@@ -30,30 +30,30 @@
         </div>
     </div>
 
-    <!-- 👑 ASLI HOTEL DASHBOARD SECTION -->
+    <!-- 👑 ASLI DASHBOARD SECTION -->
     <div class="dashboard-container" id="dashboardSection" style="display: none;">
         
-        <!-- 🍔 Sidebar (Hotel Theme) -->
+        <!-- 🍔 Collapsible Sidebar (Shuru me sirf icons) -->
         <div class="sidebar glass-box" id="sidebar">
-            <div class="brand-logo">
-                <h2>Room<span>Pe</span></h2>
+            <div class="sidebar-header">
+                <div class="menu-btn" onclick="toggleSidebar()"><i class="ph-bold ph-list"></i></div>
+                <h2 class="brand-title"><span class="nav-text">Master Panel</span></h2>
             </div>
             
             <div class="sidebar-user">
                 <div class="user-avatar">A</div>
-                <div class="user-info">
+                <div class="user-info nav-text">
                     <span class="user-name">Arun Bhai</span>
-                    <span class="user-role">CEO / Founder</span>
+                    <span class="user-role">Super Admin</span>
                 </div>
             </div>
 
-            <div class="menu-label">Main Menu</div>
             <ul class="nav-links">
-                <li class="active"><i class="ph ph-squares-four"></i> <span>Overview</span></li>
-                <li><i class="ph ph-storefront"></i> <span>Add New Hotel</span></li>
-                <li><i class="ph ph-users"></i> <span>All Clients</span></li>
-                <li><i class="ph ph-receipt"></i> <span>Billing & Plans</span></li>
-                <li class="logout-btn" onclick="logoutDashboard()"><i class="ph ph-sign-out"></i> <span>Logout</span></li>
+                <li class="active" title="Overview"><i class="ph ph-squares-four"></i> <span class="nav-text">Overview</span></li>
+                <li title="Add New Client"><i class="ph ph-storefront"></i> <span class="nav-text">Add Client</span></li>
+                <li title="All Clients"><i class="ph ph-users"></i> <span class="nav-text">Client List</span></li>
+                <li title="Analytics"><i class="ph ph-chart-line-up"></i> <span class="nav-text">Analytics</span></li>
+                <li class="logout-btn" title="Logout" onclick="logoutDashboard()"><i class="ph ph-sign-out"></i> <span class="nav-text">Logout</span></li>
             </ul>
         </div>
 
@@ -63,22 +63,22 @@
             <!-- 🌟 Premium Top Header -->
             <div class="crm-header glass-box">
                 <div class="header-left">
-                    <h2 id="dynamicGreeting" style="margin:0; color:#fff; font-size: 18px;">Hello, Arun Bhai! 🚀</h2>
-                    <p id="currentDate" style="margin:0; font-size:12px; color:#a1a5b7;">Loading date...</p>
+                    <h2 id="dynamicGreeting" style="margin:0; color:#fff; font-size: 16px;">Hello, Arun Bhai! 🚀</h2>
+                    <p id="currentDate" style="margin:0; font-size:11px; color:#a1a5b7;">Loading date...</p>
                 </div>
                 
                 <div class="header-search">
                     <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" placeholder="Search hotels by name or ID...">
+                    <input type="text" placeholder="Search clients, IDs...">
                 </div>
 
                 <div class="header-right-icons">
-                    <button class="add-hotel-btn"><i class="ph ph-plus"></i> New Hotel</button>
+                    <button class="add-hotel-btn"><i class="ph ph-plus"></i> New Client</button>
                     <button class="btn-icon"><i class="ph ph-bell"></i></button>
                 </div>
             </div>
 
-            <!-- 📊 Bento Grid Widgets (Hotel Theme) -->
+            <!-- 📊 COMPACT BENTO GRID WIDGETS -->
             <div class="crm-grid">
                 
                 <!-- Widget 1: Revenue -->
@@ -89,23 +89,31 @@
                     <div class="progress-bar-thin"><div class="fill" style="width: 75%;"></div></div>
                 </div>
 
-                <!-- Widget 2: Hotel Stats -->
+                <!-- Widget 2: Platform Stats -->
                 <div class="crm-widget glass-box">
-                    <div class="w-title">Platform Stats</div>
+                    <div class="w-title">Active Platform Stats</div>
                     <div class="task-circles">
-                        <div class="tc"><div class="circle wait"><i class="ph ph-storefront"></i></div><span style="color:#fff; font-size:16px; font-weight:bold;">12</span><span>Total Hotels</span></div>
-                        <div class="tc"><div class="circle done"><i class="ph ph-check"></i></div><span style="color:#fff; font-size:16px; font-weight:bold;">10</span><span>Active</span></div>
+                        <div class="tc"><div class="circle wait">12</div><span>Clients</span></div>
+                        <div class="tc"><div class="circle done">8.5k</div><span>Scans</span></div>
                     </div>
                 </div>
 
-                <!-- Widget 3: Recent Hotels Table -->
+                <!-- Widget 3: Pending Approvals (Extra space utilization) -->
+                <div class="crm-widget glass-box">
+                    <div class="w-title">Pending Approvals</div>
+                    <h1 class="w-amount" style="color: #f5a623;">03</h1>
+                    <div class="w-sub">New Client Requests</div>
+                    <div class="progress-bar-thin"><div class="fill" style="width: 30%; background: #f5a623;"></div></div>
+                </div>
+
+                <!-- Widget 4: Recent Clients Table (FoodVilla, Food Station) -->
                 <div class="crm-widget table-widget glass-box">
-                    <div class="w-title">Recently Added Hotels</div>
+                    <div class="w-title">Recently Onboarded Clients</div>
                     <table class="mini-table">
-                        <tr><th>Hotel Name</th><th>Join Date</th><th>Plan Status</th></tr>
-                        <tr><td>Hotel Taj</td><td>15 Aug 2026</td><td class="t-done">Active</td></tr>
+                        <tr><th>Client Name</th><th>Join Date</th><th>Status</th></tr>
+                        <tr><td>Food Station</td><td>18 Aug 2026</td><td class="t-done">Active</td></tr>
                         <tr><td>FoodVilla</td><td>12 Aug 2026</td><td class="t-done">Active</td></tr>
-                        <tr><td>Radisson Blue</td><td>05 Aug 2026</td><td class="t-wait">Payment Pending</td></tr>
+                        <tr><td>Demo Cafe</td><td>05 Aug 2026</td><td class="t-wait">Trial Phase</td></tr>
                     </table>
                 </div>
 
