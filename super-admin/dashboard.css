@@ -110,3 +110,65 @@ body {
 .toast-text { font-size: 14px; font-weight: 600; font-family: 'Poppins', sans-serif; }
 .toast-success span { color: #10B981; font-size: 22px; }
 .toast-error span { color: #EF4444; font-size: 22px; }
+/* 👑 MASTER DASHBOARD UI STYLES */
+.dashboard-container {
+    position: relative;
+    z-index: 10;
+    width: 95%;
+    height: 90vh;
+    display: flex;
+    gap: 20px;
+    max-width: 1400px;
+}
+
+/* Glass Card Reusable Class */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-title { color: #17e87b; font-size: 22px; display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+
+.nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.nav-links li { padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 500; color: #a3a3a3; transition: 0.3s; }
+.nav-links li:hover { background: rgba(0, 176, 91, 0.1); color: white; }
+.nav-links li.active { background: #00b05b; color: white; box-shadow: 0 5px 15px rgba(0, 176, 91, 0.4); }
+.nav-links li.logout-btn { margin-top: auto; color: #ef4444; }
+.nav-links li.logout-btn:hover { background: rgba(239, 68, 68, 0.1); }
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.header {
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h2 { margin: 0; font-size: 20px; font-weight: 600; }
+.profile-pic { width: 45px; height: 45px; background: #17e87b; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 20px; color: #04120a; }
+
+/* Stats Grid */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.stat-card { padding: 25px; display: flex; align-items: center; gap: 20px; }
+.stat-card h3 { margin: 0; font-size: 14px; color: #a3a3a3; font-weight: 500; }
+.stat-card h1 { margin: 5px 0 0 0; font-size: 32px; font-family: 'Okra', sans-serif; }
+.icon-box { width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: #17e87b; }
