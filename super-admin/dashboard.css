@@ -1,171 +1,87 @@
-/* 🔥 SUPER ADMIN PREMIUM GLASSMORPHISM THEME */
+/* 🔥 CRM ENTERPRISE UI STYLES */
 body { 
-    background: #04120a; /* Dark green background */
-    color: white; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    height: 100vh; 
+    background: #121520; /* Deep Navy Dark Background */
+    color: #a1a5b7; 
     margin: 0; 
     font-family: 'Poppins', sans-serif; 
-    overflow: hidden; /* Extra scroll hatane ke liye */
-}
-
-/* 🟢 3D SPHERES CSS */
-.bg-shapes {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 0;
-}
-.sphere {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #17e87b, #00b05b, #004d26);
-    box-shadow: 0 10px 40px rgba(0, 176, 91, 0.3);
-}
-.s1 { width: 120px; height: 120px; top: 15%; left: 25%; filter: blur(4px); }
-.s2 { width: 280px; height: 280px; bottom: 10%; left: 15%; }
-.s3 { width: 220px; height: 220px; top: 20%; right: 25%; }
-.s4 { width: 90px; height: 90px; bottom: 20%; right: 35%; }
-
-/* 🧊 GLASSMORPHISM LOGIN BOX */
-.glass-container {
-    position: relative;
-    z-index: 10; /* Box gole ke upar rahega */
-}
-
-.login-box { 
-    background: rgba(255, 255, 255, 0.03); /* Halke shishe ka effect */
-    backdrop-filter: blur(15px); /* Asli blur effect yahan se hai */
-    -webkit-backdrop-filter: blur(15px);
-    padding: 50px 40px; 
-    border-radius: 20px; 
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
-    text-align: center; 
-    width: 100%; 
-    min-width: 300px;
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Shishe ki boundary */
-}
-
-.login-box h2 { 
-    margin: 0 0 30px 0; 
-    font-weight: 500;
-    color: #ffffff; 
-    font-size: 24px; 
-    letter-spacing: 1px;
-}
-
-.input-group { 
-    margin-bottom: 20px; 
-    text-align: left; 
-}
-
-.input-group label { 
-    font-size: 11px; 
-    color: #a3a3a3; 
-    margin-bottom: 5px; 
-    display: block; 
-}
-
-.input-group input { 
-    width: 100%; 
-    padding: 12px 15px; 
-    border-radius: 8px; 
-    border: none;
-    background: rgba(0, 176, 91, 0.2); /* Input box ka green tint */
-    color: white; 
-    box-sizing: border-box; 
-    font-family: 'Poppins', sans-serif; 
-    outline: none;
-    transition: 0.3s;
-}
-
-.input-group input:focus {
-    background: rgba(0, 176, 91, 0.4);
-}
-
-.login-btn { 
-    width: 100%; 
-    padding: 12px; 
-    background: #00b05b; /* Neon green button */
-    color: white; 
-    border: none; 
-    border-radius: 50px; /* Ekdam gol button */
-    font-weight: 600; 
-    font-size: 16px; 
-    cursor: pointer; 
-    margin-top: 15px; 
-    transition: 0.3s; 
-    box-shadow: 0 10px 20px rgba(0, 176, 91, 0.3);
-}
-
-.login-btn:hover { 
-    background: #17e87b; 
-    transform: translateY(-2px);
-}
-
-/* 🔥 CUSTOM PREMIUM POPUP (TOAST) DESIGN WAHI PURANA WALA... */
-.custom-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 14px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 9999; }
-.custom-toast.show { top: 30px; }
-.toast-text { font-size: 14px; font-weight: 600; font-family: 'Poppins', sans-serif; }
-.toast-success span { color: #10B981; font-size: 22px; }
-.toast-error span { color: #EF4444; font-size: 22px; }
-/* 👑 MASTER DASHBOARD UI STYLES */
-.dashboard-container { position: relative; z-index: 10; width: 98%; height: 95vh; display: flex; gap: 20px; max-width: 1500px; }
-.glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-
-/* 🍔 Collapsible Sidebar Logic */
-.sidebar {
-    width: 80px; /* Shuru me patli line */
-    padding: 25px 15px;
-    display: flex;
-    flex-direction: column;
-    transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Ekdam smooth sliding */
+    font-size: 13px; /* Professional small fonts */
     overflow-x: hidden;
-    white-space: nowrap;
 }
-.sidebar.expanded { width: 260px; padding: 25px 20px; } /* Expand hone par width */
 
-.sidebar-header { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; padding-left: 10px; }
-.menu-btn { font-size: 26px; color: #17e87b; cursor: pointer; transition: 0.3s; }
-.menu-btn:hover { color: #fff; }
-.brand-title { color: #17e87b; font-size: 22px; display: flex; align-items: center; gap: 10px; margin: 0; }
+/* 🔐 LOGIN WRAPPER */
+.login-wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; width: 100%; }
+.crm-login-box { background: #1c2030; border: 1px solid #282d42; padding: 40px; border-radius: 12px; width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+.crm-login-box h2 { color: #fff; margin-bottom: 25px; font-weight: 500; font-size: 20px; }
+.input-group { margin-bottom: 15px; }
+.input-group input { width: 100%; padding: 12px 15px; background: #121520; border: 1px solid #282d42; color: #fff; border-radius: 8px; outline: none; font-family: 'Poppins', sans-serif; font-size: 13px; box-sizing: border-box; }
+.input-group input:focus { border-color: #5c5ce6; }
+.login-btn { width: 100%; padding: 12px; background: #00d084; color: #121520; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+.login-btn:hover { background: #00b370; }
 
-.nav-text { opacity: 0; transition: opacity 0.2s; display: none; }
-.sidebar.expanded .nav-text { opacity: 1; display: inline-block; }
+/* 👑 CRM DASHBOARD LAYOUT */
+.dashboard-container { display: flex; height: 100vh; width: 100%; overflow: hidden; }
 
-.nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
-.nav-links li { padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-weight: 500; color: #a3a3a3; transition: 0.3s; font-size: 16px; }
-.nav-links li i { font-size: 24px; min-width: 24px; }
-.nav-links li:hover { background: rgba(0, 176, 91, 0.1); color: white; }
-.nav-links li.active { background: #00b05b; color: white; box-shadow: 0 5px 15px rgba(0, 176, 91, 0.4); }
-.nav-links li.logout-btn { margin-top: auto; color: #ef4444; }
-.nav-links li.logout-btn:hover { background: rgba(239, 68, 68, 0.1); }
+/* 🍔 Sidebar */
+.sidebar { width: 240px; background: #1c2030; border-right: 1px solid #282d42; padding: 20px; display: flex; flex-direction: column; }
+.brand-logo h2 { color: #fff; font-size: 24px; margin: 0 0 30px 0; font-weight: 600; text-align: center; }
+.brand-logo span { color: #e91e63; }
 
-/* 🌟 Premium Header */
-.main-content { flex: 1; display: flex; flex-direction: column; gap: 20px; }
-.header { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-.header-left h2 { margin: 0; font-size: 22px; font-weight: 600; color: white; }
-.header-date { margin: 2px 0 0 0; font-size: 12px; color: #a3a3a3; }
+.sidebar-user { border: 1px solid #282d42; border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+.user-avatar { width: 35px; height: 35px; background: #ffd700; color: #000; border-radius: 5px; display: flex; justify-content: center; align-items: center; font-weight: 600; font-size: 16px; }
+.user-info { display: flex; flex-direction: column; }
+.user-name { color: #fff; font-weight: 500; font-size: 13px; }
+.user-role { font-size: 11px; color: #8b94a7; }
 
-.header-center { flex: 1; display: flex; justify-content: center; }
-.search-box { background: rgba(0, 176, 91, 0.1); border: 1px solid rgba(0, 176, 91, 0.3); border-radius: 50px; padding: 12px 20px; display: flex; align-items: center; gap: 10px; width: 100%; max-width: 400px; transition: 0.3s; }
-.search-box:focus-within { border-color: #17e87b; background: rgba(0, 176, 91, 0.2); }
-.search-box i { color: #17e87b; font-size: 18px; }
-.search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; font-family: 'Poppins', sans-serif; font-size: 14px; }
+.menu-label { font-size: 11px; color: #8b94a7; text-transform: uppercase; margin-bottom: 10px; padding-left: 10px; letter-spacing: 0.5px; }
+.nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; }
+.nav-links li { padding: 10px 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #8b94a7; transition: 0.3s; font-size: 13px; }
+.nav-links li i { font-size: 18px; }
+.nav-links li:hover, .nav-links li.active { background: #121520; color: #fff; border-right: 3px solid #5c5ce6; }
+.nav-links li.logout-btn { margin-top: auto; color: #ff3b30; }
 
-.header-right { display: flex; align-items: center; gap: 25px; }
-.quick-btn { background: #00b05b; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0, 176, 91, 0.3); font-family: 'Poppins', sans-serif; }
-.quick-btn:hover { background: #17e87b; transform: translateY(-2px); }
-.notification-bell { position: relative; font-size: 26px; color: #a3a3a3; cursor: pointer; transition: 0.3s; }
-.notification-bell:hover { color: white; }
-.notification-bell .dot { position: absolute; top: 0; right: 2px; width: 10px; height: 10px; background: #17e87b; border-radius: 50%; box-shadow: 0 0 10px #17e87b; animation: blink 1.5s infinite; }
-@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-.profile-pic { width: 45px; height: 45px; background: #17e87b; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 20px; color: #04120a; }
+/* Main Content & Header */
+.main-content { flex: 1; padding: 25px; display: flex; flex-direction: column; gap: 25px; overflow-y: auto; }
 
-/* Stats Grid */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-.stat-card { padding: 25px; display: flex; align-items: center; gap: 20px; }
-.stat-card h3 { margin: 0; font-size: 14px; color: #a3a3a3; font-weight: 500; }
-.stat-card h1 { margin: 5px 0 0 0; font-size: 32px; font-family: 'Okra', sans-serif; }
-.icon-box { width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: #17e87b; }
+.crm-header { display: flex; justify-content: space-between; align-items: center; }
+.header-left-icons { display: flex; gap: 10px; }
+.btn-icon { background: #1c2030; border: 1px solid #282d42; color: #8b94a7; padding: 10px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
+.btn-icon:hover { color: #fff; background: #282d42; }
+.btn-icon.active { background: #5c5ce6; color: #fff; border-color: #5c5ce6; }
+
+.header-search { display: flex; align-items: center; gap: 10px; background: #1c2030; border: 1px solid #282d42; padding: 8px 15px; border-radius: 50px; width: 300px; }
+.header-search input { background: transparent; border: none; color: #fff; outline: none; width: 100%; font-family: 'Poppins', sans-serif; font-size: 12px; }
+.header-search i { color: #8b94a7; }
+
+/* 📊 BENTO GRID WIDGETS */
+.crm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.crm-widget { background: #1c2030; border: 1px solid #282d42; border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+.w-title { color: #8b94a7; font-size: 14px; margin-bottom: 15px; }
+.w-amount { color: #fff; margin: 0 0 10px 0; font-size: 26px; font-weight: 600; }
+.w-sub { font-size: 11px; margin-bottom: 15px; }
+.progress-bar-thin { width: 100%; height: 6px; background: #121520; border-radius: 10px; overflow: hidden; }
+.progress-bar-thin .fill { height: 100%; background: #00d084; border-radius: 10px; }
+
+/* Tasks Circles */
+.task-circles { display: flex; justify-content: space-around; margin-top: 10px; }
+.tc { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.tc span { font-size: 11px; color: #8b94a7; }
+.circle { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600; border: 3px solid #282d42; }
+.circle.wait { border-color: #ff3b30; color: #ff3b30; }
+.circle.dev { border-color: #5c5ce6; color: #fff; }
+.circle.done { border-color: #00d084; background: #00d084; color: #121520; }
+
+/* Mini Table */
+.table-widget { grid-column: span 1; }
+.mini-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.mini-table th { text-align: left; color: #8b94a7; padding-bottom: 10px; font-weight: 500; border-bottom: 1px solid #282d42; }
+.mini-table td { padding: 12px 0; color: #fff; border-bottom: 1px solid #282d42; }
+.t-wait { color: #ff3b30 !important; font-weight: 500; }
+.t-prog { color: #f5a623 !important; font-weight: 500; }
+.t-late { color: #ff3b30 !important; font-weight: 500; }
+
+/* Custom Toast Popup (Wahi purana) */
+.custom-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #1c2030; border: 1px solid #282d42; color: #fff; padding: 12px 20px; border-radius: 50px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: top 0.4s; z-index: 9999; font-size: 13px; }
+.custom-toast.show { top: 20px; }
+.toast-success span { color: #00d084; font-size: 18px; }
+.toast-error span { color: #ff3b30; font-size: 18px; }
