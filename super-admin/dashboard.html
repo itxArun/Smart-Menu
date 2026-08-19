@@ -78,36 +78,35 @@
                 </div>
             </div>
 
-            <!-- 📊 COMPACT BENTO GRID WIDGETS -->
+           <!-- 📊 PREMIUM BENTO GRID WIDGETS (Different Shapes) -->
             <div class="crm-grid">
                 
-                <!-- Widget 1: Revenue -->
-                <div class="crm-widget glass-box">
+                <!-- 1. Revenue (Wide Rectangle) -->
+                <div class="crm-widget glass-box w-wide">
                     <div class="w-title">Total Revenue</div>
                     <h1 class="w-amount">₹45,000</h1>
                     <div class="w-sub">This Month <span style="color:#00d084;">+12%</span></div>
                     <div class="progress-bar-thin"><div class="fill" style="width: 75%;"></div></div>
                 </div>
 
-                <!-- Widget 2: Platform Stats -->
-                <div class="crm-widget glass-box">
-                    <div class="w-title">Active Platform Stats</div>
-                    <div class="task-circles">
+                <!-- 2. Platform Stats (Perfect Square) -->
+                <div class="crm-widget glass-box w-square">
+                    <div class="w-title">Active Stats</div>
+                    <div class="task-circles" style="margin-top: 15px;">
                         <div class="tc"><div class="circle wait">12</div><span>Clients</span></div>
                         <div class="tc"><div class="circle done">8.5k</div><span>Scans</span></div>
                     </div>
                 </div>
 
-                <!-- Widget 3: Pending Approvals (Extra space utilization) -->
-                <div class="crm-widget glass-box">
-                    <div class="w-title">Pending Approvals</div>
-                    <h1 class="w-amount" style="color: #f5a623;">03</h1>
-                    <div class="w-sub">New Client Requests</div>
-                    <div class="progress-bar-thin"><div class="fill" style="width: 30%; background: #f5a623;"></div></div>
+                <!-- 3. Pending Approvals (Perfect Square) -->
+                <div class="crm-widget glass-box w-square">
+                    <div class="w-title">Pending</div>
+                    <h1 class="w-amount" style="color: #f5a623; font-size: 38px;">03</h1>
+                    <div class="w-sub">New Requests</div>
                 </div>
 
-                <!-- Widget 4: Recent Clients Table (FoodVilla, Food Station) -->
-                <div class="crm-widget table-widget glass-box">
+                <!-- 4. Recent Clients Table (Large Rectangle) -->
+                <div class="crm-widget table-widget glass-box w-large">
                     <div class="w-title">Recently Onboarded Clients</div>
                     <table class="mini-table">
                         <tr><th>Client Name</th><th>Join Date</th><th>Status</th></tr>
@@ -117,9 +116,17 @@
                     </table>
                 </div>
 
+                <!-- 5. NEW: Quick Action (Tall Vertical Rectangle) -->
+                <div class="crm-widget glass-box w-tall">
+                    <div class="w-title">Quick Action</div>
+                    <div class="quick-scan-box">
+                        <i class="ph ph-qr-code" style="font-size: 60px; color: #00d084;"></i>
+                        <p style="margin: 10px 0; font-size: 12px;">Generate QR</p>
+                        <button class="add-hotel-btn" style="width: 100%; justify-content: center;">Create New</button>
+                    </div>
+                </div>
+
             </div>
-        </div>
-    </div>
 
     <script type="module" src="dashboard.js"></script>
 </body>
