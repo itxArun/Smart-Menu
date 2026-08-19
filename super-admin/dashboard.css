@@ -1,6 +1,6 @@
-/* 🔥 SUPER ADMIN PREMIUM DARK THEME */
+/* 🔥 SUPER ADMIN PREMIUM GLASSMORPHISM THEME */
 body { 
-    background: #0F172A; 
+    background: #04120a; /* Dark green background */
     color: white; 
     display: flex; 
     justify-content: center; 
@@ -8,45 +8,71 @@ body {
     height: 100vh; 
     margin: 0; 
     font-family: 'Poppins', sans-serif; 
+    overflow: hidden; /* Extra scroll hatane ke liye */
+}
+
+/* 🟢 3D SPHERES CSS */
+.bg-shapes {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0;
+}
+.sphere {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #17e87b, #00b05b, #004d26);
+    box-shadow: 0 10px 40px rgba(0, 176, 91, 0.3);
+}
+.s1 { width: 120px; height: 120px; top: 15%; left: 25%; filter: blur(4px); }
+.s2 { width: 280px; height: 280px; bottom: 10%; left: 15%; }
+.s3 { width: 220px; height: 220px; top: 20%; right: 25%; }
+.s4 { width: 90px; height: 90px; bottom: 20%; right: 35%; }
+
+/* 🧊 GLASSMORPHISM LOGIN BOX */
+.glass-container {
+    position: relative;
+    z-index: 10; /* Box gole ke upar rahega */
 }
 
 .login-box { 
-    background: #1E293B; 
-    padding: 40px; 
+    background: rgba(255, 255, 255, 0.03); /* Halke shishe ka effect */
+    backdrop-filter: blur(15px); /* Asli blur effect yahan se hai */
+    -webkit-backdrop-filter: blur(15px);
+    padding: 50px 40px; 
     border-radius: 20px; 
     box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
     text-align: center; 
     width: 100%; 
-    max-width: 350px; 
-    border: 1px solid rgba(255,255,255,0.1); 
+    min-width: 300px;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Shishe ki boundary */
 }
 
 .login-box h2 { 
-    margin: 0 0 20px 0; 
-    font-family: 'Okra', sans-serif; 
-    color: #38BDF8; 
+    margin: 0 0 30px 0; 
+    font-weight: 500;
+    color: #ffffff; 
     font-size: 24px; 
+    letter-spacing: 1px;
 }
 
 .input-group { 
-    margin-bottom: 15px; 
+    margin-bottom: 20px; 
     text-align: left; 
 }
 
 .input-group label { 
-    font-size: 12px; 
-    color: #94A3B8; 
-    font-weight: 600; 
+    font-size: 11px; 
+    color: #a3a3a3; 
     margin-bottom: 5px; 
     display: block; 
 }
 
 .input-group input { 
     width: 100%; 
-    padding: 12px; 
-    border-radius: 10px; 
-    border: 1px solid #334155; 
-    background: #0F172A; 
+    padding: 12px 15px; 
+    border-radius: 8px; 
+    border: none;
+    background: rgba(0, 176, 91, 0.2); /* Input box ka green tint */
     color: white; 
     box-sizing: border-box; 
     font-family: 'Poppins', sans-serif; 
@@ -55,60 +81,32 @@ body {
 }
 
 .input-group input:focus {
-    border-color: #38BDF8;
+    background: rgba(0, 176, 91, 0.4);
 }
 
 .login-btn { 
     width: 100%; 
-    padding: 14px; 
-    background: #38BDF8; 
-    color: #0F172A; 
+    padding: 12px; 
+    background: #00b05b; /* Neon green button */
+    color: white; 
     border: none; 
-    border-radius: 10px; 
-    font-weight: 800; 
-    font-size: 15px; 
+    border-radius: 50px; /* Ekdam gol button */
+    font-weight: 600; 
+    font-size: 16px; 
     cursor: pointer; 
-    margin-top: 10px; 
+    margin-top: 15px; 
     transition: 0.3s; 
+    box-shadow: 0 10px 20px rgba(0, 176, 91, 0.3);
 }
 
 .login-btn:hover { 
-    background: #0284C7; 
-    color: white; 
+    background: #17e87b; 
     transform: translateY(-2px);
 }
-/* 🔥 PREMIUM CUSTOM POPUP (TOAST) DESIGN */
-.custom-toast {
-    position: fixed;
-    top: -100px; /* Shuru me upar chhupa rahega */
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(30, 41, 59, 0.95); /* Premium Dark Glass effect */
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    padding: 14px 24px;
-    border-radius: 50px; /* Ekdam gol / Pill shape */
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-    transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Wahi mast Jelly wala Bounce */
-    z-index: 9999;
-}
 
-/* Jab popup show hoga tab wo niche girega */
-.custom-toast.show {
-    top: 30px; 
-}
-
-.toast-text {
-    font-size: 14px;
-    font-weight: 600;
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: 0.5px;
-}
-
-/* Success (Green) aur Error (Red) ke icons ka color */
+/* 🔥 CUSTOM PREMIUM POPUP (TOAST) DESIGN WAHI PURANA WALA... */
+.custom-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 14px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 9999; }
+.custom-toast.show { top: 30px; }
+.toast-text { font-size: 14px; font-weight: 600; font-family: 'Poppins', sans-serif; }
 .toast-success span { color: #10B981; font-size: 22px; }
 .toast-error span { color: #EF4444; font-size: 22px; }
