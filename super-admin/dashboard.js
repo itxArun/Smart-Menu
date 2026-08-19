@@ -1,4 +1,3 @@
-// 🔥 CUSTOM PREMIUM POPUP FUNCTION
 window.showToast = (message, type = "success") => {
     const toast = document.getElementById('customToast');
     const icon = document.getElementById('toastIcon');
@@ -15,13 +14,6 @@ window.showToast = (message, type = "success") => {
     setTimeout(() => { toast.classList.remove('show'); }, 3000);
 };
 
-// 🍔 SIDEBAR TOGGLE LOGIC
-window.toggleSidebar = () => {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('expanded'); 
-};
-
-// 🌟 DYNAMIC GREETING LOGIC
 const updateGreetingAndDate = () => {
     const hour = new Date().getHours();
     let greeting = "Good Evening, Arun Bhai! 🌙";
@@ -35,7 +27,6 @@ const updateGreetingAndDate = () => {
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', options);
 };
 
-// 🚀 SUPER ADMIN LOGIN LOGIC
 window.superAdminLogin = () => {
     const email = document.getElementById('saEmail').value;
     const pass = document.getElementById('saPass').value;
@@ -54,12 +45,12 @@ window.superAdminLogin = () => {
     }
 };
 
-// 🔒 LOGOUT LOGIC
 window.logoutDashboard = () => {
     document.getElementById('saPass').value = "";
     document.getElementById('dashboardSection').style.display = 'none';
-    document.getElementById('loginSection').style.display = 'block';
     
-    document.getElementById('sidebar').classList.remove('expanded'); 
+    // Yahi wo bug tha! 'block' ki jagah isko 'flex' karna padega taaki ye wapas center me aaye
+    document.getElementById('loginSection').style.display = 'flex'; 
+    
     showToast("Logged out successfully!", "success");
 };
