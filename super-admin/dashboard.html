@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Dashboard | CRM Panel</title>
-    
+    <title>Master Dashboard | CEO Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
     <link rel="stylesheet" href="dashboard.css">
@@ -17,43 +16,43 @@
         <div id="toastMessage" class="toast-text"></div>
     </div>
 
-    <!-- 🔐 LOGIN SECTION (Bina Golon ke, ekdam Clean Dark) -->
+    <!-- 🔐 LOGIN SECTION (Glass Effect ke sath, Center me) -->
     <div class="login-wrapper" id="loginSection">
-        <div class="crm-login-box">
-            <h2>MASTER LOGIN</h2>
+        <div class="glass-box login-box">
+            <h2><i class="ph-fill ph-shield-check" style="color: #00d084;"></i> MASTER LOGIN</h2>
             <div class="input-group">
-                <input type="email" id="saEmail" placeholder="Email Address">
+                <input type="email" id="saEmail" placeholder="Master Email">
             </div>
             <div class="input-group">
-                <input type="password" id="saPass" placeholder="Password">
+                <input type="password" id="saPass" placeholder="Master Password">
             </div>
-            <button class="login-btn" onclick="superAdminLogin()">Sign In</button>
+            <button class="login-btn" onclick="superAdminLogin()">Access Panel</button>
         </div>
     </div>
 
-    <!-- 👑 ASLI CRM DASHBOARD SECTION -->
+    <!-- 👑 ASLI HOTEL DASHBOARD SECTION -->
     <div class="dashboard-container" id="dashboardSection" style="display: none;">
         
-        <!-- 🍔 Sidebar (Reference photo jaisa, profile top par) -->
-        <div class="sidebar" id="sidebar">
+        <!-- 🍔 Sidebar (Hotel Theme) -->
+        <div class="sidebar glass-box" id="sidebar">
             <div class="brand-logo">
-                <h2>CRM<span>iC</span></h2>
+                <h2>Room<span>Pe</span></h2>
             </div>
             
             <div class="sidebar-user">
                 <div class="user-avatar">A</div>
                 <div class="user-info">
                     <span class="user-name">Arun Bhai</span>
-                    <span class="user-role">Super Admin</span>
+                    <span class="user-role">CEO / Founder</span>
                 </div>
             </div>
 
             <div class="menu-label">Main Menu</div>
             <ul class="nav-links">
-                <li class="active"><i class="ph ph-squares-four"></i> <span>Dashboard</span></li>
-                <li><i class="ph ph-cube"></i> <span>Project List</span></li>
-                <li><i class="ph ph-folder"></i> <span>File Manager</span></li>
-                <li><i class="ph ph-ticket"></i> <span>Support Tickets</span></li>
+                <li class="active"><i class="ph ph-squares-four"></i> <span>Overview</span></li>
+                <li><i class="ph ph-storefront"></i> <span>Add New Hotel</span></li>
+                <li><i class="ph ph-users"></i> <span>All Clients</span></li>
+                <li><i class="ph ph-receipt"></i> <span>Billing & Plans</span></li>
                 <li class="logout-btn" onclick="logoutDashboard()"><i class="ph ph-sign-out"></i> <span>Logout</span></li>
             </ul>
         </div>
@@ -62,49 +61,51 @@
         <div class="main-content">
             
             <!-- 🌟 Premium Top Header -->
-            <div class="crm-header">
-                <div class="header-left-icons">
-                    <button class="btn-icon active"><i class="ph ph-chart-bar"></i></button>
-                    <button class="btn-icon"><i class="ph ph-arrows-out-simple"></i></button>
-                    <button class="btn-icon"><i class="ph ph-bell"></i></button>
+            <div class="crm-header glass-box">
+                <div class="header-left">
+                    <h2 id="dynamicGreeting" style="margin:0; color:#fff; font-size: 18px;">Hello, Arun Bhai! 🚀</h2>
+                    <p id="currentDate" style="margin:0; font-size:12px; color:#a1a5b7;">Loading date...</p>
                 </div>
                 
                 <div class="header-search">
                     <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" placeholder="Search hotels, IDs...">
-                    <i class="ph ph-list" style="cursor:pointer;"></i>
+                    <input type="text" placeholder="Search hotels by name or ID...">
+                </div>
+
+                <div class="header-right-icons">
+                    <button class="add-hotel-btn"><i class="ph ph-plus"></i> New Hotel</button>
+                    <button class="btn-icon"><i class="ph ph-bell"></i></button>
                 </div>
             </div>
 
-            <!-- 📊 Bento Grid Widgets -->
+            <!-- 📊 Bento Grid Widgets (Hotel Theme) -->
             <div class="crm-grid">
                 
-                <!-- Widget 1: Revenue / Budget -->
-                <div class="crm-widget">
+                <!-- Widget 1: Revenue -->
+                <div class="crm-widget glass-box">
                     <div class="w-title">Total Revenue</div>
                     <h1 class="w-amount">₹45,000</h1>
-                    <div class="w-sub">Remaining <span style="color:#00d084;">₹7,740</span></div>
+                    <div class="w-sub">This Month <span style="color:#00d084;">+12%</span></div>
                     <div class="progress-bar-thin"><div class="fill" style="width: 75%;"></div></div>
                 </div>
 
-                <!-- Widget 2: Tasks Status (Like Photo) -->
-                <div class="crm-widget">
-                    <div class="w-title">Overall Progress</div>
+                <!-- Widget 2: Hotel Stats -->
+                <div class="crm-widget glass-box">
+                    <div class="w-title">Platform Stats</div>
                     <div class="task-circles">
-                        <div class="tc"><div class="circle wait"><i class="ph ph-clock"></i></div><span>Waiting</span></div>
-                        <div class="tc"><div class="circle dev">67%</div><span>Dev</span></div>
-                        <div class="tc"><div class="circle done"><i class="ph ph-check"></i></div><span>Done</span></div>
+                        <div class="tc"><div class="circle wait"><i class="ph ph-storefront"></i></div><span style="color:#fff; font-size:16px; font-weight:bold;">12</span><span>Total Hotels</span></div>
+                        <div class="tc"><div class="circle done"><i class="ph ph-check"></i></div><span style="color:#fff; font-size:16px; font-weight:bold;">10</span><span>Active</span></div>
                     </div>
                 </div>
 
-                <!-- Widget 3: Table Layout -->
-                <div class="crm-widget table-widget">
-                    <div class="w-title">Overdue Tasks</div>
+                <!-- Widget 3: Recent Hotels Table -->
+                <div class="crm-widget table-widget glass-box">
+                    <div class="w-title">Recently Added Hotels</div>
                     <table class="mini-table">
-                        <tr><th>Client</th><th>Deadline</th><th>Status</th></tr>
-                        <tr><td>Hotel Taj</td><td>2026-08-15</td><td class="t-wait">Waiting</td></tr>
-                        <tr><td>FoodVilla</td><td>2026-08-12</td><td class="t-prog">Day 4</td></tr>
-                        <tr><td>Radisson</td><td>2026-08-06</td><td class="t-late">Days 10</td></tr>
+                        <tr><th>Hotel Name</th><th>Join Date</th><th>Plan Status</th></tr>
+                        <tr><td>Hotel Taj</td><td>15 Aug 2026</td><td class="t-done">Active</td></tr>
+                        <tr><td>FoodVilla</td><td>12 Aug 2026</td><td class="t-done">Active</td></tr>
+                        <tr><td>Radisson Blue</td><td>05 Aug 2026</td><td class="t-wait">Payment Pending</td></tr>
                     </table>
                 </div>
 
