@@ -14,6 +14,12 @@ window.showToast = (message, type = "success") => {
     setTimeout(() => { toast.classList.remove('show'); }, 3000);
 };
 
+// 🍔 COLLAPSIBLE SIDEBAR LOGIC
+window.toggleSidebar = () => {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('expanded');
+};
+
 const updateGreetingAndDate = () => {
     const hour = new Date().getHours();
     let greeting = "Good Evening, Arun Bhai! 🌙";
@@ -48,9 +54,8 @@ window.superAdminLogin = () => {
 window.logoutDashboard = () => {
     document.getElementById('saPass').value = "";
     document.getElementById('dashboardSection').style.display = 'none';
-    
-    // Yahi wo bug tha! 'block' ki jagah isko 'flex' karna padega taaki ye wapas center me aaye
     document.getElementById('loginSection').style.display = 'flex'; 
+    document.getElementById('sidebar').classList.remove('expanded'); 
     
     showToast("Logged out successfully!", "success");
 };
