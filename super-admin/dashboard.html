@@ -11,7 +11,7 @@
 </head>
 <body>
 
-    <!-- 🔥 CUSTOM PREMIUM TOAST / POPUP -->
+<!-- 🔥 CUSTOM PREMIUM TOAST -->
     <div id="customToast" class="custom-toast">
         <span id="toastIcon"></span>
         <div id="toastMessage" class="toast-text"></div>
@@ -23,7 +23,7 @@
         <div class="sphere s3"></div><div class="sphere s4"></div>
     </div>
 
-    <!-- 🔐 LOGIN SECTION (ID add kiya hai taaki hide kar sakein) -->
+    <!-- 🔐 LOGIN SECTION -->
     <div class="glass-container" id="loginSection">
         <div class="login-box">
             <h2>MASTER LOGIN</h2>
@@ -39,25 +39,48 @@
         </div>
     </div>
 
-    <!-- 👑 ASLI DASHBOARD SECTION (Shuru me Hidden rahega) -->
+    <!-- 👑 ASLI DASHBOARD SECTION -->
     <div class="dashboard-container" id="dashboardSection" style="display: none;">
         
-        <!-- Left Sidebar -->
-        <div class="sidebar glass-card">
-            <h2 class="brand-title"><i class="ph-fill ph-crown"></i> CEO Panel</h2>
+        <!-- 🍔 Collapsible Sidebar -->
+        <div class="sidebar glass-card" id="sidebar">
+            <div class="sidebar-header">
+                <div class="menu-btn" onclick="toggleSidebar()"><i class="ph-bold ph-list"></i></div>
+                <h2 class="brand-title"><i class="ph-fill ph-crown"></i> <span class="nav-text">CEO Panel</span></h2>
+            </div>
             <ul class="nav-links">
-                <li class="active"><i class="ph-fill ph-squares-four"></i> Overview</li>
-                <li><i class="ph-fill ph-storefront"></i> Add New Hotel</li>
-                <li><i class="ph-fill ph-users"></i> All Clients</li>
-                <li class="logout-btn" onclick="logoutDashboard()"><i class="ph-fill ph-sign-out"></i> Logout</li>
+                <li class="active"><i class="ph-fill ph-squares-four"></i> <span class="nav-text">Overview</span></li>
+                <li><i class="ph-fill ph-storefront"></i> <span class="nav-text">Add New Hotel</span></li>
+                <li><i class="ph-fill ph-users"></i> <span class="nav-text">All Clients</span></li>
+                <li class="logout-btn" onclick="logoutDashboard()"><i class="ph-fill ph-sign-out"></i> <span class="nav-text">Logout</span></li>
             </ul>
         </div>
 
         <!-- Main Content Area -->
         <div class="main-content">
+            
+            <!-- 🌟 Premium Header -->
             <div class="header glass-card">
-                <h2>Welcome, Arun Bhai! 🚀</h2>
-                <div class="profile-pic">A</div>
+                <div class="header-left">
+                    <h2 id="dynamicGreeting">Hello, Arun Bhai! 🚀</h2>
+                    <p class="header-date" id="currentDate">Loading date...</p>
+                </div>
+                
+                <div class="header-center">
+                    <div class="search-box">
+                        <i class="ph-bold ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search hotels, IDs...">
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <button class="quick-btn"><i class="ph-bold ph-plus"></i> New Client</button>
+                    <div class="notification-bell">
+                        <i class="ph-fill ph-bell"></i>
+                        <div class="dot"></div>
+                    </div>
+                    <div class="profile-pic">A</div>
+                </div>
             </div>
 
             <!-- Stats Grid -->
@@ -79,7 +102,4 @@
             </div>
         </div>
     </div>
-
-    <script type="module" src="dashboard.js"></script>
-</body>
 </html>
