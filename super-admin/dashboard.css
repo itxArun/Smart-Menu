@@ -77,3 +77,38 @@ body {
     color: white; 
     transform: translateY(-2px);
 }
+/* 🔥 PREMIUM CUSTOM POPUP (TOAST) DESIGN */
+.custom-toast {
+    position: fixed;
+    top: -100px; /* Shuru me upar chhupa rahega */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 41, 59, 0.95); /* Premium Dark Glass effect */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 50px; /* Ekdam gol / Pill shape */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Wahi mast Jelly wala Bounce */
+    z-index: 9999;
+}
+
+/* Jab popup show hoga tab wo niche girega */
+.custom-toast.show {
+    top: 30px; 
+}
+
+.toast-text {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+/* Success (Green) aur Error (Red) ke icons ka color */
+.toast-success span { color: #10B981; font-size: 22px; }
+.toast-error span { color: #EF4444; font-size: 22px; }
