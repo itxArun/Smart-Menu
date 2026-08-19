@@ -18,10 +18,10 @@ window.showToast = (message, type = "success") => {
 // 🍔 SIDEBAR TOGGLE LOGIC
 window.toggleSidebar = () => {
     const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('expanded'); // Click karne par expand/collapse hogi
+    sidebar.classList.toggle('expanded'); 
 };
 
-// 🌟 DYNAMIC GREETING LOGIC (Time ke hisaab se)
+// 🌟 DYNAMIC GREETING LOGIC
 const updateGreetingAndDate = () => {
     const hour = new Date().getHours();
     let greeting = "Good Evening, Arun Bhai! 🌙";
@@ -31,7 +31,6 @@ const updateGreetingAndDate = () => {
     
     document.getElementById('dynamicGreeting').innerText = greeting;
 
-    // Aaj ki real date set karo (e.g., August 19, 2026)
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', options);
 };
@@ -47,7 +46,7 @@ window.superAdminLogin = () => {
         setTimeout(() => {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('dashboardSection').style.display = 'flex';
-            updateGreetingAndDate(); // Login hote hi time/date update karega
+            updateGreetingAndDate(); 
         }, 500);
 
     } else {
@@ -61,7 +60,6 @@ window.logoutDashboard = () => {
     document.getElementById('dashboardSection').style.display = 'none';
     document.getElementById('loginSection').style.display = 'block';
     
-    // Sidebar ko wapas patla kar do logout hone par
     document.getElementById('sidebar').classList.remove('expanded'); 
     showToast("Logged out successfully!", "success");
 };
