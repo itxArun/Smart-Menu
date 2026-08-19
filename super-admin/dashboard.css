@@ -79,30 +79,48 @@ body {
 .add-hotel-btn { background: #00d084; color: #020617; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; gap: 5px; align-items: center; font-size: 12px; }
 .btn-icon { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #8b94a7; padding: 8px; border-radius: 6px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 16px; }
 
-/* 📊 COMPACT BENTO GRID WIDGETS */
-.crm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-.crm-widget { padding: 15px; } /* Reduced padding for compact look */
+/* 📊 PREMIUM BENTO GRID WIDGETS (Shapes & Sizes) */
+.crm-grid { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); /* 4 Barabar Columns */
+    grid-auto-rows: 160px; /* Fixed height for squares */
+    gap: 15px; 
+}
+
+.crm-widget { 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+}
+
+/* 🔥 BENTO SHAPES MAGIC */
+.w-wide { grid-column: span 2; grid-row: span 1; } /* Chauda Dibba */
+.w-square { grid-column: span 1; grid-row: span 1; align-items: center; text-align: center; } /* Ekdam Chaukor */
+.w-large { grid-column: span 3; grid-row: span 2; justify-content: flex-start; } /* Sabse bada Table ka box */
+.w-tall { grid-column: span 1; grid-row: span 2; align-items: center; justify-content: center; text-align: center; } /* Lamba khada box */
+
 .w-title { color: #8b94a7; font-size: 12px; margin-bottom: 10px; }
-.w-amount { color: #fff; margin: 0 0 5px 0; font-size: 22px; font-weight: 600; }
+.w-amount { color: #fff; margin: 0 0 5px 0; font-size: 26px; font-weight: 600; }
 .w-sub { font-size: 11px; margin-bottom: 10px; }
 .progress-bar-thin { width: 100%; height: 4px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; }
 .progress-bar-thin .fill { height: 100%; background: #00d084; border-radius: 10px; }
 
 /* Tasks Circles */
-.task-circles { display: flex; justify-content: space-around; margin-top: 5px; }
-.tc { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.task-circles { display: flex; justify-content: center; gap: 20px; width: 100%; }
+.tc { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .tc span { font-size: 11px; color: #8b94a7; }
-.circle { width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; border: 2px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); font-weight: 600; color: #fff; }
+.circle { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; border: 2px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); font-weight: 600; color: #fff; }
 
 /* Mini Table */
-/* Mini Table */
-.table-widget { grid-column: span 2; }/* Table takes full width at bottom */
-.mini-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.mini-table th { text-align: left; color: #8b94a7; padding-bottom: 8px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.mini-table td { padding: 10px 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.mini-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+.mini-table th { text-align: left; color: #8b94a7; padding-bottom: 12px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.mini-table td { padding: 15px 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .t-wait { color: #f5a623 !important; font-weight: 500; }
 .t-done { color: #00d084 !important; font-weight: 500; }
 
+/* Quick Action Box */
+.quick-scan-box { display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: 15px; }
 /* Toast */
 .custom-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #020617; border: 1px solid #00d084; color: #fff; padding: 10px 15px; border-radius: 50px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,208,132,0.2); transition: top 0.4s; z-index: 9999; font-size: 12px; }
 .custom-toast.show { top: 20px; }
