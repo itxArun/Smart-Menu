@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Master Dashboard | CEO Panel</title>
     
-    <!-- 🚀 Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
-    
-    <!-- 🚀 Nayi CSS File Link -->
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
@@ -22,32 +19,67 @@
 
     <!-- 🟢 3D BACKGROUND SPHERES -->
     <div class="bg-shapes">
-        <div class="sphere s1"></div>
-        <div class="sphere s2"></div>
-        <div class="sphere s3"></div>
-        <div class="sphere s4"></div>
+        <div class="sphere s1"></div><div class="sphere s2"></div>
+        <div class="sphere s3"></div><div class="sphere s4"></div>
     </div>
 
-    <!-- 🔐 SUPER ADMIN LOGIN SCREEN (GLASS EFFECT) -->
-    <div class="glass-container">
-        <div class="login-box" id="superAdminLogin">
-            <h2>LOGIN</h2>
-            
+    <!-- 🔐 LOGIN SECTION (ID add kiya hai taaki hide kar sakein) -->
+    <div class="glass-container" id="loginSection">
+        <div class="login-box">
+            <h2>MASTER LOGIN</h2>
             <div class="input-group">
                 <label>Email</label>
                 <input type="email" id="saEmail">
             </div>
-            
             <div class="input-group">
                 <label>Password</label>
                 <input type="password" id="saPass">
             </div>
-            
             <button class="login-btn" onclick="superAdminLogin()">Sign In</button>
         </div>
     </div>
 
-    <!-- 🚀 Nayi JS File Link -->
+    <!-- 👑 ASLI DASHBOARD SECTION (Shuru me Hidden rahega) -->
+    <div class="dashboard-container" id="dashboardSection" style="display: none;">
+        
+        <!-- Left Sidebar -->
+        <div class="sidebar glass-card">
+            <h2 class="brand-title"><i class="ph-fill ph-crown"></i> CEO Panel</h2>
+            <ul class="nav-links">
+                <li class="active"><i class="ph-fill ph-squares-four"></i> Overview</li>
+                <li><i class="ph-fill ph-storefront"></i> Add New Hotel</li>
+                <li><i class="ph-fill ph-users"></i> All Clients</li>
+                <li class="logout-btn" onclick="logoutDashboard()"><i class="ph-fill ph-sign-out"></i> Logout</li>
+            </ul>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="header glass-card">
+                <h2>Welcome, Arun Bhai! 🚀</h2>
+                <div class="profile-pic">A</div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card glass-card">
+                    <div class="icon-box"><i class="ph-fill ph-storefront"></i></div>
+                    <div>
+                        <h3>Total Hotels</h3>
+                        <h1>12</h1>
+                    </div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="icon-box" style="color: #38BDF8;"><i class="ph-fill ph-coins"></i></div>
+                    <div>
+                        <h3>Total Revenue</h3>
+                        <h1>₹45,000</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="dashboard.js"></script>
 </body>
 </html>
