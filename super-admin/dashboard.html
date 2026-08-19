@@ -20,22 +20,31 @@
         <div id="toastMessage" class="toast-text"></div>
     </div>
 
-    <!-- 🔐 SUPER ADMIN LOGIN SCREEN -->
-    <div class="login-box" id="superAdminLogin">
-        <div style="font-size: 40px; margin-bottom: 10px; color: #38BDF8;"><i class="ph-fill ph-shield-check"></i></div>
-        <h2>Master Control</h2>
-        
-        <div class="input-group">
-            <label>Master Email</label>
-            <input type="email" id="saEmail" placeholder="ceo@foodvilla.com">
+    <!-- 🟢 3D BACKGROUND SPHERES -->
+    <div class="bg-shapes">
+        <div class="sphere s1"></div>
+        <div class="sphere s2"></div>
+        <div class="sphere s3"></div>
+        <div class="sphere s4"></div>
+    </div>
+
+    <!-- 🔐 SUPER ADMIN LOGIN SCREEN (GLASS EFFECT) -->
+    <div class="glass-container">
+        <div class="login-box" id="superAdminLogin">
+            <h2>LOGIN</h2>
+            
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="saEmail">
+            </div>
+            
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="saPass">
+            </div>
+            
+            <button class="login-btn" onclick="superAdminLogin()">Sign In</button>
         </div>
-        
-        <div class="input-group">
-            <label>Master Password</label>
-            <input type="password" id="saPass" placeholder="••••••••">
-        </div>
-        
-        <button class="login-btn" onclick="superAdminLogin()">Access Dashboard</button>
     </div>
 
     <!-- 🚀 Nayi JS File Link -->
