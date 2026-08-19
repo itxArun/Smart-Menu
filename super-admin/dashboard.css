@@ -33,8 +33,8 @@ body {
 
 /* 🍔 Sidebar (Collapsible Magic) */
 .sidebar { 
-    width: 65px; /* Shuru me patli line */
-    padding: 15px 10px; 
+    width: 50px; /* Red line ke barabar ekdam patla */
+    padding: 15px 5px; /* Extra padding hata di */
     display: flex; 
     flex-direction: column; 
     transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
@@ -43,27 +43,17 @@ body {
 }
 .sidebar.expanded { width: 220px; padding: 15px 15px; }
 
-.sidebar-header { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; padding-left: 5px; }
-.menu-btn { font-size: 22px; color: #00d084; cursor: pointer; }
+.sidebar-header { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; padding-left: 12px; }
+.menu-btn { font-size: 24px; color: #00d084; cursor: pointer; }
 .brand-title { color: #fff; font-size: 18px; margin: 0; font-weight: 600; }
 
 /* Hide text by default, show on expand */
 .nav-text { opacity: 0; display: none; transition: 0.2s; }
 .sidebar.expanded .nav-text { opacity: 1; display: inline-block; }
 
-.sidebar-user { border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 8px; display: flex; align-items: center; gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.2); justify-content: center; }
-.sidebar.expanded .sidebar-user { justify-content: flex-start; }
-.user-avatar { min-width: 30px; height: 30px; background: #00d084; color: #020617; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: 600; font-size: 14px; }
-.user-info { display: flex; flex-direction: column; }
-.user-name { color: #fff; font-weight: 500; font-size: 12px; }
-.user-role { font-size: 10px; color: #8b94a7; }
-
-.nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; }
-.nav-links li { padding: 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #8b94a7; transition: 0.3s; font-size: 12px; justify-content: center; }
-.sidebar.expanded .nav-links li { justify-content: flex-start; }
-.nav-links li i { font-size: 20px; min-width: 20px; }
-.nav-links li:hover, .nav-links li.active { background: rgba(0, 208, 132, 0.1); color: #fff; }
-.nav-links li.logout-btn { margin-top: auto; color: #ff3b30; }
+.sidebar-user { border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 6px; display: flex; align-items: center; gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.2); justify-content: center; }
+.sidebar.expanded .sidebar-user { justify-content: flex-start; padding: 10px; }
+.user-avatar { min-width: 28px; height: 28px; background: #00d084; color: #020617; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: 600; font-size: 14px; }
 
 /* Main Content */
 .main-content { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
@@ -93,7 +83,8 @@ body {
 .circle { width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; border: 2px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); font-weight: 600; color: #fff; }
 
 /* Mini Table */
-.table-widget { grid-column: 1 / -1; } /* Table takes full width at bottom */
+/* Mini Table */
+.table-widget { grid-column: span 2; }/* Table takes full width at bottom */
 .mini-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .mini-table th { text-align: left; color: #8b94a7; padding-bottom: 8px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .mini-table td { padding: 10px 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.05); }
