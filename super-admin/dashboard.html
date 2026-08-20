@@ -231,10 +231,13 @@
                 <!-- Reusing our Overview Grid Class -->
                 <div class="crm-grid">
                     
-                    <!-- 1. Main Chart (Large Box) -->
-                    <div class="crm-widget table-widget glass-box w-large" style="padding: 20px;">
+                   <!-- 1. Main Chart (Large Box) -->
+                    <div class="crm-widget glass-box w-large" style="padding: 20px;">
                         <div class="w-title" style="margin-bottom: 20px;">Monthly Scan Activity</div>
-                        <canvas id="mainChart" height="250"></canvas>
+                        <!-- Chart Container (Ye glitch rokena) -->
+                        <div style="position: relative; height: 250px; width: 100%;">
+                            <canvas id="mainChart"></canvas>
+                        </div>
                     </div>
 
                     <!-- 2. Top Client (Square Box) -->
