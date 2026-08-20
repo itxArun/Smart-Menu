@@ -193,3 +193,8 @@ body {
     /* Table scrolling */
     .table-widget { overflow-x: auto; }
 }
+/* Custom Invisible Scrollbar */
+.main-content::-webkit-scrollbar { width: 5px; }
+.main-content::-webkit-scrollbar-track { background: transparent; }
+.main-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+.main-content::-webkit-scrollbar-thumb:hover { background: rgba(0, 208, 132, 0.3); }
