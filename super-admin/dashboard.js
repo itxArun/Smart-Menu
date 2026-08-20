@@ -53,13 +53,12 @@ window.logoutDashboard = () => {
     showToast("Logged out successfully!", "success");
 };
 
-// 🌟 NAYA: Chart.js Logic
+// 🌟 Chart.js Logic (Anti-Glitch)
 let myChart = null;
 const loadAnalyticsChart = () => {
     const ctx = document.getElementById('mainChart');
     if(!ctx) return;
     
-    // Agar chart pehle se hai toh usko mita do taaki double na bane
     if(myChart) myChart.destroy(); 
 
     myChart = new Chart(ctx, {
@@ -73,11 +72,12 @@ const loadAnalyticsChart = () => {
                 backgroundColor: 'rgba(0, 208, 132, 0.1)',
                 borderWidth: 2,
                 fill: true,
-                tension: 0.4 // Smooth curve line
+                tension: 0.4
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false, /* Ye property glitch ko rokegi */
             plugins: { legend: { display: false } },
             scales: {
                 y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b94a7' } },
@@ -86,7 +86,6 @@ const loadAnalyticsChart = () => {
         }
     });
 };
-
 window.switchTab = (tabName) => {
     const overviewSec = document.getElementById('overviewSection');
     const addSec = document.getElementById('addClientSection');
