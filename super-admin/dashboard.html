@@ -48,7 +48,7 @@
                 <li id="nav-add" title="Add New Client" onclick="switchTab('add')">
                     <i class="ph ph-storefront"></i> <span class="nav-text">Add Client</span>
                 </li>
-                <li title="All Clients">
+               <li id="nav-list" title="All Clients" onclick="switchTab('list')">
                     <i class="ph ph-users"></i> <span class="nav-text">Client List</span>
                 </li>
                 <li title="Analytics">
@@ -171,7 +171,57 @@
                     <button class="add-hotel-btn form-submit" onclick="saveNewClient()">Save & Generate QR</button>
                 </div>
             </div>
-
+<!-- Client List Section (Hidden by default) -->
+            <div id="clientListSection" style="display: none;">
+                <div class="glass-box" style="padding: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 class="section-title">All Onboarded Clients</h2>
+                        <div class="header-search" style="width: 250px;">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="text" placeholder="Search by name...">
+                        </div>
+                    </div>
+                    
+                    <table class="main-data-table">
+                        <thead>
+                            <tr>
+                                <th>Client ID</th>
+                                <th>Restaurant Name</th>
+                                <th>City</th>
+                                <th>Plan</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="color:#8b94a7;">#SM-001</td>
+                                <td>Food Station</td>
+                                <td>Patna</td>
+                                <td>Premium (Yearly)</td>
+                                <td><span class="status-badge active-badge">Active</span></td>
+                                <td><button class="action-btn"><i class="ph ph-pencil-simple"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td style="color:#8b94a7;">#SM-002</td>
+                                <td>FoodVilla</td>
+                                <td>Delhi</td>
+                                <td>Pro Plan</td>
+                                <td><span class="status-badge active-badge">Active</span></td>
+                                <td><button class="action-btn"><i class="ph ph-pencil-simple"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td style="color:#8b94a7;">#SM-003</td>
+                                <td>Demo Cafe</td>
+                                <td>Mumbai</td>
+                                <td>14-Days Trial</td>
+                                <td><span class="status-badge trial-badge">Trial Phase</span></td>
+                                <td><button class="action-btn"><i class="ph ph-pencil-simple"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div> <!-- End of Main Content -->
     </div> <!-- End of Dashboard Container -->
 
