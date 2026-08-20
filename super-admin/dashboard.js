@@ -24,10 +24,10 @@ window.toggleSidebar = () => {
 // Dynamic Date and Greeting
 const updateGreetingAndDate = () => {
     const hour = new Date().getHours();
-    let greeting = "Good Evening, Arun Bhai! 🌙";
+    let greeting = "Good Evening, Arun 🌙";
     
-    if (hour >= 5 && hour < 12) greeting = "Good Morning, Arun Bhai! 🌅";
-    else if (hour >= 12 && hour < 17) greeting = "Good Afternoon, Arun Bhai! ☀️";
+    if (hour >= 5 && hour < 12) greeting = "Good Morning, Arun 🌅";
+    else if (hour >= 12 && hour < 17) greeting = "Good Afternoon, Arun ☀️";
     
     document.getElementById('dynamicGreeting').innerText = greeting;
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
