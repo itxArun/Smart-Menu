@@ -68,7 +68,7 @@ body {
 /* Main Content */
 .main-content { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
 
-.crm-header { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+.crm-header { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 50; }
 .header-search { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 50px; width: 300px; }
 .header-search input { background: transparent; border: none; color: #fff; outline: none; width: 100%; font-family: 'Poppins', sans-serif; font-size: 12px; }
 .header-search i { color: #8b94a7; }
@@ -157,7 +157,7 @@ body {
 /* Notifications */
 .notification-wrapper { position: relative; }
 .bell-dot { position: absolute; top: 5px; right: 8px; width: 8px; height: 8px; background: #ff3b30; border-radius: 50%; border: 2px solid #121520; }
-.notif-dropdown { position: absolute; top: 45px; right: 0; width: 280px; padding: 15px; display: none; z-index: 100; text-align: left; }
+.notif-dropdown { position: absolute; top: 50px; right: 0; width: 280px; padding: 15px; display: none; z-index: 999; text-align: left; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
 .notif-dropdown.show { display: block; }
 .notif-dropdown h4 { margin: 0 0 10px 0; color: #fff; font-size: 13px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
 .notif-item { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
