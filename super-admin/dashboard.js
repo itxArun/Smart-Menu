@@ -32,11 +32,30 @@ const updateGreetingAndDate = () => {
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', options);
 };
 
-window.superAdminLogin = (event) => {
-    if(event) event.preventDefault(); // 🛑 FIX: Page refresh rokne ka brahmastra
+// ==========================================
+// 👁️ PASSWORD SHOW/HIDE LOGIC
+// ==========================================
+window.togglePassword = () => {
+    const passInput = document.getElementById('saPass');
+    const eyeIcon = document.getElementById('toggleEye');
+    if (passInput.type === "password") {
+        passInput.type = "text";
+        eyeIcon.classList.replace("ph-eye", "ph-eye-slash");
+        eyeIcon.style.color = "#00d084"; // Dekhne par Green ho jayega
+    } else {
+        passInput.type = "password";
+        eyeIcon.classList.replace("ph-eye-slash", "ph-eye");
+        eyeIcon.style.color = "#8b94a7";
+    }
+};
 
-    const email = document.getElementById('saEmail').value;
-    const pass = document.getElementById('saPass').value;
+// ==========================================
+// 🔐 HACKER-PROOF FIREBASE LOGIN SYSTEM (Loop Fixed)
+// ==========================================
+window.superAdminLogin = () => {
+    // .trim() aage-peeche ke galti se lage spaces ko hata dega
+    const email = document.getElementById('saEmail').value.trim();
+    const pass = document.getElementById('saPass').value.trim();
     
     if(!email || !pass) {
         showToast("Email aur Password dono daalo!", "error");
@@ -48,38 +67,41 @@ window.superAdminLogin = (event) => {
     auth.signInWithEmailAndPassword(email, pass)
         .then((userCredential) => {
             showToast("Welcome CEO Arun! 🚀", "success");
-            // Dashboard automatically khul jayega
+            // Yahan se aage ka kaam onAuthStateChanged khud sambhal lega
         })
         .catch((error) => {
-            showToast("Galat Password ya Email! ❌", "error");
-            console.error(error.message);
+            if(error.code === 'auth/invalid-credential') {
+                showToast("Galat Password ya Email! Aankh (Eye) daba kar check karo.", "error");
+            } else {
+                showToast("Error: " + error.message, "error");
+            }
+            console.error(error);
         });
 };
 
 window.logoutDashboard = () => {
-    // Firebase se officially logout hona
     auth.signOut().then(() => {
         showToast("Logged out successfully! 🔒", "success");
         document.getElementById('saPass').value = "";
     }).catch((error) => {
-        showToast("Logout me error aaya!", "error");
+        console.error(error);
     });
 };
 
-// 🛡️ THE ULTIMATE SECURITY GUARD (Page Load Check)
+// 🛡️ THE ULTIMATE SECURITY GUARD
 window.onload = () => {
     updateGreetingAndDate();
     
-    // Ye guard hamesha check karega ki asli CEO login hai ya nahi
     auth.onAuthStateChanged((user) => {
+        const loginSec = document.getElementById('loginSection');
+        const dashSec = document.getElementById('dashboardSection');
+        
         if (user) {
-            // Asli user hai -> Dashboard ka taala kholo
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('dashboardSection').style.display = 'flex';
+            if(loginSec) loginSec.style.display = 'none';
+            if(dashSec) dashSec.style.display = 'flex';
         } else {
-            // Koi aur hai ya logout ho gaya -> Dashboard chhupao, Login dikhao
-            document.getElementById('dashboardSection').style.display = 'none';
-            document.getElementById('loginSection').style.display = 'flex';
+            if(dashSec) dashSec.style.display = 'none';
+            if(loginSec) loginSec.style.display = 'flex';
         }
     });
 };
