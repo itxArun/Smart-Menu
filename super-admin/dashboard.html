@@ -98,19 +98,21 @@
                 </div>
             </div>
 
-            <!-- Bento Grid Widgets (Overview Tab) -->
+         <!-- Bento Grid Widgets (Overview Tab) -->
             <div class="crm-grid" id="overviewSection">
+                
                 <div class="crm-widget glass-box w-wide">
-                    <div class="w-title">Total Revenue</div>
-                    <h1 class="w-amount">₹45,000</h1>
-                    <div class="w-sub">This Month <span style="color:#00d084;">+12%</span></div>
-                    <div class="progress-bar-thin"><div class="fill" style="width: 75%;"></div></div>
+                    <div class="w-title">Total Revenue (Estimated)</div>
+                    <h1 class="w-amount" id="dashRevenue">₹0</h1>
+                    <div class="w-sub">Based on Active Plans <span style="color:#00d084;">Auto-Synced</span></div>
+                    <div class="progress-bar-thin"><div class="fill" style="width: 100%;"></div></div>
                 </div>
+                
                 <div class="crm-widget glass-box w-square">
-                    <div class="w-title">Active Stats</div>
+                    <div class="w-title">Live Database Stats</div>
                     <div class="task-circles" style="margin-top: 15px;">
-                        <div class="tc"><div class="circle wait">12</div><span>Clients</span></div>
-                        <div class="tc"><div class="circle done">8.5k</div><span>Scans</span></div>
+                        <div class="tc"><div class="circle wait" id="dashTotalClients">0</div><span style="font-size: 11px;">Total Clients</span></div>
+                        <div class="tc"><div class="circle done" id="dashActiveClients">0</div><span style="font-size: 11px;">Active Live</span></div>
                     </div>
                 </div>
                 <div class="crm-widget glass-box w-square">
