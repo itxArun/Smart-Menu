@@ -80,12 +80,18 @@ window.superAdminLogin = () => {
 };
 
 window.logoutDashboard = () => {
-    auth.signOut().then(() => {
-        showToast("Logged out successfully! 🔒", "success");
-        document.getElementById('saPass').value = "";
-    }).catch((error) => {
-        console.error(error);
-    });
+    // 🛑 FIXED: Confirmation Popup
+    const confirmLogout = confirm("⚠️ Are you sure you want to log out of the Master Panel?");
+    
+    // Agar User 'OK' dabayega tabhi logout hoga
+    if (confirmLogout) {
+        auth.signOut().then(() => {
+            showToast("Logged out successfully! 🔒", "success");
+            document.getElementById('saPass').value = ""; // Password clear karna
+        }).catch((error) => {
+            console.error(error);
+        });
+    }
 };
 
 // 🛡️ THE ULTIMATE SECURITY GUARD
