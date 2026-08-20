@@ -48,14 +48,13 @@
                 </div>
             </div>
 
-            <ul class="nav-links">
-                <li class="active" title="Overview"><i class="ph ph-squares-four"></i> <span class="nav-text">Overview</span></li>
-                <li title="Add New Client"><i class="ph ph-storefront"></i> <span class="nav-text">Add Client</span></li>
+          <ul class="nav-links">
+                <li class="active" id="nav-overview" title="Overview" onclick="switchTab('overview')"><i class="ph ph-squares-four"></i> <span class="nav-text">Overview</span></li>
+                <li id="nav-add" title="Add New Client" onclick="switchTab('add')"><i class="ph ph-storefront"></i> <span class="nav-text">Add Client</span></li>
                 <li title="All Clients"><i class="ph ph-users"></i> <span class="nav-text">Client List</span></li>
                 <li title="Analytics"><i class="ph ph-chart-line-up"></i> <span class="nav-text">Analytics</span></li>
                 <li class="logout-btn" title="Logout" onclick="logoutDashboard()"><i class="ph ph-sign-out"></i> <span class="nav-text">Logout</span></li>
             </ul>
-        </div>
 
         <!-- Main Content Area -->
         <div class="main-content">
@@ -79,7 +78,7 @@
             </div>
 
            <!-- 📊 PREMIUM BENTO GRID WIDGETS (Different Shapes) -->
-            <div class="crm-grid" style="display: none;">
+            <div class="crm-grid" id="overviewSection">
                 
                 <!-- 1. Revenue (Wide Rectangle) -->
                 <div class="crm-widget glass-box w-wide">
@@ -126,7 +125,7 @@
                     </div>
                 </div>
 <!-- add client section (hidden by default) -->
-            <div id="addClientSection">
+            <div id="addClientSection" style="display: none;">
                 <div class="glass-box form-container">
                     <h2 class="section-title">Onboard New Client</h2>
                     <p class="section-sub">Enter restaurant details to generate QR menu access.</p>
