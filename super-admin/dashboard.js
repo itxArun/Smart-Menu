@@ -125,16 +125,86 @@ window.toggleNotif = () => {
     document.getElementById('notifDropdown').classList.toggle('show');
 };
 
+// ==========================================
+// ✏️ GOD MODE: EDIT & DELETE LOGIC
+// ==========================================
+
+// 1. Popup kholna aur purana data laana
 window.openEditModal = (dbId) => {
-    // dbId ko aage chal kar Update function ke liye use karenge
+    // Array me se us restaurant ko dhundho jiska pencil icon click hua hai
+    const client = clientsData.find(c => c.dbId === dbId);
+    if(!client) return;
+
+    // Popup ke inputs me asli data bharo
+    document.getElementById('editClientId').value = client.dbId;
+    document.getElementById('editName').value = client.name;
+    document.getElementById('editCity').value = client.city;
+    document.getElementById('editPlan').value = client.plan;
+    
+    const statusSelect = document.getElementById('editStatus');
+    if(client.status === 'Active') statusSelect.value = 'Active';
+    else if(client.status === 'Trial Phase') statusSelect.value = 'Trial Phase';
+    else statusSelect.value = 'Deactivated';
+
+    // Popup dikhao
     document.getElementById('editModal').style.display = 'flex';
 };
 
-window.closeEditModal = (isSaved) => {
+window.closeEditModal = () => {
     document.getElementById('editModal').style.display = 'none';
-    if(isSaved) showToast("Client Plan Updated!", "success");
 };
 
+// 2. Firebase me naya data UPDATE karna
+window.saveEditedClient = () => {
+    const dbId = document.getElementById('editClientId').value;
+    const newName = document.getElementById('editName').value;
+    const newCity = document.getElementById('editCity').value;
+    const newPlan = document.getElementById('editPlan').value;
+    const newStatus = document.getElementById('editStatus').value;
+    
+    // Status ke hisaab se color badge set karna
+    let newStatusClass = 'active-badge';
+    if(newStatus === 'Trial Phase') newStatusClass = 'trial-badge';
+    if(newStatus === 'Deactivated') newStatusClass = ''; // Isko baad me red kar denge
+
+    showToast("Updating Cloud Server... ⏳", "success");
+
+    // Firebase update command
+    db.collection("merchants").doc(dbId).update({
+        restaurantName: newName,
+        city: newCity,
+        plan: newPlan,
+        status: newStatus,
+        statusClass: newStatusClass
+    }).then(() => {
+        showToast("Client Data Updated Successfully! 🚀", "success");
+        closeEditModal();
+    }).catch((error) => {
+        showToast("Error updating client!", "error");
+        console.error(error);
+    });
+};
+
+// 3. Firebase se hamesha ke liye DELETE karna
+window.deleteClient = () => {
+    const dbId = document.getElementById('editClientId').value;
+    
+    // Safety check: Delete karne se pehle poochega
+    const confirmDelete = confirm("⚠️ WARNING: Are you sure you want to permanently delete this Restaurant? All their data will be lost!");
+    
+    if(confirmDelete) {
+        showToast("Deleting from Cloud... ⏳", "success");
+        
+        // Firebase delete command
+        db.collection("merchants").doc(dbId).delete().then(() => {
+            showToast("Restaurant Deleted Permanently! 🗑️", "success");
+            closeEditModal();
+        }).catch((error) => {
+            showToast("Error deleting client!", "error");
+            console.error(error);
+        });
+    }
+};
 
 // ==========================================
 // 🔥 FIREBASE CLOUD DATABASE LOGIC
