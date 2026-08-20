@@ -144,27 +144,40 @@ window.onload = () => {
     updateGreetingAndDate();
 };
 // ==========================================
-// 💾 LOCAL STORAGE & DATA LOGIC
+// 🔥 FIREBASE CLOUD DATABASE LOGIC
 // ==========================================
 
-// Default data (Agar system naya hai)
-let clientsData = [
-    { id: '#SM-001', name: 'Food Station', city: 'Patna', plan: 'Premium (Yearly)', status: 'Active', statusClass: 'active-badge' },
-    { id: '#SM-002', name: 'FoodVilla', city: 'Delhi', plan: 'Pro Plan', status: 'Active', statusClass: 'active-badge' },
-    { id: '#SM-003', name: 'Demo Cafe', city: 'Mumbai', plan: '14-Days Trial', status: 'Trial Phase', statusClass: 'trial-badge' }
-];
+// 1. Tumhara Firebase Config
+const firebaseConfig = {
+    apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
+    authDomain: "itx-arun-bdf24.firebaseapp.com",
+    projectId: "itx-arun-bdf24",
+    storageBucket: "itx-arun-bdf24.firebasestorage.app",
+    messagingSenderId: "442083262265",
+    appId: "1:442083262265:web:3e023b1211f752cb3132e8"
+};
 
-// Check karo agar browser me pehle se save hai
-if(localStorage.getItem('smartMenuClients')) {
-    clientsData = JSON.parse(localStorage.getItem('smartMenuClients'));
-}
+// 2. Firebase ko Start karna
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore(); // Database ka connection
+
+let clientsData = [];
+
+// 3. 🚀 REAL-TIME LISTENER (Ye jadoo hai: Database me kuch bhi update hoga, table apne aap refresh hogi)
+db.collection("onboarded_clients").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+    clientsData = [];
+    snapshot.forEach((doc) => {
+        // Firebase se data nikal kar array me dalna
+        clientsData.push({ dbId: doc.id, ...doc.data() });
+    });
+    renderTable(); // Table UI update karna
+});
 
 // Table ko Load karne ka function
 const renderTable = () => {
     const tbody = document.getElementById("clientTableBody");
     if(!tbody) return;
-    
-    tbody.innerHTML = ''; // Purana static html saaf karo
+    tbody.innerHTML = ''; 
     
     clientsData.forEach(client => {
         const tr = document.createElement('tr');
@@ -174,7 +187,7 @@ const renderTable = () => {
             <td>${client.city}</td>
             <td>${client.plan}</td>
             <td><span class="status-badge ${client.statusClass}">${client.status}</span></td>
-            <td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td>
+            <td><button class="action-btn" onclick="openEditModal('${client.dbId}')"><i class="ph ph-pencil-simple"></i></button></td>
         `;
         tbody.appendChild(tr);
     });
@@ -192,7 +205,7 @@ window.filterTable = (query) => {
     }
 };
 
-// ➕ REAL-TIME CLIENT ADD & SAVE LOGIC
+// ➕ FIREBASE ME NAYA CLIENT SAVE KARNA
 window.saveNewClient = () => {
     const name = document.getElementById('clientNameInput').value;
     const city = document.getElementById('clientCityInput').value;
@@ -201,60 +214,50 @@ window.saveNewClient = () => {
     if(!name) { showToast("Please enter Restaurant Name!", "error"); return; }
 
     const randomId = '#SM-' + Math.floor(Math.random() * 900 + 100);
+    showToast("Connecting to Cloud Server... ⏳", "success");
     
-    // Naye client ko list me sabse upar add karo
-    clientsData.unshift({
+    // Cloud Firestore me Data Bhejna
+    db.collection("onboarded_clients").add({
         id: randomId,
         name: name,
         city: city || 'N/A',
         plan: plan,
         status: 'Active',
-        statusClass: 'active-badge'
+        statusClass: 'active-badge',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp() // Date & Time save karna
+    }).then(() => {
+        showToast("Client Saved to Cloud Database! ☁️🚀", "success");
+        const inputs = document.querySelectorAll('#addClientSection input');
+        inputs.forEach(input => input.value = '');
+        setTimeout(() => { switchTab('list'); }, 1200);
+    }).catch((error) => {
+        showToast("Error connecting to server!", "error");
+        console.error(error);
     });
-
-    // Browser Storage me Save karo
-    localStorage.setItem('smartMenuClients', JSON.stringify(clientsData));
-    
-    // Table ko wapas reload karo naye data ke sath
-    renderTable();
-
-    showToast("Client Added & Saved Permanently! 🚀", "success");
-    
-    const inputs = document.querySelectorAll('#addClientSection input');
-    inputs.forEach(input => input.value = '');
-    setTimeout(() => { switchTab('list'); }, 1000);
 };
 
-// 📥 EXPORT TO CSV (EXCEL) LOGIC - PRO BLOB METHOD
+// 📥 EXPORT TO CSV (BLOB METHOD)
 window.exportToCSV = () => {
     if(clientsData.length === 0) { showToast("No data to export!", "error"); return; }
     
-    // Sirf headings yahan rahengi
     let csvContent = "Client ID,Restaurant Name,City,Plan,Status\n"; 
-    
-    // Har client ka data line by line add karo
     clientsData.forEach(client => {
         let row = `${client.id},${client.name},${client.city},${client.plan},${client.status}`;
         csvContent += row + "\n";
     });
     
-    // Blob magic: Ye data ko directly file object me badal deta hai (No # error)
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    
-    // File Banakar Download Karao
     const link = document.createElement("a");
     link.setAttribute("href", url);
     link.setAttribute("download", "SmartMenu_Clients.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
     showToast("Excel File Downloaded! 📊", "success");
 };
 
-// Jab page khule toh Table Data automatically load ho jaye
+// Start logic
 window.onload = () => {
     updateGreetingAndDate();
-    renderTable(); // <--- NAYA: Table loading start hogi
 };
