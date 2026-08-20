@@ -137,43 +137,88 @@
                 </div>
             </div>
 
-            <!-- Add Client Form -->
+           <!-- Add Client Section (Bento Grid Style) -->
             <div id="addClientSection" style="display: none;">
-                <div class="glass-box form-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 class="section-title">Onboard New Client</h2>
-                    <p class="section-sub">Enter restaurant details to generate QR menu access.</p>
-                   <div class="form-grid">
-                        <div class="input-group"><label>Restaurant/Cafe Name</label><input type="text" id="clientNameInput" placeholder="e.g. Spice Route"></div>
-                        <div class="input-group"><label>Owner Name</label><input type="text" placeholder="Full Name"></div>
-                        <div class="input-group"><label>Email Address</label><input type="email" placeholder="client@email.com"></div>
-                        <div class="input-group"><label>Phone Number</label><input type="tel" placeholder="+91 "></div>
-                        <div class="input-group"><label>City / Location</label><input type="text" id="clientCityInput" placeholder="e.g. Patna, Bihar"></div>
-                        <div class="input-group">
-                            <label>Subscription Plan</label>
-                            <select id="clientPlanInput">
-                                <option>14-Days Trial</option><option>Pro Plan (Monthly)</option><option>Premium (Yearly)</option>
-                            </select>
+                </div>
+                
+                <div class="crm-grid">
+                    <!-- Main Form (Large Box - Spans 3 columns) -->
+                    <div class="crm-widget table-widget glass-box w-large" style="padding: 30px;">
+                        <p class="section-sub" style="margin-top: 0;">Enter restaurant details to generate QR menu access.</p>
+                        <div class="form-grid">
+                            <div class="input-group"><label>Restaurant/Cafe Name</label><input type="text" id="clientNameInput" placeholder="e.g. Spice Route"></div>
+                            <div class="input-group"><label>Owner Name</label><input type="text" placeholder="Full Name"></div>
+                            <div class="input-group"><label>Email Address</label><input type="email" placeholder="client@email.com"></div>
+                            <div class="input-group"><label>Phone Number</label><input type="tel" placeholder="+91 "></div>
+                            <div class="input-group"><label>City / Location</label><input type="text" id="clientCityInput" placeholder="e.g. Patna, Bihar"></div>
+                            <div class="input-group">
+                                <label>Subscription Plan</label>
+                                <select id="clientPlanInput">
+                                    <option>14-Days Trial</option><option>Pro Plan (Monthly)</option><option>Premium (Yearly)</option>
+                                </select>
+                            </div>
                         </div>
+                        <button class="add-hotel-btn form-submit" onclick="saveNewClient()">Save & Generate QR</button>
                     </div>
-                    <button class="add-hotel-btn form-submit" onclick="saveNewClient()">Save & Generate QR</button>
+
+                    <!-- Onboarding Tips (Tall Box - Spans 1 column) -->
+                    <div class="crm-widget glass-box w-tall" style="background: rgba(0, 208, 132, 0.05); border: 1px solid rgba(0, 208, 132, 0.2);">
+                        <div class="w-title" style="color: #00d084; font-size: 14px; font-weight: 600;">Onboarding Tips</div>
+                        <div style="text-align: left; margin-top: 25px;">
+                            <p style="font-size: 12px; color: #a1a5b7; margin-bottom: 20px;"><i class="ph-fill ph-check-circle" style="color: #00d084;"></i> Use valid email for login info.</p>
+                            <p style="font-size: 12px; color: #a1a5b7; margin-bottom: 20px;"><i class="ph-fill ph-check-circle" style="color: #00d084;"></i> Add city for better search.</p>
+                            <p style="font-size: 12px; color: #a1a5b7; margin-bottom: 20px;"><i class="ph-fill ph-check-circle" style="color: #00d084;"></i> Trial auto-expires in 14 days.</p>
+                        </div>
+                        <i class="ph ph-lightbulb" style="font-size: 60px; color: rgba(0, 208, 132, 0.2); margin-top: auto;"></i>
+                    </div>
                 </div>
             </div>
 
-            <!-- Client List Section (Edit buttons upgraded) -->
+          <!-- Client List Section (Bento Grid Style) -->
             <div id="clientListSection" style="display: none;">
-                <div class="glass-box" style="padding: 25px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 class="section-title">All Onboarded Clients</h2>
-                        <div class="header-search" style="width: 250px;"><i class="ph ph-magnifying-glass"></i><input type="text" onkeyup="filterTable(this.value)" placeholder="Search by name..."></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="section-title">Client Management</h2>
+                    <div class="header-search" style="width: 250px;"><i class="ph ph-magnifying-glass"></i><input type="text" onkeyup="filterTable(this.value)" placeholder="Search by name..."></div>
+                </div>
+
+                <div class="crm-grid">
+                    <!-- Quick Stat 1 (Square) -->
+                    <div class="crm-widget glass-box w-square">
+                        <div class="w-title">Total Clients</div>
+                        <h1 class="w-amount" style="color: #38bdf8; font-size: 38px;">12</h1>
                     </div>
-                    <table class="main-data-table">
-                        <thead><tr><th>Client ID</th><th>Restaurant Name</th><th>City</th><th>Plan</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody id="clientTableBody">
-                            <tr><td style="color:#8b94a7;">#SM-001</td><td>Food Station</td><td>Patna</td><td>Premium (Yearly)</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
-                            <tr><td style="color:#8b94a7;">#SM-002</td><td>FoodVilla</td><td>Delhi</td><td>Pro Plan</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
-                            <tr><td style="color:#8b94a7;">#SM-003</td><td>Demo Cafe</td><td>Mumbai</td><td>14-Days Trial</td><td><span class="status-badge trial-badge">Trial Phase</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
-                        </tbody>
-                    </table>
+                    
+                    <!-- Quick Stat 2 (Square) -->
+                    <div class="crm-widget glass-box w-square">
+                        <div class="w-title">Active Plans</div>
+                        <h1 class="w-amount" style="color: #00d084; font-size: 38px;">09</h1>
+                    </div>
+                    
+                    <!-- Alert Widget (Wide Box) -->
+                    <div class="crm-widget glass-box w-wide">
+                        <div class="w-title">Trial Expiring Soon</div>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                            <div class="stat-icon" style="color: #f5a623; background: rgba(245, 166, 35, 0.1); width: 50px; height: 50px; font-size: 24px;"><i class="ph ph-clock"></i></div>
+                            <div>
+                                <h2 style="font-size: 18px; color:#fff; margin:0;">Demo Cafe</h2>
+                                <p style="margin: 3px 0 0; font-size: 11px; color: #8b94a7;">Expires in 2 days</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Data Table (Spans full width - 4 columns) -->
+                    <div class="crm-widget table-widget glass-box" style="grid-column: span 4; grid-row: span 2; justify-content: flex-start; padding: 25px; overflow-x: auto;">
+                        <table class="main-data-table">
+                            <thead><tr><th>Client ID</th><th>Restaurant Name</th><th>City</th><th>Plan</th><th>Status</th><th>Action</th></tr></thead>
+                            <tbody id="clientTableBody">
+                                <tr><td style="color:#8b94a7;">#SM-001</td><td>Food Station</td><td>Patna</td><td>Premium (Yearly)</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
+                                <tr><td style="color:#8b94a7;">#SM-002</td><td>FoodVilla</td><td>Delhi</td><td>Pro Plan</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
+                                <tr><td style="color:#8b94a7;">#SM-003</td><td>Demo Cafe</td><td>Mumbai</td><td>14-Days Trial</td><td><span class="status-badge trial-badge">Trial Phase</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
