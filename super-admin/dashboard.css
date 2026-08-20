@@ -126,7 +126,23 @@ body {
 .form-grid select { appearance: none; cursor: pointer; color: #fff; }
 .form-grid select option { background: #020617; color: #fff; }
 .form-submit { width: 100%; max-width: 250px; padding: 12px; font-size: 14px; justify-content: center; }
+/* Client List Data Table */
+.main-data-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+.main-data-table th { color: #8b94a7; padding: 15px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); }
+.main-data-table th:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.main-data-table th:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; text-align: center; }
+.main-data-table td { padding: 15px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.main-data-table td:last-child { text-align: center; }
+.main-data-table tr:hover td { background: rgba(255,255,255,0.02); }
 
+/* Status Badges */
+.status-badge { padding: 5px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
+.active-badge { background: rgba(0, 208, 132, 0.1); color: #00d084; border: 1px solid rgba(0, 208, 132, 0.2); }
+.trial-badge { background: rgba(245, 166, 35, 0.1); color: #f5a623; border: 1px solid rgba(245, 166, 35, 0.2); }
+
+/* Edit Button */
+.action-btn { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #8b94a7; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+.action-btn:hover { background: #00d084; color: #020617; }
 /* Toast */
 .custom-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #020617; border: 1px solid #00d084; color: #fff; padding: 10px 15px; border-radius: 50px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,208,132,0.2); transition: top 0.4s; z-index: 9999; font-size: 12px; }
 .custom-toast.show { top: 20px; }
