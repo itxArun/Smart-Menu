@@ -79,7 +79,7 @@
             </div>
 
            <!-- 📊 PREMIUM BENTO GRID WIDGETS (Different Shapes) -->
-            <div class="crm-grid">
+            <div class="crm-grid" style="display: none;">
                 
                 <!-- 1. Revenue (Wide Rectangle) -->
                 <div class="crm-widget glass-box w-wide">
@@ -125,7 +125,42 @@
                         <button class="add-hotel-btn" style="width: 100%; justify-content: center;">Create New</button>
                     </div>
                 </div>
-
+<!-- add client section (hidden by default) -->
+            <div id="addClientSection">
+                <div class="glass-box form-container">
+                    <h2 class="section-title">Onboard New Client</h2>
+                    <p class="section-sub">Enter restaurant details to generate QR menu access.</p>
+                    
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Restaurant/Cafe Name</label>
+                            <input type="text" placeholder="e.g. Spice Route">
+                        </div>
+                        <div class="input-group">
+                            <label>Owner Name</label>
+                            <input type="text" placeholder="Full Name">
+                        </div>
+                        <div class="input-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="client@email.com">
+                        </div>
+                        <div class="input-group">
+                            <label>Phone Number</label>
+                            <input type="tel" placeholder="+91 ">
+                        </div>
+                        <div class="input-group">
+                            <label>Subscription Plan</label>
+                            <select>
+                                <option>14-Days Trial</option>
+                                <option>Pro Plan (Monthly)</option>
+                                <option>Premium (Yearly)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="add-hotel-btn form-submit">Save & Generate QR</button>
+                </div>
+            </div>
             </div>
 
     <script type="module" src="dashboard.js"></script>
