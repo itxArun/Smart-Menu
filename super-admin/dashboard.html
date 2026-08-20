@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
     <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 </head>
 <body>
 
@@ -60,13 +61,13 @@
             </ul>
         </div>
 
-        <!-- Main Content Area -->
+       <!-- Main Content Area -->
         <div class="main-content">
             
             <!-- Top Header -->
             <div class="crm-header glass-box">
                 <div class="header-left">
-                    <h2 id="dynamicGreeting" style="margin:0; color:#fff; font-size: 16px;">Hello! 🚀</h2>
+                    <h2 id="dynamicGreeting" style="margin:0; color:#fff; font-size: 16px;">Hello, Arun! 🚀</h2>
                     <p id="currentDate" style="margin:0; font-size:11px; color:#a1a5b7;">Loading date...</p>
                 </div>
                 
@@ -77,22 +78,34 @@
 
                 <div class="header-right-icons">
                     <button class="add-hotel-btn" onclick="switchTab('add')"><i class="ph ph-plus"></i> New Client</button>
-                    <button class="btn-icon"><i class="ph ph-bell"></i></button>
+                    
+                    <!-- 🔔 NOTIFICATION BELL & DROPDOWN -->
+                    <div class="notification-wrapper">
+                        <button class="btn-icon" onclick="toggleNotif()"><i class="ph ph-bell"></i><span class="bell-dot"></span></button>
+                        <div class="notif-dropdown glass-box" id="notifDropdown">
+                            <h4>Recent Alerts</h4>
+                            <div class="notif-item">
+                                <i class="ph-fill ph-check-circle" style="color:#00d084;"></i>
+                                <div><p>Food Station onboarding complete</p><span>10 mins ago</span></div>
+                            </div>
+                            <div class="notif-item">
+                                <i class="ph-fill ph-warning-circle" style="color:#f5a623;"></i>
+                                <div><p>Demo Cafe trial expiring soon</p><span>2 hrs ago</span></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
             <!-- Bento Grid Widgets (Overview Tab) -->
             <div class="crm-grid" id="overviewSection">
-                
-                <!-- Revenue (Wide) -->
                 <div class="crm-widget glass-box w-wide">
                     <div class="w-title">Total Revenue</div>
                     <h1 class="w-amount">₹45,000</h1>
                     <div class="w-sub">This Month <span style="color:#00d084;">+12%</span></div>
                     <div class="progress-bar-thin"><div class="fill" style="width: 75%;"></div></div>
                 </div>
-
-                <!-- Stats (Square) -->
                 <div class="crm-widget glass-box w-square">
                     <div class="w-title">Active Stats</div>
                     <div class="task-circles" style="margin-top: 15px;">
@@ -100,15 +113,11 @@
                         <div class="tc"><div class="circle done">8.5k</div><span>Scans</span></div>
                     </div>
                 </div>
-
-                <!-- Pending (Square) -->
                 <div class="crm-widget glass-box w-square">
                     <div class="w-title">Pending</div>
                     <h1 class="w-amount" style="color: #f5a623; font-size: 38px;">03</h1>
                     <div class="w-sub">New Requests</div>
                 </div>
-
-                <!-- Clients Table (Large) -->
                 <div class="crm-widget table-widget glass-box w-large">
                     <div class="w-title">Recently Onboarded Clients</div>
                     <table class="mini-table">
@@ -118,8 +127,6 @@
                         <tr><td>Demo Cafe</td><td>05 Aug 2026</td><td class="t-wait">Trial Phase</td></tr>
                     </table>
                 </div>
-
-                <!-- Quick Action (Tall) -->
                 <div class="crm-widget glass-box w-tall">
                     <div class="w-title">Quick Action</div>
                     <div class="quick-scan-box">
@@ -128,144 +135,84 @@
                         <button class="add-hotel-btn" style="width: 100%; justify-content: center;" onclick="switchTab('add')">Create New</button>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Add Client Form (Hidden by default) -->
+            <!-- Add Client Form -->
             <div id="addClientSection" style="display: none;">
                 <div class="glass-box form-container">
                     <h2 class="section-title">Onboard New Client</h2>
                     <p class="section-sub">Enter restaurant details to generate QR menu access.</p>
-                    
-               <div class="form-grid">
-                        <div class="input-group">
-                            <label>Restaurant/Cafe Name</label>
-                            <input type="text" placeholder="e.g. Spice Route">
-                        </div>
-                        <div class="input-group">
-                            <label>Owner Name</label>
-                            <input type="text" placeholder="Full Name">
-                        </div>
-                        <div class="input-group">
-                            <label>Email Address</label>
-                            <input type="email" placeholder="client@email.com">
-                        </div>
-                        <div class="input-group">
-                            <label>Phone Number</label>
-                            <input type="tel" placeholder="+91 ">
-                        </div>
-                        <div class="input-group">
-                            <label>City / Location</label>
-                            <input type="text" placeholder="e.g. Patna, Bihar">
-                        </div>
+                    <div class="form-grid">
+                        <div class="input-group"><label>Restaurant/Cafe Name</label><input type="text" placeholder="e.g. Spice Route"></div>
+                        <div class="input-group"><label>Owner Name</label><input type="text" placeholder="Full Name"></div>
+                        <div class="input-group"><label>Email Address</label><input type="email" placeholder="client@email.com"></div>
+                        <div class="input-group"><label>Phone Number</label><input type="tel" placeholder="+91 "></div>
+                        <div class="input-group"><label>City / Location</label><input type="text" placeholder="e.g. Patna, Bihar"></div>
                         <div class="input-group">
                             <label>Subscription Plan</label>
                             <select>
-                                <option>14-Days Trial</option>
-                                <option>Pro Plan (Monthly)</option>
-                                <option>Premium (Yearly)</option>
+                                <option>14-Days Trial</option><option>Pro Plan (Monthly)</option><option>Premium (Yearly)</option>
                             </select>
                         </div>
                     </div>
-                    
                     <button class="add-hotel-btn form-submit" onclick="saveNewClient()">Save & Generate QR</button>
                 </div>
             </div>
-<!-- Client List Section (Hidden by default) -->
+
+            <!-- Client List Section (Edit buttons upgraded) -->
             <div id="clientListSection" style="display: none;">
                 <div class="glass-box" style="padding: 25px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2 class="section-title">All Onboarded Clients</h2>
-                        <div class="header-search" style="width: 250px;">
-                            <i class="ph ph-magnifying-glass"></i>
-                            <input type="text" placeholder="Search by name...">
-                        </div>
+                        <div class="header-search" style="width: 250px;"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search by name..."></div>
                     </div>
-                    
                     <table class="main-data-table">
-                        <thead>
-                            <tr>
-                                <th>Client ID</th>
-                                <th>Restaurant Name</th>
-                                <th>City</th>
-                                <th>Plan</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Client ID</th><th>Restaurant Name</th><th>City</th><th>Plan</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
-                            <tr>
-                                <td style="color:#8b94a7;">#SM-001</td>
-                                <td>Food Station</td>
-                                <td>Patna</td>
-                                <td>Premium (Yearly)</td>
-                                <td><span class="status-badge active-badge">Active</span></td>
-                                <td><button class="action-btn"><i class="ph ph-pencil-simple"></i></button></td>
-                            </tr>
-                            <tr>
-                                <td style="color:#8b94a7;">#SM-002</td>
-                                <td>FoodVilla</td>
-                                <td>Delhi</td>
-                                <td>Pro Plan</td>
-                                <td><span class="status-badge active-badge">Active</span></td>
-                                <td><button class="action-btn"><i class="ph ph-pencil-simple"></i></button></td>
-                            </tr>
-                            <tr>
-                                <td style="color:#8b94a7;">#SM-003</td>
-                                <td>Demo Cafe</td>
-                                <td>Mumbai</td>
-                                <td>14-Days Trial</td>
-                                <td><span class="status-badge trial-badge">Trial Phase</span></td>
-                                <td><button class="action-btn"><i class="ph ph-pencil-simple"></i></button></td>
-                            </tr>
+                            <tr><td style="color:#8b94a7;">#SM-001</td><td>Food Station</td><td>Patna</td><td>Premium (Yearly)</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
+                            <tr><td style="color:#8b94a7;">#SM-002</td><td>FoodVilla</td><td>Delhi</td><td>Pro Plan</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
+                            <tr><td style="color:#8b94a7;">#SM-003</td><td>Demo Cafe</td><td>Mumbai</td><td>14-Days Trial</td><td><span class="status-badge trial-badge">Trial Phase</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <!-- Analytics Section (Hidden by default) -->
+
+            <!-- Analytics Section (Chart Canvas added) -->
             <div id="analyticsSection" style="display: none;">
                 <div class="glass-box" style="padding: 25px;">
                     <h2 class="section-title" style="margin-bottom: 20px;">Platform Analytics</h2>
-                    
                     <div class="analytics-grid">
-                        <!-- Stat Box 1 -->
-                        <div class="stat-box">
-                            <div class="stat-icon" style="color: #00d084; background: rgba(0, 208, 132, 0.1);"><i class="ph ph-trend-up"></i></div>
-                            <div class="stat-info">
-                                <h3>Total Scans</h3>
-                                <h2>12,450</h2>
-                                <p>+15% from last week</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Stat Box 2 -->
-                        <div class="stat-box">
-                            <div class="stat-icon" style="color: #38bdf8; background: rgba(56, 189, 248, 0.1);"><i class="ph ph-users"></i></div>
-                            <div class="stat-info">
-                                <h3>New Diners</h3>
-                                <h2>3,200</h2>
-                                <p>Across all restaurants</p>
-                            </div>
-                        </div>
-
-                        <!-- Stat Box 3 -->
-                        <div class="stat-box">
-                            <div class="stat-icon" style="color: #f5a623; background: rgba(245, 166, 35, 0.1);"><i class="ph ph-star"></i></div>
-                            <div class="stat-info">
-                                <h3>Top Client</h3>
-                                <h2 style="font-size: 18px; margin-top:5px;">Food Station</h2>
-                                <p>4,120 Scans this month</p>
-                            </div>
-                        </div>
+                        <div class="stat-box"><div class="stat-icon" style="color: #00d084; background: rgba(0, 208, 132, 0.1);"><i class="ph ph-trend-up"></i></div><div class="stat-info"><h3>Total Scans</h3><h2>12,450</h2><p>+15% from last week</p></div></div>
+                        <div class="stat-box"><div class="stat-icon" style="color: #38bdf8; background: rgba(56, 189, 248, 0.1);"><i class="ph ph-users"></i></div><div class="stat-info"><h3>New Diners</h3><h2>3,200</h2><p>Across all restaurants</p></div></div>
+                        <div class="stat-box"><div class="stat-icon" style="color: #f5a623; background: rgba(245, 166, 35, 0.1);"><i class="ph ph-star"></i></div><div class="stat-info"><h3>Top Client</h3><h2 style="font-size: 18px; margin-top:5px;">Food Station</h2><p>4,120 Scans this month</p></div></div>
                     </div>
-
-                    <!-- Placeholder for Chart -->
-                    <div class="chart-container" style="margin-top: 25px; padding: 40px; text-align: center; border: 1px dashed rgba(255,255,255,0.1); border-radius: 10px;">
-                        <i class="ph ph-chart-bar" style="font-size: 48px; color: #8b94a7; margin-bottom: 10px;"></i>
-                        <p style="color: #8b94a7; font-size: 13px;">Graphical Chart will be integrated here (e.g., using Chart.js)</p>
+                    <!-- 📊 Asli Chart Yahan Aayega -->
+                    <div class="chart-container" style="margin-top: 25px; padding: 20px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+                        <canvas id="mainChart" height="80"></canvas>
                     </div>
                 </div>
             </div>
+
+            <!-- ✏️ EDIT MODAL (Popup) -->
+            <div class="modal-overlay" id="editModal" style="display: none;">
+                <div class="glass-box modal-box">
+                    <h3 style="margin: 0 0 15px 0; color: #fff;">Edit Client Plan</h3>
+                    <div class="input-group">
+                        <label style="color:#8b94a7; font-size:12px; margin-bottom:8px; display:block;">Update Subscription</label>
+                        <select style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none;">
+                            <option>Premium (Yearly)</option>
+                            <option>Pro Plan (Monthly)</option>
+                            <option>14-Days Trial</option>
+                            <option>Deactivate Account</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="add-hotel-btn" style="flex: 1; justify-content: center;" onclick="closeEditModal(true)">Save</button>
+                        <button class="btn-icon" style="flex: 1; color: #ff3b30;" onclick="closeEditModal(false)">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
         </div> <!-- End of Main Content -->
     </div> <!-- End of Dashboard Container -->
 
