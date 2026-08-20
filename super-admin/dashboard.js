@@ -63,3 +63,29 @@ window.logoutDashboard = () => {
 window.onload = () => {
     updateGreetingAndDate();
 };
+// TAB SWITCHING LOGIC (Overview vs Add Client)
+window.switchTab = (tabName) => {
+    const overviewSec = document.getElementById('overviewSection');
+    const addSec = document.getElementById('addClientSection');
+    const navOverview = document.getElementById('nav-overview');
+    const navAdd = document.getElementById('nav-add');
+
+    if (tabName === 'overview') {
+        // Show Overview, Hide Form
+        overviewSec.style.display = 'grid';
+        addSec.style.display = 'none';
+        
+        // Update active class on buttons
+        navOverview.classList.add('active');
+        navAdd.classList.remove('active');
+    } 
+    else if (tabName === 'add') {
+        // Show Form, Hide Overview
+        overviewSec.style.display = 'none';
+        addSec.style.display = 'block';
+        
+        // Update active class on buttons
+        navOverview.classList.remove('active');
+        navAdd.classList.add('active');
+    }
+};
