@@ -17,23 +17,24 @@
         <div id="toastMessage" class="toast-text"></div>
     </div>
 
-   <!-- 🔐 SUPER ADMIN LOGIN SECTION -->
+  <!-- 🔐 SUPER ADMIN LOGIN SECTION -->
     <div id="loginSection" class="login-wrapper" style="display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; background: #0b0f19;">
         <div class="glass-box login-box" style="width: 350px; padding: 40px; text-align: center;">
-            <h2 style="color: #fff; margin-bottom: 25px;"><i class="ph-fill ph-shield-check" style="color: #00d084;"></i> SUPER ADMIN</h2>
+            <h2 style="color: #fff; margin-bottom: 25px; letter-spacing: 1px;"><i class="ph-fill ph-shield-check" style="color: #00d084;"></i> SUPER ADMIN</h2>
             
             <div class="input-group" style="text-align: left; margin-bottom: 15px;">
-                <input type="email" id="saEmail" placeholder="admin@arun.com" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px;">
+                <!-- 🛑 FIXED: Generic Placeholder -->
+                <input type="email" id="saEmail" placeholder="Enter Admin Email" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px;">
             </div>
             
             <div class="input-group" style="text-align: left; margin-bottom: 25px; position: relative;">
-                <input type="password" id="saPass" placeholder="Password" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; padding-right: 40px;">
+                <input type="password" id="saPass" placeholder="Enter Password" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; padding-right: 40px;">
                 <!-- 👁️ Eye Icon -->
                 <i class="ph ph-eye" id="toggleEye" onclick="togglePassword()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #8b94a7; cursor: pointer; font-size: 20px;"></i>
             </div>
             
-            <!-- type="button" page ko refresh/crash hone se rokega -->
-            <button type="button" class="add-hotel-btn" onclick="superAdminLogin()" style="width: 100%; padding: 12px; font-size: 16px; border-radius: 6px;">Access Panel</button>
+            <!-- 🎨 FIXED: Premium Gradient Button -->
+            <button type="button" onclick="superAdminLogin()" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 600; border-radius: 8px; background: linear-gradient(135deg, #00d084, #009860); color: #0b0f19; border: none; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 208, 132, 0.2);">Access Panel</button>
         </div>
     </div>
 
