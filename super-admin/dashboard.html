@@ -301,22 +301,47 @@
                 </div>
             </div>
 
-            <!-- ✏️ EDIT MODAL (Popup) -->
+           <!-- ✏️ UPGRADED EDIT MODAL (Full Control Panel) -->
             <div class="modal-overlay" id="editModal" style="display: none;">
-                <div class="glass-box modal-box">
-                    <h3 style="margin: 0 0 15px 0; color: #fff;">Edit Client Plan</h3>
-                    <div class="input-group">
-                        <label style="color:#8b94a7; font-size:12px; margin-bottom:8px; display:block;">Update Subscription</label>
-                        <select style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none;">
-                            <option>Premium (Yearly)</option>
-                            <option>Pro Plan (Monthly)</option>
-                            <option>14-Days Trial</option>
-                            <option>Deactivate Account</option>
-                        </select>
+                <div class="glass-box modal-box" style="width: 400px;">
+                    <h3 style="margin: 0 0 15px 0; color: #fff;">Control Panel: Edit Client</h3>
+                    
+                    <!-- Hidden ID input (Firebase ko batane ke liye ki kisse update karna hai) -->
+                    <input type="hidden" id="editClientId"> 
+                    
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label style="color:#8b94a7; font-size:12px; margin-bottom:5px; display:block;">Restaurant Name</label>
+                        <input type="text" id="editName" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px;">
                     </div>
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button class="add-hotel-btn" style="flex: 1; justify-content: center;" onclick="closeEditModal(true)">Save</button>
-                        <button class="btn-icon" style="flex: 1; color: #ff3b30;" onclick="closeEditModal(false)">Cancel</button>
+                    
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label style="color:#8b94a7; font-size:12px; margin-bottom:5px; display:block;">City / Location</label>
+                        <input type="text" id="editCity" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px;">
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div class="input-group" style="flex: 1;">
+                            <label style="color:#8b94a7; font-size:12px; margin-bottom:5px; display:block;">Update Plan</label>
+                            <select id="editPlan" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px;">
+                                <option>Premium (Yearly)</option>
+                                <option>Pro Plan (Monthly)</option>
+                                <option>14-Days Trial</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="flex: 1;">
+                            <label style="color:#8b94a7; font-size:12px; margin-bottom:5px; display:block;">Account Status</label>
+                            <select id="editStatus" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px;">
+                                <option value="Active">Active</option>
+                                <option value="Trial Phase">Trial Phase</option>
+                                <option value="Deactivated">Deactivated (Block)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button class="add-hotel-btn" style="flex: 1; justify-content: center;" onclick="saveEditedClient()">Update Database</button>
+                        <button class="btn-icon" style="background: rgba(255, 59, 48, 0.1); color: #ff3b30; border-color: rgba(255, 59, 48, 0.2); padding: 0 15px;" onclick="deleteClient()" title="Delete Restaurant"><i class="ph ph-trash"></i></button>
+                        <button class="btn-icon" style="color: #a1a5b7;" onclick="closeEditModal()">Cancel</button>
                     </div>
                 </div>
             </div>
