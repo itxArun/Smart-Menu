@@ -32,11 +32,9 @@ const updateGreetingAndDate = () => {
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', options);
 };
 
-// ==========================================
-// 🔐 HACKER-PROOF FIREBASE LOGIN SYSTEM
-// ==========================================
+window.superAdminLogin = (event) => {
+    if(event) event.preventDefault(); // 🛑 FIX: Page refresh rokne ka brahmastra
 
-window.superAdminLogin = () => {
     const email = document.getElementById('saEmail').value;
     const pass = document.getElementById('saPass').value;
     
@@ -47,11 +45,10 @@ window.superAdminLogin = () => {
 
     showToast("Verifying Security... ⏳", "success");
 
-    // Firebase Google Servers se check karega
     auth.signInWithEmailAndPassword(email, pass)
         .then((userCredential) => {
             showToast("Welcome CEO Arun! 🚀", "success");
-            // Dashboard automatically khul jayega niche wale function se
+            // Dashboard automatically khul jayega
         })
         .catch((error) => {
             showToast("Galat Password ya Email! ❌", "error");
@@ -331,12 +328,16 @@ window.filterTable = (query) => {
 };
 
 // ==========================================
-// 🥷 NINJA TRICK: SECONDARY APP FOR AUTO-ACCOUNT CREATION
+// 🥷 NINJA TRICK: CRASH-PROOF SECONDARY APP
 // ==========================================
-// Ye doosra engine hai jo sirf account banayega taaki admin logout na ho
-const secondaryApp = firebase.initializeApp(firebaseConfig, "SecondaryApp");
+let secondaryApp;
+// Check karo ki kya SecondaryApp pehle se bana hua hai? 
+if (firebase.apps.find(app => app.name === "SecondaryApp")) {
+    secondaryApp = firebase.app("SecondaryApp");
+} else {
+    secondaryApp = firebase.initializeApp(firebaseConfig, "SecondaryApp");
+}
 const secondaryAuth = secondaryApp.auth();
-
 // ➕ NAYA CLIENT SAVE & AUTO-LOGIN CREATE KARNA
 window.saveNewClient = () => {
     const name = document.getElementById('clientNameInput').value;
