@@ -10,13 +10,13 @@
 </head>
 <body>
 
-    <!-- 🔥 CUSTOM PREMIUM TOAST -->
+    <!-- Custom Toast -->
     <div id="customToast" class="custom-toast">
         <span id="toastIcon"></span>
         <div id="toastMessage" class="toast-text"></div>
     </div>
 
-    <!-- 🔐 LOGIN SECTION (Center me) -->
+    <!-- Login Section (Testing ke liye Hidden hai) -->
     <div class="login-wrapper" id="loginSection" style="display: none;">
         <div class="glass-box login-box">
             <h2><i class="ph-fill ph-shield-check" style="color: #00d084;"></i> SUPER ADMIN</h2>
@@ -30,10 +30,10 @@
         </div>
     </div>
 
-    <!-- 👑 ASLI DASHBOARD SECTION -->
+    <!-- Dashboard Section -->
     <div class="dashboard-container" id="dashboardSection" style="display: flex;">
         
-        <!-- 🍔 Collapsible Sidebar (Shuru me sirf icons) -->
+        <!-- Sidebar -->
         <div class="sidebar glass-box" id="sidebar">
             <div class="sidebar-header">
                 <div class="menu-btn" onclick="toggleSidebar()"><i class="ph-bold ph-list"></i></div>
@@ -48,21 +48,32 @@
                 </div>
             </div>
 
-          <ul class="nav-links">
-                <li class="active" id="nav-overview" title="Overview" onclick="switchTab('overview')"><i class="ph ph-squares-four"></i> <span class="nav-text">Overview</span></li>
-                <li id="nav-add" title="Add New Client" onclick="switchTab('add')"><i class="ph ph-storefront"></i> <span class="nav-text">Add Client</span></li>
-                <li title="All Clients"><i class="ph ph-users"></i> <span class="nav-text">Client List</span></li>
-                <li title="Analytics"><i class="ph ph-chart-line-up"></i> <span class="nav-text">Analytics</span></li>
-                <li class="logout-btn" title="Logout" onclick="logoutDashboard()"><i class="ph ph-sign-out"></i> <span class="nav-text">Logout</span></li>
+            <ul class="nav-links">
+                <li class="active" id="nav-overview" title="Overview" onclick="switchTab('overview')">
+                    <i class="ph ph-squares-four"></i> <span class="nav-text">Overview</span>
+                </li>
+                <li id="nav-add" title="Add New Client" onclick="switchTab('add')">
+                    <i class="ph ph-storefront"></i> <span class="nav-text">Add Client</span>
+                </li>
+                <li title="All Clients">
+                    <i class="ph ph-users"></i> <span class="nav-text">Client List</span>
+                </li>
+                <li title="Analytics">
+                    <i class="ph ph-chart-line-up"></i> <span class="nav-text">Analytics</span>
+                </li>
+                <li class="logout-btn" title="Logout" onclick="logoutDashboard()">
+                    <i class="ph ph-sign-out"></i> <span class="nav-text">Logout</span>
+                </li>
             </ul>
+        </div>
 
         <!-- Main Content Area -->
         <div class="main-content">
             
-            <!-- 🌟 Premium Top Header -->
+            <!-- Top Header -->
             <div class="crm-header glass-box">
                 <div class="header-left">
-                    <h2 id="dynamicGreeting" style="margin:0; color:#fff; font-size: 16px;">Hello, Arun Bhai! 🚀</h2>
+                    <h2 id="dynamicGreeting" style="margin:0; color:#fff; font-size: 16px;">Hello! 🚀</h2>
                     <p id="currentDate" style="margin:0; font-size:11px; color:#a1a5b7;">Loading date...</p>
                 </div>
                 
@@ -72,15 +83,15 @@
                 </div>
 
                 <div class="header-right-icons">
-                    <button class="add-hotel-btn"><i class="ph ph-plus"></i> New Client</button>
+                    <button class="add-hotel-btn" onclick="switchTab('add')"><i class="ph ph-plus"></i> New Client</button>
                     <button class="btn-icon"><i class="ph ph-bell"></i></button>
                 </div>
             </div>
 
-           <!-- 📊 PREMIUM BENTO GRID WIDGETS (Different Shapes) -->
+            <!-- Bento Grid Widgets (Overview Tab) -->
             <div class="crm-grid" id="overviewSection">
                 
-                <!-- 1. Revenue (Wide Rectangle) -->
+                <!-- Revenue (Wide) -->
                 <div class="crm-widget glass-box w-wide">
                     <div class="w-title">Total Revenue</div>
                     <h1 class="w-amount">₹45,000</h1>
@@ -88,7 +99,7 @@
                     <div class="progress-bar-thin"><div class="fill" style="width: 75%;"></div></div>
                 </div>
 
-                <!-- 2. Platform Stats (Perfect Square) -->
+                <!-- Stats (Square) -->
                 <div class="crm-widget glass-box w-square">
                     <div class="w-title">Active Stats</div>
                     <div class="task-circles" style="margin-top: 15px;">
@@ -97,14 +108,14 @@
                     </div>
                 </div>
 
-                <!-- 3. Pending Approvals (Perfect Square) -->
+                <!-- Pending (Square) -->
                 <div class="crm-widget glass-box w-square">
                     <div class="w-title">Pending</div>
                     <h1 class="w-amount" style="color: #f5a623; font-size: 38px;">03</h1>
                     <div class="w-sub">New Requests</div>
                 </div>
 
-                <!-- 4. Recent Clients Table (Large Rectangle) -->
+                <!-- Clients Table (Large) -->
                 <div class="crm-widget table-widget glass-box w-large">
                     <div class="w-title">Recently Onboarded Clients</div>
                     <table class="mini-table">
@@ -115,16 +126,19 @@
                     </table>
                 </div>
 
-                <!-- 5. NEW: Quick Action (Tall Vertical Rectangle) -->
+                <!-- Quick Action (Tall) -->
                 <div class="crm-widget glass-box w-tall">
                     <div class="w-title">Quick Action</div>
                     <div class="quick-scan-box">
                         <i class="ph ph-qr-code" style="font-size: 60px; color: #00d084;"></i>
                         <p style="margin: 10px 0; font-size: 12px;">Generate QR</p>
-                        <button class="add-hotel-btn" style="width: 100%; justify-content: center;">Create New</button>
+                        <button class="add-hotel-btn" style="width: 100%; justify-content: center;" onclick="switchTab('add')">Create New</button>
                     </div>
                 </div>
-<!-- add client section (hidden by default) -->
+
+            </div>
+
+            <!-- Add Client Form (Hidden by default) -->
             <div id="addClientSection" style="display: none;">
                 <div class="glass-box form-container">
                     <h2 class="section-title">Onboard New Client</h2>
@@ -160,7 +174,9 @@
                     <button class="add-hotel-btn form-submit">Save & Generate QR</button>
                 </div>
             </div>
-            </div>
+
+        </div> <!-- End of Main Content -->
+    </div> <!-- End of Dashboard Container -->
 
     <script type="module" src="dashboard.js"></script>
 </body>
