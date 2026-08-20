@@ -60,27 +60,31 @@ window.logoutDashboard = () => {
     showToast("Logged out successfully!", "success");
 };
 
-// Tab Switching Logic (Overview, Add Client, Client List)
+// Tab Switching Logic (Overview, Add Client, Client List, Analytics)
 window.switchTab = (tabName) => {
-    // Teeno Sections ko uthao
+    // Charo Sections ko uthao
     const overviewSec = document.getElementById('overviewSection');
     const addSec = document.getElementById('addClientSection');
     const listSec = document.getElementById('clientListSection');
+    const analyticsSec = document.getElementById('analyticsSection');
     
-    // Teeno Sidebar Buttons ko uthao
+    // Charo Sidebar Buttons ko uthao
     const navOverview = document.getElementById('nav-overview');
     const navAdd = document.getElementById('nav-add');
     const navList = document.getElementById('nav-list');
+    const navAnalytics = document.getElementById('nav-analytics');
 
     // Sabko pehle hide kar do (Clear screen)
     overviewSec.style.display = 'none';
     addSec.style.display = 'none';
     listSec.style.display = 'none';
+    analyticsSec.style.display = 'none';
     
-    // Sabke buttons se active hat do
+    // Sabke buttons se active hata do
     navOverview.classList.remove('active');
     navAdd.classList.remove('active');
     navList.classList.remove('active');
+    navAnalytics.classList.remove('active');
 
     // Jisko click kiya hai, usko show karo aur button ko active karo
     if (tabName === 'overview') {
@@ -95,8 +99,11 @@ window.switchTab = (tabName) => {
         listSec.style.display = 'block';
         navList.classList.add('active');
     }
+    else if (tabName === 'analytics') {
+        analyticsSec.style.display = 'block';
+        navAnalytics.classList.add('active');
+    }
 };
-
 // Auto load for testing (Bypass Login)
 window.onload = () => {
     updateGreetingAndDate();
