@@ -32,37 +32,59 @@ const updateGreetingAndDate = () => {
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', options);
 };
 
+// ==========================================
+// 🔐 HACKER-PROOF FIREBASE LOGIN SYSTEM
+// ==========================================
+
 window.superAdminLogin = () => {
     const email = document.getElementById('saEmail').value;
     const pass = document.getElementById('saPass').value;
     
-    // Master Credentials (Tum yahan apna password change kar sakte ho)
-    if(email === "admin@arun.com" && pass === "Arun@123") {
-        showToast("Welcome CEO! 🚀", "success");
-        
-        // Browser ko yaad dilana ki Arun login ho chuka hai
-        localStorage.setItem("isSuperAdmin", "true"); 
-        
-        setTimeout(() => {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('dashboardSection').style.display = 'flex';
-            updateGreetingAndDate(); 
-        }, 500);
-    } else {
-        showToast("Invalid Credentials!", "error");
+    if(!email || !pass) {
+        showToast("Email aur Password dono daalo!", "error");
+        return;
     }
+
+    showToast("Verifying Security... ⏳", "success");
+
+    // Firebase Google Servers se check karega
+    auth.signInWithEmailAndPassword(email, pass)
+        .then((userCredential) => {
+            showToast("Welcome CEO Arun! 🚀", "success");
+            // Dashboard automatically khul jayega niche wale function se
+        })
+        .catch((error) => {
+            showToast("Galat Password ya Email! ❌", "error");
+            console.error(error.message);
+        });
 };
 
 window.logoutDashboard = () => {
-    document.getElementById('saPass').value = "";
+    // Firebase se officially logout hona
+    auth.signOut().then(() => {
+        showToast("Logged out successfully! 🔒", "success");
+        document.getElementById('saPass').value = "";
+    }).catch((error) => {
+        showToast("Logout me error aaya!", "error");
+    });
+};
+
+// 🛡️ THE ULTIMATE SECURITY GUARD (Page Load Check)
+window.onload = () => {
+    updateGreetingAndDate();
     
-    // Browser se login history delete karna
-    localStorage.removeItem("isSuperAdmin"); 
-    
-    document.getElementById('dashboardSection').style.display = 'none';
-    document.getElementById('loginSection').style.display = 'flex'; 
-    document.getElementById('sidebar').classList.remove('expanded'); 
-    showToast("Logged out successfully!", "success");
+    // Ye guard hamesha check karega ki asli CEO login hai ya nahi
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            // Asli user hai -> Dashboard ka taala kholo
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'flex';
+        } else {
+            // Koi aur hai ya logout ho gaya -> Dashboard chhupao, Login dikhao
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'flex';
+        }
+    });
 };
 
 // ==========================================
@@ -231,7 +253,7 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-
+const auth = firebase.auth();
 let clientsData = [];
 
 // 🚀 REAL-TIME LISTENER (Data lana aur Dashboard Dashboard Update karna)
@@ -368,16 +390,4 @@ window.exportToCSV = () => {
 
 // Start logic
 // Start logic & Security Check
-window.onload = () => {
-    // Check karo ki kya Arun pehle se login hai?
-    if(localStorage.getItem("isSuperAdmin") === "true") {
-        // Agar haan, toh direct Dashboard kholo
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('dashboardSection').style.display = 'flex';
-        updateGreetingAndDate();
-    } else {
-        // Agar nahi, toh Dashboard chupao aur Login screen dikhao
-        document.getElementById('dashboardSection').style.display = 'none';
-        document.getElementById('loginSection').style.display = 'flex';
-    }
-};
+
