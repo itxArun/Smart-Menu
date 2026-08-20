@@ -1,3 +1,6 @@
+// ==========================================
+// 🎨 UI & UTILITY FUNCTIONS
+// ==========================================
 window.showToast = (message, type = "success") => {
     const toast = document.getElementById('customToast');
     const icon = document.getElementById('toastIcon');
@@ -53,7 +56,9 @@ window.logoutDashboard = () => {
     showToast("Logged out successfully!", "success");
 };
 
-// 🌟 Chart.js Logic (Anti-Glitch)
+// ==========================================
+// 📊 CHART & TAB NAVIGATION
+// ==========================================
 let myChart = null;
 const loadAnalyticsChart = () => {
     const ctx = document.getElementById('mainChart');
@@ -77,7 +82,7 @@ const loadAnalyticsChart = () => {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false, /* Ye property glitch ko rokegi */
+            maintainAspectRatio: false, 
             plugins: { legend: { display: false } },
             scales: {
                 y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b94a7' } },
@@ -86,6 +91,7 @@ const loadAnalyticsChart = () => {
         }
     });
 };
+
 window.switchTab = (tabName) => {
     const overviewSec = document.getElementById('overviewSection');
     const addSec = document.getElementById('addClientSection');
@@ -111,27 +117,16 @@ window.switchTab = (tabName) => {
         listSec.style.display = 'block'; navList.classList.add('active');
     } else if (tabName === 'analytics') {
         analyticsSec.style.display = 'block'; navAnalytics.classList.add('active');
-        // Jab Analytics tab khule, tabhi Chart render karo
         setTimeout(() => { loadAnalyticsChart(); }, 100);
     }
 };
 
-window.saveNewClient = () => {
-    showToast("Client Account Created & Details Sent! 🚀", "success");
-    const inputs = document.querySelectorAll('#addClientSection input');
-    inputs.forEach(input => input.value = '');
-    const select = document.querySelector('#addClientSection select');
-    if(select) select.selectedIndex = 0;
-    setTimeout(() => { switchTab('overview'); }, 1200);
-};
-
-// 🌟 NAYA: Notification Toggle Logic
 window.toggleNotif = () => {
     document.getElementById('notifDropdown').classList.toggle('show');
 };
 
-// 🌟 NAYA: Edit Modal Logic
-window.openEditModal = () => {
+window.openEditModal = (dbId) => {
+    // dbId ko aage chal kar Update function ke liye use karenge
     document.getElementById('editModal').style.display = 'flex';
 };
 
@@ -140,14 +135,11 @@ window.closeEditModal = (isSaved) => {
     if(isSaved) showToast("Client Plan Updated!", "success");
 };
 
-window.onload = () => {
-    updateGreetingAndDate();
-};
+
 // ==========================================
 // 🔥 FIREBASE CLOUD DATABASE LOGIC
 // ==========================================
 
-// 1. Tumhara Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
     authDomain: "itx-arun-bdf24.firebaseapp.com",
@@ -157,23 +149,30 @@ const firebaseConfig = {
     appId: "1:442083262265:web:3e023b1211f752cb3132e8"
 };
 
-// 2. Firebase ko Start karna
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore(); // Database ka connection
+const db = firebase.firestore();
 
 let clientsData = [];
 
-// 3. 🚀 REAL-TIME LISTENER (Ye jadoo hai: Database me kuch bhi update hoga, table apne aap refresh hogi)
-db.collection("onboarded_clients").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+// 🚀 REAL-TIME LISTENER (merchants folder aur tumhara old data mapping)
+db.collection("merchants").onSnapshot((snapshot) => {
     clientsData = [];
     snapshot.forEach((doc) => {
-        // Firebase se data nikal kar array me dalna
-        clientsData.push({ dbId: doc.id, ...doc.data() });
+        const data = doc.data();
+        clientsData.push({ 
+            dbId: doc.id, 
+            id: data.restaurantId || data.id || '#SM-???', 
+            name: data.restaurantName || data.name || 'Unknown', 
+            city: data.city || 'N/A', 
+            plan: data.plan || 'Free Tier', 
+            status: data.status || 'Active',
+            statusClass: data.statusClass || 'active-badge'
+        });
     });
-    renderTable(); // Table UI update karna
+    renderTable(); 
 });
 
-// Table ko Load karne ka function
 const renderTable = () => {
     const tbody = document.getElementById("clientTableBody");
     if(!tbody) return;
@@ -193,7 +192,6 @@ const renderTable = () => {
     });
 };
 
-// 🔍 LIVE SEARCH LOGIC
 window.filterTable = (query) => {
     let filter = query.toLowerCase();
     let tbody = document.getElementById("clientTableBody");
@@ -205,7 +203,7 @@ window.filterTable = (query) => {
     }
 };
 
-// ➕ FIREBASE ME NAYA CLIENT SAVE KARNA
+// ➕ NAYA CLIENT SAVE KARNA (Matching your old DB structure)
 window.saveNewClient = () => {
     const name = document.getElementById('clientNameInput').value;
     const city = document.getElementById('clientCityInput').value;
@@ -216,19 +214,25 @@ window.saveNewClient = () => {
     const randomId = '#SM-' + Math.floor(Math.random() * 900 + 100);
     showToast("Connecting to Cloud Server... ⏳", "success");
     
-    // Cloud Firestore me Data Bhejna
-    db.collection("onboarded_clients").add({
-        id: randomId,
-        name: name,
+    db.collection("merchants").add({
+        restaurantId: randomId,
+        restaurantName: name,
+        email: "Not Provided", 
+        upiId: "Not Provided", 
         city: city || 'N/A',
         plan: plan,
         status: 'Active',
         statusClass: 'active-badge',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp() // Date & Time save karna
+        createdAt: firebase.firestore.FieldValue.serverTimestamp() 
     }).then(() => {
         showToast("Client Saved to Cloud Database! ☁️🚀", "success");
+        
+        // Form Clear karna
         const inputs = document.querySelectorAll('#addClientSection input');
         inputs.forEach(input => input.value = '');
+        const select = document.querySelector('#addClientSection select');
+        if(select) select.selectedIndex = 0;
+
         setTimeout(() => { switchTab('list'); }, 1200);
     }).catch((error) => {
         showToast("Error connecting to server!", "error");
