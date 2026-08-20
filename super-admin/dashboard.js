@@ -1,3 +1,4 @@
+// Popup Function
 window.showToast = (message, type = "success") => {
     const toast = document.getElementById('customToast');
     const icon = document.getElementById('toastIcon');
@@ -14,12 +15,13 @@ window.showToast = (message, type = "success") => {
     setTimeout(() => { toast.classList.remove('show'); }, 3000);
 };
 
-// 🍔 COLLAPSIBLE SIDEBAR LOGIC
+// Sidebar Toggle
 window.toggleSidebar = () => {
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('expanded');
 };
 
+// Dynamic Date and Greeting
 const updateGreetingAndDate = () => {
     const hour = new Date().getHours();
     let greeting = "Good Evening, Arun Bhai! 🌙";
@@ -28,42 +30,37 @@ const updateGreetingAndDate = () => {
     else if (hour >= 12 && hour < 17) greeting = "Good Afternoon, Arun Bhai! ☀️";
     
     document.getElementById('dynamicGreeting').innerText = greeting;
-
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', options);
 };
 
+// Login Logic
 window.superAdminLogin = () => {
     const email = document.getElementById('saEmail').value;
     const pass = document.getElementById('saPass').value;
     
     if(email === "admin@arun.com" && pass === "Arun@123") {
         showToast("Welcome CEO! 🚀", "success");
-        
         setTimeout(() => {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('dashboardSection').style.display = 'flex';
             updateGreetingAndDate(); 
         }, 500);
-
     } else {
         showToast("Invalid Credentials!", "error");
     }
 };
 
+// Logout Logic
 window.logoutDashboard = () => {
     document.getElementById('saPass').value = "";
     document.getElementById('dashboardSection').style.display = 'none';
     document.getElementById('loginSection').style.display = 'flex'; 
     document.getElementById('sidebar').classList.remove('expanded'); 
-    
     showToast("Logged out successfully!", "success");
 };
-// 🔥 TEMPORARY BYPASS (Testing ke liye Auto-Load)
-window.onload = () => {
-    updateGreetingAndDate();
-};
-// TAB SWITCHING LOGIC (Overview vs Add Client)
+
+// Tab Switching Logic (Overview vs Add Client)
 window.switchTab = (tabName) => {
     const overviewSec = document.getElementById('overviewSection');
     const addSec = document.getElementById('addClientSection');
@@ -71,21 +68,20 @@ window.switchTab = (tabName) => {
     const navAdd = document.getElementById('nav-add');
 
     if (tabName === 'overview') {
-        // Show Overview, Hide Form
         overviewSec.style.display = 'grid';
         addSec.style.display = 'none';
-        
-        // Update active class on buttons
         navOverview.classList.add('active');
         navAdd.classList.remove('active');
     } 
     else if (tabName === 'add') {
-        // Show Form, Hide Overview
         overviewSec.style.display = 'none';
         addSec.style.display = 'block';
-        
-        // Update active class on buttons
         navOverview.classList.remove('active');
         navAdd.classList.add('active');
     }
+};
+
+// Auto load for testing (Bypass Login)
+window.onload = () => {
+    updateGreetingAndDate();
 };
