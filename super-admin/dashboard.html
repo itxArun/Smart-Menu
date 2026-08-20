@@ -73,7 +73,7 @@
                 
                 <div class="header-search">
                     <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" placeholder="Search clients, IDs...">
+                    <input type="text" onkeyup="filterTable(this.value)" placeholder="Search clients, IDs...">
                 </div>
 
                 <div class="header-right-icons">
@@ -142,15 +142,15 @@
                 <div class="glass-box form-container">
                     <h2 class="section-title">Onboard New Client</h2>
                     <p class="section-sub">Enter restaurant details to generate QR menu access.</p>
-                    <div class="form-grid">
-                        <div class="input-group"><label>Restaurant/Cafe Name</label><input type="text" placeholder="e.g. Spice Route"></div>
+                   <div class="form-grid">
+                        <div class="input-group"><label>Restaurant/Cafe Name</label><input type="text" id="clientNameInput" placeholder="e.g. Spice Route"></div>
                         <div class="input-group"><label>Owner Name</label><input type="text" placeholder="Full Name"></div>
                         <div class="input-group"><label>Email Address</label><input type="email" placeholder="client@email.com"></div>
                         <div class="input-group"><label>Phone Number</label><input type="tel" placeholder="+91 "></div>
-                        <div class="input-group"><label>City / Location</label><input type="text" placeholder="e.g. Patna, Bihar"></div>
+                        <div class="input-group"><label>City / Location</label><input type="text" id="clientCityInput" placeholder="e.g. Patna, Bihar"></div>
                         <div class="input-group">
                             <label>Subscription Plan</label>
-                            <select>
+                            <select id="clientPlanInput">
                                 <option>14-Days Trial</option><option>Pro Plan (Monthly)</option><option>Premium (Yearly)</option>
                             </select>
                         </div>
@@ -164,11 +164,11 @@
                 <div class="glass-box" style="padding: 25px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2 class="section-title">All Onboarded Clients</h2>
-                        <div class="header-search" style="width: 250px;"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search by name..."></div>
+                        <div class="header-search" style="width: 250px;"><i class="ph ph-magnifying-glass"></i><input type="text" onkeyup="filterTable(this.value)" placeholder="Search by name..."></div>
                     </div>
                     <table class="main-data-table">
                         <thead><tr><th>Client ID</th><th>Restaurant Name</th><th>City</th><th>Plan</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody>
+                        <tbody id="clientTableBody">
                             <tr><td style="color:#8b94a7;">#SM-001</td><td>Food Station</td><td>Patna</td><td>Premium (Yearly)</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
                             <tr><td style="color:#8b94a7;">#SM-002</td><td>FoodVilla</td><td>Delhi</td><td>Pro Plan</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
                             <tr><td style="color:#8b94a7;">#SM-003</td><td>Demo Cafe</td><td>Mumbai</td><td>14-Days Trial</td><td><span class="status-badge trial-badge">Trial Phase</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
