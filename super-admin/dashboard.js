@@ -36,8 +36,13 @@ window.superAdminLogin = () => {
     const email = document.getElementById('saEmail').value;
     const pass = document.getElementById('saPass').value;
     
+    // Master Credentials (Tum yahan apna password change kar sakte ho)
     if(email === "admin@arun.com" && pass === "Arun@123") {
         showToast("Welcome CEO! 🚀", "success");
+        
+        // Browser ko yaad dilana ki Arun login ho chuka hai
+        localStorage.setItem("isSuperAdmin", "true"); 
+        
         setTimeout(() => {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('dashboardSection').style.display = 'flex';
@@ -50,6 +55,10 @@ window.superAdminLogin = () => {
 
 window.logoutDashboard = () => {
     document.getElementById('saPass').value = "";
+    
+    // Browser se login history delete karna
+    localStorage.removeItem("isSuperAdmin"); 
+    
     document.getElementById('dashboardSection').style.display = 'none';
     document.getElementById('loginSection').style.display = 'flex'; 
     document.getElementById('sidebar').classList.remove('expanded'); 
