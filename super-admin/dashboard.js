@@ -330,41 +330,65 @@ window.filterTable = (query) => {
     }
 };
 
-// ➕ NAYA CLIENT SAVE KARNA (Matching your old DB structure)
+// ==========================================
+// 🥷 NINJA TRICK: SECONDARY APP FOR AUTO-ACCOUNT CREATION
+// ==========================================
+// Ye doosra engine hai jo sirf account banayega taaki admin logout na ho
+const secondaryApp = firebase.initializeApp(firebaseConfig, "SecondaryApp");
+const secondaryAuth = secondaryApp.auth();
+
+// ➕ NAYA CLIENT SAVE & AUTO-LOGIN CREATE KARNA
 window.saveNewClient = () => {
     const name = document.getElementById('clientNameInput').value;
+    const email = document.getElementById('clientEmailInput').value;
+    const pass = document.getElementById('clientPassInput').value;
     const city = document.getElementById('clientCityInput').value;
     const plan = document.getElementById('clientPlanInput').value;
     
-    if(!name) { showToast("Please enter Restaurant Name!", "error"); return; }
+    // Check karo ki sab zaruri details bhari hain ya nahi
+    if(!name || !email || !pass) { 
+        showToast("Restaurant Name, Email aur Password zaruri hai!", "error"); 
+        return; 
+    }
 
     const randomId = '#SM-' + Math.floor(Math.random() * 900 + 100);
-    showToast("Connecting to Cloud Server... ⏳", "success");
+    showToast("Creating Secure Login & Database... ⏳", "success");
     
-    db.collection("merchants").add({
-        restaurantId: randomId,
-        restaurantName: name,
-        email: "Not Provided", 
-        upiId: "Not Provided", 
-        city: city || 'N/A',
-        plan: plan,
-        status: 'Active',
-        statusClass: 'active-badge',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp() 
-    }).then(() => {
-        showToast("Client Saved to Cloud Database! ☁️🚀", "success");
-        
-        // Form Clear karna
-        const inputs = document.querySelectorAll('#addClientSection input');
-        inputs.forEach(input => input.value = '');
-        const select = document.querySelector('#addClientSection select');
-        if(select) select.selectedIndex = 0;
+    // STEP 1: Background me naya Account banana
+    secondaryAuth.createUserWithEmailAndPassword(email, pass)
+        .then((userCredential) => {
+            // Account bante hi secondary engine ko turant sign-out kar do taaki kachra na jama ho
+            secondaryAuth.signOut();
+            
+            // STEP 2: Agar login ban gaya, toh Firestore me Data save karo
+            return db.collection("merchants").add({
+                restaurantId: randomId,
+                restaurantName: name,
+                email: email, 
+                upiId: "Not Provided", 
+                city: city || 'N/A',
+                plan: plan,
+                status: 'Active',
+                statusClass: 'active-badge',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+            });
+        })
+        .then(() => {
+            showToast("Hotel Created & Owner Account Ready! 🚀", "success");
+            
+            // Form Clear karna
+            const inputs = document.querySelectorAll('#addClientSection input');
+            inputs.forEach(input => input.value = '');
+            const select = document.querySelector('#addClientSection select');
+            if(select) select.selectedIndex = 0;
 
-        setTimeout(() => { switchTab('list'); }, 1200);
-    }).catch((error) => {
-        showToast("Error connecting to server!", "error");
-        console.error(error);
-    });
+            setTimeout(() => { switchTab('list'); }, 1500);
+        })
+        .catch((error) => {
+            // Agar email pehle se exist karta hai ya password weak hai
+            showToast("Error: " + error.message, "error");
+            console.error(error);
+        });
 };
 
 // 📥 EXPORT TO CSV (BLOB METHOD)
