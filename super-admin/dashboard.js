@@ -225,12 +225,12 @@ window.saveNewClient = () => {
     setTimeout(() => { switchTab('list'); }, 1000);
 };
 
-// 📥 EXPORT TO CSV (EXCEL) LOGIC
+// 📥 EXPORT TO CSV (EXCEL) LOGIC - PRO BLOB METHOD
 window.exportToCSV = () => {
     if(clientsData.length === 0) { showToast("No data to export!", "error"); return; }
     
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Client ID,Restaurant Name,City,Plan,Status\n"; // Headings
+    // Sirf headings yahan rahengi
+    let csvContent = "Client ID,Restaurant Name,City,Plan,Status\n"; 
     
     // Har client ka data line by line add karo
     clientsData.forEach(client => {
@@ -238,10 +238,13 @@ window.exportToCSV = () => {
         csvContent += row + "\n";
     });
     
+    // Blob magic: Ye data ko directly file object me badal deta hai (No # error)
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
     // File Banakar Download Karao
-    const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    link.setAttribute("href", url);
     link.setAttribute("download", "SmartMenu_Clients.csv");
     document.body.appendChild(link);
     link.click();
