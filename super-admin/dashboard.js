@@ -225,11 +225,18 @@ const db = firebase.firestore();
 
 let clientsData = [];
 
-// 🚀 REAL-TIME LISTENER (merchants folder aur tumhara old data mapping)
+// 🚀 REAL-TIME LISTENER (Data lana aur Dashboard Dashboard Update karna)
 db.collection("merchants").onSnapshot((snapshot) => {
     clientsData = [];
+    
+    // Counters start from zero
+    let totalClientsCount = 0;
+    let activeClientsCount = 0;
+    
     snapshot.forEach((doc) => {
         const data = doc.data();
+        
+        // Data map kar rahe hain
         clientsData.push({ 
             dbId: doc.id, 
             id: data.restaurantId || data.id || '#SM-???', 
@@ -239,10 +246,29 @@ db.collection("merchants").onSnapshot((snapshot) => {
             status: data.status || 'Active',
             statusClass: data.statusClass || 'active-badge'
         });
-    });
-    renderTable(); 
-});
 
+        // Ginti (Counting) kar rahe hain
+        totalClientsCount++;
+        if(data.status === 'Active' || !data.status) {
+            activeClientsCount++;
+        }
+    });
+    
+    // UI Table Update karna
+    renderTable(); 
+    
+    // 📊 Dashboard ke Numbers Update karna
+    const dashTotal = document.getElementById('dashTotalClients');
+    const dashActive = document.getElementById('dashActiveClients');
+    const dashRev = document.getElementById('dashRevenue');
+    
+    if(dashTotal) dashTotal.innerText = totalClientsCount;
+    if(dashActive) dashActive.innerText = activeClientsCount;
+    
+    // Maan lo har active client ka 1500 Rs ka plan hai (Revenue calculation)
+    const estimatedRevenue = activeClientsCount * 1500;
+    if(dashRev) dashRev.innerText = "₹" + estimatedRevenue.toLocaleString("en-IN");
+});
 const renderTable = () => {
     const tbody = document.getElementById("clientTableBody");
     if(!tbody) return;
