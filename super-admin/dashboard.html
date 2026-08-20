@@ -177,19 +177,70 @@
                 </div>
             </div>
 
-            <!-- Analytics Section (Chart Canvas added) -->
+         <!-- Analytics Section (Bento Grid Style) -->
             <div id="analyticsSection" style="display: none;">
-                <div class="glass-box" style="padding: 25px;">
-                    <h2 class="section-title" style="margin-bottom: 20px;">Platform Analytics</h2>
-                    <div class="analytics-grid">
-                        <div class="stat-box"><div class="stat-icon" style="color: #00d084; background: rgba(0, 208, 132, 0.1);"><i class="ph ph-trend-up"></i></div><div class="stat-info"><h3>Total Scans</h3><h2>12,450</h2><p>+15% from last week</p></div></div>
-                        <div class="stat-box"><div class="stat-icon" style="color: #38bdf8; background: rgba(56, 189, 248, 0.1);"><i class="ph ph-users"></i></div><div class="stat-info"><h3>New Diners</h3><h2>3,200</h2><p>Across all restaurants</p></div></div>
-                        <div class="stat-box"><div class="stat-icon" style="color: #f5a623; background: rgba(245, 166, 35, 0.1);"><i class="ph ph-star"></i></div><div class="stat-info"><h3>Top Client</h3><h2 style="font-size: 18px; margin-top:5px;">Food Station</h2><p>4,120 Scans this month</p></div></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="section-title">Platform Analytics</h2>
+                </div>
+                
+                <!-- Reusing our Overview Grid Class -->
+                <div class="crm-grid">
+                    
+                    <!-- 1. Main Chart (Large Box) -->
+                    <div class="crm-widget table-widget glass-box w-large" style="padding: 20px;">
+                        <div class="w-title" style="margin-bottom: 20px;">Monthly Scan Activity</div>
+                        <canvas id="mainChart" height="250"></canvas>
                     </div>
-                    <!-- 📊 Asli Chart Yahan Aayega -->
-                    <div class="chart-container" style="margin-top: 25px; padding: 20px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
-                        <canvas id="mainChart" height="80"></canvas>
+
+                    <!-- 2. Top Client (Square Box) -->
+                    <div class="crm-widget glass-box w-square">
+                        <div class="w-title">Top Performing Client</div>
+                        <div class="stat-icon" style="color: #f5a623; background: rgba(245, 166, 35, 0.1); margin: 15px 0 10px 0; font-size: 28px; width: 60px; height: 60px;">
+                            <i class="ph ph-star"></i>
+                        </div>
+                        <h2 style="font-size: 18px; color:#fff; margin:0;">Food Station</h2>
+                        <p style="margin: 5px 0 0; font-size: 11px; color: #00d084;">4,120 Scans</p>
                     </div>
+
+                    <!-- 3. Devices Setup (Square Box) -->
+                    <div class="crm-widget glass-box w-square">
+                        <div class="w-title">Scans By Device</div>
+                        <div style="display: flex; justify-content: space-around; width: 100%; margin-top: 20px;">
+                            <div style="text-align:center;">
+                                <i class="ph ph-device-mobile" style="font-size:32px; color:#38bdf8;"></i><br>
+                                <span style="font-size:14px; font-weight:600; color:#fff;">85%</span><br>
+                                <span style="font-size:10px; color:#8b94a7;">Mobile</span>
+                            </div>
+                            <div style="text-align:center;">
+                                <i class="ph ph-desktop" style="font-size:32px; color:#a1a5b7;"></i><br>
+                                <span style="font-size:14px; font-weight:600; color:#fff;">15%</span><br>
+                                <span style="font-size:10px; color:#8b94a7;">Desktop</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Platform Growth (Wide Box) -->
+                    <div class="crm-widget glass-box w-wide" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div class="w-title">Platform Growth</div>
+                            <h1 class="w-amount" style="font-size: 32px;">+3,200</h1>
+                            <div class="w-sub">New Diners This Week</div>
+                        </div>
+                        <div class="stat-icon" style="color: #00d084; background: rgba(0, 208, 132, 0.1); width:70px; height:70px; font-size:32px;">
+                            <i class="ph ph-trend-up"></i>
+                        </div>
+                    </div>
+
+                    <!-- 5. Status (Wide Box) -->
+                    <div class="crm-widget glass-box w-wide">
+                        <div class="w-title">System Status</div>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                            <div style="width: 15px; height: 15px; background: #00d084; border-radius: 50%; box-shadow: 0 0 10px #00d084;"></div>
+                            <h2 style="font-size: 16px; color:#fff; margin:0;">All Systems Operational</h2>
+                        </div>
+                        <p style="margin: 5px 0 0; font-size: 11px; color: #8b94a7;">API latency: 42ms</p>
+                    </div>
+
                 </div>
             </div>
 
