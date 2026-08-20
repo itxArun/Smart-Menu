@@ -143,57 +143,115 @@ window.closeEditModal = (isSaved) => {
 window.onload = () => {
     updateGreetingAndDate();
 };
+// ==========================================
+// 💾 LOCAL STORAGE & DATA LOGIC
+// ==========================================
+
+// Default data (Agar system naya hai)
+let clientsData = [
+    { id: '#SM-001', name: 'Food Station', city: 'Patna', plan: 'Premium (Yearly)', status: 'Active', statusClass: 'active-badge' },
+    { id: '#SM-002', name: 'FoodVilla', city: 'Delhi', plan: 'Pro Plan', status: 'Active', statusClass: 'active-badge' },
+    { id: '#SM-003', name: 'Demo Cafe', city: 'Mumbai', plan: '14-Days Trial', status: 'Trial Phase', statusClass: 'trial-badge' }
+];
+
+// Check karo agar browser me pehle se save hai
+if(localStorage.getItem('smartMenuClients')) {
+    clientsData = JSON.parse(localStorage.getItem('smartMenuClients'));
+}
+
+// Table ko Load karne ka function
+const renderTable = () => {
+    const tbody = document.getElementById("clientTableBody");
+    if(!tbody) return;
+    
+    tbody.innerHTML = ''; // Purana static html saaf karo
+    
+    clientsData.forEach(client => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="color:#8b94a7;">${client.id}</td>
+            <td>${client.name}</td>
+            <td>${client.city}</td>
+            <td>${client.plan}</td>
+            <td><span class="status-badge ${client.statusClass}">${client.status}</span></td>
+            <td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+};
+
 // 🔍 LIVE SEARCH LOGIC
 window.filterTable = (query) => {
     let filter = query.toLowerCase();
     let tbody = document.getElementById("clientTableBody");
-    if(!tbody) return;
-    
     let trs = tbody.getElementsByTagName("tr");
+    
     for (let i = 0; i < trs.length; i++) {
         let text = trs[i].innerText.toLowerCase();
         trs[i].style.display = text.includes(filter) ? "" : "none";
     }
 };
 
-// ➕ REAL-TIME CLIENT ADD LOGIC (Replace old saveNewClient)
+// ➕ REAL-TIME CLIENT ADD & SAVE LOGIC
 window.saveNewClient = () => {
-    // Form se details uthana
     const name = document.getElementById('clientNameInput').value;
     const city = document.getElementById('clientCityInput').value;
     const plan = document.getElementById('clientPlanInput').value;
     
-    // Agar naam khali hai toh error do
-    if(!name) {
-        showToast("Please enter Restaurant Name!", "error");
-        return;
-    }
+    if(!name) { showToast("Please enter Restaurant Name!", "error"); return; }
 
-    // Table me naya row banana
-    const tbody = document.getElementById('clientTableBody');
-    const newRow = document.createElement('tr');
-    
-    // Random ID generate karna
     const randomId = '#SM-' + Math.floor(Math.random() * 900 + 100);
     
-    // Naya data table me set karna
-    newRow.innerHTML = `
-        <td style="color:#8b94a7;">${randomId}</td>
-        <td>${name}</td>
-        <td>${city || 'N/A'}</td>
-        <td>${plan}</td>
-        <td><span class="status-badge active-badge">Active</span></td>
-        <td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td>
-    `;
-    
-    // Sabse upar (top pe) nayi entry add karna
-    tbody.insertBefore(newRow, tbody.firstChild);
+    // Naye client ko list me sabse upar add karo
+    clientsData.unshift({
+        id: randomId,
+        name: name,
+        city: city || 'N/A',
+        plan: plan,
+        status: 'Active',
+        statusClass: 'active-badge'
+    });
 
-    // Success popup aur form clear karna
-    showToast("Client Added Successfully! 🚀", "success");
+    // Browser Storage me Save karo
+    localStorage.setItem('smartMenuClients', JSON.stringify(clientsData));
+    
+    // Table ko wapas reload karo naye data ke sath
+    renderTable();
+
+    showToast("Client Added & Saved Permanently! 🚀", "success");
+    
     const inputs = document.querySelectorAll('#addClientSection input');
     inputs.forEach(input => input.value = '');
-    
-    // Magic Effect: Client add hone ke baad direct 'Client List' page kholna
     setTimeout(() => { switchTab('list'); }, 1000);
+};
+
+// 📥 EXPORT TO CSV (EXCEL) LOGIC
+window.exportToCSV = () => {
+    if(clientsData.length === 0) { showToast("No data to export!", "error"); return; }
+    
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Client ID,Restaurant Name,City,Plan,Status\n"; // Headings
+    
+    // Har client ka data line by line add karo
+    clientsData.forEach(client => {
+        let row = `${client.id},${client.name},${client.city},${client.plan},${client.status}`;
+        csvContent += row + "\n";
+    });
+    
+    // File Banakar Download Karao
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "SmartMenu_Clients.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast("Excel File Downloaded! 📊", "success");
+};
+
+// Jab page khule toh Table Data automatically load ho jaye
+window.onload = () => {
+    updateGreetingAndDate();
+    renderTable(); // <--- NAYA: Table loading start hogi
 };
