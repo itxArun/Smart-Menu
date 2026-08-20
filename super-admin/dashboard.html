@@ -51,7 +51,7 @@
                <li id="nav-list" title="All Clients" onclick="switchTab('list')">
                     <i class="ph ph-users"></i> <span class="nav-text">Client List</span>
                 </li>
-                <li title="Analytics">
+               <li id="nav-analytics" title="Analytics" onclick="switchTab('analytics')">
                     <i class="ph ph-chart-line-up"></i> <span class="nav-text">Analytics</span>
                 </li>
                 <li class="logout-btn" title="Logout" onclick="logoutDashboard()">
@@ -220,6 +220,50 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+            <!-- Analytics Section (Hidden by default) -->
+            <div id="analyticsSection" style="display: none;">
+                <div class="glass-box" style="padding: 25px;">
+                    <h2 class="section-title" style="margin-bottom: 20px;">Platform Analytics</h2>
+                    
+                    <div class="analytics-grid">
+                        <!-- Stat Box 1 -->
+                        <div class="stat-box">
+                            <div class="stat-icon" style="color: #00d084; background: rgba(0, 208, 132, 0.1);"><i class="ph ph-trend-up"></i></div>
+                            <div class="stat-info">
+                                <h3>Total Scans</h3>
+                                <h2>12,450</h2>
+                                <p>+15% from last week</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Stat Box 2 -->
+                        <div class="stat-box">
+                            <div class="stat-icon" style="color: #38bdf8; background: rgba(56, 189, 248, 0.1);"><i class="ph ph-users"></i></div>
+                            <div class="stat-info">
+                                <h3>New Diners</h3>
+                                <h2>3,200</h2>
+                                <p>Across all restaurants</p>
+                            </div>
+                        </div>
+
+                        <!-- Stat Box 3 -->
+                        <div class="stat-box">
+                            <div class="stat-icon" style="color: #f5a623; background: rgba(245, 166, 35, 0.1);"><i class="ph ph-star"></i></div>
+                            <div class="stat-info">
+                                <h3>Top Client</h3>
+                                <h2 style="font-size: 18px; margin-top:5px;">Food Station</h2>
+                                <p>4,120 Scans this month</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder for Chart -->
+                    <div class="chart-container" style="margin-top: 25px; padding: 40px; text-align: center; border: 1px dashed rgba(255,255,255,0.1); border-radius: 10px;">
+                        <i class="ph ph-chart-bar" style="font-size: 48px; color: #8b94a7; margin-bottom: 10px;"></i>
+                        <p style="color: #8b94a7; font-size: 13px;">Graphical Chart will be integrated here (e.g., using Chart.js)</p>
+                    </div>
                 </div>
             </div>
         </div> <!-- End of Main Content -->
