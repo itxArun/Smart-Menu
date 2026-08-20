@@ -180,7 +180,16 @@
             <div id="clientListSection" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 class="section-title">Client Management</h2>
-                    <div class="header-search" style="width: 250px;"><i class="ph ph-magnifying-glass"></i><input type="text" onkeyup="filterTable(this.value)" placeholder="Search by name..."></div>
+                    <div style="display: flex; gap: 10px;">
+                        <div class="header-search" style="width: 250px;">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="text" onkeyup="filterTable(this.value)" placeholder="Search by name...">
+                        </div>
+                        <!-- 📥 EXPORT BUTTON -->
+                        <button class="btn-icon" onclick="exportToCSV()" title="Download Excel" style="background: rgba(0,208,132,0.1); color: #00d084; border-color: rgba(0,208,132,0.2);">
+                            <i class="ph ph-download-simple"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="crm-grid">
