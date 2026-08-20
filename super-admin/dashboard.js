@@ -144,3 +144,57 @@ window.closeEditModal = (isSaved) => {
 window.onload = () => {
     updateGreetingAndDate();
 };
+// 🔍 LIVE SEARCH LOGIC
+window.filterTable = (query) => {
+    let filter = query.toLowerCase();
+    let tbody = document.getElementById("clientTableBody");
+    if(!tbody) return;
+    
+    let trs = tbody.getElementsByTagName("tr");
+    for (let i = 0; i < trs.length; i++) {
+        let text = trs[i].innerText.toLowerCase();
+        trs[i].style.display = text.includes(filter) ? "" : "none";
+    }
+};
+
+// ➕ REAL-TIME CLIENT ADD LOGIC (Replace old saveNewClient)
+window.saveNewClient = () => {
+    // Form se details uthana
+    const name = document.getElementById('clientNameInput').value;
+    const city = document.getElementById('clientCityInput').value;
+    const plan = document.getElementById('clientPlanInput').value;
+    
+    // Agar naam khali hai toh error do
+    if(!name) {
+        showToast("Please enter Restaurant Name!", "error");
+        return;
+    }
+
+    // Table me naya row banana
+    const tbody = document.getElementById('clientTableBody');
+    const newRow = document.createElement('tr');
+    
+    // Random ID generate karna
+    const randomId = '#SM-' + Math.floor(Math.random() * 900 + 100);
+    
+    // Naya data table me set karna
+    newRow.innerHTML = `
+        <td style="color:#8b94a7;">${randomId}</td>
+        <td>${name}</td>
+        <td>${city || 'N/A'}</td>
+        <td>${plan}</td>
+        <td><span class="status-badge active-badge">Active</span></td>
+        <td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td>
+    `;
+    
+    // Sabse upar (top pe) nayi entry add karna
+    tbody.insertBefore(newRow, tbody.firstChild);
+
+    // Success popup aur form clear karna
+    showToast("Client Added Successfully! 🚀", "success");
+    const inputs = document.querySelectorAll('#addClientSection input');
+    inputs.forEach(input => input.value = '');
+    
+    // Magic Effect: Client add hone ke baad direct 'Client List' page kholna
+    setTimeout(() => { switchTab('list'); }, 1000);
+};
