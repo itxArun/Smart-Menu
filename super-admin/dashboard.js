@@ -85,3 +85,21 @@ window.switchTab = (tabName) => {
 window.onload = () => {
     updateGreetingAndDate();
 };
+// Save New Client Logic
+window.saveNewClient = () => {
+    // 1. Success Message Dikhayega
+    showToast("Client Account Created & Details Sent! 🚀", "success");
+
+    // 2. Form ke saare input boxes ko khali (clear) karega
+    const inputs = document.querySelectorAll('#addClientSection input');
+    inputs.forEach(input => input.value = '');
+
+    // Select dropdown ko wapas pehle option par set karega
+    const select = document.querySelector('#addClientSection select');
+    if(select) select.selectedIndex = 0;
+
+    // 3. Ek second baad wapas Overview screen par bhej dega
+    setTimeout(() => {
+        switchTab('overview');
+    }, 1200);
+};
