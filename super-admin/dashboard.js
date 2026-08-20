@@ -367,6 +367,17 @@ window.exportToCSV = () => {
 };
 
 // Start logic
+// Start logic & Security Check
 window.onload = () => {
-    updateGreetingAndDate();
+    // Check karo ki kya Arun pehle se login hai?
+    if(localStorage.getItem("isSuperAdmin") === "true") {
+        // Agar haan, toh direct Dashboard kholo
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('dashboardSection').style.display = 'flex';
+        updateGreetingAndDate();
+    } else {
+        // Agar nahi, toh Dashboard chupao aur Login screen dikhao
+        document.getElementById('dashboardSection').style.display = 'none';
+        document.getElementById('loginSection').style.display = 'flex';
+    }
 };
