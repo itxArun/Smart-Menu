@@ -1,14 +1,14 @@
-/* 🔥 COMPACT MASTER DASHBOARD UI STYLES */
+/* Base Styles */
 body { 
     background: linear-gradient(135deg, #0f172a, #020617); 
     color: #a1a5b7; 
     margin: 0; 
     font-family: 'Poppins', sans-serif; 
-    font-size: 12px; /* Smaller base font */
+    font-size: 12px;
     overflow-x: hidden;
 }
 
-/* 🧊 Glass Effect */
+/* Glass Box */
 .glass-box {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
@@ -18,22 +18,22 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-/* 🔐 LOGIN WRAPPER */
+/* Login Wrapper */
 .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; }
 .login-box { padding: 30px; width: 280px; text-align: center; }
 .login-box h2 { color: #fff; margin-bottom: 20px; font-weight: 500; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.input-group { margin-bottom: 12px; }
+.input-group { margin-bottom: 12px; text-align: left; }
 .input-group input { width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none; font-family: 'Poppins', sans-serif; box-sizing: border-box; font-size: 12px; }
 .input-group input:focus { border-color: #00d084; }
 .login-btn { width: 100%; padding: 10px; background: #00d084; color: #020617; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s; }
 .login-btn:hover { background: #00b370; }
 
-/* 👑 DASHBOARD LAYOUT */
+/* Dashboard Layout */
 .dashboard-container { display: flex; height: 100vh; width: 100%; overflow: hidden; padding: 12px; box-sizing: border-box; gap: 12px; }
 
-/* 🍔 Sidebar (Collapsible Magic) */
+/* Sidebar Logic */
 .sidebar { 
-    width: 75px; /* Ekdam perfect balanced size */
+    width: 75px; 
     padding: 20px 10px; 
     display: flex; 
     flex-direction: column; 
@@ -48,21 +48,19 @@ body {
 .menu-btn:hover { color: #fff; }
 .brand-title { color: #fff; font-size: 18px; margin: 0; font-weight: 600; }
 
-/* Hide text by default, show on expand */
 .nav-text { opacity: 0; display: none; transition: 0.2s; }
 .sidebar.expanded .nav-text { opacity: 1; display: inline-block; }
 
-/* User Profile Icon */
 .sidebar-user { border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 8px; display: flex; align-items: center; gap: 12px; margin-bottom: 25px; background: rgba(0,0,0,0.2); justify-content: center; }
 .sidebar.expanded .sidebar-user { justify-content: flex-start; padding: 12px; }
 .user-avatar { min-width: 32px; height: 32px; background: #00d084; color: #020617; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-weight: 600; font-size: 16px; }
+.user-info { display: flex; flex-direction: column; }
+.user-name { color: #fff; font-weight: 500; font-size: 12px; }
+.user-role { font-size: 10px; color: #8b94a7; }
 
-/* Icons and Links */
 .nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .nav-links li { padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #8b94a7; transition: 0.3s; font-size: 13px; justify-content: center; }
 .sidebar.expanded .nav-links li { justify-content: flex-start; }
-
-/* Icon Size Fix */
 .nav-links li i { font-size: 24px; min-width: 24px; text-align: center; }
 .nav-links li:hover, .nav-links li.active { background: rgba(0, 208, 132, 0.1); color: #fff; }
 .nav-links li.logout-btn { margin-top: auto; color: #ff3b30; }
@@ -79,26 +77,21 @@ body {
 .add-hotel-btn { background: #00d084; color: #020617; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; gap: 5px; align-items: center; font-size: 12px; }
 .btn-icon { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #8b94a7; padding: 8px; border-radius: 6px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 16px; }
 
-/* 📊 PREMIUM BENTO GRID WIDGETS (Shapes & Sizes) */
+/* Bento Grid Widgets */
 .crm-grid { 
     display: grid; 
-    grid-template-columns: repeat(4, 1fr); /* 4 Barabar Columns */
-    grid-auto-rows: 160px; /* Fixed height for squares */
+    grid-template-columns: repeat(4, 1fr); 
+    grid-auto-rows: 160px; 
     gap: 15px; 
 }
 
-.crm-widget { 
-    padding: 20px; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-}
+.crm-widget { padding: 20px; display: flex; flex-direction: column; justify-content: center; }
 
-/* 🔥 BENTO SHAPES MAGIC */
-.w-wide { grid-column: span 2; grid-row: span 1; } /* Chauda Dibba */
-.w-square { grid-column: span 1; grid-row: span 1; align-items: center; text-align: center; } /* Ekdam Chaukor */
-.w-large { grid-column: span 3; grid-row: span 2; justify-content: flex-start; } /* Sabse bada Table ka box */
-.w-tall { grid-column: span 1; grid-row: span 2; align-items: center; justify-content: center; text-align: center; } /* Lamba khada box */
+/* Bento Shapes */
+.w-wide { grid-column: span 2; grid-row: span 1; } 
+.w-square { grid-column: span 1; grid-row: span 1; align-items: center; text-align: center; } 
+.w-large { grid-column: span 3; grid-row: span 2; justify-content: flex-start; } 
+.w-tall { grid-column: span 1; grid-row: span 2; align-items: center; justify-content: center; text-align: center; } 
 
 .w-title { color: #8b94a7; font-size: 12px; margin-bottom: 10px; }
 .w-amount { color: #fff; margin: 0 0 5px 0; font-size: 26px; font-weight: 600; }
@@ -106,7 +99,7 @@ body {
 .progress-bar-thin { width: 100%; height: 4px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; }
 .progress-bar-thin .fill { height: 100%; background: #00d084; border-radius: 10px; }
 
-/* Tasks Circles */
+/* Task Circles */
 .task-circles { display: flex; justify-content: center; gap: 20px; width: 100%; }
 .tc { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .tc span { font-size: 11px; color: #8b94a7; }
@@ -119,28 +112,21 @@ body {
 .t-wait { color: #f5a623 !important; font-weight: 500; }
 .t-done { color: #00d084 !important; font-weight: 500; }
 
-/* Quick Action Box */
 .quick-scan-box { display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: 15px; }
-/* add client form */
+
+/* Add Client Form */
 .form-container { padding: 30px; }
 .section-title { margin: 0; color: #fff; font-size: 18px; font-weight: 500; }
 .section-sub { margin: 5px 0 25px 0; color: #8b94a7; font-size: 12px; }
-
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
 .form-grid .input-group { margin-bottom: 0; text-align: left; }
 .form-grid label { display: block; margin-bottom: 8px; color: #8b94a7; font-size: 12px; }
-.form-grid input, .form-grid select { 
-    width: 100%; padding: 12px 15px; 
-    background: rgba(0,0,0,0.2); 
-    border: 1px solid rgba(255,255,255,0.1); 
-    color: #fff; border-radius: 6px; 
-    outline: none; font-family: 'Poppins', sans-serif; 
-    box-sizing: border-box; font-size: 12px; 
-}
+.form-grid input, .form-grid select { width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none; font-family: 'Poppins', sans-serif; box-sizing: border-box; font-size: 12px; }
 .form-grid input:focus, .form-grid select:focus { border-color: #00d084; }
 .form-grid select { appearance: none; cursor: pointer; color: #fff; }
 .form-grid select option { background: #020617; color: #fff; }
 .form-submit { width: 100%; max-width: 250px; padding: 12px; font-size: 14px; justify-content: center; }
+
 /* Toast */
 .custom-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #020617; border: 1px solid #00d084; color: #fff; padding: 10px 15px; border-radius: 50px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,208,132,0.2); transition: top 0.4s; z-index: 9999; font-size: 12px; }
 .custom-toast.show { top: 20px; }
