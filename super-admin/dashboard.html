@@ -23,7 +23,6 @@
             <h2 style="color: #fff; margin-bottom: 25px; letter-spacing: 1px;"><i class="ph-fill ph-shield-check" style="color: #00d084;"></i> SUPER ADMIN</h2>
             
             <div class="input-group" style="text-align: left; margin-bottom: 15px;">
-                <!-- 🛑 FIXED: Generic Placeholder -->
                 <input type="email" id="saEmail" placeholder="Enter Admin Email" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px;">
             </div>
             
@@ -33,8 +32,7 @@
                 <i class="ph ph-eye" id="toggleEye" onclick="togglePassword()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #8b94a7; cursor: pointer; font-size: 20px;"></i>
             </div>
             
-            <!-- 🎨 FIXED: Premium Gradient Button -->
-            <button type="button" onclick="superAdminLogin()" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 600; border-radius: 8px; background: linear-gradient(135deg, #00d084, #009860); color: #0b0f19; border: none; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 208, 132, 0.2);">Access Panel</button>
+            <button type="button" onclick="superAdminLogin(event)" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 600; border-radius: 8px; background: linear-gradient(135deg, #00d084, #009860); color: #0b0f19; border: none; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 208, 132, 0.2);">Access Panel</button>
         </div>
     </div>
 
@@ -48,7 +46,6 @@
                 <h2 class="brand-title"><span class="nav-text">Master Panel</span></h2>
             </div>
             
-
             <ul class="nav-links">
                 <li class="active" id="nav-overview" title="Overview" onclick="switchTab('overview')">
                     <i class="ph ph-squares-four"></i> <span class="nav-text">Overview</span>
@@ -101,7 +98,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -238,9 +234,7 @@
                         <table class="main-data-table">
                             <thead><tr><th>Client ID</th><th>Restaurant Name</th><th>City</th><th>Plan</th><th>Status</th><th>Action</th></tr></thead>
                             <tbody id="clientTableBody">
-                                <tr><td style="color:#8b94a7;">#SM-001</td><td>Food Station</td><td>Patna</td><td>Premium (Yearly)</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
-                                <tr><td style="color:#8b94a7;">#SM-002</td><td>FoodVilla</td><td>Delhi</td><td>Pro Plan</td><td><span class="status-badge active-badge">Active</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
-                                <tr><td style="color:#8b94a7;">#SM-003</td><td>Demo Cafe</td><td>Mumbai</td><td>14-Days Trial</td><td><span class="status-badge trial-badge">Trial Phase</span></td><td><button class="action-btn" onclick="openEditModal()"><i class="ph ph-pencil-simple"></i></button></td></tr>
+                                <!-- Data Firebase se automatically aayega -->
                             </tbody>
                         </table>
                     </div>
@@ -259,7 +253,7 @@
                    <!-- 1. Main Chart (Large Box) -->
                     <div class="crm-widget glass-box w-large" style="padding: 20px;">
                         <div class="w-title" style="margin-bottom: 20px;">Monthly Scan Activity</div>
-                        <!-- Chart Container (Ye glitch rokena) -->
+                        <!-- Chart Container -->
                         <div style="position: relative; height: 250px; width: 100%;">
                             <canvas id="mainChart"></canvas>
                         </div>
@@ -322,7 +316,7 @@
                 <div class="glass-box modal-box" style="width: 400px;">
                     <h3 style="margin: 0 0 15px 0; color: #fff;">Control Panel: Edit Client</h3>
                     
-                    <!-- Hidden ID input (Firebase ko batane ke liye ki kisse update karna hai) -->
+                    <!-- Hidden ID input -->
                     <input type="hidden" id="editClientId"> 
                     
                     <div class="input-group" style="margin-bottom: 15px;">
@@ -365,12 +359,12 @@
         </div> <!-- End of Main Content -->
     </div> <!-- End of Dashboard Container -->
 
-    <script type="module" src="dashboard.js"></script>
     <!-- 🔥 Firebase Cloud Database SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-    <!-- Tumhari purani JS file -->
+    
+    <!-- Only Link JS ONCE -->
     <script src="dashboard.js"></script>
 </body>
 </html>
