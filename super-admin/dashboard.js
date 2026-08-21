@@ -41,7 +41,7 @@ window.togglePassword = () => {
     if (passInput.type === "password") {
         passInput.type = "text";
         eyeIcon.classList.replace("ph-eye", "ph-eye-slash");
-        eyeIcon.style.color = "#00d084"; // Dekhne par Green ho jayega
+        eyeIcon.style.color = "#00d084"; 
     } else {
         passInput.type = "password";
         eyeIcon.classList.replace("ph-eye-slash", "ph-eye");
@@ -50,10 +50,12 @@ window.togglePassword = () => {
 };
 
 // ==========================================
-// 🔐 HACKER-PROOF FIREBASE LOGIN SYSTEM (Loop Fixed)
+// 🔐 HACKER-PROOF FIREBASE LOGIN SYSTEM
 // ==========================================
-window.superAdminLogin = () => {
-    // .trim() aage-peeche ke galti se lage spaces ko hata dega
+window.superAdminLogin = (event) => {
+    // 🛑 ANTI-CRASH LOCK: Ye page ko refresh hone se rokega
+    if(event) event.preventDefault(); 
+
     const email = document.getElementById('saEmail').value.trim();
     const pass = document.getElementById('saPass').value.trim();
     
@@ -67,7 +69,6 @@ window.superAdminLogin = () => {
     auth.signInWithEmailAndPassword(email, pass)
         .then((userCredential) => {
             showToast("Welcome CEO Arun! 🚀", "success");
-            // Yahan se aage ka kaam onAuthStateChanged khud sambhal lega
         })
         .catch((error) => {
             if(error.code === 'auth/invalid-credential') {
@@ -80,14 +81,12 @@ window.superAdminLogin = () => {
 };
 
 window.logoutDashboard = () => {
-    // 🛑 FIXED: Confirmation Popup
     const confirmLogout = confirm("⚠️ Are you sure you want to log out of the Master Panel?");
     
-    // Agar User 'OK' dabayega tabhi logout hoga
     if (confirmLogout) {
         auth.signOut().then(() => {
             showToast("Logged out successfully! 🔒", "success");
-            document.getElementById('saPass').value = ""; // Password clear karna
+            document.getElementById('saPass').value = ""; 
         }).catch((error) => {
             console.error(error);
         });
@@ -184,14 +183,10 @@ window.toggleNotif = () => {
 // ==========================================
 // ✏️ GOD MODE: EDIT & DELETE LOGIC
 // ==========================================
-
-// 1. Popup kholna aur purana data laana
 window.openEditModal = (dbId) => {
-    // Array me se us restaurant ko dhundho jiska pencil icon click hua hai
     const client = clientsData.find(c => c.dbId === dbId);
     if(!client) return;
 
-    // Popup ke inputs me asli data bharo
     document.getElementById('editClientId').value = client.dbId;
     document.getElementById('editName').value = client.name;
     document.getElementById('editCity').value = client.city;
@@ -202,7 +197,6 @@ window.openEditModal = (dbId) => {
     else if(client.status === 'Trial Phase') statusSelect.value = 'Trial Phase';
     else statusSelect.value = 'Deactivated';
 
-    // Popup dikhao
     document.getElementById('editModal').style.display = 'flex';
 };
 
@@ -210,7 +204,6 @@ window.closeEditModal = () => {
     document.getElementById('editModal').style.display = 'none';
 };
 
-// 2. Firebase me naya data UPDATE karna
 window.saveEditedClient = () => {
     const dbId = document.getElementById('editClientId').value;
     const newName = document.getElementById('editName').value;
@@ -218,14 +211,12 @@ window.saveEditedClient = () => {
     const newPlan = document.getElementById('editPlan').value;
     const newStatus = document.getElementById('editStatus').value;
     
-    // Status ke hisaab se color badge set karna
     let newStatusClass = 'active-badge';
     if(newStatus === 'Trial Phase') newStatusClass = 'trial-badge';
-    if(newStatus === 'Deactivated') newStatusClass = ''; // Isko baad me red kar denge
+    if(newStatus === 'Deactivated') newStatusClass = ''; 
 
     showToast("Updating Cloud Server... ⏳", "success");
 
-    // Firebase update command
     db.collection("merchants").doc(dbId).update({
         restaurantName: newName,
         city: newCity,
@@ -241,17 +232,12 @@ window.saveEditedClient = () => {
     });
 };
 
-// 3. Firebase se hamesha ke liye DELETE karna
 window.deleteClient = () => {
     const dbId = document.getElementById('editClientId').value;
-    
-    // Safety check: Delete karne se pehle poochega
     const confirmDelete = confirm("⚠️ WARNING: Are you sure you want to permanently delete this Restaurant? All their data will be lost!");
     
     if(confirmDelete) {
         showToast("Deleting from Cloud... ⏳", "success");
-        
-        // Firebase delete command
         db.collection("merchants").doc(dbId).delete().then(() => {
             showToast("Restaurant Deleted Permanently! 🗑️", "success");
             closeEditModal();
@@ -265,7 +251,6 @@ window.deleteClient = () => {
 // ==========================================
 // 🔥 FIREBASE CLOUD DATABASE LOGIC
 // ==========================================
-
 const firebaseConfig = {
     apiKey: "AIzaSyDHfU0QaryYKy7zfhFXQdMEqh1KdIApNXY",
     authDomain: "itx-arun-bdf24.firebaseapp.com",
@@ -275,24 +260,18 @@ const firebaseConfig = {
     appId: "1:442083262265:web:3e023b1211f752cb3132e8"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 let clientsData = [];
 
-// 🚀 REAL-TIME LISTENER (Data lana aur Dashboard Dashboard Update karna)
 db.collection("merchants").onSnapshot((snapshot) => {
     clientsData = [];
-    
-    // Counters start from zero
     let totalClientsCount = 0;
     let activeClientsCount = 0;
     
     snapshot.forEach((doc) => {
         const data = doc.data();
-        
-        // Data map kar rahe hain
         clientsData.push({ 
             dbId: doc.id, 
             id: data.restaurantId || data.id || '#SM-???', 
@@ -303,17 +282,14 @@ db.collection("merchants").onSnapshot((snapshot) => {
             statusClass: data.statusClass || 'active-badge'
         });
 
-        // Ginti (Counting) kar rahe hain
         totalClientsCount++;
         if(data.status === 'Active' || !data.status) {
             activeClientsCount++;
         }
     });
     
-    // UI Table Update karna
     renderTable(); 
     
-    // 📊 Dashboard ke Numbers Update karna
     const dashTotal = document.getElementById('dashTotalClients');
     const dashActive = document.getElementById('dashActiveClients');
     const dashRev = document.getElementById('dashRevenue');
@@ -321,10 +297,10 @@ db.collection("merchants").onSnapshot((snapshot) => {
     if(dashTotal) dashTotal.innerText = totalClientsCount;
     if(dashActive) dashActive.innerText = activeClientsCount;
     
-    // Maan lo har active client ka 1500 Rs ka plan hai (Revenue calculation)
     const estimatedRevenue = activeClientsCount * 1500;
     if(dashRev) dashRev.innerText = "₹" + estimatedRevenue.toLocaleString("en-IN");
 });
+
 const renderTable = () => {
     const tbody = document.getElementById("clientTableBody");
     if(!tbody) return;
@@ -359,23 +335,33 @@ window.filterTable = (query) => {
 // 🥷 NINJA TRICK: CRASH-PROOF SECONDARY APP
 // ==========================================
 let secondaryApp;
-// Check karo ki kya SecondaryApp pehle se bana hua hai? 
 if (firebase.apps.find(app => app.name === "SecondaryApp")) {
     secondaryApp = firebase.app("SecondaryApp");
 } else {
     secondaryApp = firebase.initializeApp(firebaseConfig, "SecondaryApp");
 }
 const secondaryAuth = secondaryApp.auth();
-// ➕ NAYA CLIENT SAVE & AUTO-LOGIN CREATE KARNA
+
 window.saveNewClient = () => {
-    const name = document.getElementById('clientNameInput').value;
-    const email = document.getElementById('clientEmailInput').value;
-    const pass = document.getElementById('clientPassInput').value;
-    const city = document.getElementById('clientCityInput').value;
-    const plan = document.getElementById('clientPlanInput').value;
+    const name = document.getElementById('clientNameInput');
+    const email = document.getElementById('clientEmailInput');
+    const pass = document.getElementById('clientPassInput');
+    const city = document.getElementById('clientCityInput');
+    const plan = document.getElementById('clientPlanInput');
     
-    // Check karo ki sab zaruri details bhari hain ya nahi
+    // Yahan safety lock hai, agar HTML me dabbe nahi milenge to error nahi dega
     if(!name || !email || !pass) { 
+        showToast("System Error: Form ke inputs HTML me nahi mil rahe!", "error"); 
+        return; 
+    }
+
+    const nameVal = name.value;
+    const emailVal = email.value;
+    const passVal = pass.value;
+    const cityVal = city ? city.value : 'N/A';
+    const planVal = plan ? plan.value : 'Free Tier';
+
+    if(!nameVal || !emailVal || !passVal) { 
         showToast("Restaurant Name, Email aur Password zaruri hai!", "error"); 
         return; 
     }
@@ -383,20 +369,16 @@ window.saveNewClient = () => {
     const randomId = '#SM-' + Math.floor(Math.random() * 900 + 100);
     showToast("Creating Secure Login & Database... ⏳", "success");
     
-    // STEP 1: Background me naya Account banana
-    secondaryAuth.createUserWithEmailAndPassword(email, pass)
+    secondaryAuth.createUserWithEmailAndPassword(emailVal, passVal)
         .then((userCredential) => {
-            // Account bante hi secondary engine ko turant sign-out kar do taaki kachra na jama ho
             secondaryAuth.signOut();
-            
-            // STEP 2: Agar login ban gaya, toh Firestore me Data save karo
             return db.collection("merchants").add({
                 restaurantId: randomId,
-                restaurantName: name,
-                email: email, 
+                restaurantName: nameVal,
+                email: emailVal, 
                 upiId: "Not Provided", 
-                city: city || 'N/A',
-                plan: plan,
+                city: cityVal,
+                plan: planVal,
                 status: 'Active',
                 statusClass: 'active-badge',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp() 
@@ -404,23 +386,16 @@ window.saveNewClient = () => {
         })
         .then(() => {
             showToast("Hotel Created & Owner Account Ready! 🚀", "success");
-            
-            // Form Clear karna
             const inputs = document.querySelectorAll('#addClientSection input');
             inputs.forEach(input => input.value = '');
-            const select = document.querySelector('#addClientSection select');
-            if(select) select.selectedIndex = 0;
-
             setTimeout(() => { switchTab('list'); }, 1500);
         })
         .catch((error) => {
-            // Agar email pehle se exist karta hai ya password weak hai
             showToast("Error: " + error.message, "error");
             console.error(error);
         });
 };
 
-// 📥 EXPORT TO CSV (BLOB METHOD)
 window.exportToCSV = () => {
     if(clientsData.length === 0) { showToast("No data to export!", "error"); return; }
     
@@ -440,7 +415,3 @@ window.exportToCSV = () => {
     document.body.removeChild(link);
     showToast("Excel File Downloaded! 📊", "success");
 };
-
-// Start logic
-// Start logic & Security Check
-
